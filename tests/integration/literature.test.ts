@@ -3,6 +3,7 @@ import { demoContent, createDemoBattle } from "../../src/content/demo-battle.js"
 import { literatureCardDefinitions } from "../../src/content/literature-cards.js";
 import { useCardEffects } from "../../src/domain/card-effects.js";
 import { DEFAULT_GAME_CONFIG } from "../../src/domain/config.js";
+import type { RunState } from "../../src/domain/schema.js";
 import { submitPlayerKey } from "../../src/domain/turn-state.js";
 import { parseRunState } from "../../src/domain/validate.js";
 import { describeCard } from "../../src/ui/battle-view.js";
@@ -29,7 +30,7 @@ describe("literature club card identity", () => {
     for (const upgraded of [false, true]) {
       const staged = inHand("LIT-001", upgraded);
       const before = staged.run.combat!.drawPile.length;
-      let used = staged.run;
+      let used: RunState = staged.run;
       let now = 0;
       for (const key of "jot") {
         now += 10;
