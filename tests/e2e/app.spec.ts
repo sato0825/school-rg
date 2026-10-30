@@ -365,6 +365,12 @@ for (const [act, kind, enemyId, name] of [
   [2, "elite", "stairwell-echo", "階段の反響"],
   [3, "combat", "window-shadow", "夜窓の影"],
   [3, "elite", "night-locker", "夜のロッカー"],
+  [1, "combat", "lost-homework", "迷子の答案"],
+  [1, "elite", "school-gate", "閉まる校門"],
+  [2, "combat", "lab-magnet", "理科室の磁石"],
+  [2, "elite", "library-index", "動く書架の索引"],
+  [3, "combat", "empty-desk", "誰もいない机"],
+  [3, "elite", "last-bus", "最終便の影"],
 ] as const) {
   test(`Act ${act} ${kind} ${name} shows its Intent and can be defeated by typing`, async ({ page }) => {
     await page.clock.install();
@@ -381,6 +387,15 @@ for (const [act, kind, enemyId, name] of [
     const intentId = entered.run.combat!.enemies[0]!.intentId;
     const label = demoContent.intents.find((item) => item.id === intentId)!.label;
     await expect(page.locator(".intent-ticket")).toContainText(label);
+    if (["school-gate", "library-index", "last-bus"].includes(enemyId)) {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await expect(page.locator(".intent-ticket")).toBeInViewport();
+      await expect(page.locator(".enemy-hud")).toBeInViewport();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      if (process.env.SCHOOL_RG_CAPTURE_ENEMIES === "1") {
+        await page.screenshot({ path: `docs/content/previews/issue120-act${act}-elite-narrow-20261031.png`, fullPage: true });
+      }
+    }
     await typeThroughBattle(page);
     await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
   });
