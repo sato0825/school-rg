@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { demoContent, demoEncounterTable, demoEnemyAi } from "../../src/content/demo-battle.js";
+import { demoContent, demoRunContentTables, demoEnemyAi } from "../../src/content/demo-battle.js";
 import { availableEventChoices, resolveEventChoice } from "../../src/domain/events.js";
 import { availableRunNodes, chooseRunEventChoice, createRunSession, enterRunNode, settleRunCombat } from "../../src/domain/run-flow.js";
 import { parseRunState } from "../../src/domain/validate.js";
@@ -10,9 +10,9 @@ describe("data-driven event choices", () => {
   it("selects the same event for the same seed and resumes the unresolved state", () => {
     const start = createRunSession(42, "literature-demo", demoContent, eventMap);
     const nodeId = availableRunNodes(start)[0]!.id;
-    const event = enterRunNode(start, nodeId, demoContent, demoEnemyAi, demoEncounterTable);
+    const event = enterRunNode(start, nodeId, demoContent, demoEnemyAi, demoRunContentTables);
     expect(event.screen).toBe("event");
-    expect(enterRunNode(createRunSession(42, "literature-demo", demoContent, eventMap), nodeId, demoContent, demoEnemyAi, demoEncounterTable)).toEqual(event);
+    expect(enterRunNode(createRunSession(42, "literature-demo", demoContent, eventMap), nodeId, demoContent, demoEnemyAi, demoRunContentTables)).toEqual(event);
     expect(parseRunState(JSON.parse(JSON.stringify(event.run)), demoContent)).toEqual(event.run);
     expect(availableEventChoices(event.run, demoContent).some((item) => item.choice.id === "fight")).toBe(true);
     expect(() => chooseRunEventChoice(event, "missing-choice", demoContent, demoEnemyAi)).toThrow(/unknown event choice/);
@@ -27,12 +27,12 @@ describe("data-driven event choices", () => {
     expect(completed.run.event).toBeNull();
     expect(completed.completedNodeIds).toContain(nodeId);
     expect(() => chooseRunEventChoice(completed, "fight", demoContent, demoEnemyAi)).toThrow(/event screen/);
-    expect(() => enterRunNode(completed, nodeId, demoContent, demoEnemyAi, demoEncounterTable)).toThrow(/not available/);
+    expect(() => enterRunNode(completed, nodeId, demoContent, demoEnemyAi, demoRunContentTables)).toThrow(/not available/);
   });
 
   it("enforces conditions and applies selected costs and rewards in order", () => {
     const start = createRunSession(8, "literature-demo", demoContent, eventMap);
-    const opened = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, demoEncounterTable);
+    const opened = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, demoRunContentTables);
     const board = { ...opened.run, event: { ...opened.run.event!, eventId: "after-school-board" } };
     expect(availableEventChoices({ ...board, gold: 0 }, demoContent).find((item) => item.choice.id === "borrow")?.available).toBe(false);
     expect(() => resolveEventChoice({ ...board, gold: 0 }, "borrow", demoContent)).toThrow(/conditions/);
