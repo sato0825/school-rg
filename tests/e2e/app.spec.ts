@@ -93,6 +93,37 @@ test("shop and event choices accept focused keyboard activation", async ({ page 
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
 });
 
+test("shop relic, potion and card purchases persist and respect one-time stock", async ({ page }) => {
+  await startDemoRun(page);
+  await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
+  await page.evaluate(() => {
+    const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
+    saved.session.run.gold = 200;
+    localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
+  });
+  await page.reload();
+  const relic = page.locator(".shop-relic-offer");
+  const potion = page.locator(".shop-potion-offer");
+  await expect(relic).toHaveCount(1);
+  await expect(potion).toHaveCount(1);
+  await relic.focus();
+  await page.keyboard.press("Enter");
+  await expect(relic).toBeDisabled();
+  await expect(relic).toContainText("購入済み");
+  await expect(page.locator(".economy-message")).toContainText("レリックを購入");
+  await potion.focus();
+  await page.keyboard.press("Enter");
+  await expect(potion).toBeDisabled();
+  await expect(potion).toContainText("購入済み");
+  await expect(page.locator(".economy-panel")).toContainText("ポーション 3/3");
+  await page.locator("[data-action=buy-offer]").first().focus();
+  await page.keyboard.press("Enter");
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
+  await expect(page.locator(".shop-relic-offer, .shop-potion-offer, [data-action=buy-offer]").filter({ hasText: "購入済み" })).toHaveCount(3);
+  await expect(page.locator("[data-action=remove-shop-card]").first()).toBeDisabled();
+});
+
 test("rest choice accepts focused keyboard activation", async ({ page }) => {
   await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).first().focus();

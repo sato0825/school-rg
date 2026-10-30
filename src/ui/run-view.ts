@@ -80,18 +80,31 @@ export function renderRunTreasure(root: HTMLElement, session: RunSession, conten
   root.innerHTML = shell("宝箱", `<section class="reward-panel treasure-panel"><span class="eyebrow">FOUND ITEM</span><h2>宝箱から1つ選ぶ</h2><p>ポーション ${session.run.potionIds.length}/${requireSetting(config.potionSlots)} · レリック ${session.run.relicIds.length}個</p><div class="reward-options">${offers}</div><button type="button" class="skip-reward" data-action="skip-treasure">何も取らず進む</button></section>`, art);
 }
 
-export function renderRunShop(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, message: string): void {
+export function renderRunShop(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, message: string, config: GameConfig = DEFAULT_GAME_CONFIG): void {
   const shop = session.run.shop;
   if (!shop) throw new Error("shop screen requires active stock");
+  const gold = session.run.gold;
+  const full = session.run.potionIds.length >= requireSetting(config.potionSlots);
   const offers = shop.offers.map((offer) => {
     const card = content.cards.find((item) => item.id === offer.cardId)!;
-    return `<button type="button" class="reward-card" data-action="buy-offer" data-id="${offer.offerId}" ${offer.purchased ? "disabled" : ""}><small>${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span><b>${offer.purchased ? "購入済み" : `${offer.price}G`}</b></button>`;
+    const reason = offer.purchased ? "購入済み" : gold < offer.price ? "所持金不足" : "";
+    return `<button type="button" class="reward-card" data-action="buy-offer" data-id="${offer.offerId}" ${reason ? "disabled" : ""}><small>${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span><b>${reason || `${offer.price}G`}</b></button>`;
+  }).join("");
+  const relicOffers = shop.relicOffers.map((offer) => {
+    const relic = content.relics.find((item) => item.id === offer.contentId)!;
+    const reason = offer.purchased ? "購入済み" : gold < offer.price ? "所持金不足" : session.run.relicIds.includes(offer.contentId) ? "所持済み" : "";
+    return `<button type="button" class="reward-card shop-relic-offer" data-action="buy-relic" data-id="${html(offer.offerId)}" ${reason ? "disabled" : ""}><small>RELIC</small><strong>${html(relic.name)}</strong><span>ラン中に効果を発揮</span><b>${reason || `${offer.price}G`}</b></button>`;
+  }).join("");
+  const potionOffers = shop.potionOffers.map((offer) => {
+    const potion = content.potions.find((item) => item.id === offer.contentId)!;
+    const reason = offer.purchased ? "購入済み" : full ? "所持枠が満杯" : gold < offer.price ? "所持金不足" : "";
+    return `<button type="button" class="reward-card shop-potion-offer" data-action="buy-potion" data-id="${html(offer.offerId)}" ${reason ? "disabled" : ""}><small>POTION</small><strong>${html(potion.name)}</strong><span>入力語 ${html(potion.input.text)}</span><b>${reason || `${offer.price}G`}</b></button>`;
   }).join("");
   const removal = session.run.deck.map((instance) => {
     const card = content.cards.find((item) => item.id === instance.cardId)!;
-    return `<button type="button" class="mini-choice" data-action="remove-shop-card" data-id="${instance.instanceId}" ${shop.removalUsed ? "disabled" : ""}>${html(card.input.text)}${instance.upgraded ? "+" : ""}</button>`;
+    return `<button type="button" class="mini-choice" data-action="remove-shop-card" data-id="${instance.instanceId}" ${shop.removalUsed || gold < shop.removalPrice || session.run.deck.length <= 1 ? "disabled" : ""}>${html(card.input.text)}${instance.upgraded ? "+" : ""}</button>`;
   }).join("");
-  root.innerHTML = shell("購買", `<section class="reward-panel economy-panel"><span class="eyebrow">SCHOOL SHOP</span><h2>購買</h2><p>所持金 ${session.run.gold}G。商品は一度ずつ購入できます。</p><div class="reward-options">${offers}</div><div class="economy-section"><h3>カード削除 · ${shop.removalPrice}G</h3><div class="choice-list">${removal}</div></div><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button><p class="economy-message" role="status">${html(message)}</p></section>`, art);
+  root.innerHTML = shell("購買", `<section class="reward-panel economy-panel"><span class="eyebrow">SCHOOL SHOP</span><h2>購買</h2><p>所持金 ${gold}G · ポーション ${session.run.potionIds.length}/${requireSetting(config.potionSlots)}。商品は一度ずつ購入できます。</p><div class="economy-section"><h3>カード</h3><div class="reward-options">${offers}</div></div><div class="economy-section"><h3>レリック</h3><div class="reward-options">${relicOffers || "売り切れ"}</div></div><div class="economy-section"><h3>ポーション</h3><div class="reward-options">${potionOffers || "売り切れ"}</div></div><div class="economy-section"><h3>カード削除 · ${shop.removalPrice}G</h3><div class="choice-list">${removal}</div></div><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button><p class="economy-message" role="status">${html(message)}</p></section>`, art);
 }
 
 export function renderRunRest(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {

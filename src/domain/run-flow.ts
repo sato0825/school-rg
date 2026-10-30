@@ -1,5 +1,5 @@
 import { selectEnemyIntent, type EnemyAiRegistry } from "./enemy-ai.js";
-import { awardEncounterGold, buyShopCard, closeShop, DEFAULT_ECONOMY_OPTIONS, healAtRest, openShop, removeShopCard, upgradeAtRest, type EconomyOptions } from "./economy.js";
+import { awardEncounterGold, buyShopCard, buyShopPotion, buyShopRelic, closeShop, DEFAULT_ECONOMY_OPTIONS, healAtRest, openShop, removeShopCard, upgradeAtRest, type EconomyOptions } from "./economy.js";
 import { openRandomEvent, resolveEventChoice, type EventPools } from "./events.js";
 import { DEFAULT_GAME_CONFIG, type GameConfig } from "./config.js";
 import { availableNextNodes, generateRunMap, moveToConnectedNode, type MapGenerationOptions } from "./map-generation.js";
@@ -170,6 +170,16 @@ export function chooseRunReward(session: RunSession, cardId: string | null): Run
 export function buyRunShopCard(session: RunSession, offerId: string): RunSession {
   if (session.screen !== "shop") throw new Error("expected shop screen");
   return { ...session, run: buyShopCard(session.run, offerId) };
+}
+
+export function buyRunShopRelic(session: RunSession, offerId: string, content: ContentRegistry): RunSession {
+  if (session.screen !== "shop") throw new Error("expected shop screen");
+  return { ...session, run: buyShopRelic(session.run, offerId, content) };
+}
+
+export function buyRunShopPotion(session: RunSession, offerId: string, content: ContentRegistry, config: GameConfig = DEFAULT_GAME_CONFIG): RunSession {
+  if (session.screen !== "shop") throw new Error("expected shop screen");
+  return { ...session, run: buyShopPotion(session.run, offerId, content, config) };
 }
 
 export function removeRunShopCard(session: RunSession, cardInstanceId: string): RunSession {

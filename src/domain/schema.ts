@@ -149,6 +149,8 @@ export const CombatStateSchema = z.strictObject({
 export const ShopStateSchema = z.strictObject({
   nodeId: id,
   offers: z.array(z.strictObject({ offerId: id, cardId: id, price: nonNegativeInt, purchased: z.boolean() })),
+  relicOffers: z.array(z.strictObject({ offerId: id, contentId: id, price: nonNegativeInt, purchased: z.boolean() })).default([]),
+  potionOffers: z.array(z.strictObject({ offerId: id, contentId: id, price: nonNegativeInt, purchased: z.boolean() })).default([]),
   removalPrice: nonNegativeInt,
   removalUsed: z.boolean(),
 });
