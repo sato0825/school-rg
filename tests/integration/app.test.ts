@@ -12,6 +12,9 @@ describe("run and typing combat HUD", () => {
     if (!root) throw new Error("Missing test root");
     const unmount = mountApp(root);
     expect(root.querySelector("h1")?.textContent).toBe("学園タイピングローグライク");
+    expect(root.textContent).toContain("放課後を、打ち抜く。");
+    root.querySelector<HTMLButtonElement>("[data-action=open-clubs]")?.click();
+    root.querySelector<HTMLButtonElement>("[data-action=choose-club]")?.click();
     expect(root.textContent).toContain("次の行き先を選ぶ");
     root.querySelector<HTMLButtonElement>(".map-node.available")?.click();
     expect(root.querySelectorAll(".card")).toHaveLength(5);

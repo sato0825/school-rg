@@ -12,7 +12,7 @@ import { emitRelicEvent, type RelicEventKind, type RelicEvent } from "../domain/
 import { discardPotion, selectPotionEnemy, selectPotionSlot, setPotionInputActive, submitPotionKey } from "../domain/potions.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { demoBattleArt } from "./demo-art.js";
-import { renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderSaveRecovery } from "./run-view.js";
+import { renderClubSelect, renderCompendium, renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserSaveStore, type SaveStore } from "./save-store.js";
 
@@ -24,10 +24,12 @@ const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWe
 export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore()): () => void {
   const clock = { nowMs: () => Math.floor(performance.now()) };
   let session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
+  let frontScreen: "title" | "clubs" | "compendium" | null = "title";
+  let frontReturn: "title" | null = "title";
   let restoreError = false;
   try {
     const saved = store.read();
-    if (saved) session = deserializeRunSession(saved, demoContent, clock);
+    if (saved) { session = deserializeRunSession(saved, demoContent, clock); frontScreen = null; }
   } catch { restoreError = true; }
   let run: RunState = session.run;
   const view: BattleView = { art: demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
@@ -41,12 +43,15 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     run = fireRelic(run, "turn_start");
   };
   const persist = () => {
-    if (restoreError) return;
+    if (restoreError || frontScreen !== null) return;
     try { store.write(serializeRunSession({ ...session, run }, demoContent, clock, disposition)); }
     catch { view.message = "保存できませんでした。"; }
   };
   const render = () => {
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
+    else if (frontScreen === "title") renderRunTitle(root, demoBattleArt);
+    else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt);
+    else if (frontScreen === "compendium") renderCompendium(root, demoContent, demoBattleArt);
     else if (session.screen === "map") renderRunMap(root, session, demoBattleArt);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
     else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message);
@@ -126,6 +131,9 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     view.selectedDebuff = null;
     session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
     run = session.run;
+    frontScreen = "title";
+    frontReturn = "title";
+    restoreError = false;
     restoreError = false;
     view.message = "カード名をタイプして発動。誤入力は無視されます。";
     render();
@@ -133,6 +141,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
 
   function onKeyDown(event: KeyboardEvent): void {
     if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
+    if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
+    if (event.target instanceof HTMLButtonElement && event.key.length === 1) event.target.blur();
     if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey)) event.preventDefault();
     try {
       if (event.key === requireSetting(config.potionModeKey)) run = setPotionInputActive(run, !run.combat.potionControl?.active, clock, demoContent, disposition);
@@ -152,6 +162,22 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const id = button.dataset.id ?? "";
     try {
       if (action === "new-run" || action === "restart") { restart(); return; }
+      if (action === "open-clubs" && frontScreen === "title") { frontScreen = "clubs"; render(); return; }
+      if (action === "choose-club" && frontScreen === "clubs") {
+        session = createRunSession(42, id, demoContent, demoMapOptions);
+        run = session.run;
+        frontScreen = null;
+        render();
+        return;
+      }
+      if (action === "open-compendium" && (frontScreen === "title" || (frontScreen === null && session.screen === "map"))) {
+        frontReturn = frontScreen === "title" ? "title" : null;
+        frontScreen = "compendium";
+        render();
+        return;
+      }
+      if (action === "front-back" && frontScreen) { frontScreen = frontScreen === "clubs" ? "title" : frontReturn; render(); return; }
+      if (frontScreen !== null || restoreError) return;
       if (restoreError) return;
       if (session.screen === "map" && action === "enter-node") {
         session = enterRunNode(session, id, demoContent, demoEnemyAi, demoEncounterTable);

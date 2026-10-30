@@ -19,6 +19,23 @@ function shell(title: string, body: string, art: BattleArt): string {
   return `<main class="run-screen" style="background-image:url('${html(art.stageUrl)}')"><div class="run-scrim"></div><header class="run-header"><div class="brand"><span class="brand-mark">✦</span><div><small>SCHOOL ROGUELIKE</small><h1>学園タイピングローグライク</h1></div></div><strong>${html(title)}</strong></header>${body}</main>`;
 }
 
+export function renderRunTitle(root: HTMLElement, art: BattleArt): void {
+  root.innerHTML = shell("放課後から始まる", `<section class="front-panel title-panel"><div class="front-copy"><span class="eyebrow">TYPE YOUR NEXT MOVE</span><h2>放課後を、打ち抜く。</h2><p>カード名を入力して行動する、学園タイピングローグライク。</p><div class="front-actions"><button type="button" data-action="open-clubs">ランを始める</button><button type="button" data-action="open-compendium">図鑑を見る</button></div><p class="front-note">現在は文芸部の検証用コンテンツを公開中です。5部活の固有デッキは制作中です。</p></div><img class="front-hero" src="${html(art.heroUrl)}" alt="文芸部の生徒" /></section>`, art);
+}
+
+export function renderClubSelect(root: HTMLElement, content: ContentRegistry, art: BattleArt): void {
+  const clubs = content.clubs.map((club) => `<button type="button" class="club-choice" data-action="choose-club" data-id="${html(club.id)}"><img src="${html(art.heroUrl)}" alt="" /><span><small>CLUB</small><strong>${html(club.name)}</strong><em>初期HP ${club.startingHp} · デッキ ${club.starterCardIds.length}枚</em></span></button>`).join("");
+  root.innerHTML = shell("部活を選ぶ", `<section class="front-panel club-panel"><span class="eyebrow">CHOOSE YOUR CLUB</span><h2>所属する部活を選ぶ</h2><p>部活ごとに初期デッキとカードプールが変わります。</p><div class="club-choices">${clubs}</div><button type="button" class="front-back" data-action="front-back">タイトルへ戻る</button></section>`, art);
+}
+
+export function renderCompendium(root: HTMLElement, content: ContentRegistry, art: BattleArt): void {
+  const cardRows = content.cards.map((card) => `<li><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span></li>`).join("");
+  const relicRows = content.relics.map((relic) => `<li><strong>${html(relic.name)}</strong></li>`).join("");
+  const potionRows = content.potions.map((potion) => `<li><strong>${html(potion.name)}</strong><span>入力語 ${html(potion.input.text)}</span></li>`).join("");
+  const enemyRows = content.enemies.map((enemy) => `<li><strong>${html(enemy.name)}</strong><span>HP ${enemy.maxHp}</span></li>`).join("");
+  root.innerHTML = shell("図鑑", `<section class="front-panel compendium-panel"><span class="eyebrow">COMPENDIUM</span><h2>学園図鑑</h2><p>掲載内容は現在の検証用コンテンツです。</p><div class="compendium-list"><details open><summary>カード · ${content.cards.length}</summary><ul>${cardRows}</ul></details><details><summary>レリック · ${content.relics.length}</summary><ul>${relicRows}</ul></details><details><summary>ポーション · ${content.potions.length}</summary><ul>${potionRows}</ul></details><details><summary>敵 · ${content.enemies.length}</summary><ul>${enemyRows}</ul></details></div><button type="button" class="front-back" data-action="front-back">戻る</button></section>`, art);
+}
+
 export function renderRunMap(root: HTMLElement, session: RunSession, art: BattleArt): void {
   const run = session.run;
   const current = run.map.nodes.find((node) => node.id === run.map.currentNodeId)!;
@@ -31,7 +48,7 @@ export function renderRunMap(root: HTMLElement, session: RunSession, art: Battle
     const visited = session.completedNodeIds.includes(node.id);
     return `<button type="button" class="map-node ${node.id === current.id ? "current" : ""} ${visited ? "visited" : ""} ${enabled ? "available" : ""}" data-action="enter-node" data-id="${node.id}" ${enabled ? "" : "disabled"} aria-label="${floor}階 ${html(kindNames[node.kind])}${enabled ? " 選択可能" : ""}"><span>${kindIcons[node.kind]}</span><small>${html(kindNames[node.kind])}</small></button>`;
   }).join("")}</div></div>`).join("");
-  root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><span>ROUTE SELECT</span><h2>次の行き先を選ぶ</h2><p>接続された場所だけに進めます。戦闘ではカード名を直接タイプします。</p><div class="map-stats">♥ ${run.player.hp}/${run.player.maxHp} · ${run.gold}G · デッキ ${run.deck.length}枚 · シード ${run.seed}</div></div><div class="map-scroll" aria-label="Act ${run.act} マップ">${rows}</div></section>`, art);
+  root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><span>ROUTE SELECT</span><h2>次の行き先を選ぶ</h2><p>接続された場所だけに進めます。戦闘ではカード名を直接タイプします。</p><div class="map-stats">♥ ${run.player.hp}/${run.player.maxHp} · ${run.gold}G · デッキ ${run.deck.length}枚 · シード ${run.seed}</div><button type="button" class="map-compendium" data-action="open-compendium">図鑑</button></div><div class="map-scroll" aria-label="Act ${run.act} マップ">${rows}</div></section>`, art);
 }
 
 export function renderRunReward(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {

@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+async function startDemoRun(page: import("@playwright/test").Page): Promise<void> {
+  await page.goto("/");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+}
+
 async function enterNextNode(page: import("@playwright/test").Page): Promise<void> {
   const combat = page.locator(".map-node.available").filter({ hasText: "戦闘" });
   if (await combat.count()) await combat.last().click();
@@ -17,7 +23,8 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
       await page.keyboard.type(word);
       if (await page.locator(completion).count()) return;
       if ((await page.locator(".typing-buffer").innerText()).trim() === word) {
-        await page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: new RegExp(`^${word}$`) }) }).first().click();
+        await page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: new RegExp(`^${word}$`) }) }).first().focus();
+        await page.keyboard.press("Enter");
       }
       if (await page.locator(completion).count()) return;
       if ((await page.locator(".typing-buffer").innerText()).trim()) await page.keyboard.press("Escape");
@@ -27,8 +34,80 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
   throw new Error("the battle did not reach a reward within 12 turns");
 }
 
-test("renders the combat HUD and accepts direct keyboard input", async ({ page }) => {
+test("title, compendium, club selection, map and battle controls work by keyboard", async ({ page }) => {
   await page.goto("/");
+  await expect(page.getByRole("heading", { name: "放課後を、打ち抜く。" })).toBeVisible();
+  await page.getByRole("button", { name: "図鑑を見る" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "学園図鑑" })).toBeVisible();
+  await expect(page.locator(".compendium-list details")).toHaveCount(4);
+  await page.getByRole("button", { name: "戻る" }).focus();
+  await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: "ランを始める" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "所属する部活を選ぶ" })).toBeVisible();
+  await page.getByRole("button", { name: /文芸部/ }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+  await page.locator(".map-compendium").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "学園図鑑" })).toBeVisible();
+  await page.getByRole("button", { name: "戻る" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+  await page.locator(".map-node.available").filter({ hasText: "戦闘" }).first().focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".card")).toHaveCount(5);
+  await page.locator(".pause-button").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".pause-button")).toHaveText("再開");
+  await page.locator(".pause-button").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".pause-button")).toHaveText("一時停止");
+});
+
+test("shop and event choices accept focused keyboard activation", async ({ page }) => {
+  await startDemoRun(page);
+  await page.locator(".map-node.available").filter({ hasText: "購買" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
+  await page.locator(".reward-card").first().focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".reward-card").first()).toBeDisabled();
+  await page.getByRole("button", { name: "購買を出る" }).focus();
+  await page.keyboard.press("Enter");
+  await page.locator(".map-node.available").filter({ hasText: "イベント" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".event-panel")).toBeVisible();
+  await page.locator("[data-action=event-choice][data-id=help], [data-action=event-choice][data-id=pass]").first().focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+});
+
+test("rest choice accepts focused keyboard activation", async ({ page }) => {
+  await startDemoRun(page);
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
+  await page.locator("[data-action=rest-heal]").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+});
+
+test("a defeated run reaches its result and returns to the title by keyboard", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.clock.install();
+  await startDemoRun(page);
+  await enterNextNode(page);
+  for (let turn = 0; turn < 25 && !(await page.locator(".run-result").count()); turn++) await page.clock.runFor(11_000);
+  await expect(page.getByRole("heading", { name: "敗北" })).toBeVisible();
+  await page.getByRole("button", { name: "新しいランを始める" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "放課後を、打ち抜く。" })).toBeVisible();
+});
+
+test("renders the combat HUD and accepts direct keyboard input", async ({ page }) => {
+  await startDemoRun(page);
   await expect(page.getByRole("heading", { name: "学園タイピングローグライク" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
   await enterNextNode(page);
@@ -46,7 +125,7 @@ test("renders the combat HUD and accepts direct keyboard input", async ({ page }
 
 test("a typed battle reaches victory with the visible Intent and pile counts", async ({ page }) => {
   await page.clock.install();
-  await page.goto("/");
+  await startDemoRun(page);
   await enterNextNode(page);
   await expect(page.locator(".intent-ticket")).toContainText("飛び散る答案");
   await page.keyboard.type("heavy strike");
@@ -72,7 +151,7 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
 
 test("a potion is typed in its own mode and consumed after extending the active turn", async ({ page }) => {
   await page.clock.install();
-  await page.goto("/");
+  await startDemoRun(page);
   await enterNextNode(page);
   await expect(page.locator(".potion-slot")).toHaveCount(2);
   await page.clock.runFor(1_000);
@@ -89,7 +168,7 @@ test("a potion is typed in its own mode and consumed after extending the active 
 
 test("the combatants and controls remain visible on a narrow viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await startDemoRun(page);
   await expect(page.locator(".map-node.available").first()).toBeInViewport();
   await enterNextNode(page);
   await expect(page.locator(".hero-art")).toBeInViewport();
@@ -102,16 +181,20 @@ test("the combatants and controls remain visible on a narrow viewport", async ({
 test("a full Act can be finished through typed combat, rewards and a boss", async ({ page }) => {
   test.setTimeout(60_000);
   await page.clock.install();
-  await page.goto("/");
+  await startDemoRun(page);
   for (let encounter = 0; encounter < 3; encounter++) {
     await enterNextNode(page);
     if (encounter === 2) await expect(page.locator(".enemy-hud")).toContainText("追試の番人");
     await typeThroughBattle(page);
     await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
     if (encounter === 0) {
-      await page.locator(".reward-card").first().click();
+      await page.locator(".reward-card").first().focus();
+      await page.keyboard.press("Enter");
       await expect(page.locator(".map-stats")).toContainText("デッキ 11枚");
-    } else await page.getByRole("button", { name: "報酬を受け取らず進む" }).click();
+    } else {
+      await page.getByRole("button", { name: "報酬を受け取らず進む" }).focus();
+      await page.keyboard.press("Enter");
+    }
   }
   await expect(page.locator(".run-header")).toContainText("ACT 1 · 3F");
   await expect(page.locator(".map-node.available")).toHaveCount(1);
@@ -121,7 +204,7 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
 });
 
 test("a route can upgrade at rest and buy once at the shop", async ({ page }) => {
-  await page.goto("/");
+  await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).click();
   await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
   await page.locator("[data-action=rest-upgrade]").first().click();
@@ -140,7 +223,7 @@ test("a route can upgrade at rest and buy once at the shop", async ({ page }) =>
 test("an event choice can start typed combat and cannot be entered twice", async ({ page }) => {
   test.setTimeout(60_000);
   await page.clock.install();
-  await page.goto("/");
+  await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
   await page.getByRole("button", { name: "購買を出る" }).click();
   await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
@@ -155,7 +238,7 @@ test("an event choice can start typed combat and cannot be entered twice", async
 
 test("an event potion can be typed during combat and damages its enemy target", async ({ page }) => {
   await page.clock.install();
-  await page.goto("/");
+  await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
   await page.getByRole("button", { name: "購買を出る" }).click();
   await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
@@ -168,7 +251,7 @@ test("an event potion can be typed during combat and damages its enemy target", 
 });
 
 test("reload preserves an unfinished potion word and its inventory", async ({ page }) => {
-  await page.goto("/");
+  await startDemoRun(page);
   await enterNextNode(page);
   await page.keyboard.press("F2");
   await page.keyboard.type("cl");
@@ -183,7 +266,7 @@ test("reload preserves an unfinished potion word and its inventory", async ({ pa
 });
 
 test("reload preserves a shop purchase and an unfinished typed card", async ({ page }) => {
-  await page.goto("/");
+  await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).click();
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
@@ -209,7 +292,7 @@ test("reload preserves a shop purchase and an unfinished typed card", async ({ p
 });
 
 test("unsupported save versions leave the stored data intact", async ({ page }) => {
-  await page.goto("/");
+  await startDemoRun(page);
   const key = "school-rg-run-v1";
   const original = await page.evaluate((saveKey) => localStorage.getItem(saveKey), key);
   const unsupported = JSON.stringify({ formatVersion: 99, session: {} });
