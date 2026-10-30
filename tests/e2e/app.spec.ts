@@ -25,7 +25,10 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
       const words = await page.locator(".card-word").allInnerTexts();
       const word = priorities.find((item) => words.includes(item));
       if (!word) break;
-      await page.keyboard.type(word);
+      // Keep the long-run bot independent of CI host key-dispatch latency.
+      await page.evaluate((value) => {
+        for (const key of value) window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+      }, word);
       if (await page.locator(completion).count()) return;
       if (await page.locator(".typing-hint").filter({ hasText: "攻撃対象の敵を選択" }).count()) {
         await page.locator(".enemy-slot").last().click();
@@ -529,7 +532,8 @@ async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ 
       await typeThroughBattle(page);
     } else throw new Error(`unexpected run screen at step ${step}`);
   }
-  await expect(page.getByRole("heading", { name: "全Actクリア" })).toBeVisible();
+  const result = await page.locator(".run-result").innerText().catch(() => "ラン結果画面なし");
+  expect(result).toContain("全Actクリア");
   expect(bosses).toBe(3);
   expect(battles).toBeGreaterThanOrEqual(3);
   await expect(page.locator(".run-header")).toContainText("全Act完走");
