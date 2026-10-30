@@ -23,7 +23,7 @@ function readyRun(): RunState {
   run.combat!.phase = "PLAYER_START";
   run.combat!.hand = [];
   run.combat!.drawPile = ["combat-1"];
-  run.combat!.typing = { buffer: "", candidateCardInstanceIds: [], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null };
+  run.combat!.typing = { buffer: "", candidateCardInstanceIds: [], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null, targetHandInstanceId: null };
   return run;
 }
 

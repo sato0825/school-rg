@@ -35,6 +35,7 @@ function resetTyping(combat: CombatState, hand: readonly string[]): CombatState[
     selectedCardInstanceId: null,
     progress: 0,
     targetEnemyInstanceId: null,
+    targetHandInstanceId: null,
   };
 }
 

@@ -37,7 +37,7 @@ export function prepareOpeningHand(
       ...combat,
       drawPile: combat.drawPile.filter((id) => !innateSet.has(id)),
       hand,
-      typing: { buffer: "", candidateCardInstanceIds: hand, selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null },
+      typing: { buffer: "", candidateCardInstanceIds: hand, selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null, targetHandInstanceId: null },
     },
     innateIds,
     events: innateIds.map((instanceId) => ({ instanceId, kind: "innate" })),

@@ -28,7 +28,7 @@ describe("time resource", () => {
     run.combat!.phase = "PLAYER_START";
     run.combat!.hand = [];
     run.combat!.drawPile = ["combat-1"];
-    run.combat!.typing = { buffer: "", candidateCardInstanceIds: [], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null };
+    run.combat!.typing = { buffer: "", candidateCardInstanceIds: [], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null, targetHandInstanceId: null };
     const started = beginPlayerTurn(run, { nowMs: () => 10 }, DEFAULT_GAME_CONFIG, validContent);
     expect(started.combat!.clock.remainingMs).toBe(30_000);
     expect(started.combat!.nextTurnBonusMs).toBe(0);

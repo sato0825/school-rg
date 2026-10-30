@@ -112,6 +112,7 @@ export const TypingStateSchema = z.strictObject({
   selectedCardInstanceId: id.nullable(),
   progress: nonNegativeInt,
   targetEnemyInstanceId: id.nullable(),
+  targetHandInstanceId: id.nullable().default(null),
 });
 
 export const TurnClockStateSchema = z.strictObject({

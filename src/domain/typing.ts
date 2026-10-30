@@ -19,12 +19,14 @@ export interface TypingResult {
   clock: TurnClockState;
   completedCardInstanceId: string | null;
   completedTargetEnemyInstanceId: string | null;
+  completedTargetHandInstanceId: string | null;
 }
 
 export interface SelectionResult {
   typing: TypingState;
   completedCardInstanceId: string | null;
   completedTargetEnemyInstanceId: string | null;
+  completedTargetHandInstanceId: string | null;
 }
 
 function normalizeText(word: string, config: GameConfig): string {
@@ -55,6 +57,7 @@ export function createTypingState(cards: readonly TypableCard[]): TypingState {
     selectedCardInstanceId: null,
     progress: 0,
     targetEnemyInstanceId: null,
+    targetHandInstanceId: null,
   };
 }
 
@@ -85,7 +88,7 @@ function activateExact(
   config: GameConfig,
   explicitConfirmation: boolean,
 ): SelectionResult {
-  const pending: SelectionResult = { typing, completedCardInstanceId: null, completedTargetEnemyInstanceId: null };
+  const pending: SelectionResult = { typing, completedCardInstanceId: null, completedTargetEnemyInstanceId: null, completedTargetHandInstanceId: null };
   const candidates = cards.filter((card) => normalizedWord(card.word, config).startsWith(typing.buffer));
   const exact = candidates.filter((card) => normalizedWord(card.word, config) === typing.buffer);
   if (!typing.buffer || exact.length === 0) return pending;
@@ -93,7 +96,14 @@ function activateExact(
   const selected = exact.find((card) => card.instanceId === typing.selectedCardInstanceId)
     ?? (exact.length === 1 || requireSetting(config.sameNameCardPolicy) === "first_in_hand" ? exact[0] : undefined);
   if (!selected) return pending;
-  if (selected.target === "hand") throw new Error("hand target selection is not yet available; see issue #8");
+  let targetHandInstanceId: string | null = null;
+  if (selected.target === "hand") {
+    targetHandInstanceId = cards.some((card) => card.instanceId === typing.targetHandInstanceId && card.instanceId !== selected.instanceId)
+      ? typing.targetHandInstanceId : null;
+    if (!targetHandInstanceId) {
+      return { ...pending, typing: { ...typing, selectedCardInstanceId: selected.instanceId, targetHandInstanceId: null } };
+    }
+  }
   let targetEnemyInstanceId: string | null = null;
   if (selected.target === "enemy") {
     targetEnemyInstanceId = liveEnemyInstanceIds.includes(typing.targetEnemyInstanceId ?? "")
@@ -107,7 +117,19 @@ function activateExact(
     typing: createTypingState(cards),
     completedCardInstanceId: selected.instanceId,
     completedTargetEnemyInstanceId: targetEnemyInstanceId,
+    completedTargetHandInstanceId: targetHandInstanceId,
   };
+}
+
+export function chooseTypingHandTarget(
+  typing: TypingState,
+  cards: readonly TypableCard[],
+  instanceId: string,
+  config: GameConfig,
+): SelectionResult {
+  if (!cards.some((card) => card.instanceId === instanceId)) throw new RangeError(`hand target is not in hand: ${instanceId}`);
+  const withTarget = { ...typing, targetHandInstanceId: instanceId };
+  return activateExact(withTarget, cards, [], config, Boolean(withTarget.selectedCardInstanceId));
 }
 
 /** Explicitly choose one complete same-name instance without guessing. */
@@ -150,6 +172,7 @@ export function advanceTypingTime(
     clock: updatedClock,
     completedCardInstanceId: null,
     completedTargetEnemyInstanceId: null,
+    completedTargetHandInstanceId: null,
   };
 }
 
