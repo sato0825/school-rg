@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { demoContent, demoEncounterTable, demoEnemyAi } from "../../src/content/demo-battle.js";
+import { createDemoBattle, demoContent, demoEncounterTable, demoEnemyAi, demoRelicRules } from "../../src/content/demo-battle.js";
+import { DEFAULT_GAME_CONFIG } from "../../src/domain/config.js";
 import { DEFAULT_ECONOMY_OPTIONS } from "../../src/domain/economy.js";
-import { availableRunNodes, buyRunShopCard, createRunSession, enterRunNode, leaveRunShop, removeRunShopCard, useRunRest } from "../../src/domain/run-flow.js";
+import { emitRelicEvent } from "../../src/domain/relic-hooks.js";
+import { availableRunNodes, buyRunShopCard, buyRunShopPotion, buyRunShopRelic, createRunSession, enterRunNode, leaveRunShop, removeRunShopCard, useRunRest } from "../../src/domain/run-flow.js";
+import { serializeRunSession, deserializeRunSession } from "../../src/domain/save.js";
+import { beginPlayerTurn } from "../../src/domain/turn-state.js";
 import { parseRunState } from "../../src/domain/validate.js";
 
 const shopMap = { floorsPerAct: 1, lanes: 2, kindWeights: { combat: 0, elite: 0, event: 0, shop: 1, rest: 0, treasure: 0 } };
@@ -40,6 +44,58 @@ describe("shop and rest nodes", () => {
     expect(removed.run.gold).toBe(125);
     expect(() => removeRunShopCard(removed, shop.run.deck[1]!.instanceId)).toThrow(/already used/);
     expect(parseRunState(removed.run, demoContent)).toEqual(removed.run);
+  });
+
+  it("sells deterministic relic and potion stock and preserves mixed purchases", () => {
+    const economy = { ...DEFAULT_ECONOMY_OPTIONS, startingGold: 200 };
+    const start = createRunSession(42, "literature-demo", demoContent, shopMap, economy);
+    const nodeId = availableRunNodes(start)[0]!.id;
+    const shop = enterRunNode(start, nodeId, demoContent, demoEnemyAi, demoEncounterTable, economy);
+    expect(enterRunNode(start, nodeId, demoContent, demoEnemyAi, demoEncounterTable, economy)).toEqual(shop);
+    expect(shop.run.shop?.relicOffers).toHaveLength(1);
+    expect(shop.run.shop?.potionOffers).toHaveLength(1);
+    const relic = shop.run.shop!.relicOffers[0]!;
+    const potion = shop.run.shop!.potionOffers[0]!;
+    expect(["spare-shoes", "hallway-clock"]).toContain(relic.contentId);
+    const withRelic = buyRunShopRelic(shop, relic.offerId, demoContent);
+    expect(withRelic.run.relicIds).toContain(relic.contentId);
+    expect(withRelic.run.gold).toBe(110);
+    expect(() => buyRunShopRelic(withRelic, relic.offerId, demoContent)).toThrow(/already purchased/);
+    const withPotion = buyRunShopPotion(withRelic, potion.offerId, demoContent);
+    expect(withPotion.run.potionIds).toContain(potion.contentId);
+    expect(withPotion.run.gold).toBe(85);
+    const withCard = buyRunShopCard(withPotion, shop.run.shop!.offers[0]!.offerId);
+    expect(withCard.run.gold).toBe(45);
+    expect(withCard.run.deck).toHaveLength(11);
+    const saved = serializeRunSession(withCard, demoContent, { nowMs: () => 0 }, () => "discard");
+    const restored = deserializeRunSession(saved, demoContent, { nowMs: () => 1_000 });
+    expect(restored).toEqual(withCard);
+    expect(parseRunState(restored.run, demoContent)).toEqual(restored.run);
+
+    const full = { ...shop, run: { ...shop.run, potionIds: ["potion-time", "potion-heal", "potion-ink"] } };
+    expect(() => buyRunShopPotion(full, potion.offerId, demoContent)).toThrow(/slots are full/);
+    const poor = { ...shop, run: { ...shop.run, gold: 0 } };
+    expect(() => buyRunShopPotion(poor, potion.offerId, demoContent)).toThrow(/insufficient gold/);
+    expect(() => buyRunShopRelic(poor, relic.offerId, demoContent)).toThrow(/insufficient gold/);
+  });
+
+  it("loads older card-only shop saves with empty item stock", () => {
+    const start = createRunSession(42, "literature-demo", demoContent, shopMap);
+    const shop = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, demoEncounterTable);
+    const old = JSON.parse(serializeRunSession(shop, demoContent, { nowMs: () => 0 }, () => "discard"));
+    delete old.session.run.shop.relicOffers;
+    delete old.session.run.shop.potionOffers;
+    const restored = deserializeRunSession(JSON.stringify(old), demoContent, { nowMs: () => 1_000 });
+    expect(restored.run.shop?.relicOffers).toEqual([]);
+    expect(restored.run.shop?.potionOffers).toEqual([]);
+  });
+
+  it("applies both common relic effects after the turn starts", () => {
+    const battle = beginPlayerTurn(createDemoBattle(), { nowMs: () => 0 }, DEFAULT_GAME_CONFIG, demoContent);
+    const shoes = emitRelicEvent({ ...battle, relicIds: ["spare-shoes"] }, "turn_start", demoRelicRules, demoContent).run;
+    expect(shoes.player.block).toBe(2);
+    const clock = emitRelicEvent({ ...battle, relicIds: ["hallway-clock"] }, "turn_start", demoRelicRules, demoContent).run;
+    expect(clock.combat?.clock.remainingMs).toBe(battle.combat!.clock.remainingMs + 500);
   });
 
   it("offers one healing or upgrade action at a rest node", () => {
