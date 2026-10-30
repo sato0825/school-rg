@@ -14,9 +14,10 @@ describe("data-driven event choices", () => {
     expect(event.screen).toBe("event");
     expect(enterRunNode(createRunSession(42, "literature-demo", demoContent, eventMap), nodeId, demoContent, demoEnemyAi, demoRunContentTables)).toEqual(event);
     expect(parseRunState(JSON.parse(JSON.stringify(event.run)), demoContent)).toEqual(event.run);
-    expect(availableEventChoices(event.run, demoContent).some((item) => item.choice.id === "fight")).toBe(true);
+    const scripted = { ...event, run: { ...event.run, event: { ...event.run.event!, eventId: "after-school-board" } } };
+    expect(availableEventChoices(scripted.run, demoContent).some((item) => item.choice.id === "fight")).toBe(true);
     expect(() => chooseRunEventChoice(event, "missing-choice", demoContent, demoEnemyAi)).toThrow(/unknown event choice/);
-    const battle = chooseRunEventChoice(event, "fight", demoContent, demoEnemyAi);
+    const battle = chooseRunEventChoice(scripted, "fight", demoContent, demoEnemyAi);
     expect(battle.screen).toBe("combat");
     expect(battle.run.event?.pendingCombat).toBe(true);
     expect(battle.run.combat?.enemies[0]?.enemyId).toBe("paper-heap");

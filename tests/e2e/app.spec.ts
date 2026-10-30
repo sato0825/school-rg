@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import { demoContent, demoEnemyAi } from "../../src/content/demo-battle.js";
+import { demoContent, demoEnemyAi, demoRunContentTables } from "../../src/content/demo-battle.js";
 import { createRunSession, enterRunNode, type EncounterPool } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
 import type { MapNode } from "../../src/domain/schema.js";
@@ -17,13 +17,25 @@ async function enterNextNode(page: import("@playwright/test").Page): Promise<voi
   else await page.locator(".map-node.available").first().click();
 }
 
+async function scriptActiveEvent(page: import("@playwright/test").Page, eventId: string): Promise<void> {
+  await page.addInitScript((id) => {
+    const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
+    saved.session.run.event.eventId = id;
+    localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
+  }, eventId);
+  await page.reload();
+  await expect(page.locator(".event-panel")).toBeVisible();
+}
+
 async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
   const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "thrust", "riposte", "final cut", "beat", "chorus", "crescendo", "mural", "sketch", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "parry", "stance", "kata", "tempo", "sync", "rest", "frame", "outline", "defend", "counter", "draw", "boost", "delay"];
+  const artPriorities = ["frame", "defend", ...priorities.filter((word) => word !== "frame" && word !== "defend")];
+  const isArt = (await page.locator(".player-hud").innerText()).includes("美術部");
   for (let turn = 0; turn < 20; turn++) {
     for (let use = 0; use < 12; use++) {
       if (await page.locator(completion).count()) return;
       const words = await page.locator(".card-word").allInnerTexts();
-      const word = priorities.find((item) => words.includes(item));
+      const word = (isArt ? artPriorities : priorities).find((item) => words.includes(item));
       if (!word) break;
       // Keep the long-run bot independent of CI host key-dispatch latency.
       await page.evaluate((value) => {
@@ -93,7 +105,7 @@ test("shop and event choices accept focused keyboard activation", async ({ page 
   await page.locator(".map-node.available").filter({ hasText: "イベント" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".event-panel")).toBeVisible();
-  await page.locator("[data-action=event-choice][data-id=help], [data-action=event-choice][data-id=pass]").first().focus();
+  await page.locator(".event-choice:not(:disabled)").first().focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
 });
@@ -501,15 +513,17 @@ for (const [clubId, label, name] of [
     const hero = page.locator(".hero-art");
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
     await expect(page.locator(".intent-ticket")).toContainText("紙片が飛ぶ");
-    await page.keyboard.type(await page.locator(".card-word").first().innerText());
+    const attack = page.locator(".card").filter({ has: page.locator(".card-kind").filter({ hasText: "ATTACK" }) }).first();
+    await page.keyboard.type(await (await attack.count() ? attack.locator(".card-word") : page.locator(".card-word").first()).innerText());
     const activateVersion = name === "kendo" ? "v3" : "v2";
     const hitVersion = name === "art" ? "v3" : "v2";
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-activate-candidate-${activateVersion}`));
     await page.clock.runFor(420);
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
-    // A typed defensive card may absorb the first attack; advance until HP is actually lost.
-    for (let turn = 0; turn < 4 && !((await hero.getAttribute("src")) ?? "").includes(`${name}-hit-candidate-${hitVersion}`); turn++) {
-      await page.clock.runFor(10_000);
+    // A defensive card may absorb the first attack; each club can also have a different turn clock.
+    for (let turn = 0; turn < 6 && !((await hero.getAttribute("src")) ?? "").includes(`${name}-hit-candidate-${hitVersion}`); turn++) {
+      const remainingMs = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.clock.remainingMs as number);
+      await page.clock.runFor(remainingMs + 1);
       await page.clock.runFor(650);
     }
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-hit-candidate-${hitVersion}`));
@@ -592,10 +606,12 @@ async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ 
   for (let step = 0; step < 36 && !(await page.locator(".run-result").count()); step++) {
     if (await page.locator(".map-panel").count()) {
       const available = page.locator(".map-node.available");
+      const hp = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.player.hp as number);
+      const rest = available.filter({ hasText: "休憩" });
       // A fixed three-Act smoke route should use recovery and rewards when the map offers them.
       // Bosses remain mandatory, and dedicated tests cover normal and elite encounters.
       const respite = available.filter({ hasText: /休憩|宝箱|購買|イベント/ });
-      await (await respite.count() ? respite.first() : available.first()).focus();
+      await (hp <= 24 && await rest.count() ? rest.first() : await respite.count() ? respite.first() : available.first()).focus();
       await page.keyboard.press("Enter");
     } else if (await page.locator(".treasure-panel").count()) {
       await page.locator(".treasure-offer:not(:disabled)").first().focus();
@@ -607,8 +623,15 @@ async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ 
       if (await page.getByRole("button", { name: "購買を出る" }).count()) await page.getByRole("button", { name: "購買を出る" }).click();
       else await page.locator("[data-action=rest-heal]").click();
     } else if (await page.locator(".event-panel").count()) {
-      await page.locator(".event-choice:not(:disabled)").filter({ hasNotText: "戦う" }).first().click();
+      const choices = page.locator(".event-choice:not(:disabled)").filter({ hasNotText: "戦う" });
+      const heal = choices.filter({ hasText: /回復|手当て|深呼吸/ });
+      await (await heal.count() ? heal.first() : choices.first()).click();
     } else if (await page.locator(".enemy-slot").count()) {
+      const hp = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.player.hp as number);
+      if (hp <= 24 && await page.locator(".potion").filter({ hasText: "bandage" }).count()) {
+        await page.keyboard.press("F2");
+        await page.keyboard.type("bandage");
+      }
       if ((await page.locator(".run-meta").innerText()).includes("boss")) {
         await expect(page.locator(".enemy-hud")).toContainText(bossNames[bosses]!);
         bosses++;
@@ -814,6 +837,7 @@ test("an event choice can start typed combat and cannot be entered twice", async
   await page.getByRole("button", { name: "購買を出る" }).click();
   await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
   await expect(page.locator(".event-panel")).toBeVisible();
+  await scriptActiveEvent(page, "after-school-board");
   await page.locator("[data-action=event-choice][data-id=fight]").click();
   await expect(page.locator(".enemy-slot")).toHaveCount(1);
   await typeThroughBattle(page, ".map-panel");
@@ -828,12 +852,44 @@ test("an event potion can be typed during combat and damages its enemy target", 
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
   await page.getByRole("button", { name: "購買を出る" }).click();
   await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
+  await scriptActiveEvent(page, "after-school-board");
   await page.locator("[data-action=event-choice][data-id=ink]").click();
   await expect(page.locator(".potion-slot")).toHaveCount(3);
   await page.keyboard.press("F2");
   await page.keyboard.type("ink");
   await expect(page.locator(".enemy-hud")).toContainText("19/26");
   await expect(page.locator(".potion-slot")).toHaveCount(2);
+});
+
+test("new events in each Act render at narrow width and resolve by keyboard", async ({ page }) => {
+  const samples = [
+    { act: 1 as const, eventId: "gym-supply-locker", title: "体育倉庫の予備箱" },
+    { act: 2 as const, eventId: "lab-cleanup", title: "理科室の後片づけ" },
+    { act: 3 as const, eventId: "last-train-board", title: "最終下校の案内板" },
+  ];
+  for (const sample of samples) {
+    const eventPage = await page.context().newPage();
+    await eventPage.setViewportSize({ width: 390, height: 844 });
+    const base = createRunSession(42, "literature-demo", demoContent);
+    const start: MapNode = { id: `a${sample.act}-start`, act: sample.act, floor: 0, kind: "start", nextIds: [`a${sample.act}-event`] };
+    const node: MapNode = { id: `a${sample.act}-event`, act: sample.act, floor: 1, kind: "event", nextIds: [] };
+    const mapped = { ...base, run: { ...base.run, act: sample.act, map: { currentNodeId: start.id, nodes: [start, node] } }, completedNodeIds: [start.id] };
+    const entered = enterRunNode(mapped, node.id, demoContent, demoEnemyAi, demoRunContentTables);
+    const scripted = { ...entered, run: { ...entered.run, event: { ...entered.run.event!, eventId: sample.eventId } } };
+    const saved = serializeRunSession(scripted, demoContent, { nowMs: () => 0 }, () => "discard");
+    await eventPage.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await eventPage.goto("/");
+    await expect(eventPage.locator(".event-panel h2")).toHaveText(sample.title);
+    await expect(eventPage.locator(".event-choice")).toHaveCount(sample.act === 1 ? 3 : 4);
+    expect(await eventPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    if (process.env.SCHOOL_RG_CAPTURE_EVENTS === "1") {
+      await eventPage.screenshot({ path: `docs/content/previews/issue116-act${sample.act}-event-narrow-20261031.png`, fullPage: true });
+    }
+    await eventPage.locator("[data-action=event-choice][data-id=leave]").focus();
+    await eventPage.keyboard.press("Enter");
+    await expect(eventPage.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+    await eventPage.close();
+  }
 });
 
 test("reload preserves an unfinished potion word and its inventory", async ({ page }) => {
