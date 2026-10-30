@@ -1,0 +1,5 @@
+# Serious student activation candidate v1
+
+Reference: `../candidates/serious-student-idle-candidate-v1.png`. Output: `../candidates/serious-student-activate-candidate-v1.png`. Requested transparent background.
+
+> Edit the supplied transparent single-character cutout into a CARD ACTIVATION pose for a 2D typing roguelike. Preserve the same exact middle-school-aged girl identity and drawing style: compact youthful body proportions, rounded face, short dark bob with two turquoise clips, gray-blue eyes, navy blazer and plaid skirt, turquoise bow, backpack, blue-gray notebook, brown loafers. Move only her pose: she lifts the notebook slightly forward with one hand and makes a small decisive gesture with the pencil in the other, alert but still gentle expression. Keep the full head, hands and shoes in frame, same overall scale and three-quarter facing direction, real transparent background and no shadow, scenery, magic effects, text, extra people or limbs. Keep facial features, hair shape, clothing details and line weight consistent with the reference. This is a candidate animation key pose, not a new character design.

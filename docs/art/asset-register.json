@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "serious-student-direction",
+      "file": "docs/art/reference/serious-student-approved-direction.png",
+      "sha256": "8e3f5fd14a190f44e69a47dcf827f069efd82c9ad0cdb62100f33c532e2ef788",
+      "width": 1536,
+      "height": 1024,
+      "alpha": "opaque",
+      "status": "direction-approved",
+      "role": "reference",
+      "rights": "original generated concept for school-rg"
+    },
+    {
+      "id": "serious-student-idle-candidate-v1",
+      "file": "docs/art/candidates/serious-student-idle-candidate-v1.png",
+      "sha256": "c858163d4fadba9ff0b595058cedd52313a044f08bfe287fc7bfd85de0c9ca89",
+      "width": 1024,
+      "height": 1536,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "character-pose",
+      "characterId": "serious-student",
+      "pose": "idle",
+      "referenceId": "serious-student-direction",
+      "promptFile": "docs/art/prompts/serious-student-idle-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "serious-student-activate-candidate-v1",
+      "file": "docs/art/candidates/serious-student-activate-candidate-v1.png",
+      "sha256": "5d93f7b447baede2e84bd5f3373e6c21eb71f1493e4cedb4c7933cbdec33c078",
+      "width": 1024,
+      "height": 1536,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "character-pose",
+      "characterId": "serious-student",
+      "pose": "activate",
+      "referenceId": "serious-student-idle-candidate-v1",
+      "promptFile": "docs/art/prompts/serious-student-activate-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "serious-student-hit-candidate-v1",
+      "file": "docs/art/candidates/serious-student-hit-candidate-v1.png",
+      "sha256": "7e889b54d22f15eb8881feaa256e5d1f45dbee05946f362bdf090918dc0d0ad0",
+      "width": 1024,
+      "height": 1536,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "character-pose",
+      "characterId": "serious-student",
+      "pose": "hit",
+      "referenceId": "serious-student-idle-candidate-v1",
+      "promptFile": "docs/art/prompts/serious-student-hit-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    }
+  ]
+}
