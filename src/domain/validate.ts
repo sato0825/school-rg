@@ -116,6 +116,7 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
     const hand = new Set(combat.hand);
     combat.typing.candidateCardInstanceIds.forEach((instanceId, i) => known(instanceId, hand, `combat.typing.candidateCardInstanceIds.${i}`, issues));
     if (combat.typing.selectedCardInstanceId) known(combat.typing.selectedCardInstanceId, hand, "combat.typing.selectedCardInstanceId", issues);
+    if (combat.typing.targetHandInstanceId) known(combat.typing.targetHandInstanceId, hand, "combat.typing.targetHandInstanceId", issues);
     const enemyInstanceIds = new Set<string>();
     combat.enemies.forEach((enemy, i) => {
       if (enemyInstanceIds.has(enemy.instanceId)) issues.push({ code: "DUPLICATE_ID", path: `combat.enemies.${i}.instanceId`, message: `Duplicate enemy instance: ${enemy.instanceId}` });

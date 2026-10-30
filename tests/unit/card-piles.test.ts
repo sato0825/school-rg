@@ -12,7 +12,7 @@ function combatWithPiles(): CombatState {
     hand: ["c"],
     discardPile: ["d"],
     exhaustPile: [],
-    typing: { buffer: "", candidateCardInstanceIds: ["c"], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null },
+    typing: { buffer: "", candidateCardInstanceIds: ["c"], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null, targetHandInstanceId: null },
   };
 }
 

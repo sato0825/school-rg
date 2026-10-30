@@ -24,7 +24,7 @@ function typedCard(cardId: string, setup?: (run: RunState) => void): RunState {
   run.combat!.discardPile = [];
   run.combat!.exhaustPile = [];
   run.combat!.resolvingPile = [];
-  run.combat!.typing = { buffer: "", candidateCardInstanceIds: ["combat-1"], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: "enemy-1" };
+  run.combat!.typing = { buffer: "", candidateCardInstanceIds: ["combat-1"], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: "enemy-1", targetHandInstanceId: null };
   run.combat!.clock = { remainingMs: 10_000, lastEventAtMs: 0, paused: false };
   setup?.(run);
   let now = 0;

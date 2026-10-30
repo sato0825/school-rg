@@ -5,10 +5,10 @@ import { assessCombatOutcome } from "./combat-outcome.js";
 import { requireSetting, type GameConfig } from "./config.js";
 import { tickStatuses } from "./status-engine.js";
 import type { ContentRegistry, RunState } from "./schema.js";
-import { chooseTypingCard, chooseTypingEnemyTarget, pressTypingKey, type SelectionResult, type TypableCard, type TypingKeyEvent } from "./typing.js";
+import { chooseTypingCard, chooseTypingEnemyTarget, chooseTypingHandTarget, pressTypingKey, type SelectionResult, type TypableCard, type TypingKeyEvent } from "./typing.js";
 
 export type TurnEndDisposition = (instanceId: string) => CardDisposition;
-export type UseTypedCard = (run: RunState, instanceId: string, targetEnemyInstanceId: string | null) => RunState;
+export type UseTypedCard = (run: RunState, instanceId: string, targetEnemyInstanceId: string | null, targetHandInstanceId: string | null) => RunState;
 export type ResolveEnemyActions = (run: RunState) => RunState;
 
 function requirePhase(run: RunState, phase: NonNullable<RunState["combat"]>["phase"]): NonNullable<RunState["combat"]> {
@@ -37,7 +37,7 @@ function applyCompletedInput(run: RunState, result: SelectionResult, useCard: Us
   const combat = requirePhase(run, "PLAYER_INPUT");
   let updated: RunState = { ...run, combat: { ...combat, typing: result.typing } };
   if (result.completedCardInstanceId) {
-    updated = useCard(updated, result.completedCardInstanceId, result.completedTargetEnemyInstanceId);
+    updated = useCard(updated, result.completedCardInstanceId, result.completedTargetEnemyInstanceId, result.completedTargetHandInstanceId);
     if (updated.combat?.hand.includes(result.completedCardInstanceId)) throw new Error("card use must move the completed card out of hand");
     if (!updated.combat || !["PLAYER_INPUT", "WON", "LOST"].includes(updated.combat.phase)) throw new Error("card use returned an invalid phase");
     updated = assessCombatOutcome(updated);
@@ -131,6 +131,21 @@ export function selectTypedEnemyTarget(
   if (current.combat?.phase !== "PLAYER_INPUT") return current;
   const liveEnemyIds = current.combat.enemies.filter((enemy) => enemy.hp > 0).map((enemy) => enemy.instanceId);
   const selection = chooseTypingEnemyTarget(current.combat.typing, typableHand(current, content), enemyInstanceId, liveEnemyIds, config);
+  return applyCompletedInput(current, selection, useCard, dispositionFor);
+}
+
+export function selectTypedHandTarget(
+  run: RunState,
+  targetHandInstanceId: string,
+  clock: MonotonicClock,
+  config: GameConfig,
+  content: ContentRegistry,
+  useCard: UseTypedCard,
+  dispositionFor: TurnEndDisposition,
+): RunState {
+  const current = advanceSelectionTime(run, clock, config, dispositionFor);
+  if (current.combat?.phase !== "PLAYER_INPUT") return current;
+  const selection = chooseTypingHandTarget(current.combat.typing, typableHand(current, content), targetHandInstanceId, config);
   return applyCompletedInput(current, selection, useCard, dispositionFor);
 }
 

@@ -12,7 +12,7 @@ function twoEnemiesAndTwoCards(): RunState {
   run.combat!.cards.push({ instanceId: "combat-2", cardId: "card-strike", upgraded: false });
   run.combat!.hand.push("combat-2");
   run.combat!.enemies.push({ ...run.combat!.enemies[0]!, instanceId: "enemy-2" });
-  run.combat!.typing = { buffer: "", candidateCardInstanceIds: ["combat-1", "combat-2"], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null };
+  run.combat!.typing = { buffer: "", candidateCardInstanceIds: ["combat-1", "combat-2"], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null, targetHandInstanceId: null };
   run.combat!.clock = { remainingMs: 10_000, lastEventAtMs: 0, paused: false };
   return run;
 }
@@ -75,7 +75,7 @@ describe("ambiguous typing selection", () => {
     let run = twoEnemiesAndTwoCards();
     run.combat!.hand = ["combat-1"];
     run.combat!.discardPile = ["combat-2"];
-    run.combat!.typing = { buffer: "strike", candidateCardInstanceIds: ["combat-1"], selectedCardInstanceId: "combat-1", progress: 6, targetEnemyInstanceId: null };
+    run.combat!.typing = { buffer: "strike", candidateCardInstanceIds: ["combat-1"], selectedCardInstanceId: "combat-1", progress: 6, targetEnemyInstanceId: null, targetHandInstanceId: null };
     let used = false;
     run = selectTypedEnemyTarget(run, "enemy-1", { nowMs: () => 10_000 }, DEFAULT_GAME_CONFIG, validContent, (state, card) => {
       used = true;
@@ -91,7 +91,7 @@ describe("ambiguous typing selection", () => {
     const inputWins = twoEnemiesAndTwoCards();
     inputWins.combat!.hand = ["combat-1"];
     inputWins.combat!.discardPile = ["combat-2"];
-    inputWins.combat!.typing = { buffer: "strike", candidateCardInstanceIds: ["combat-1"], selectedCardInstanceId: "combat-1", progress: 6, targetEnemyInstanceId: null };
+    inputWins.combat!.typing = { buffer: "strike", candidateCardInstanceIds: ["combat-1"], selectedCardInstanceId: "combat-1", progress: 6, targetEnemyInstanceId: null, targetHandInstanceId: null };
     const played = selectTypedEnemyTarget(inputWins, "enemy-1", { nowMs: () => 10_000 }, alternate, validContent, (state, card) => {
       used = true;
       return { ...state, combat: moveCardFromHand(state.combat!, card, "discard") };

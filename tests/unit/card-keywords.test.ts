@@ -20,7 +20,7 @@ function keywordFixture(): { content: ContentRegistry; combat: CombatState } {
   combat.drawPile = [];
   combat.discardPile = [];
   combat.exhaustPile = [];
-  combat.typing = { buffer: "", candidateCardInstanceIds: [...combat.hand], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null };
+  combat.typing = { buffer: "", candidateCardInstanceIds: [...combat.hand], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null, targetHandInstanceId: null };
   return { content, combat };
 }
 
@@ -57,7 +57,7 @@ describe("card keyword lifecycle", () => {
     }));
     run.combat!.drawPile = ["a", "b", "c", "d", "e"];
     run.combat!.hand = [];
-    run.combat!.typing = { buffer: "", candidateCardInstanceIds: [], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null };
+    run.combat!.typing = { buffer: "", candidateCardInstanceIds: [], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null, targetHandInstanceId: null };
     const opening = prepareOpeningHand(run.combat!, content);
     expect(opening.innateIds).toEqual(["c", "a"]);
     expect(opening.combat.drawPile).toEqual(["b", "d", "e"]);
