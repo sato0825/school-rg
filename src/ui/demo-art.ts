@@ -10,10 +10,23 @@ export const demoBattleArt: BattleArt = {
   },
 };
 
-/** #84 development preview only. These candidate poses are not approved runtime art. */
+/** #84/#96 development preview only. These candidate images are not approved runtime art. */
 export const candidateBattleArt: BattleArt = {
   ...demoBattleArt,
   previewLabel: "制作候補プレビュー · 未採用",
+  previewLabelByClubId: {
+    "literature-demo": "文芸部候補 · 静止画のみ · 未採用",
+    "science-demo": "科学部候補 · 3ポーズ比較 · 未採用",
+    "kendo-demo": "剣道部候補 · 静止画のみ · 未採用",
+    "music-demo": "軽音部候補 · 静止画のみ · 未採用",
+    "art-demo": "美術部候補 · 静止画のみ · 未採用",
+  },
+  heroUrlByClubId: {
+    "literature-demo": new URL("../../docs/art/candidates/literature-idle-candidate-v1.png", import.meta.url).href,
+    "kendo-demo": new URL("../../docs/art/candidates/kendo-idle-candidate-v1.png", import.meta.url).href,
+    "music-demo": new URL("../../docs/art/candidates/music-idle-candidate-v1.png", import.meta.url).href,
+    "art-demo": new URL("../../docs/art/candidates/art-idle-candidate-v1.png", import.meta.url).href,
+  },
   heroPosesByClubId: {
     "science-demo": {
       idle: new URL("../../docs/art/candidates/serious-student-idle-candidate-v1.png", import.meta.url).href,
