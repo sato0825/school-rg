@@ -12,7 +12,14 @@ import { ascensionEnemyHp, ascensionStartingHp, assertAscensionLevel } from "./a
 import { generateCardRewards, type RewardGenerator } from "./card-rewards.js";
 
 export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "treasure" | "won" | "lost";
-export type EncounterTable = Readonly<Record<"combat" | "elite" | "boss", readonly string[]>>;
+export type EncounterPool = Readonly<Record<"combat" | "elite" | "boss", readonly string[]>>;
+export type EncounterTable = EncounterPool | { readonly byAct: Readonly<Record<1 | 2 | 3, EncounterPool>> };
+
+function encounterPool(encounters: EncounterTable, act: number): EncounterPool {
+  if (!("byAct" in encounters)) return encounters;
+  if (act !== 1 && act !== 2 && act !== 3) throw new RangeError(`unknown encounter Act: ${act}`);
+  return encounters.byAct[act];
+}
 export type RunSession = {
   /** UI-owned identity, preserved by saves so optional measurements cannot attach to a later run. */
   runId?: string;
@@ -82,7 +89,7 @@ export function enterRunNode(session: RunSession, nextNodeId: string, content: C
   if (next.kind !== "combat" && next.kind !== "elite" && next.kind !== "boss") {
     throw new Error(`node kind ${next.kind} requires its own system before entry`);
   }
-  const pool = encounters[next.kind];
+  const pool = encounterPool(encounters, next.act)[next.kind];
   if (!pool.length) throw new RangeError(`empty encounter pool for ${next.kind}`);
   const draw = randomInt(session.run.rngState, pool.length);
   const enemyId = pool[draw.value]!;
