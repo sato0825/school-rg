@@ -167,6 +167,21 @@ test("an event potion can be typed during combat and damages its enemy target", 
   await expect(page.locator(".potion-slot")).toHaveCount(2);
 });
 
+test("reload preserves an unfinished potion word and its inventory", async ({ page }) => {
+  await page.goto("/");
+  await enterNextNode(page);
+  await page.keyboard.press("F2");
+  await page.keyboard.type("cl");
+  await expect(page.locator(".potion-buffer")).toContainText("cl");
+  await page.reload();
+  await expect(page.locator(".potion-mode")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".potion-buffer")).toContainText("cl");
+  await expect(page.locator(".potion-slot")).toHaveCount(2);
+  await page.getByRole("button", { name: "再開" }).click();
+  await page.keyboard.type("ock");
+  await expect(page.locator(".potion-slot")).toHaveCount(1);
+});
+
 test("reload preserves a shop purchase and an unfinished typed card", async ({ page }) => {
   await page.goto("/");
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).click();
