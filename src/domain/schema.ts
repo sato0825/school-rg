@@ -156,3 +156,4 @@ export type MapNode = z.infer<typeof MapNodeSchema>;
 export type CombatState = z.infer<typeof CombatStateSchema>;
 export type RunState = z.infer<typeof RunStateSchema>;
 export type TurnClockState = z.infer<typeof TurnClockStateSchema>;
+export type TypingState = z.infer<typeof TypingStateSchema>;

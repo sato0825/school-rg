@@ -39,16 +39,17 @@ export type GameConfig = z.infer<typeof GameConfigSchema>;
 
 const designDoc = "https://docs.google.com/document/d/1Z4eGdsTD1q9eu6O1czWZs96LPDSavSnT1zncXpa5uRI/edit";
 const epic = "https://github.com/sato0825/school-rg/issues/27";
+const typingIssue = "https://github.com/sato0825/school-rg/issues/5";
 
 export const DEFAULT_GAME_CONFIG: GameConfig = GameConfigSchema.parse({
   cardsDrawnPerTurn: { status: "provisional", value: 5, source: designDoc, ownerIssue: 6 },
   playerTurnMs: { status: "provisional", value: 10_000, source: designDoc, ownerIssue: 6 },
   prefixConfirmKey: { status: "provisional", value: "Enter", source: designDoc, ownerIssue: 5 },
   inputCancelKey: { status: "provisional", value: "Escape", source: designDoc, ownerIssue: 5 },
-  whitespacePolicy: { status: "unresolved", value: null, source: designDoc, ownerIssue: 5 },
-  punctuationPolicy: { status: "unresolved", value: null, source: designDoc, ownerIssue: 5 },
-  caseSensitiveInput: { status: "unresolved", value: null, source: designDoc, ownerIssue: 5 },
-  sameNameCardPolicy: { status: "unresolved", value: null, source: designDoc, ownerIssue: 5 },
+  whitespacePolicy: { status: "provisional", value: "literal", source: typingIssue, ownerIssue: 5 },
+  punctuationPolicy: { status: "provisional", value: "literal", source: typingIssue, ownerIssue: 5 },
+  caseSensitiveInput: { status: "provisional", value: false, source: typingIssue, ownerIssue: 5 },
+  sameNameCardPolicy: { status: "unresolved", value: null, source: designDoc, ownerIssue: 4 },
   handLimit: { status: "unresolved", value: null, source: designDoc, ownerIssue: 7 },
   timeCapMs: { status: "unresolved", value: null, source: designDoc, ownerIssue: 6 },
   xRoundingPolicy: { status: "unresolved", value: null, source: designDoc, ownerIssue: 9 },
