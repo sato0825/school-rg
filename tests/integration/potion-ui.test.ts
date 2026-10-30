@@ -11,6 +11,7 @@ const view: BattleView = {
   selectedDebuff: null,
   motion: null,
   potionModeKey: "F2",
+  potionSlotLimit: 3,
 };
 
 describe("potion target display", () => {

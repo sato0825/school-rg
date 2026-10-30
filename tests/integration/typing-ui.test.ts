@@ -11,6 +11,8 @@ const view: BattleView = {
   selectedDiscardId: null,
   selectedDebuff: null,
   motion: null,
+  potionModeKey: "F2",
+  potionSlotLimit: 3,
 };
 
 function battle(run: RunState): HTMLElement {

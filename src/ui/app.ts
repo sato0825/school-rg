@@ -30,7 +30,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (saved) session = deserializeRunSession(saved, demoContent, clock);
   } catch { restoreError = true; }
   let run: RunState = session.run;
-  const view: BattleView = { art: demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
+  const view: BattleView = { art: demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
   let enemyPending = false;
   let generation = 0;
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
