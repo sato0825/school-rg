@@ -369,11 +369,11 @@ test("candidate pose preview follows enemy damage and typed activation", async (
 test("five club candidates stay separate from the stage and controls at desktop and narrow widths", async ({ page }) => {
   await page.addInitScript(() => localStorage.clear());
   const candidates = [
-    { club: "文芸部", asset: "literature-idle-candidate-v1", staticOnly: true },
-    { club: "科学部", asset: "serious-student-idle-candidate-v1", staticOnly: false },
-    { club: "剣道部", asset: "kendo-idle-candidate-v1", staticOnly: true },
-    { club: "軽音部", asset: "music-idle-candidate-v1", staticOnly: true },
-    { club: "美術部", asset: "art-idle-candidate-v1", staticOnly: true },
+    { club: "文芸部", asset: "literature-idle-candidate-v1" },
+    { club: "科学部", asset: "serious-student-idle-candidate-v1" },
+    { club: "剣道部", asset: "kendo-idle-candidate-v1" },
+    { club: "軽音部", asset: "music-idle-candidate-v1" },
+    { club: "美術部", asset: "art-idle-candidate-v1" },
   ];
   for (const candidate of candidates) {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -383,7 +383,7 @@ test("five club candidates stay separate from the stage and controls at desktop 
     await enterNextNode(page);
     const hero = page.locator(".hero-art");
     await expect(hero).toHaveAttribute("src", new RegExp(candidate.asset));
-    await expect(page.locator(".art-preview-label")).toContainText(candidate.staticOnly ? "静止画のみ" : "3ポーズ比較");
+    await expect(page.locator(".art-preview-label")).toContainText("3ポーズ比較");
     await hero.evaluate(async (image) => (image as HTMLImageElement).decode());
     expect(await hero.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBe(1024);
     for (const width of [1440, 390]) {
@@ -396,6 +396,40 @@ test("five club candidates stay separate from the stage and controls at desktop 
     }
   }
 });
+
+for (const [clubId, label, name] of [
+  ["literature-demo", "文芸部", "literature"],
+  ["kendo-demo", "剣道部", "kendo"],
+  ["music-demo", "軽音部", "music"],
+  ["art-demo", "美術部", "art"],
+] as const) {
+  test(`${label} candidate follows typed activation and a known attack Intent`, async ({ page }) => {
+    await page.clock.install();
+    const start = createRunSession(42, clubId, demoContent);
+    const from: MapNode = { id: "pose-start", act: 1, floor: 0, kind: "start", nextIds: ["pose-fight"] };
+    const fight: MapNode = { id: "pose-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+    const session = { ...start, run: { ...start.run, map: { currentNodeId: from.id, nodes: [from, fight] } }, completedNodeIds: [from.id] };
+    const entered = enterRunNode(session, fight.id, demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["final-exam"] });
+    const saved = serializeRunSession(entered, demoContent, { nowMs: () => 0 }, () => "discard");
+    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await page.goto("/?artPreview=1");
+    const hero = page.locator(".hero-art");
+    await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
+    await expect(page.locator(".intent-ticket")).toContainText("紙片が飛ぶ");
+    await page.keyboard.type(await page.locator(".card-word").first().innerText());
+    await expect(hero).toHaveAttribute("src", new RegExp(`${name}-activate-candidate-v2`));
+    await page.clock.runFor(420);
+    await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
+    // A typed defensive card may absorb the first attack; advance until HP is actually lost.
+    for (let turn = 0; turn < 4 && !((await hero.getAttribute("src")) ?? "").includes(`${name}-hit-candidate-v2`); turn++) {
+      await page.clock.runFor(10_000);
+      await page.clock.runFor(650);
+    }
+    await expect(hero).toHaveAttribute("src", new RegExp(`${name}-hit-candidate-v2`));
+    await page.clock.runFor(420);
+    await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
+  });
+}
 
 test("one to three ally slots fit a shared stage at desktop and narrow widths", async ({ page }) => {
   await page.addInitScript(() => localStorage.clear());
