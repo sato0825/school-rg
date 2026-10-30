@@ -88,9 +88,14 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
     if (encounter === 2) await expect(page.locator(".enemy-hud")).toContainText("追試の番人");
     await typeThroughBattle(page);
     await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
-    await page.getByRole("button", { name: "報酬を受け取らず進む" }).click();
+    if (encounter === 0) {
+      await page.locator(".reward-card").first().click();
+      await expect(page.locator(".map-stats")).toContainText("デッキ 11枚");
+    } else await page.getByRole("button", { name: "報酬を受け取らず進む" }).click();
   }
   await expect(page.locator(".run-header")).toContainText("ACT 1 · 3F");
   await expect(page.locator(".map-node.available")).toHaveCount(1);
   await expect(page.locator(".map-node.available")).toContainText("開始");
+  await enterNextNode(page);
+  await expect(page.locator(".run-header")).toContainText("ACT 2 · 0F");
 });
