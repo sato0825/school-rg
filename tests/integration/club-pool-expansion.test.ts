@@ -60,8 +60,10 @@ describe("expanded club reward pool", () => {
         expect(typedCard(clubId, cardId, word, upgraded)).toEqual(first);
       }
     }
-    expect(typedCard("literature-demo", "LIT-007", "aside", false).combat!.enemies[0]!.hp).toBe(21);
-    expect(typedCard("literature-demo", "LIT-007", "aside", true).combat!.enemies[0]!.hp).toBe(19);
+    const aside = typedCard("literature-demo", "LIT-007", "aside", false).combat!.enemies[0]!;
+    const upgradedAside = typedCard("literature-demo", "LIT-007", "aside", true).combat!.enemies[0]!;
+    expect(aside.maxHp - aside.hp).toBe(5);
+    expect(upgradedAside.maxHp - upgradedAside.hp).toBe(7);
     expect(typedCard("science-demo", "SCI-007", "catalyst", false).combat!.statuses.enemies["enemy-1"]).toMatchObject({ poison: 2, weak: 1 });
     expect(typedCard("kendo-demo", "KEN-007", "sweep", false).player.block).toBe(3);
     expect(typedCard("music-demo", "MUS-007", "bridge", false).combat!.clock.remainingMs).toBeGreaterThan(10_000);
