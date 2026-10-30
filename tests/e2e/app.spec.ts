@@ -404,15 +404,18 @@ test("three new potions can be typed in combat with visible block, damage and he
   await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
   await page.goto("/");
   await expect(page.locator(".potion-slot")).toHaveCount(3);
+  await expect(page.locator(".potion-mode")).toBeInViewport();
+  for (const potion of await page.locator(".potion-slot").all()) await expect(potion).toBeInViewport();
   if (process.env.SCHOOL_RG_CAPTURE_POTIONS === "1") {
-    await page.screenshot({ path: "docs/content/previews/issue118-potions-narrow-20261031.png", fullPage: true });
+    await page.screenshot({ path: "docs/content/previews/issue118-potions-narrow-v2-20261031.png", fullPage: true });
   }
   await page.keyboard.press("F2");
   await page.keyboard.type("splash");
   await expect(page.locator(".enemy-hud")).toContainText("22/26");
+  const beforeBlock = Number((await page.locator(".player-hud b").innerText()).replace(/\D/g, ""));
   await page.keyboard.press("F2");
   await page.keyboard.type("shield");
-  await expect(page.locator(".player-hud")).toContainText("◇ 8");
+  expect(Number((await page.locator(".player-hud b").innerText()).replace(/\D/g, ""))).toBe(beforeBlock + 8);
   await page.keyboard.press("F2");
   await page.keyboard.type("tea");
   await expect(page.locator(".player-hud")).toContainText("23/40");

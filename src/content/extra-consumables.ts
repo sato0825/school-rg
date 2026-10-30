@@ -1,6 +1,6 @@
 import { DEFAULT_GAME_CONFIG } from "../domain/config.js";
 import type { RelicRule } from "../domain/relic-hooks.js";
-import type { EffectDefinition, Potion, Relic } from "../domain/schema.js";
+import type { Effect, Potion, Relic } from "../domain/schema.js";
 import { addCurrentTurnTime } from "../domain/time-resource.js";
 
 /** Additional #118 content. Values remain provisional until the full-run balance pass. */
@@ -18,7 +18,7 @@ export const extraConsumableBalance = {
 
 const b = extraConsumableBalance;
 
-export const extraConsumableEffects: EffectDefinition[] = [
+export const extraConsumableEffects: Effect[] = [
   { id: "potion-guard-effect", kind: "block", parameters: { amount: b.guardPotionBlock } },
   { id: "potion-splash-effect", kind: "damage", parameters: { amount: b.splashPotionDamage } },
   { id: "potion-tea-heal-effect", kind: "heal", parameters: { amount: b.teaPotionHeal } },
