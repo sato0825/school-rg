@@ -24,6 +24,8 @@ describe("run encounter and reward loop", () => {
     expect(reward.screen).toBe("reward");
     expect(reward.run.gold).toBe(65);
     expect(reward.rewardCardIds).toHaveLength(3);
+    expect(reward.rewardCardIds.some((id) => demoContent.clubs[0]!.signatureCardIds?.includes(id))).toBe(true);
+    expect(new Set(reward.rewardCardIds).size).toBe(3);
     expect(() => chooseRunReward(reward, "not-offered")).toThrow(/not a reward/);
     const skipped = chooseRunReward(reward, null);
     expect(skipped.run.deck).toHaveLength(10);
@@ -33,6 +35,15 @@ describe("run encounter and reward loop", () => {
     expect(selected.run.deck).toHaveLength(11);
     expect(selected.run.deck.at(-1)?.cardId).toBe(reward.rewardCardIds[0]);
     expect(parseRunState(selected.run, demoContent)).toEqual(selected.run);
+  });
+
+  it("accepts a replaceable reward generator but rejects invalid offers", () => {
+    const start = createRunSession(42, "literature-demo", demoContent, combatOnlyMap);
+    const entered = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, demoEncounterTable);
+    const won = { ...entered, run: { ...entered.run, combat: { ...entered.run.combat!, phase: "WON" as const } } };
+    const custom = settleRunCombat(won, demoContent, undefined, (state) => ({ state, cardIds: ["BASE-001"] }));
+    expect(custom.rewardCardIds).toEqual(["BASE-001"]);
+    expect(() => settleRunCombat(won, demoContent, undefined, (state) => ({ state, cardIds: ["BASE-001", "BASE-001"] }))).toThrow(/duplicate/);
   });
 
   it("crosses the Act boundary after boss victory and treats defeat as terminal", () => {

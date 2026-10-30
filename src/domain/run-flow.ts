@@ -3,12 +3,13 @@ import { awardEncounterGold, buyShopCard, closeShop, DEFAULT_ECONOMY_OPTIONS, he
 import { openRandomEvent, resolveEventChoice } from "./events.js";
 import { DEFAULT_GAME_CONFIG, type GameConfig } from "./config.js";
 import { availableNextNodes, generateRunMap, moveToConnectedNode, type MapGenerationOptions } from "./map-generation.js";
-import { randomInt, shuffle } from "./random.js";
+import { createRandomState, randomInt, shuffle } from "./random.js";
 import type { CombatState, ContentRegistry, MapNode, RunState } from "./schema.js";
 import { createTypingState } from "./typing.js";
 import { parseRunState } from "./validate.js";
 import { claimTreasure, leaveTreasure, openTreasure, type TreasureOptions, DEFAULT_TREASURE_OPTIONS } from "./treasure.js";
 import { ascensionEnemyHp, ascensionStartingHp, assertAscensionLevel } from "./ascension.js";
+import { generateCardRewards, type RewardGenerator } from "./card-rewards.js";
 
 export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "treasure" | "won" | "lost";
 export type EncounterTable = Readonly<Record<"combat" | "elite" | "boss", readonly string[]>>;
@@ -95,7 +96,7 @@ export function chooseRunTreasure(session: RunSession, offerId: string | null, c
   return { ...session, run, screen: "map", completedNodeIds: [...session.completedNodeIds, run.map.currentNodeId] };
 }
 
-export function settleRunCombat(session: RunSession, content: ContentRegistry, economy: EconomyOptions = DEFAULT_ECONOMY_OPTIONS): RunSession {
+export function settleRunCombat(session: RunSession, content: ContentRegistry, economy: EconomyOptions = DEFAULT_ECONOMY_OPTIONS, rewardGenerator: RewardGenerator = generateCardRewards): RunSession {
   if (session.screen !== "combat" || !session.run.combat) throw new Error("expected active combat");
   if (session.run.combat.phase === "LOST") return { ...session, screen: "lost" };
   if (session.run.combat.phase !== "WON") throw new Error("combat has not ended");
@@ -107,13 +108,16 @@ export function settleRunCombat(session: RunSession, content: ContentRegistry, e
   const rewardedRun = awardEncounterGold(session.run, node.kind, economy);
   const club = content.clubs.find((item) => item.id === session.run.clubId);
   if (!club) throw new RangeError(`unknown club: ${session.run.clubId}`);
-  const shuffled = shuffle(rewardedRun.rngState, [...new Set(club.cardPoolIds)]);
-  const rewardCardIds = shuffled.items.slice(0, 3);
-  if (rewardCardIds.length === 0 && node.act !== 3) throw new RangeError("empty reward card pool");
   if (node.kind === "boss" && node.act === 3) {
-    return { ...session, run: { ...rewardedRun, rngState: shuffled.state, combat: null }, screen: "won", completedNodeIds: [...session.completedNodeIds, node.id], rewardCardIds: [] };
+    return { ...session, run: { ...rewardedRun, combat: null }, screen: "won", completedNodeIds: [...session.completedNodeIds, node.id], rewardCardIds: [] };
   }
-  return { ...session, run: { ...rewardedRun, rngState: shuffled.state }, screen: "reward", rewardCardIds };
+  const offered = rewardGenerator(rewardedRun.rngState, club);
+  if (offered.cardIds.length === 0) throw new RangeError("empty reward card pool");
+  createRandomState(offered.state);
+  if (new Set(offered.cardIds).size !== offered.cardIds.length || offered.cardIds.some((cardId) => !club.cardPoolIds.includes(cardId))) {
+    throw new RangeError("reward generator returned duplicate or out-of-pool cards");
+  }
+  return { ...session, run: { ...rewardedRun, rngState: offered.state }, screen: "reward", rewardCardIds: offered.cardIds };
 }
 
 export function chooseRunEventChoice(session: RunSession, choiceId: string, content: ContentRegistry, ai: EnemyAiRegistry, config: GameConfig = DEFAULT_GAME_CONFIG): RunSession {

@@ -45,6 +45,15 @@ describe("versioned content and run schemas", () => {
     expect(errorIssues(() => parseContentRegistry(invalid))).toContainEqual(expect.objectContaining({ code: "DUPLICATE_ID", path: "cards.2.id" }));
   });
 
+  it("rejects signature reward cards outside a club pool or repeated there", () => {
+    const invalid = structuredClone(validContent);
+    invalid.clubs[0] = { ...invalid.clubs[0]!, signatureCardIds: ["card-draft", "card-draft"] };
+    invalid.clubs[0]!.cardPoolIds = ["card-strike"];
+    const issues = errorIssues(() => parseContentRegistry(invalid));
+    expect(issues).toContainEqual(expect.objectContaining({ code: "INVALID_STATE", path: "clubs.0.signatureCardIds.0" }));
+    expect(issues).toContainEqual(expect.objectContaining({ code: "DUPLICATE_ID", path: "clubs.0.signatureCardIds.1" }));
+  });
+
   it("rejects unknown run IDs and a card in two piles", () => {
     const invalid = structuredClone(validRun);
     invalid.clubId = "club-missing";
