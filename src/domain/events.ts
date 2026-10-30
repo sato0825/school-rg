@@ -16,6 +16,7 @@ function nextDeckInstanceId(run: RunState): string {
 export function eventConditionMet(run: RunState, condition: EventCondition, config: GameConfig = DEFAULT_GAME_CONFIG): boolean {
   switch (condition.kind) {
     case "gold_at_least": return run.gold >= condition.amount;
+    case "hp_at_least": return run.player.hp >= condition.amount;
     case "hp_at_most_percent": return run.player.hp * 100 <= run.player.maxHp * condition.percent;
     case "has_card": return run.deck.some((card) => card.cardId === condition.cardId);
     case "potion_slot_available": return run.potionIds.length < requireSetting(config.potionSlots);

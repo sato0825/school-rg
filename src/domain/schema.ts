@@ -162,6 +162,7 @@ export const TreasureStateSchema = z.strictObject({
 
 export const EventConditionSchema = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("gold_at_least"), amount: nonNegativeInt }),
+  z.strictObject({ kind: z.literal("hp_at_least"), amount: positiveInt }),
   z.strictObject({ kind: z.literal("hp_at_most_percent"), percent: z.number().int().min(0).max(100) }),
   z.strictObject({ kind: z.literal("has_card"), cardId: id }),
   z.strictObject({ kind: z.literal("potion_slot_available") }),

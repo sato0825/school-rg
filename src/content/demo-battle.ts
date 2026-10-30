@@ -16,6 +16,7 @@ import type { EventPools } from "../domain/events.js";
 import type { RelicRule } from "../domain/relic-hooks.js";
 import { variantEnemies, variantEnemyAi, variantEnemyEffects, variantEnemyIntents } from "./encounter-variants.js";
 import { extraConsumableEffects, extraPotions, extraRelicRules, extraRelics } from "./extra-consumables.js";
+import { extraEvents } from "./extra-events.js";
 
 /** One complete combat encounter for #14. Full run content belongs to #15–#24. */
 export const demoContent: ContentRegistry = parseContentRegistry({
@@ -156,6 +157,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
         { id: "fight", label: "放送室を調べる", requires: [], effects: [{ kind: "battle", enemyId: "night-announcement" }] },
       ],
     },
+    ...extraEvents,
   ],
   clubs: [{
     id: "literature-demo", name: "文芸部", startingHp: 40,
@@ -245,9 +247,9 @@ export const demoEncounterTable: EncounterTable = {
 };
 
 export const demoEventPools: EventPools = {
-  1: ["after-school-board", "collection-box"],
-  2: ["archive-inventory", "lab-ventilation"],
-  3: ["closing-library", "night-broadcast"],
+  1: ["after-school-board", "collection-box", "gym-supply-locker", "unfinished-draft"],
+  2: ["archive-inventory", "lab-ventilation", "lab-cleanup", "stairwell-memo"],
+  3: ["closing-library", "night-broadcast", "exam-material-box", "last-train-board"],
 };
 
 export const demoRunContentTables: RunContentTables = { enemies: demoEncounterTable, events: demoEventPools };
