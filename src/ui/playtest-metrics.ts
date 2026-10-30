@@ -23,10 +23,10 @@ export function startPlaytest(run: RunState, runId: string, nowMs: number, parti
     partial, activeMs: 0, visits: [], battleNodeIds: [], result: null }, lastAtMs: nowMs, active: true };
 }
 
-export function resumePlaytest(record: PlaytestRecord, run: RunState, nowMs: number, active = true): PlaytestTracker {
+export function resumePlaytest(record: PlaytestRecord, run: RunState, runId: string, nowMs: number, active = true): PlaytestTracker {
   validNow(nowMs);
   const parsed = PlaytestRecordSchema.parse(record);
-  if (parsed.clubId !== run.clubId || parsed.seed !== run.seed || parsed.ascensionLevel !== (run.ascensionLevel ?? 0)) {
+  if (parsed.runId !== runId || parsed.clubId !== run.clubId || parsed.seed !== run.seed || parsed.ascensionLevel !== (run.ascensionLevel ?? 0)) {
     throw new RangeError("playtest record does not match the run");
   }
   return { record: parsed, lastAtMs: nowMs, active: active && parsed.result === null };

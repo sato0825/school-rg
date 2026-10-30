@@ -380,9 +380,9 @@ test("opt-in playtest report survives reload, excludes pause and exports after t
   expect((await readMetrics()).activeMs).toBe(pausedAt);
   await page.getByRole("button", { name: "再開" }).click();
   await page.clock.runFor(1_000);
+  await page.getByRole("button", { name: "一時停止" }).click();
   const resumedAt = (await readMetrics()).activeMs;
   expect(resumedAt).toBeGreaterThanOrEqual(pausedAt + 1_000);
-  await page.getByRole("button", { name: "一時停止" }).click();
   await page.clock.runFor(3_000);
   expect((await readMetrics()).activeMs).toBe(resumedAt);
   await page.getByRole("button", { name: "再開" }).click();
@@ -397,6 +397,13 @@ test("opt-in playtest report survives reload, excludes pause and exports after t
   expect(report.visits.length).toBeGreaterThanOrEqual(9);
   expect(report.battleNodeIds.length).toBeGreaterThanOrEqual(3);
   expect(report.activeMs).toBeGreaterThanOrEqual(resumedAt);
+  await page.getByRole("button", { name: "新しいランを始める" }).click();
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  const nextReport = await readMetrics();
+  expect(nextReport.runId).not.toBe(report.runId);
+  expect(nextReport.partial).toBe(false);
+  expect(nextReport.battleNodeIds).toHaveLength(0);
 });
 
 test("science deck clears three Acts by typing and unlocks its own Ascension", async ({ page }) => {

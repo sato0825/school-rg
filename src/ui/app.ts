@@ -39,7 +39,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let restoreError = false;
   try {
     const saved = store.read();
-    if (saved) { session = deserializeRunSession(saved, demoContent, clock); frontScreen = null; }
+    if (saved) { session = deserializeRunSession(saved, demoContent, clock); session = { ...session, runId: session.runId ?? crypto.randomUUID() }; frontScreen = null; }
   } catch { restoreError = true; }
   let run: RunState = session.run;
   const params = new URLSearchParams(window.location.search);
@@ -50,10 +50,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   if (playtestEnabled && frontScreen === null && !restoreError) {
     try {
       const savedMetrics = playtestStore.read();
-      metrics = savedMetrics ? resumePlaytest(parsePlaytestRecord(JSON.parse(savedMetrics)), run, clock.nowMs(),
+      const parsedMetrics = savedMetrics ? parsePlaytestRecord(JSON.parse(savedMetrics)) : null;
+      metrics = parsedMetrics?.runId === session.runId ? resumePlaytest(parsedMetrics, run, session.runId!, clock.nowMs(),
         session.screen !== "won" && session.screen !== "lost" && !(run.combat?.clock.paused ?? false) && document.visibilityState === "visible")
-        : startPlaytest(run, crypto.randomUUID(), clock.nowMs(), true);
-      if (!savedMetrics) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
+        : startPlaytest(run, session.runId!, clock.nowMs(), true);
+      if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
   const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
@@ -222,11 +223,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (action === "choose-club" && frontScreen === "clubs") {
         const level = Math.min(selectedAscensionLevels[id] ?? 0, unlockedLevel(progression, id));
-        session = createRunSession(42, id, demoContent, demoMapOptions, undefined, level);
+        session = { ...createRunSession(42, id, demoContent, demoMapOptions, undefined, level), runId: crypto.randomUUID() };
         run = session.run;
         frontScreen = null;
         metricsLoadError = false;
-        if (playtestEnabled) metrics = visitPlaytestNode(startPlaytest(run, crypto.randomUUID(), clock.nowMs()), run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
+        if (playtestEnabled) metrics = visitPlaytestNode(startPlaytest(run, session.runId!, clock.nowMs()), run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
         render();
         return;
       }

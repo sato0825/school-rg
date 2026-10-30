@@ -14,7 +14,7 @@ describe("opt-in playtest metrics", () => {
     tracker = observePlaytest(tracker, 5_100, true);
     expect(tracker.record.activeMs).toBe(2_000);
     const saved = parsePlaytestRecord(JSON.parse(JSON.stringify(tracker.record)));
-    tracker = resumePlaytest(saved, run, 10_000, false);
+    tracker = resumePlaytest(saved, run, "run-a", 10_000, false);
     tracker = observePlaytest(tracker, 20_000, true);
     expect(tracker.record.activeMs).toBe(2_000);
     tracker = finishPlaytest(tracker, "won", 21_500);
@@ -29,7 +29,8 @@ describe("opt-in playtest metrics", () => {
     tracker = recordPlaytestBattle(recordPlaytestBattle(tracker, "battle-node"), "battle-node");
     expect(tracker.record.visits).toHaveLength(1);
     expect(tracker.record.battleNodeIds).toEqual(["battle-node"]);
-    expect(() => resumePlaytest(tracker.record, { ...run, clubId: "art-demo" }, 1)).toThrow(/does not match/);
+    expect(() => resumePlaytest(tracker.record, { ...run, clubId: "art-demo" }, "run-b", 1)).toThrow(/does not match/);
+    expect(() => resumePlaytest(tracker.record, run, "another-run", 1)).toThrow(/does not match/);
     expect(() => parsePlaytestRecord({ ...tracker.record, activeMs: -1 })).toThrow();
   });
 });
