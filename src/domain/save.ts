@@ -8,6 +8,7 @@ import { parseRunState } from "./validate.js";
 export const SAVE_FORMAT_VERSION = 1 as const;
 
 const SavedSessionSchema = z.strictObject({
+  runId: z.string().min(1).optional(),
   run: z.unknown(),
   screen: z.enum(["map", "combat", "reward", "shop", "rest", "event", "treasure", "won", "lost"]),
   completedNodeIds: z.array(z.string().min(1)),
@@ -28,6 +29,7 @@ export class UnsupportedSaveVersionError extends Error {
 
 function validateSession(session: RunSession, content: ContentRegistry): void {
   const { run, screen, completedNodeIds, rewardCardIds } = session;
+  if (session.runId === "") throw new RangeError("run ID must not be empty");
   const nodeIds = new Set(run.map.nodes.map((node) => node.id));
   if (new Set(completedNodeIds).size !== completedNodeIds.length || completedNodeIds.some((id) => !nodeIds.has(id))) {
     throw new RangeError("completed map nodes are invalid or duplicated");
@@ -74,7 +76,7 @@ export function deserializeRunSession(json: string, content: ContentRegistry, cl
     run = { ...run, combat: { ...run.combat, clock: { ...run.combat.clock, lastEventAtMs: now,
       paused: run.combat.phase === "PLAYER_INPUT" ? true : run.combat.clock.paused } } };
   }
-  const session: RunSession = { run, screen: parsed.session.screen as RunScreen,
+  const session: RunSession = { runId: parsed.session.runId, run, screen: parsed.session.screen as RunScreen,
     completedNodeIds: parsed.session.completedNodeIds, rewardCardIds: parsed.session.rewardCardIds };
   validateSession(session, content);
   return session;
