@@ -520,9 +520,10 @@ for (const [clubId, label, name] of [
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-activate-candidate-${activateVersion}`));
     await page.clock.runFor(420);
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
-    // A typed defensive card may absorb the first attack; advance until HP is actually lost.
+    // A defensive card may absorb the first attack; each club can also have a different turn clock.
     for (let turn = 0; turn < 6 && !((await hero.getAttribute("src")) ?? "").includes(`${name}-hit-candidate-${hitVersion}`); turn++) {
-      await page.clock.runFor(10_000);
+      const remainingMs = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.clock.remainingMs as number);
+      await page.clock.runFor(remainingMs + 1);
       await page.clock.runFor(650);
     }
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-hit-candidate-${hitVersion}`));
