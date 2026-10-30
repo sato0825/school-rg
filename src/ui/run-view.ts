@@ -25,12 +25,13 @@ export function renderRunTitle(root: HTMLElement, art: BattleArt): void {
   root.innerHTML = shell("放課後から始まる", `<section class="front-panel title-panel"><div class="front-copy"><span class="eyebrow">TYPE YOUR NEXT MOVE</span><h2>放課後を、打ち抜く。</h2><p>カード名を入力して行動する、学園タイピングローグライク。</p><div class="front-actions"><button type="button" data-action="open-clubs">ランを始める</button><button type="button" data-action="open-compendium">図鑑を見る</button></div><p class="front-note">現在は文芸部の検証用コンテンツを公開中です。5部活の固有デッキは制作中です。</p></div><img class="front-hero" src="${html(art.heroUrl)}" alt="文芸部の生徒" /></section>`, art);
 }
 
-export function renderClubSelect(root: HTMLElement, content: ContentRegistry, art: BattleArt, progression: Progression, selectedLevel: number, loadError: boolean): void {
-  const club = content.clubs[0];
-  const unlocked = club ? unlockedLevel(progression, club.id) : 0;
-  const levels = [0, ...ASCENSION_RULES.map((rule) => rule.level)].map((level) => `<button type="button" class="ascension-choice" data-action="ascension-level" data-id="${level}" aria-pressed="${selectedLevel === level}" ${level > unlocked || loadError ? "disabled" : ""}>難度 ${level}${level === 0 ? " · 通常" : ` · ${html(ASCENSION_RULES[level - 1]!.label)}`}</button>`).join("");
-  const clubs = content.clubs.map((item) => `<button type="button" class="club-choice" data-action="choose-club" data-id="${html(item.id)}"><img src="${html(art.heroUrl)}" alt="" /><span><small>CLUB</small><strong>${html(item.name)}</strong><em>初期HP ${item.startingHp} · デッキ ${item.starterCardIds.length}枚 · 解放難度 ${unlockedLevel(progression, item.id)}</em></span></button>`).join("");
-  root.innerHTML = shell("部活を選ぶ", `<section class="front-panel club-panel"><span class="eyebrow">CHOOSE YOUR CLUB</span><h2>所属する部活を選ぶ</h2><p>部活ごとに初期デッキとカードプールが変わります。</p><div class="ascension-choices" aria-label="難度選択">${levels}</div><p>${loadError ? "解放状態を読めません。保存データを確認してください。" : "3 Actを完走すると、その部活の次の難度が解放されます。"}</p><div class="club-choices">${clubs}</div><button type="button" class="front-back" data-action="front-back">タイトルへ戻る</button></section>`, art);
+export function renderClubSelect(root: HTMLElement, content: ContentRegistry, art: BattleArt, progression: Progression, selectedLevels: Readonly<Record<string, number>>, loadError: boolean): void {
+  const clubs = content.clubs.map((item) => {
+    const unlocked = unlockedLevel(progression, item.id);
+    const levels = [0, ...ASCENSION_RULES.map((rule) => rule.level)].map((level) => `<button type="button" class="ascension-choice" data-action="ascension-level" data-id="${html(item.id)}:${level}" aria-pressed="${(selectedLevels[item.id] ?? 0) === level}" ${level > unlocked || loadError ? "disabled" : ""}>難度 ${level}${level === 0 ? " · 通常" : ` · ${html(ASCENSION_RULES[level - 1]!.label)}`}</button>`).join("");
+    return `<div class="club-option"><button type="button" class="club-choice" data-action="choose-club" data-id="${html(item.id)}"><img src="${html(art.heroUrl)}" alt="" /><span><small>CLUB</small><strong>${html(item.name)}</strong><em>初期HP ${item.startingHp} · デッキ ${item.starterCardIds.length}枚 · 解放難度 ${unlocked}</em></span></button><div class="ascension-choices" aria-label="${html(item.name)}の難度選択">${levels}</div></div>`;
+  }).join("");
+  root.innerHTML = shell("部活を選ぶ", `<section class="front-panel club-panel"><span class="eyebrow">CHOOSE YOUR CLUB</span><h2>所属する部活を選ぶ</h2><p>部活ごとに初期デッキとカードプールが変わります。</p><p>${loadError ? "解放状態を読めません。保存データを確認してください。" : "3 Actを完走すると、その部活の次の難度が解放されます。"}</p><div class="club-choices">${clubs}</div><button type="button" class="front-back" data-action="front-back">タイトルへ戻る</button></section>`, art);
 }
 
 export function renderCompendium(root: HTMLElement, content: ContentRegistry, art: BattleArt): void {
@@ -53,7 +54,7 @@ export function renderRunMap(root: HTMLElement, session: RunSession, art: Battle
     const visited = session.completedNodeIds.includes(node.id);
     return `<button type="button" class="map-node ${node.id === current.id ? "current" : ""} ${visited ? "visited" : ""} ${enabled ? "available" : ""}" data-action="enter-node" data-id="${node.id}" ${enabled ? "" : "disabled"} aria-label="${floor}階 ${html(kindNames[node.kind])}${enabled ? " 選択可能" : ""}"><span>${kindIcons[node.kind]}</span><small>${html(kindNames[node.kind])}</small></button>`;
   }).join("")}</div></div>`).join("");
-  root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><span>ROUTE SELECT</span><h2>次の行き先を選ぶ</h2><p>接続された場所だけに進めます。戦闘ではカード名を直接タイプします。</p><div class="map-stats">♥ ${run.player.hp}/${run.player.maxHp} · ${run.gold}G · デッキ ${run.deck.length}枚 · シード ${run.seed}</div><button type="button" class="map-compendium" data-action="open-compendium">図鑑</button></div><div class="map-scroll" aria-label="Act ${run.act} マップ">${rows}</div></section>`, art);
+  root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><span>ROUTE SELECT</span><h2>次の行き先を選ぶ</h2><p>接続された場所だけに進めます。戦闘ではカード名を直接タイプします。</p><div class="map-stats">♥ ${run.player.hp}/${run.player.maxHp} · ${run.gold}G · デッキ ${run.deck.length}枚 · 難度 ${run.ascensionLevel} · シード ${run.seed}</div><button type="button" class="map-compendium" data-action="open-compendium">図鑑</button></div><div class="map-scroll" aria-label="Act ${run.act} マップ">${rows}</div></section>`, art);
 }
 
 export function renderRunReward(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
@@ -107,7 +108,7 @@ export function renderRunEvent(root: HTMLElement, session: RunSession, content: 
 
 export function renderRunResult(root: HTMLElement, session: RunSession, art: BattleArt): void {
   const won = session.screen === "won";
-  root.innerHTML = shell(won ? "全Act完走" : "ラン終了", `<section class="reward-panel run-result"><span class="eyebrow">RUN RESULT</span><h2>${won ? "全Actクリア" : "敗北"}</h2><p>${won ? "3つのActのボスを突破しました。" : "次のランで再挑戦できます。"}</p><div class="map-stats">ACT ${session.run.act} · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</div><button type="button" class="skip-reward" data-action="new-run">新しいランを始める</button></section>`, art);
+  root.innerHTML = shell(won ? "全Act完走" : "ラン終了", `<section class="reward-panel run-result"><span class="eyebrow">RUN RESULT</span><h2>${won ? "全Actクリア" : "敗北"}</h2><p>${won ? "3つのActのボスを突破しました。" : "次のランで再挑戦できます。"}</p><div class="map-stats">ACT ${session.run.act} · 難度 ${session.run.ascensionLevel} · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</div><button type="button" class="skip-reward" data-action="new-run">新しいランを始める</button></section>`, art);
 }
 
 export function renderSaveRecovery(root: HTMLElement, art: BattleArt): void {

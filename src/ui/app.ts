@@ -30,7 +30,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const savedProgression = progressStore.read();
     if (savedProgression) progression = parseProgression(JSON.parse(savedProgression), demoContent);
   } catch { progressionLoadError = true; }
-  let selectedAscensionLevel = 0;
+  const selectedAscensionLevels: Record<string, number> = {};
   let session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
   let frontScreen: "title" | "clubs" | "compendium" | null = "title";
   let frontReturn: "title" | null = "title";
@@ -58,7 +58,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   const render = () => {
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
     else if (frontScreen === "title") renderRunTitle(root, demoBattleArt);
-    else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevel, progressionLoadError);
+    else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError);
     else if (frontScreen === "compendium") renderCompendium(root, demoContent, demoBattleArt);
     else if (session.screen === "map") renderRunMap(root, session, demoBattleArt);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
@@ -77,7 +77,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     session = settleRunCombat({ ...session, run }, demoContent);
     run = session.run;
     if (session.screen === "won" && !progressionLoadError) {
-      progression = unlockAfterVictory(progression, run);
+      progression = unlockAfterVictory(progression, session);
       try { progressStore.write(JSON.stringify(progression)); }
       catch { view.message = "難度の解放を保存できませんでした。"; }
     }
@@ -178,14 +178,15 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (action === "new-run" || action === "restart") { restart(); return; }
       if (action === "open-clubs" && frontScreen === "title") { frontScreen = "clubs"; render(); return; }
       if (action === "ascension-level" && frontScreen === "clubs") {
-        const level = Number(id);
-        if (!Number.isSafeInteger(level) || level < 0 || level > Math.min(MAX_ASCENSION_LEVEL, unlockedLevel(progression, demoContent.clubs[0]!.id))) return;
-        selectedAscensionLevel = level;
+        const [clubId, rawLevel] = id.split(":");
+        const level = Number(rawLevel);
+        if (!clubId || !demoContent.clubs.some((club) => club.id === clubId) || !Number.isSafeInteger(level) || level < 0 || level > Math.min(MAX_ASCENSION_LEVEL, unlockedLevel(progression, clubId))) return;
+        selectedAscensionLevels[clubId] = level;
         render();
         return;
       }
       if (action === "choose-club" && frontScreen === "clubs") {
-        const level = Math.min(selectedAscensionLevel, unlockedLevel(progression, id));
+        const level = Math.min(selectedAscensionLevels[id] ?? 0, unlockedLevel(progression, id));
         session = createRunSession(42, id, demoContent, demoMapOptions, undefined, level);
         run = session.run;
         frontScreen = null;

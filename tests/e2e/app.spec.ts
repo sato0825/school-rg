@@ -236,6 +236,16 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   expect(bosses).toBe(3);
   expect(battles).toBeGreaterThanOrEqual(3);
   await expect(page.locator(".run-header")).toContainText("全Act完走");
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["literature-demo"])).toBe(1);
+  await page.getByRole("button", { name: "新しいランを始める" }).click();
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await expect(page.locator(".ascension-choice").nth(1)).toBeEnabled();
+  await page.locator(".ascension-choice").nth(1).focus();
+  await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await expect(page.locator(".map-stats")).toContainText("難度 1");
+  await enterNextNode(page);
+  await expect(page.locator(".enemy-hud")).toContainText("32/32");
 });
 
 test("treasure offers survive reload and a focused choice completes its node", async ({ page }) => {

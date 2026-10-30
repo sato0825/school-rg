@@ -1,5 +1,6 @@
 import * as z from "zod";
-import type { ContentRegistry, RunState } from "./schema.js";
+import type { ContentRegistry } from "./schema.js";
+import type { RunSession } from "./run-flow.js";
 
 const issue = "https://github.com/sato0825/school-rg/issues/66";
 /** Values and unlock rules are provisional until the content balance review. */
@@ -31,7 +32,12 @@ export function assertAscensionLevel(level: number): void {
 export function unlockedLevel(progression: Progression, clubId: string): number { return progression.unlockedByClub[clubId] ?? 0; }
 
 /** A full three-Act victory at the currently highest unlocked level opens one more. */
-export function unlockAfterVictory(progression: Progression, run: RunState): Progression {
+export function unlockAfterVictory(progression: Progression, session: RunSession): Progression {
+  const run = session.run;
+  const finalNode = run.map.nodes.find((node) => node.id === run.map.currentNodeId);
+  if (session.screen !== "won" || finalNode?.kind !== "boss" || finalNode.act !== 3 || !session.completedNodeIds.includes(finalNode.id)) {
+    throw new Error("Ascension unlock requires a completed three-Act victory");
+  }
   assertAscensionLevel(run.ascensionLevel);
   const highest = unlockedLevel(progression, run.clubId);
   if (run.ascensionLevel !== highest || highest === MAX_ASCENSION_LEVEL) return progression;

@@ -103,7 +103,6 @@ export const EnemyInstanceSchema = z.strictObject({
 export const MapNodeSchema = z.strictObject({
   id,
   act: z.union([z.literal(1), z.literal(2), z.literal(3)]),
-  ascensionLevel: nonNegativeInt.default(0),
   floor: nonNegativeInt,
   kind: z.enum(["start", "combat", "elite", "event", "shop", "rest", "treasure", "boss"]),
   nextIds: z.array(id),
@@ -194,6 +193,7 @@ export const RunStateSchema = z.strictObject({
   rngState: z.number().int().min(0).max(0xffffffff),
   clubId: id,
   act: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+  ascensionLevel: nonNegativeInt.default(0),
   player: z.strictObject({ hp: nonNegativeInt, maxHp: positiveInt, block: nonNegativeInt }),
   deck: z.array(CardInstanceSchema),
   relicIds: z.array(id),
