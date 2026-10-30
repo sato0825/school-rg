@@ -14,4 +14,4 @@ Encounter設定はAct 1〜3と戦闘・強敵・ボスの組み合わせで敵ID
 
 文芸部の短縮3 ActランをChromeでカード名を直接入力して進め、各Actのボス開始画面を保存した。[Act 1](content/previews/issue98-act1-boss-retry1-20261031.png)・[Act 2](content/previews/issue98-act2-boss-retry1-20261031.png)・[Act 3](content/previews/issue98-act3-boss-retry1-20261031.png)。Act表示、敵名、予告Intent、入力時計と手札は画面に出ており、敵と入力欄の重なりはない。一方、3体とも同じ仮画像・背景なので視覚上のAct差は未実装。自動操作による表示確認であり、人間の60分プレイテストではない。
 
-#120では追加の強敵を390×844で表示し、[Act 1](content/previews/issue120-act1-elite-narrow-20261031.png)、[Act 2](content/previews/issue120-act2-elite-narrow-20261031.png)、[Act 3](content/previews/issue120-act3-elite-narrow-20261031.png) のIntentと敵名、手札を確認する。各体をカード名入力で倒すE2Eは別途実施する。自動操作での表示と戦闘の検査は、人間の難度評価や最終アートの審査には代わらない。
+#120では追加の強敵を390×844で表示し、[Act 1](content/previews/issue120-act1-elite-narrow-20261031.png)、[Act 2](content/previews/issue120-act2-elite-narrow-20261031.png)、[Act 3](content/previews/issue120-act3-elite-narrow-20261031.png) のIntentと敵名、手札が重ならないことを確認した。追加6体はカード名入力で倒すE2Eを通過した。自動操作での表示と戦闘の検査は、人間の難度評価や最終アートの審査には代わらない。
