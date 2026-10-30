@@ -1,0 +1,78 @@
+import { randomInt } from "./random.js";
+import type { ContentRegistry, EventChoice, EventCondition, EventDefinition, RunState } from "./schema.js";
+
+function nextDeckInstanceId(run: RunState): string {
+  const existing = new Set(run.deck.map((card) => card.instanceId));
+  let index = run.deck.length + 1;
+  while (existing.has(`deck-${index}`)) index++;
+  return `deck-${index}`;
+}
+
+export function eventConditionMet(run: RunState, condition: EventCondition): boolean {
+  switch (condition.kind) {
+    case "gold_at_least": return run.gold >= condition.amount;
+    case "hp_at_most_percent": return run.player.hp * 100 <= run.player.maxHp * condition.percent;
+    case "has_card": return run.deck.some((card) => card.cardId === condition.cardId);
+  }
+}
+
+export function availableEventChoices(run: RunState, content: ContentRegistry): { choice: EventChoice; available: boolean }[] {
+  if (!run.event) throw new Error("no active event");
+  const definition = content.events.find((event) => event.id === run.event!.eventId);
+  if (!definition) throw new RangeError(`unknown event: ${run.event.eventId}`);
+  return definition.choices.map((choice) => ({ choice, available: choice.requires.every((condition) => eventConditionMet(run, condition)) }));
+}
+
+export function openRandomEvent(run: RunState, content: ContentRegistry): RunState {
+  const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
+  if (node?.kind !== "event" || run.combat || run.shop || run.event) throw new Error("expected unopened event node outside combat");
+  if (content.events.length === 0) throw new RangeError("event pool is empty");
+  const draw = randomInt(run.rngState, content.events.length);
+  const definition = content.events[draw.value]!;
+  return { ...run, rngState: draw.state, event: { nodeId: node.id, eventId: definition.id, choiceId: null, pendingCombat: false } };
+}
+
+export function activeEvent(run: RunState, content: ContentRegistry): EventDefinition {
+  if (!run.event) throw new Error("no active event");
+  const definition = content.events.find((event) => event.id === run.event!.eventId);
+  if (!definition) throw new RangeError(`unknown event: ${run.event.eventId}`);
+  return definition;
+}
+
+/** Applies noncombat effects in order; a final battle effect is returned for the run layer. */
+export function resolveEventChoice(run: RunState, choiceId: string, content: ContentRegistry): { run: RunState; battleEnemyId: string | null } {
+  if (!run.event || run.event.choiceId || run.event.pendingCombat || run.combat) throw new Error("event choice is not pending");
+  const choice = activeEvent(run, content).choices.find((item) => item.id === choiceId);
+  if (!choice) throw new RangeError(`unknown event choice: ${choiceId}`);
+  if (!choice.requires.every((condition) => eventConditionMet(run, condition))) throw new RangeError(`event choice conditions are not met: ${choiceId}`);
+  let current = run;
+  let battleEnemyId: string | null = null;
+  for (const effect of choice.effects) {
+    switch (effect.kind) {
+      case "gold": {
+        const gold = current.gold + effect.amount;
+        if (!Number.isSafeInteger(gold) || gold < 0) throw new RangeError("event gold effect is unaffordable or overflows");
+        current = { ...current, gold };
+        break;
+      }
+      case "hp": {
+        const hp = Math.min(current.player.maxHp, current.player.hp + effect.amount);
+        if (!Number.isSafeInteger(hp) || hp < 0) throw new RangeError("event HP effect is invalid");
+        current = { ...current, player: { ...current.player, hp } };
+        break;
+      }
+      case "add_card": {
+        if (!content.cards.some((card) => card.id === effect.cardId)) throw new RangeError(`unknown event card: ${effect.cardId}`);
+        current = { ...current, deck: [...current.deck, { instanceId: nextDeckInstanceId(current), cardId: effect.cardId, upgraded: false }] };
+        break;
+      }
+      case "battle": {
+        if (battleEnemyId) throw new Error("event choice cannot start two battles");
+        if (!content.enemies.some((enemy) => enemy.id === effect.enemyId)) throw new RangeError(`unknown event enemy: ${effect.enemyId}`);
+        battleEnemyId = effect.enemyId;
+        break;
+      }
+    }
+  }
+  return { run: { ...current, event: { ...current.event!, choiceId, pendingCombat: Boolean(battleEnemyId) } }, battleEnemyId };
+}

@@ -1,23 +1,25 @@
 import { expect, test } from "@playwright/test";
 
 async function enterNextNode(page: import("@playwright/test").Page): Promise<void> {
-  await page.locator(".map-node.available").first().click();
+  const combat = page.locator(".map-node.available").filter({ hasText: "戦闘" });
+  if (await combat.count()) await combat.last().click();
+  else await page.locator(".map-node.available").first().click();
 }
 
-async function typeThroughBattle(page: import("@playwright/test").Page): Promise<void> {
+async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
   const priorities = ["heavy strike", "sweep", "strike", "finish", "poison", "defend", "counter", "draw", "boost", "delay"];
   for (let turn = 0; turn < 12; turn++) {
     for (let use = 0; use < 12; use++) {
-      if (await page.locator(".reward-panel").count()) return;
+      if (await page.locator(completion).count()) return;
       const words = await page.locator(".card-word").allInnerTexts();
       const word = priorities.find((item) => words.includes(item));
       if (!word) break;
       await page.keyboard.type(word);
-      if (await page.locator(".reward-panel").count()) return;
+      if (await page.locator(completion).count()) return;
       if ((await page.locator(".typing-buffer").innerText()).trim() === word) {
         await page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: new RegExp(`^${word}$`) }) }).first().click();
       }
-      if (await page.locator(".reward-panel").count()) return;
+      if (await page.locator(completion).count()) return;
       if ((await page.locator(".typing-buffer").innerText()).trim()) await page.keyboard.press("Escape");
     }
     await page.clock.runFor(11_000);
@@ -115,4 +117,20 @@ test("a route can upgrade at rest and buy once at the shop", async ({ page }) =>
   await expect(page.getByRole("status")).toContainText("所持金が足りません。");
   await page.getByRole("button", { name: "購買を出る" }).click();
   await expect(page.locator(".map-node.available")).toContainText("ボス");
+});
+
+test("an event choice can start typed combat and cannot be entered twice", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.clock.install();
+  await page.goto("/");
+  await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
+  await page.getByRole("button", { name: "購買を出る" }).click();
+  await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
+  await expect(page.locator(".event-panel")).toBeVisible();
+  await page.locator("[data-action=event-choice][data-id=fight]").click();
+  await expect(page.locator(".enemy-slot")).toHaveCount(1);
+  await typeThroughBattle(page, ".map-panel");
+  await expect(page.locator(".run-header")).toContainText("ACT 1 · 2F");
+  await expect(page.locator(".map-node.available")).toContainText("ボス");
+  await expect(page.locator(".map-node.current")).toBeDisabled();
 });

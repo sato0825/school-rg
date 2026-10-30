@@ -51,6 +51,7 @@ export function parseContentRegistry(value: unknown): ContentRegistry {
   const relics = collectUnique(content.relics, "relics", issues);
   collectUnique(content.potions, "potions", issues);
   collectUnique(content.clubs, "clubs", issues);
+  collectUnique(content.events, "events", issues);
 
   content.cards.forEach((card, i) => card.effectIds.forEach((effectId, j) => known(effectId, effects, `cards.${i}.effectIds.${j}`, issues)));
   content.cards.forEach((card, i) => card.upgradeEffectIds?.forEach((effectId, j) => known(effectId, effects, `cards.${i}.upgradeEffectIds.${j}`, issues)));
@@ -62,6 +63,22 @@ export function parseContentRegistry(value: unknown): ContentRegistry {
     club.starterCardIds.forEach((cardId, j) => known(cardId, cards, `clubs.${i}.starterCardIds.${j}`, issues));
     club.cardPoolIds.forEach((cardId, j) => known(cardId, cards, `clubs.${i}.cardPoolIds.${j}`, issues));
     if (club.startingRelicId) known(club.startingRelicId, relics, `clubs.${i}.startingRelicId`, issues);
+  });
+  content.events.forEach((event, i) => {
+    collectUnique(event.choices, `events.${i}.choices`, issues);
+    event.choices.forEach((choice, j) => {
+      choice.requires.forEach((condition, k) => {
+        if (condition.kind === "has_card") known(condition.cardId, cards, `events.${i}.choices.${j}.requires.${k}.cardId`, issues);
+      });
+      const battles = choice.effects.filter((effect) => effect.kind === "battle");
+      if (battles.length > 1 || (battles.length === 1 && choice.effects.at(-1)?.kind !== "battle")) {
+        issues.push({ code: "INVALID_STATE", path: `events.${i}.choices.${j}.effects`, message: "Battle effect must be the final and only battle effect" });
+      }
+      choice.effects.forEach((effect, k) => {
+        if (effect.kind === "add_card") known(effect.cardId, cards, `events.${i}.choices.${j}.effects.${k}.cardId`, issues);
+        if (effect.kind === "battle") known(effect.enemyId, new Set(content.enemies.map((enemy) => enemy.id)), `events.${i}.choices.${j}.effects.${k}.enemyId`, issues);
+      });
+    });
   });
   if (issues.length) throw new DomainValidationError(issues);
   return content;
@@ -103,6 +120,20 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
       if (offerIds.has(offer.offerId)) issues.push({ code: "DUPLICATE_ID", path: `shop.offers.${i}.offerId`, message: `Duplicate shop offer: ${offer.offerId}` });
       offerIds.add(offer.offerId);
     });
+  }
+  if (run.event) {
+    known(run.event.nodeId, mapIds, "event.nodeId", issues);
+    if (run.event.nodeId !== run.map.currentNodeId || run.map.nodes.find((node) => node.id === run.event!.nodeId)?.kind !== "event") {
+      issues.push({ code: "INVALID_STATE", path: "event.nodeId", message: "Event is not at the current event node" });
+    }
+    const definition = content.events.find((event) => event.id === run.event!.eventId);
+    if (!definition) issues.push({ code: "UNKNOWN_REFERENCE", path: "event.eventId", message: `Unregistered event: ${run.event.eventId}` });
+    else if (run.event.choiceId && !definition.choices.some((choice) => choice.id === run.event!.choiceId)) {
+      issues.push({ code: "UNKNOWN_REFERENCE", path: "event.choiceId", message: `Unregistered event choice: ${run.event.choiceId}` });
+    }
+    if (run.event.pendingCombat !== Boolean(run.combat) || (run.event.pendingCombat && !run.event.choiceId)) {
+      issues.push({ code: "INVALID_STATE", path: "event.pendingCombat", message: "Event battle state is inconsistent" });
+    }
   }
 
   if (run.combat) {

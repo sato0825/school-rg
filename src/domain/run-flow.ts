@@ -1,12 +1,13 @@
 import { selectEnemyIntent, type EnemyAiRegistry } from "./enemy-ai.js";
 import { awardEncounterGold, buyShopCard, closeShop, DEFAULT_ECONOMY_OPTIONS, healAtRest, openShop, removeShopCard, upgradeAtRest, type EconomyOptions } from "./economy.js";
+import { openRandomEvent, resolveEventChoice } from "./events.js";
 import { availableNextNodes, generateRunMap, moveToConnectedNode, type MapGenerationOptions } from "./map-generation.js";
 import { randomInt, shuffle } from "./random.js";
 import type { CombatState, ContentRegistry, MapNode, RunState } from "./schema.js";
 import { createTypingState } from "./typing.js";
 import { parseRunState } from "./validate.js";
 
-export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "won" | "lost";
+export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "won" | "lost";
 export type EncounterTable = Readonly<Record<"combat" | "elite" | "boss", readonly string[]>>;
 export type RunSession = {
   run: RunState;
@@ -29,7 +30,7 @@ export function createRunSession(seed: number, clubId: string, content: ContentR
   const run = parseRunState({
     schemaVersion: 1, seed, rngState: map.rngState, clubId, act: 1,
     player: { hp: club.startingHp, maxHp: club.startingHp, block: 0 },
-    deck, relicIds: club.startingRelicId ? [club.startingRelicId] : [], potionIds: [], gold: economy.startingGold, shop: null,
+    deck, relicIds: club.startingRelicId ? [club.startingRelicId] : [], potionIds: [], gold: economy.startingGold, shop: null, event: null,
     map: { nodes: map.nodes, currentNodeId: map.currentNodeId }, combat: null,
   }, content);
   return { run, screen: "map", completedNodeIds: [map.currentNodeId], rewardCardIds: [] };
@@ -69,6 +70,7 @@ export function enterRunNode(session: RunSession, nextNodeId: string, content: C
     return { ...session, run: openShop(moved, content, economy), screen: "shop" };
   }
   if (next.kind === "rest") return { ...session, run: moveToConnectedNode(session.run, next.id), screen: "rest" };
+  if (next.kind === "event") return { ...session, run: openRandomEvent(moveToConnectedNode(session.run, next.id), content), screen: "event" };
   if (next.kind !== "combat" && next.kind !== "elite" && next.kind !== "boss") {
     throw new Error(`node kind ${next.kind} requires its own system before entry`);
   }
@@ -85,6 +87,9 @@ export function settleRunCombat(session: RunSession, content: ContentRegistry, e
   if (session.run.combat.phase === "LOST") return { ...session, screen: "lost" };
   if (session.run.combat.phase !== "WON") throw new Error("combat has not ended");
   const node = currentNode(session.run);
+  if (session.run.event?.pendingCombat) {
+    return { ...session, run: { ...session.run, combat: null, event: null }, screen: "map", completedNodeIds: [...session.completedNodeIds, node.id] };
+  }
   if (node.kind !== "combat" && node.kind !== "elite" && node.kind !== "boss") throw new Error("combat ended at a non-combat node");
   const rewardedRun = awardEncounterGold(session.run, node.kind, economy);
   const club = content.clubs.find((item) => item.id === session.run.clubId);
@@ -96,6 +101,15 @@ export function settleRunCombat(session: RunSession, content: ContentRegistry, e
     return { ...session, run: { ...rewardedRun, rngState: shuffled.state, combat: null }, screen: "won", completedNodeIds: [...session.completedNodeIds, node.id], rewardCardIds: [] };
   }
   return { ...session, run: { ...rewardedRun, rngState: shuffled.state }, screen: "reward", rewardCardIds };
+}
+
+export function chooseRunEventChoice(session: RunSession, choiceId: string, content: ContentRegistry, ai: EnemyAiRegistry): RunSession {
+  if (session.screen !== "event") throw new Error("expected event screen");
+  const result = resolveEventChoice(session.run, choiceId, content);
+  if (result.run.player.hp === 0) return { ...session, run: result.run, screen: "lost" };
+  if (result.battleEnemyId) return { ...session, run: createEncounter(result.run, result.battleEnemyId, content, ai), screen: "combat" };
+  const nodeId = result.run.map.currentNodeId;
+  return { ...session, run: { ...result.run, event: null }, screen: "map", completedNodeIds: [...session.completedNodeIds, nodeId] };
 }
 
 export function chooseRunReward(session: RunSession, cardId: string | null): RunSession {
