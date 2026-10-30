@@ -1,5 +1,6 @@
 import { baseCardDefinitions, baseCardEffects } from "./base-cards.js";
 import { literatureCardDefinitions, literatureCardEffects } from "./literature-cards.js";
+import { scienceCardDefinitions, scienceCardEffects } from "./science-cards.js";
 import { shuffle } from "../domain/random.js";
 import type { ContentRegistry, RunState } from "../domain/schema.js";
 import { createTypingState } from "../domain/typing.js";
@@ -14,6 +15,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
   effects: [
     ...baseCardEffects,
     ...literatureCardEffects,
+    ...scienceCardEffects,
     { id: "paper-hit", kind: "damage", parameters: { amount: 5 } },
     { id: "paper-guard", kind: "block", parameters: { amount: 4 } },
     { id: "exam-hit", kind: "damage", parameters: { amount: 7 } },
@@ -22,7 +24,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "potion-heal-effect", kind: "heal", parameters: { amount: 5 } },
     { id: "potion-ink-effect", kind: "damage", parameters: { amount: 7 } },
   ],
-  cards: [...baseCardDefinitions, ...literatureCardDefinitions],
+  cards: [...baseCardDefinitions, ...literatureCardDefinitions, ...scienceCardDefinitions],
   intents: [
     { id: "paper-intent-hit", label: "飛び散る答案", category: "attack", effectIds: ["paper-hit"] },
     { id: "paper-intent-guard", label: "机を積む", category: "defend", effectIds: ["paper-guard"] },
@@ -33,7 +35,10 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "paper-heap", name: "答案のかたまり", maxHp: 26, intentIds: ["paper-intent-hit", "paper-intent-guard"] },
     { id: "final-exam", name: "追試の番人", maxHp: 38, intentIds: ["exam-intent-hit", "exam-intent-guard"] },
   ],
-  relics: [{ id: "library-bookmark", name: "図書室のしおり", triggerIds: ["bookmark-acquired", "bookmark-turn", "bookmark-skill"], effectIds: [] }],
+  relics: [
+    { id: "library-bookmark", name: "図書室のしおり", triggerIds: ["bookmark-acquired", "bookmark-turn", "bookmark-skill"], effectIds: [] },
+    { id: "lab-glasses", name: "観察眼鏡", triggerIds: ["lab-glasses-combat-start"], effectIds: [] },
+  ],
   potions: [
     { id: "potion-time", name: "時間の小瓶", input: { text: "clock", locale: "en" }, target: "self", effectIds: ["potion-time-effect"] },
     { id: "potion-heal", name: "保健室の包帯", input: { text: "bandage", locale: "en" }, target: "self", effectIds: ["potion-heal-effect"] },
@@ -66,6 +71,12 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     cardPoolIds: [...baseCardDefinitions.map((card) => card.id), ...literatureCardDefinitions.map((card) => card.id)],
     startingRelicId: "library-bookmark",
     startingPotionIds: ["potion-time", "potion-heal"],
+  }, {
+    id: "science-demo", name: "科学部", startingHp: 38,
+    starterCardIds: ["BASE-001", "BASE-001", "BASE-002", "BASE-003", "BASE-007", "SCI-001", "SCI-002", "SCI-003", "SCI-004", "BASE-011"],
+    cardPoolIds: [...baseCardDefinitions.map((card) => card.id), ...scienceCardDefinitions.map((card) => card.id)],
+    startingRelicId: "lab-glasses",
+    startingPotionIds: ["potion-ink"],
   }],
 });
 
@@ -82,6 +93,9 @@ export const demoRelicRules: RelicRule[] = [
     const cardId = run.combat?.cards.find((card) => card.instanceId === event.cardInstanceId)?.cardId;
     return run.combat?.phase === "PLAYER_INPUT" && !!demoContent.cards.find((card) => card.id === cardId && card.type === "skill");
   }, apply: (run, _event, stacks) => ({ ...run, player: { ...run.player, block: run.player.block + stacks } }) },
+  { id: "lab-glasses-combat-start", on: "combat_start", priority: 0, stackMode: "each", apply: (run, _event, stacks) => ({
+    ...run, combat: run.combat ? { ...run.combat, statuses: { ...run.combat.statuses, player: { ...run.combat.statuses.player, strength: (run.combat.statuses.player.strength ?? 0) + stacks } } } : null,
+  }) },
 ];
 
 export const demoEncounterTable: EncounterTable = {

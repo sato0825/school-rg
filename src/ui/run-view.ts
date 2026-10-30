@@ -22,7 +22,7 @@ function shell(title: string, body: string, art: BattleArt): string {
 }
 
 export function renderRunTitle(root: HTMLElement, art: BattleArt): void {
-  root.innerHTML = shell("放課後から始まる", `<section class="front-panel title-panel"><div class="front-copy"><span class="eyebrow">TYPE YOUR NEXT MOVE</span><h2>放課後を、打ち抜く。</h2><p>カード名を入力して行動する、学園タイピングローグライク。</p><div class="front-actions"><button type="button" data-action="open-clubs">ランを始める</button><button type="button" data-action="open-compendium">図鑑を見る</button></div><p class="front-note">現在は文芸部の検証用コンテンツを公開中です。5部活の固有デッキは制作中です。</p></div><img class="front-hero" src="${html(art.heroUrl)}" alt="文芸部の生徒" /></section>`, art);
+  root.innerHTML = shell("放課後から始まる", `<section class="front-panel title-panel"><div class="front-copy"><span class="eyebrow">TYPE YOUR NEXT MOVE</span><h2>放課後を、打ち抜く。</h2><p>カード名を入力して行動する、学園タイピングローグライク。</p><div class="front-actions"><button type="button" data-action="open-clubs">ランを始める</button><button type="button" data-action="open-compendium">図鑑を見る</button></div><p class="front-note">現在は文芸部・科学部の検証用デッキを公開中です。残りの部活と正式なアートは制作中です。</p></div><img class="front-hero" src="${html(art.heroUrl)}" alt="文芸部の生徒" /></section>`, art);
 }
 
 export function renderClubSelect(root: HTMLElement, content: ContentRegistry, art: BattleArt, progression: Progression, selectedLevels: Readonly<Record<string, number>>, loadError: boolean): void {
