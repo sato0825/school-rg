@@ -270,11 +270,21 @@ test("candidate pose preview follows enemy damage and typed activation", async (
   await expect.poll(decoded).toBeGreaterThan(0);
   await page.clock.runFor(420);
   await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v1/);
+  await page.clock.runFor(730);
+  await page.keyboard.press("z");
+  const idlePhase = await hero.evaluate((image) => ({ delay: Number.parseFloat(getComputedStyle(image).animationDelay) * 1_000, now: Math.floor(performance.now()) }));
+  expect(Math.abs(idlePhase.delay + idlePhase.now % 3_100)).toBeLessThan(100);
   const word = await page.locator(".card-word").first().innerText();
   await page.keyboard.type(word);
   await expect(hero).toHaveAttribute("src", /serious-student-activate-candidate-v1/);
   await expect.poll(decoded).toBeGreaterThan(0);
-  await page.clock.runFor(380);
+  await page.clock.runFor(170);
+  await page.keyboard.press("z");
+  await expect(hero).toHaveClass(/act/);
+  const actionDelay = await hero.evaluate((image) => Number.parseFloat(getComputedStyle(image).animationDelay) * 1_000);
+  expect(actionDelay).toBeLessThan(-100);
+  expect(actionDelay).toBeGreaterThan(-380);
+  await page.clock.runFor(210);
   await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v1/);
   await page.setViewportSize({ width: 390, height: 844 });
   const [stage, controls, heroBox] = await Promise.all([
