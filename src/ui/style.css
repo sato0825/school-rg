@@ -1,0 +1,35 @@
+:root {
+  font-family: system-ui, "Hiragino Kaku Gothic ProN", sans-serif;
+  color: #24313a;
+  background: #f6f1e8;
+}
+
+body {
+  margin: 0;
+}
+
+.intro {
+  box-sizing: border-box;
+  max-width: 46rem;
+  min-height: 100vh;
+  padding: clamp(2rem, 8vw, 6rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.eyebrow {
+  color: #a5564d;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+h1 {
+  line-height: 1.2;
+}
+
+.status {
+  font-size: 0.875rem;
+  color: #526168;
+}
