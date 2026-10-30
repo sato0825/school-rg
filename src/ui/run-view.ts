@@ -3,6 +3,7 @@ import { activeEvent, availableEventChoices } from "../domain/events.js";
 import type { ContentRegistry, MapNode } from "../domain/schema.js";
 import { describeCard } from "./battle-view.js";
 import type { BattleArt } from "./battle-view.js";
+import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
 
 const kindNames: Record<MapNode["kind"], string> = {
   start: "開始", combat: "戦闘", elite: "強敵", event: "イベント", shop: "購買", rest: "休憩", treasure: "宝箱", boss: "ボス",
@@ -57,6 +58,19 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
     return `<button type="button" class="reward-card" data-action="reward-card" data-id="${card.id}"><small>${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span></button>`;
   }).join("");
   root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><p>選んだカードはこのランのデッキへ加わります。</p><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art);
+}
+
+export function renderRunTreasure(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, config: GameConfig = DEFAULT_GAME_CONFIG): void {
+  const treasure = session.run.treasure;
+  if (!treasure) throw new Error("treasure screen requires offers");
+  const full = session.run.potionIds.length >= requireSetting(config.potionSlots);
+  const offers = treasure.offers.map((offer) => {
+    const definition = offer.kind === "relic" ? content.relics.find((item) => item.id === offer.contentId) : content.potions.find((item) => item.id === offer.contentId);
+    if (!definition) throw new RangeError(`unknown treasure content: ${offer.contentId}`);
+    const disabled = offer.kind === "potion" && full;
+    return `<button type="button" class="reward-card treasure-offer" data-action="treasure-offer" data-id="${html(offer.offerId)}" ${disabled ? "disabled" : ""}><small>${offer.kind === "relic" ? "RELIC" : "POTION"}</small><strong>${html(definition.name)}</strong><span>${offer.kind === "potion" ? `入力語 ${html(content.potions.find((item) => item.id === offer.contentId)!.input.text)}` : "ラン中に効果を発揮"}</span>${disabled ? "<b>所持枠が満杯</b>" : ""}</button>`;
+  }).join("");
+  root.innerHTML = shell("宝箱", `<section class="reward-panel treasure-panel"><span class="eyebrow">FOUND ITEM</span><h2>宝箱から1つ選ぶ</h2><p>ポーション ${session.run.potionIds.length}/${requireSetting(config.potionSlots)} · レリック ${session.run.relicIds.length}個</p><div class="reward-options">${offers}</div><button type="button" class="skip-reward" data-action="skip-treasure">何も取らず進む</button></section>`, art);
 }
 
 export function renderRunShop(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, message: string): void {
