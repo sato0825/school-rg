@@ -6,5 +6,6 @@ export const demoBattleArt: BattleArt = {
   heroUrl: new URL("../assets/girl-notebook-v1.png", import.meta.url).href,
   enemyUrlById: {
     "paper-heap": new URL("../assets/enemy-paper-v1.png", import.meta.url).href,
+    "final-exam": new URL("../assets/enemy-paper-v1.png", import.meta.url).href,
   },
 };
