@@ -108,7 +108,7 @@ test("a defeated run reaches its result and returns to the title by keyboard", a
   await page.clock.install();
   await startDemoRun(page);
   await enterNextNode(page);
-  for (let turn = 0; turn < 25 && !(await page.locator(".run-result").count()); turn++) await page.clock.runFor(11_000);
+  for (let turn = 0; turn < 30 && !(await page.locator(".run-result").count()); turn++) await page.clock.runFor(11_000);
   await expect(page.getByRole("heading", { name: "敗北" })).toBeVisible();
   await page.getByRole("button", { name: "新しいランを始める" }).focus();
   await page.keyboard.press("Enter");
@@ -128,7 +128,7 @@ test("renders the combat HUD and accepts direct keyboard input", async ({ page }
   await page.keyboard.press("z");
   await expect(page.locator(".typing-buffer .placeholder")).toBeVisible();
   await page.keyboard.type("heavy strike");
-  await expect(page.locator(".enemy-hud")).toContainText("12/26");
+  await expect(page.locator(".enemy-hud")).toContainText("10/24");
   await expect(page.locator(".card")).toHaveCount(4);
 });
 
@@ -210,10 +210,10 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await page.clock.install();
   await startDemoRun(page);
   await enterNextNode(page);
-  await expect(page.locator(".intent-ticket")).toContainText("飛び散る答案");
+  await expect(page.locator(".intent-ticket")).toContainText("焦りを誘う");
   await page.keyboard.type("heavy strike");
   await page.keyboard.type("strike");
-  await expect(page.locator(".enemy-hud")).toContainText("6/26");
+  await expect(page.locator(".enemy-hud")).toContainText("4/24");
   await page.getByRole("button", { name: "一時停止" }).click();
   const pausedTime = await page.locator("[data-role=time]").innerText();
   await page.locator(".enemy-slot").click();
@@ -223,12 +223,11 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await page.getByRole("button", { name: "再開" }).click();
   await page.clock.runFor(11_000);
   await expect(page.locator(".run-meta")).toContainText("TURN 2");
-  await expect(page.locator(".player-hud")).toContainText("36/40");
+  await expect(page.locator(".player-hud")).toContainText("40/40");
   await expect(page.locator(".relic-row")).toContainText("図書室のしおり");
   await expect(page.locator(".pile-counts")).toContainText("捨て札 5");
-  await expect(page.locator(".intent-ticket")).toContainText("机を積む");
+  await expect(page.locator(".intent-ticket")).toContainText("遅刻札を投げる");
   await page.keyboard.type("sweep");
-  await page.keyboard.type("strike");
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
 });
 
@@ -335,6 +334,7 @@ test("candidate pose preview follows enemy damage and typed activation", async (
   await expect(page.locator(".art-preview-label")).toContainText("未採用");
   await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v1/);
   await expect.poll(decoded).toBeGreaterThan(0);
+  await page.clock.runFor(10_000);
   await page.clock.runFor(10_000);
   await page.clock.runFor(650);
   await expect(hero).toHaveAttribute("src", /serious-student-hit-candidate-v1/);

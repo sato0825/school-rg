@@ -18,6 +18,12 @@ export const demoBattleArt: BattleArt = {
     "night-announcement": placeholderEnemyUrl,
     "lost-and-found": placeholderEnemyUrl,
     "closing-bell": placeholderEnemyUrl,
+    "late-pass": placeholderEnemyUrl,
+    "notice-board": placeholderEnemyUrl,
+    "safety-sign": placeholderEnemyUrl,
+    "stairwell-echo": placeholderEnemyUrl,
+    "window-shadow": placeholderEnemyUrl,
+    "night-locker": placeholderEnemyUrl,
   },
 };
 
