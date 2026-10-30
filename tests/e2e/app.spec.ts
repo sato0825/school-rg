@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import { demoContent, demoEnemyAi } from "../../src/content/demo-battle.js";
+import { createRunSession, enterRunNode, type EncounterPool } from "../../src/domain/run-flow.js";
+import { serializeRunSession } from "../../src/domain/save.js";
+import type { MapNode } from "../../src/domain/schema.js";
 
 async function startDemoRun(page: import("@playwright/test").Page): Promise<void> {
   await page.goto("/?shortRun=1&seed=42");
@@ -262,6 +266,34 @@ test("an elite formation accepts a typed single target and an all-enemy attack",
   await typeThroughBattle(page);
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
 });
+
+for (const [act, kind, enemyId, name] of [
+  [1, "combat", "late-pass", "遅刻札の影"],
+  [1, "elite", "notice-board", "動く掲示板"],
+  [2, "combat", "safety-sign", "理科室の安全標識"],
+  [2, "elite", "stairwell-echo", "階段の反響"],
+  [3, "combat", "window-shadow", "夜窓の影"],
+  [3, "elite", "night-locker", "夜のロッカー"],
+] as const) {
+  test(`Act ${act} ${kind} ${name} shows its Intent and can be defeated by typing`, async ({ page }) => {
+    await page.clock.install();
+    const start = createRunSession(42, "literature-demo", demoContent);
+    const from: MapNode = { id: "test-start", act, floor: 0, kind: "start", nextIds: ["test-fight"] };
+    const fight: MapNode = { id: "test-fight", act, floor: 1, kind, nextIds: [] };
+    const session = { ...start, run: { ...start.run, act, map: { currentNodeId: from.id, nodes: [from, fight] } }, completedNodeIds: [from.id] };
+    const pool: EncounterPool = { combat: [enemyId], elite: [enemyId], boss: ["final-exam"] };
+    const entered = enterRunNode(session, fight.id, demoContent, demoEnemyAi, pool);
+    const saved = serializeRunSession(entered, demoContent, { nowMs: () => 0 }, () => "discard");
+    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await page.goto("/");
+    await expect(page.locator(".enemy-hud")).toContainText(name);
+    const intentId = entered.run.combat!.enemies[0]!.intentId;
+    const label = demoContent.intents.find((item) => item.id === intentId)!.label;
+    await expect(page.locator(".intent-ticket")).toContainText(label);
+    await typeThroughBattle(page);
+    await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
+  });
+}
 
 test("a potion is typed in its own mode and consumed after extending the active turn", async ({ page }) => {
   await page.clock.install();
