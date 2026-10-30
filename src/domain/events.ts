@@ -1,4 +1,6 @@
 import { randomInt } from "./random.js";
+import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "./config.js";
+import { collectPotion } from "./potions.js";
 import { acquireRelic } from "./relic-hooks.js";
 import type { ContentRegistry, EventChoice, EventCondition, EventDefinition, RunState } from "./schema.js";
 
@@ -9,19 +11,20 @@ function nextDeckInstanceId(run: RunState): string {
   return `deck-${index}`;
 }
 
-export function eventConditionMet(run: RunState, condition: EventCondition): boolean {
+export function eventConditionMet(run: RunState, condition: EventCondition, config: GameConfig = DEFAULT_GAME_CONFIG): boolean {
   switch (condition.kind) {
     case "gold_at_least": return run.gold >= condition.amount;
     case "hp_at_most_percent": return run.player.hp * 100 <= run.player.maxHp * condition.percent;
     case "has_card": return run.deck.some((card) => card.cardId === condition.cardId);
+    case "potion_slot_available": return run.potionIds.length < requireSetting(config.potionSlots);
   }
 }
 
-export function availableEventChoices(run: RunState, content: ContentRegistry): { choice: EventChoice; available: boolean }[] {
+export function availableEventChoices(run: RunState, content: ContentRegistry, config: GameConfig = DEFAULT_GAME_CONFIG): { choice: EventChoice; available: boolean }[] {
   if (!run.event) throw new Error("no active event");
   const definition = content.events.find((event) => event.id === run.event!.eventId);
   if (!definition) throw new RangeError(`unknown event: ${run.event.eventId}`);
-  return definition.choices.map((choice) => ({ choice, available: choice.requires.every((condition) => eventConditionMet(run, condition)) }));
+  return definition.choices.map((choice) => ({ choice, available: choice.requires.every((condition) => eventConditionMet(run, condition, config)) }));
 }
 
 export function openRandomEvent(run: RunState, content: ContentRegistry): RunState {
@@ -41,11 +44,11 @@ export function activeEvent(run: RunState, content: ContentRegistry): EventDefin
 }
 
 /** Applies noncombat effects in order; a final battle effect is returned for the run layer. */
-export function resolveEventChoice(run: RunState, choiceId: string, content: ContentRegistry): { run: RunState; battleEnemyId: string | null } {
+export function resolveEventChoice(run: RunState, choiceId: string, content: ContentRegistry, config: GameConfig = DEFAULT_GAME_CONFIG): { run: RunState; battleEnemyId: string | null } {
   if (!run.event || run.event.choiceId || run.event.pendingCombat || run.combat) throw new Error("event choice is not pending");
   const choice = activeEvent(run, content).choices.find((item) => item.id === choiceId);
   if (!choice) throw new RangeError(`unknown event choice: ${choiceId}`);
-  if (!choice.requires.every((condition) => eventConditionMet(run, condition))) throw new RangeError(`event choice conditions are not met: ${choiceId}`);
+  if (!choice.requires.every((condition) => eventConditionMet(run, condition, config))) throw new RangeError(`event choice conditions are not met: ${choiceId}`);
   let current = run;
   let battleEnemyId: string | null = null;
   for (const effect of choice.effects) {
@@ -69,6 +72,10 @@ export function resolveEventChoice(run: RunState, choiceId: string, content: Con
       }
       case "add_relic": {
         current = acquireRelic(current, effect.relicId, content);
+        break;
+      }
+      case "add_potion": {
+        current = collectPotion(current, effect.potionId, content, config);
         break;
       }
       case "battle": {

@@ -13,6 +13,8 @@ export type BattleView = {
   selectedDiscardId: string | null;
   selectedDebuff: string | null;
   motion: "hero" | "enemy" | null;
+  potionModeKey: string;
+  potionSlotLimit: number;
 };
 
 function html(value: string): string {
@@ -52,6 +54,10 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     return { instanceId, card: content.cards.find((card) => card.id === instance.cardId)! };
   });
   const selected = combat.typing.selectedCardInstanceId;
+  const potionControl = combat.potionControl;
+  const potionActive = potionControl?.active ?? false;
+  const selectedPotionId = potionControl?.typing.selectedCardInstanceId;
+  const potionTargetHint = selectedPotionId && run.potionIds[Number(selectedPotionId.slice(7))] && content.potions.find((potion) => potion.id === run.potionIds[Number(selectedPotionId.slice(7))])?.target === "enemy" && !potionControl?.typing.targetEnemyInstanceId ? "対象の敵を選択" : null;
   const pendingHandTarget = selected && hand.find((entry) => entry.instanceId === selected)?.card.target === "hand";
   const pendingEnemyTarget = selected && hand.find((entry) => entry.instanceId === selected)?.card.target === "enemy" && !combat.typing.targetEnemyInstanceId && combat.enemies.filter((enemy) => enemy.hp > 0).length > 1;
   const typingHint = pendingHandTarget ? "対象にする手札を選んでください" : combat.typing.buffer && combat.typing.candidateCardInstanceIds.length > 1 ? `候補 ${combat.typing.candidateCardInstanceIds.length}枚 · 使うカードを選択` : pendingEnemyTarget ? "攻撃対象の敵を選択" : "カード名を入力 · Escで取消";
@@ -65,7 +71,7 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     const intent = content.intents.find((item) => item.id === enemy.intentId);
     const intentEffect = content.effects.find((item) => item.id === intent?.effectIds[0]);
     const amount = intentEffect?.parameters.amount;
-    const targeted = combat.typing.targetEnemyInstanceId === enemy.instanceId;
+    const targeted = (potionActive ? potionControl!.typing.targetEnemyInstanceId : combat.typing.targetEnemyInstanceId) === enemy.instanceId;
     return `<button type="button" class="enemy-slot ${targeted ? "targeted" : ""}" data-action="enemy" data-id="${enemy.instanceId}" aria-pressed="${targeted}" aria-label="${html(definition?.name ?? "敵")}を対象に選ぶ${targeted ? "（選択中）" : ""}">
       <span class="intent-ticket"><small>INTENT</small><strong>${html(intent?.label ?? "行動")}</strong>${amount ? `<b>${amount}</b>` : ""}</span>
       <img class="enemy-art ${view.motion === "enemy" ? "act" : ""}" src="${html(view.art.enemyUrlById[enemy.enemyId] ?? "")}" alt="${html(definition?.name ?? "敵")}" />
@@ -77,6 +83,12 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     <span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-kind">${html(card.type.toUpperCase())}</span>
     <strong class="card-word">${wordMarkup(card.input.text, combat.typing.buffer)}</strong><span class="card-effect">${html(describeCard(card, content))}</span>
   </button>`).join("");
+  const potions = run.potionIds.map((potionId, index) => {
+    const potion = content.potions.find((item) => item.id === potionId)!;
+    const instanceId = `potion-${index}`;
+    const candidate = potionControl?.typing.candidateCardInstanceIds.includes(instanceId) ?? false;
+    return `<div class="potion-slot"><button type="button" class="potion ${potionActive && candidate ? "candidate" : ""} ${selectedPotionId === instanceId ? "selected" : ""}" data-action="potion" data-id="${instanceId}" aria-pressed="${selectedPotionId === instanceId}" aria-label="${html(potion.name)}、入力語 ${html(potion.input.text)}"><strong>${html(potion.name)}</strong><span>${wordMarkup(potion.input.text, potionActive ? potionControl!.typing.buffer : "")}</span></button><button type="button" class="potion-discard" data-action="discard-potion" data-id="${index}" aria-label="${html(potion.name)}を破棄">×</button></div>`;
+  }).join("");
   const discard = combat.discardPile.map((instanceId) => {
     const cardId = combat.cards.find((item) => item.instanceId === instanceId)?.cardId;
     const word = content.cards.find((card) => card.id === cardId)?.input.text ?? instanceId;
@@ -91,6 +103,7 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     <section class="stage" aria-label="戦闘ステージ" style="background-image:url('${html(view.art.stageUrl)}')"><div class="stage-vignette"></div><div class="ally-group"><div class="ally-slot"><img class="hero-art ${view.motion === "hero" ? "act" : ""}" src="${html(view.art.heroUrl)}" alt="${html(clubName)}の生徒" /><div class="hero-shadow"></div></div></div><div class="enemy-group">${enemies}</div><div class="player-hud"><span class="hud-name">${html(clubName)}</span><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><b>◇ ${run.player.block}</b><div class="status-row">${statusMarkup(combat.statuses.player)}</div><div class="relic-row" aria-label="レリック">${relicNames.map((name) => `<span class="relic-chip" title="${html(name)}">✦ ${html(name)}</span>`).join("")}</div></div></section>
     <section class="control-deck" aria-label="タイピング戦闘操作"><div class="time-row"><div class="time-label"><span>PLAYER INPUT</span><strong data-role="time" aria-label="残り時間 ${remaining}秒">${remaining}<small> sec</small></strong></div><div class="time-track"><div class="time-fill" data-role="time-fill" style="width:${timeRatio}%"></div></div><div class="pile-counts"><span>山札 ${combat.drawPile.length}</span><span>捨て札 ${combat.discardPile.length}</span><span>除外 ${combat.exhaustPile.length}</span></div></div>
       <div class="typing-row"><span class="typing-caption">TYPE A CARD NAME</span><div class="typing-buffer">${combat.typing.buffer ? html(combat.typing.buffer) : `<span class="placeholder">ここに入力が表示されます</span>`}<span class="caret"></span></div><span class="typing-hint" role="status">${typingHint}</span></div>
+      <div class="potion-row" aria-label="ポーション"><button type="button" class="potion-mode ${potionActive ? "active" : ""}" data-action="potion-mode" aria-pressed="${potionActive}">ポーション ${run.potionIds.length}/${view.potionSlotLimit} · 入力 ${html(view.potionModeKey)}</button><span class="potion-buffer" role="status">${potionTargetHint ?? (potionActive ? html(potionControl!.typing.buffer) || "入力待ち" : `${html(view.potionModeKey)} またはボタンで入力`)}</span>${potions || `<span class="shelf-empty">空き</span>`}</div>
       <div class="hand" aria-label="手札">${cards || `<p class="empty-hand">手札がありません。残り時間で敵の行動へ進みます。</p>`}</div>
       <div class="selection-shelf"><div><span class="shelf-label">捨て札から選択</span><div class="choice-list">${discard || `<span class="shelf-empty">なし</span>`}</div></div><div><span class="shelf-label">解除する状態</span><div class="choice-list">${debuffs || `<span class="shelf-empty">なし</span>`}</div></div></div><p class="battle-message" role="status" aria-live="polite">${html(view.message)}</p>
     </section>

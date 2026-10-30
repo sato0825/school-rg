@@ -16,6 +16,9 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "paper-guard", kind: "block", parameters: { amount: 4 } },
     { id: "exam-hit", kind: "damage", parameters: { amount: 7 } },
     { id: "exam-guard", kind: "block", parameters: { amount: 6 } },
+    { id: "potion-time-effect", kind: "add_time", parameters: { amountMs: 3_000 } },
+    { id: "potion-heal-effect", kind: "heal", parameters: { amount: 5 } },
+    { id: "potion-ink-effect", kind: "damage", parameters: { amount: 7 } },
   ],
   cards: baseCardDefinitions,
   intents: [
@@ -29,7 +32,11 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "final-exam", name: "追試の番人", maxHp: 38, intentIds: ["exam-intent-hit", "exam-intent-guard"] },
   ],
   relics: [{ id: "library-bookmark", name: "図書室のしおり", triggerIds: ["bookmark-acquired", "bookmark-turn", "bookmark-skill"], effectIds: [] }],
-  potions: [],
+  potions: [
+    { id: "potion-time", name: "時間の小瓶", input: { text: "clock", locale: "en" }, target: "self", effectIds: ["potion-time-effect"] },
+    { id: "potion-heal", name: "保健室の包帯", input: { text: "bandage", locale: "en" }, target: "self", effectIds: ["potion-heal-effect"] },
+    { id: "potion-ink", name: "インクの小瓶", input: { text: "ink", locale: "en" }, target: "enemy", effectIds: ["potion-ink-effect"] },
+  ],
   events: [
     {
       id: "after-school-board", title: "放課後の掲示板", description: "掲示物が風で散らばっている。手伝えば、部室の情報が手に入るかもしれない。",
@@ -37,6 +44,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
         { id: "help", label: "掲示物を整理する · 15G", requires: [], effects: [{ kind: "gold", amount: 15 }] },
         { id: "borrow", label: "資料を借りる · 10Gでdrawを追加", requires: [{ kind: "gold_at_least", amount: 10 }], effects: [{ kind: "gold", amount: -10 }, { kind: "add_card", cardId: "BASE-007" }] },
         { id: "fight", label: "散らかった答案に立ち向かう", requires: [], effects: [{ kind: "battle", enemyId: "paper-heap" }] },
+        { id: "ink", label: "インクの小瓶を拾って戦う", requires: [{ kind: "potion_slot_available" }], effects: [{ kind: "add_potion", potionId: "potion-ink" }, { kind: "battle", enemyId: "paper-heap" }] },
       ],
     },
     {
@@ -45,6 +53,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
         { id: "pass", label: "静かに通り過ぎる · 5G", requires: [], effects: [{ kind: "gold", amount: 5 }] },
         { id: "recover", label: "落ち着いて手当てする · HP4回復", requires: [{ kind: "hp_at_most_percent", percent: 50 }], effects: [{ kind: "hp", amount: 4 }] },
         { id: "bookmark", label: "しおりを見つける · レリックを取得", requires: [], effects: [{ kind: "add_relic", relicId: "library-bookmark" }] },
+        { id: "ink", label: "インクの小瓶を拾って戦う", requires: [{ kind: "potion_slot_available" }], effects: [{ kind: "add_potion", potionId: "potion-ink" }, { kind: "battle", enemyId: "paper-heap" }] },
         { id: "fight", label: "箱を開けて戦う", requires: [], effects: [{ kind: "battle", enemyId: "paper-heap" }] },
       ],
     },
@@ -54,6 +63,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     starterCardIds: ["BASE-001", "BASE-001", "BASE-002", "BASE-003", "BASE-007", "BASE-010", "BASE-011", "BASE-013", "BASE-017", "BASE-023"],
     cardPoolIds: baseCardDefinitions.map((card) => card.id),
     startingRelicId: "library-bookmark",
+    startingPotionIds: ["potion-time", "potion-heal"],
   }],
 });
 

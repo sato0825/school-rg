@@ -1,6 +1,7 @@
 import { selectEnemyIntent, type EnemyAiRegistry } from "./enemy-ai.js";
 import { awardEncounterGold, buyShopCard, closeShop, DEFAULT_ECONOMY_OPTIONS, healAtRest, openShop, removeShopCard, upgradeAtRest, type EconomyOptions } from "./economy.js";
 import { openRandomEvent, resolveEventChoice } from "./events.js";
+import { DEFAULT_GAME_CONFIG, type GameConfig } from "./config.js";
 import { availableNextNodes, generateRunMap, moveToConnectedNode, type MapGenerationOptions } from "./map-generation.js";
 import { randomInt, shuffle } from "./random.js";
 import type { CombatState, ContentRegistry, MapNode, RunState } from "./schema.js";
@@ -30,7 +31,7 @@ export function createRunSession(seed: number, clubId: string, content: ContentR
   const run = parseRunState({
     schemaVersion: 1, seed, rngState: map.rngState, clubId, act: 1,
     player: { hp: club.startingHp, maxHp: club.startingHp, block: 0 },
-    deck, relicIds: club.startingRelicId ? [club.startingRelicId] : [], potionIds: [], gold: economy.startingGold, shop: null, event: null,
+    deck, relicIds: club.startingRelicId ? [club.startingRelicId] : [], potionIds: club.startingPotionIds ?? [], gold: economy.startingGold, shop: null, event: null,
     map: { nodes: map.nodes, currentNodeId: map.currentNodeId }, combat: null,
   }, content);
   return { run, screen: "map", completedNodeIds: [map.currentNodeId], rewardCardIds: [] };
@@ -103,9 +104,9 @@ export function settleRunCombat(session: RunSession, content: ContentRegistry, e
   return { ...session, run: { ...rewardedRun, rngState: shuffled.state }, screen: "reward", rewardCardIds };
 }
 
-export function chooseRunEventChoice(session: RunSession, choiceId: string, content: ContentRegistry, ai: EnemyAiRegistry): RunSession {
+export function chooseRunEventChoice(session: RunSession, choiceId: string, content: ContentRegistry, ai: EnemyAiRegistry, config: GameConfig = DEFAULT_GAME_CONFIG): RunSession {
   if (session.screen !== "event") throw new Error("expected event screen");
-  const result = resolveEventChoice(session.run, choiceId, content);
+  const result = resolveEventChoice(session.run, choiceId, content, config);
   if (result.run.player.hp === 0) return { ...session, run: result.run, screen: "lost" };
   if (result.battleEnemyId) return { ...session, run: createEncounter(result.run, result.battleEnemyId, content, ai), screen: "combat" };
   const nodeId = result.run.map.currentNodeId;

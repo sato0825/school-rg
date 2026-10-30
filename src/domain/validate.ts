@@ -63,6 +63,7 @@ export function parseContentRegistry(value: unknown): ContentRegistry {
     club.starterCardIds.forEach((cardId, j) => known(cardId, cards, `clubs.${i}.starterCardIds.${j}`, issues));
     club.cardPoolIds.forEach((cardId, j) => known(cardId, cards, `clubs.${i}.cardPoolIds.${j}`, issues));
     if (club.startingRelicId) known(club.startingRelicId, relics, `clubs.${i}.startingRelicId`, issues);
+    club.startingPotionIds?.forEach((potionId, j) => known(potionId, new Set(content.potions.map((potion) => potion.id)), `clubs.${i}.startingPotionIds.${j}`, issues));
   });
   content.events.forEach((event, i) => {
     collectUnique(event.choices, `events.${i}.choices`, issues);
@@ -77,6 +78,7 @@ export function parseContentRegistry(value: unknown): ContentRegistry {
       choice.effects.forEach((effect, k) => {
         if (effect.kind === "add_card") known(effect.cardId, cards, `events.${i}.choices.${j}.effects.${k}.cardId`, issues);
         if (effect.kind === "add_relic") known(effect.relicId, relics, `events.${i}.choices.${j}.effects.${k}.relicId`, issues);
+        if (effect.kind === "add_potion") known(effect.potionId, new Set(content.potions.map((potion) => potion.id)), `events.${i}.choices.${j}.effects.${k}.potionId`, issues);
         if (effect.kind === "battle") known(effect.enemyId, new Set(content.enemies.map((enemy) => enemy.id)), `events.${i}.choices.${j}.effects.${k}.enemyId`, issues);
       });
     });

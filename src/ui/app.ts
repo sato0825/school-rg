@@ -9,6 +9,7 @@ import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, pausePlayerTurn, 
 import { demoContent, demoEncounterTable, demoEnemyAi } from "../content/demo-battle.js";
 import { demoRelicRules } from "../content/demo-battle.js";
 import { emitRelicEvent, type RelicEventKind, type RelicEvent } from "../domain/relic-hooks.js";
+import { discardPotion, selectPotionEnemy, selectPotionSlot, setPotionInputActive, submitPotionKey } from "../domain/potions.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { demoBattleArt } from "./demo-art.js";
 import { renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderSaveRecovery } from "./run-view.js";
@@ -29,7 +30,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (saved) session = deserializeRunSession(saved, demoContent, clock);
   } catch { restoreError = true; }
   let run: RunState = session.run;
-  const view: BattleView = { art: demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
+  const view: BattleView = { art: demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
   let enemyPending = false;
   let generation = 0;
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
@@ -132,9 +133,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
 
   function onKeyDown(event: KeyboardEvent): void {
     if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
-    if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape") event.preventDefault();
+    if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey)) event.preventDefault();
     try {
-      run = submitPlayerKey(run, { key: event.key, repeat: event.repeat, isComposing: event.isComposing }, clock, config, demoContent, useCard, disposition);
+      if (event.key === requireSetting(config.potionModeKey)) run = setPotionInputActive(run, !run.combat.potionControl?.active, clock, demoContent, disposition);
+      else if (run.combat.potionControl?.active) run = submitPotionKey(run, { key: event.key, repeat: event.repeat, isComposing: event.isComposing }, clock, config, demoContent, disposition);
+      else run = submitPlayerKey(run, { key: event.key, repeat: event.repeat, isComposing: event.isComposing }, clock, config, demoContent, useCard, disposition);
       settleIfFinished();
       render();
       enemyPhase();
@@ -166,7 +169,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (session.screen === "event" && action === "event-choice") {
         const relicCount = run.relicIds.length;
-        session = chooseRunEventChoice(session, id, demoContent, demoEnemyAi);
+        session = chooseRunEventChoice(session, id, demoContent, demoEnemyAi, config);
         run = session.run;
         for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
         if (session.screen === "combat") startCombat();
@@ -189,14 +192,26 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         return;
       }
       if (session.screen !== "combat") return;
-      if (action === "pause" && run.combat?.phase === "PLAYER_INPUT") {
+      if (action === "potion-mode" && run.combat?.phase === "PLAYER_INPUT") {
+        run = setPotionInputActive(run, !run.combat.potionControl?.active, clock, demoContent, disposition);
+      } else if (action === "discard-potion" && run.combat?.phase === "PLAYER_INPUT") {
+        run = tickPlayerTurn(run, clock, disposition);
+        if (run.combat?.phase === "PLAYER_INPUT") run = discardPotion(run, Number(id));
+      } else if (action === "potion" && run.combat?.phase === "PLAYER_INPUT") {
+        run = run.combat.potionControl?.active && run.combat.potionControl.typing.buffer
+          ? selectPotionSlot(run, id, clock, config, demoContent, disposition)
+          : setPotionInputActive(run, true, clock, demoContent, disposition);
+      } else if (action === "pause" && run.combat?.phase === "PLAYER_INPUT") {
         run = run.combat.clock.paused ? resumePlayerTurn(run, clock) : pausePlayerTurn(run, clock, disposition);
         view.message = run.combat?.clock.paused ? "一時停止中です。" : "入力を再開しました。";
       } else if (run.combat?.clock.paused) {
         return;
       } else if (run.combat?.phase === "PLAYER_INPUT" && action === "enemy") {
-        run = selectTypedEnemyTarget(run, id, clock, config, demoContent, useCard, disposition);
+        run = run.combat.potionControl?.active
+          ? selectPotionEnemy(run, id, clock, config, demoContent, disposition)
+          : selectTypedEnemyTarget(run, id, clock, config, demoContent, useCard, disposition);
       } else if (run.combat?.phase === "PLAYER_INPUT" && action === "card") {
+        if (run.combat.potionControl?.active) return;
         const selectedId = run.combat.typing.selectedCardInstanceId;
         const selectedCardId = run.combat.cards.find((item) => item.instanceId === selectedId)?.cardId;
         const selectedCard = demoContent.cards.find((item) => item.id === selectedCardId);
