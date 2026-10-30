@@ -1,11 +1,13 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mountApp } from "../../src/ui/app.js";
 
 describe("run and typing combat HUD", () => {
   beforeEach(() => {
     document.body.innerHTML = '<div id="app"></div>';
+    window.history.replaceState(null, "", "/?seed=42");
   });
+  afterEach(() => window.history.replaceState(null, "", "/"));
 
   it("shows combat state and ignores a wrong key", () => {
     const root = document.querySelector<HTMLElement>("#app");
