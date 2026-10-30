@@ -1,4 +1,5 @@
 import { availableRunNodes, type RunSession } from "../domain/run-flow.js";
+import { activeEvent, availableEventChoices } from "../domain/events.js";
 import type { ContentRegistry, MapNode } from "../domain/schema.js";
 import { describeCard } from "./battle-view.js";
 import type { BattleArt } from "./battle-view.js";
@@ -61,6 +62,12 @@ export function renderRunRest(root: HTMLElement, session: RunSession, content: C
     return `<button type="button" class="mini-choice" data-action="rest-upgrade" data-id="${instance.instanceId}">${html(card.input.text)}</button>`;
   }).join("");
   root.innerHTML = shell("休憩", `<section class="reward-panel economy-panel"><span class="eyebrow">REST STOP</span><h2>休憩</h2><p>回復するか、デッキのカードを1枚強化します。</p><div class="rest-actions"><button type="button" class="skip-reward" data-action="rest-heal">休んで回復 · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</button><div class="economy-section"><h3>強化するカード</h3><div class="choice-list">${choices || "強化可能なカードなし"}</div></div></div></section>`, art);
+}
+
+export function renderRunEvent(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
+  const event = activeEvent(session.run, content);
+  const choices = availableEventChoices(session.run, content).map(({ choice, available }) => `<button type="button" class="event-choice" data-action="event-choice" data-id="${choice.id}" ${available ? "" : "disabled"}>${html(choice.label)}${available ? "" : " · 条件未達"}</button>`).join("");
+  root.innerHTML = shell("校内イベント", `<section class="reward-panel event-panel"><span class="eyebrow">AFTER SCHOOL</span><h2>${html(event.title)}</h2><p>${html(event.description)}</p><div class="event-choices">${choices}</div><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art);
 }
 
 export function renderRunResult(root: HTMLElement, session: RunSession, art: BattleArt): void {

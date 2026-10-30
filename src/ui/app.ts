@@ -2,19 +2,19 @@ import { useCardEffects } from "../domain/card-effects.js";
 import { DEFAULT_GAME_CONFIG, requireSetting } from "../domain/config.js";
 import { resolveEnemyIntents } from "../domain/enemy-ai.js";
 import { executeEnemyIntentEffects } from "../domain/enemy-intent-effects.js";
-import { buyRunShopCard, chooseRunReward, createRunSession, enterRunNode, leaveRunShop, removeRunShopCard, settleRunCombat, useRunRest } from "../domain/run-flow.js";
+import { buyRunShopCard, chooseRunEventChoice, chooseRunReward, createRunSession, enterRunNode, leaveRunShop, removeRunShopCard, settleRunCombat, useRunRest } from "../domain/run-flow.js";
 import type { MapGenerationOptions } from "../domain/map-generation.js";
 import type { RunState } from "../domain/schema.js";
 import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, pausePlayerTurn, resumePlayerTurn, selectTypedCard, selectTypedEnemyTarget, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../domain/turn-state.js";
 import { demoContent, demoEncounterTable, demoEnemyAi } from "../content/demo-battle.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { demoBattleArt } from "./demo-art.js";
-import { renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop } from "./run-view.js";
+import { renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop } from "./run-view.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = () => "discard" as const;
 /** The visible run is a compact provisional Act with battle, shop and rest routes. */
-const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 3, elite: 0, event: 0, shop: 1, rest: 1, treasure: 0 } };
+const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 3, elite: 0, event: 1, shop: 1, rest: 1, treasure: 0 } };
 
 export function mountApp(root: HTMLElement): () => void {
   let session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
@@ -28,6 +28,7 @@ export function mountApp(root: HTMLElement): () => void {
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
     else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message);
     else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt);
+    else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt);
     else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt);
     else renderBattle(root, run, demoContent, view);
   };
@@ -129,6 +130,14 @@ export function mountApp(root: HTMLElement): () => void {
       if (session.screen === "reward" && (action === "reward-card" || action === "skip-reward")) {
         session = chooseRunReward(session, action === "skip-reward" ? null : id);
         run = session.run;
+        render();
+        return;
+      }
+      if (session.screen === "event" && action === "event-choice") {
+        session = chooseRunEventChoice(session, id, demoContent, demoEnemyAi);
+        run = session.run;
+        if (session.screen === "combat") run = beginPlayerTurn(run, clock, config, demoContent);
+        view.message = "カード名をタイプして発動。誤入力は無視されます。";
         render();
         return;
       }
