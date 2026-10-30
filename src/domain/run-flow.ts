@@ -8,6 +8,7 @@ import type { CombatState, ContentRegistry, MapNode, RunState } from "./schema.j
 import { createTypingState } from "./typing.js";
 import { parseRunState } from "./validate.js";
 import { claimTreasure, leaveTreasure, openTreasure, type TreasureOptions, DEFAULT_TREASURE_OPTIONS } from "./treasure.js";
+import { ascensionEnemyHp, ascensionStartingHp, assertAscensionLevel } from "./ascension.js";
 
 export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "treasure" | "won" | "lost";
 export type EncounterTable = Readonly<Record<"combat" | "elite" | "boss", readonly string[]>>;
@@ -24,14 +25,15 @@ function currentNode(run: RunState): MapNode {
   return node;
 }
 
-export function createRunSession(seed: number, clubId: string, content: ContentRegistry, mapOptions?: MapGenerationOptions, economy: EconomyOptions = DEFAULT_ECONOMY_OPTIONS): RunSession {
+export function createRunSession(seed: number, clubId: string, content: ContentRegistry, mapOptions?: MapGenerationOptions, economy: EconomyOptions = DEFAULT_ECONOMY_OPTIONS, ascensionLevel = 0): RunSession {
   const club = content.clubs.find((item) => item.id === clubId);
   if (!club) throw new RangeError(`unknown club: ${clubId}`);
+  assertAscensionLevel(ascensionLevel);
   const map = generateRunMap(seed, mapOptions);
   const deck = club.starterCardIds.map((cardId, index) => ({ instanceId: `deck-${index + 1}`, cardId, upgraded: false }));
   const run = parseRunState({
-    schemaVersion: 1, seed, rngState: map.rngState, clubId, act: 1,
-    player: { hp: club.startingHp, maxHp: club.startingHp, block: 0 },
+    schemaVersion: 1, seed, rngState: map.rngState, clubId, act: 1, ascensionLevel,
+    player: { hp: ascensionStartingHp(club.startingHp, ascensionLevel), maxHp: ascensionStartingHp(club.startingHp, ascensionLevel), block: 0 },
     deck, relicIds: club.startingRelicId ? [club.startingRelicId] : [], potionIds: club.startingPotionIds ?? [], gold: economy.startingGold, shop: null, event: null, treasure: null,
     map: { nodes: map.nodes, currentNodeId: map.currentNodeId }, combat: null,
   }, content);
@@ -52,7 +54,7 @@ function createEncounter(run: RunState, enemyId: string, content: ContentRegistr
   const combat: CombatState = {
     phase: "PLAYER_START", turn: 1, cards, drawPile: shuffled.items,
     hand: [], discardPile: [], exhaustPile: [], resolvingPile: [],
-    enemies: [{ instanceId: enemyInstanceId, enemyId, hp: definition.maxHp, maxHp: definition.maxHp, block: 0, intentId: definition.intentIds[0]!, intentHistoryIds: [] }],
+    enemies: [{ instanceId: enemyInstanceId, enemyId, hp: ascensionEnemyHp(definition.maxHp, run.ascensionLevel), maxHp: ascensionEnemyHp(definition.maxHp, run.ascensionLevel), block: 0, intentId: definition.intentIds[0]!, intentHistoryIds: [] }],
     typing: createTypingState([]), clock: { remainingMs: 0, lastEventAtMs: 0, paused: false }, nextTurnBonusMs: 0,
     statuses: { player: {}, enemies: {} },
   };

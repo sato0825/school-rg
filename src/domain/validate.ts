@@ -4,6 +4,7 @@ import {
   type ContentRegistry,
   type RunState,
 } from "./schema.js";
+import { assertAscensionLevel } from "./ascension.js";
 
 export type ValidationIssue = {
   code: "SCHEMA_INVALID" | "DUPLICATE_ID" | "UNKNOWN_REFERENCE" | "INVALID_STATE";
@@ -92,6 +93,7 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
   // casting an arbitrary object to ContentRegistry.
   parseContentRegistry(content);
   const run = parse(RunStateSchema, value);
+  assertAscensionLevel(run.ascensionLevel);
   const issues: ValidationIssue[] = [];
   const cards = new Set(content.cards.map(({ id }) => id));
   const clubs = new Set(content.clubs.map(({ id }) => id));

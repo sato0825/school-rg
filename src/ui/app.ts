@@ -14,15 +14,23 @@ import { renderBattle, type BattleView } from "./battle-view.js";
 import { demoBattleArt } from "./demo-art.js";
 import { renderClubSelect, renderCompendium, renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
-import { browserSaveStore, type SaveStore } from "./save-store.js";
+import { browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
+import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, MAX_ASCENSION_LEVEL } from "../domain/ascension.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = () => "discard" as const;
 /** The visible run is a compact provisional Act with all implemented node kinds. */
 const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 2, treasure: 2 } };
 
-export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore()): () => void {
+export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(), progressStore: SaveStore = browserProgressStore()): () => void {
   const clock = { nowMs: () => Math.floor(performance.now()) };
+  let progression = emptyProgression();
+  let progressionLoadError = false;
+  try {
+    const savedProgression = progressStore.read();
+    if (savedProgression) progression = parseProgression(JSON.parse(savedProgression), demoContent);
+  } catch { progressionLoadError = true; }
+  const selectedAscensionLevels: Record<string, number> = {};
   let session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
   let frontScreen: "title" | "clubs" | "compendium" | null = "title";
   let frontReturn: "title" | null = "title";
@@ -50,7 +58,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   const render = () => {
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
     else if (frontScreen === "title") renderRunTitle(root, demoBattleArt);
-    else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt);
+    else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError);
     else if (frontScreen === "compendium") renderCompendium(root, demoContent, demoBattleArt);
     else if (session.screen === "map") renderRunMap(root, session, demoBattleArt);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
@@ -68,6 +76,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     run = fireRelic(run, "combat_end");
     session = settleRunCombat({ ...session, run }, demoContent);
     run = session.run;
+    if (session.screen === "won" && !progressionLoadError) {
+      progression = unlockAfterVictory(progression, session);
+      try { progressStore.write(JSON.stringify(progression)); }
+      catch { view.message = "難度の解放を保存できませんでした。"; }
+    }
   }
 
   const useCard = (state: RunState, instanceId: string, targetEnemyInstanceId: string | null, targetHandInstanceId: string | null): RunState => {
@@ -164,8 +177,17 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     try {
       if (action === "new-run" || action === "restart") { restart(); return; }
       if (action === "open-clubs" && frontScreen === "title") { frontScreen = "clubs"; render(); return; }
+      if (action === "ascension-level" && frontScreen === "clubs") {
+        const [clubId, rawLevel] = id.split(":");
+        const level = Number(rawLevel);
+        if (!clubId || !demoContent.clubs.some((club) => club.id === clubId) || !Number.isSafeInteger(level) || level < 0 || level > Math.min(MAX_ASCENSION_LEVEL, unlockedLevel(progression, clubId))) return;
+        selectedAscensionLevels[clubId] = level;
+        render();
+        return;
+      }
       if (action === "choose-club" && frontScreen === "clubs") {
-        session = createRunSession(42, id, demoContent, demoMapOptions);
+        const level = Math.min(selectedAscensionLevels[id] ?? 0, unlockedLevel(progression, id));
+        session = createRunSession(42, id, demoContent, demoMapOptions, undefined, level);
         run = session.run;
         frontScreen = null;
         render();
