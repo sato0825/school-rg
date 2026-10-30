@@ -30,7 +30,7 @@ describe("typing turn state machine", () => {
   it("starts by drawing and lets a typed card win without waiting for timeout", () => {
     let now = 0;
     const source = { nowMs: () => now };
-    let run = beginPlayerTurn(readyRun(), source, DEFAULT_GAME_CONFIG);
+    let run = beginPlayerTurn(readyRun(), source, DEFAULT_GAME_CONFIG, validContent);
     expect(run.combat!.phase).toBe("PLAYER_INPUT");
     expect(run.combat!.hand).toEqual(["combat-1"]);
     expect(run.combat!.clock.remainingMs).toBe(10_000);
@@ -53,7 +53,7 @@ describe("typing turn state machine", () => {
   it("expires the unused hand, executes enemy phase once, then starts the next turn", () => {
     let now = 0;
     const source = { nowMs: () => now };
-    let run = beginPlayerTurn(readyRun(), source, DEFAULT_GAME_CONFIG);
+    let run = beginPlayerTurn(readyRun(), source, DEFAULT_GAME_CONFIG, validContent);
     now = 10_100;
     run = tickPlayerTurn(run, source, discard);
     expect(run.combat!.phase).toBe("PLAYER_END");
@@ -72,14 +72,14 @@ describe("typing turn state machine", () => {
     expect(run.combat!.phase).toBe("PLAYER_START");
     expect(run.combat!.turn).toBe(2);
     now = 10_200;
-    run = beginPlayerTurn(run, source, DEFAULT_GAME_CONFIG);
+    run = beginPlayerTurn(run, source, DEFAULT_GAME_CONFIG, validContent);
     expect(run.combat!.hand).toEqual(["combat-1"]);
   });
 
   it("does not consume paused wall time and expires after resuming", () => {
     let now = 0;
     const source = { nowMs: () => now };
-    let run = beginPlayerTurn(readyRun(), source, DEFAULT_GAME_CONFIG);
+    let run = beginPlayerTurn(readyRun(), source, DEFAULT_GAME_CONFIG, validContent);
     now = 2_000;
     run = pausePlayerTurn(run, source, discard);
     expect(run.combat!.clock.remainingMs).toBe(8_000);
@@ -97,7 +97,7 @@ describe("typing turn state machine", () => {
     const content = structuredClone(validContent);
     content.cards[0]!.input.text = "s";
     const source = { nowMs: () => 10_000 };
-    const started = beginPlayerTurn(readyRun(), { nowMs: () => 0 }, DEFAULT_GAME_CONFIG);
+    const started = beginPlayerTurn(readyRun(), { nowMs: () => 0 }, DEFAULT_GAME_CONFIG, validContent);
     let used = 0;
     const useCard = (run: RunState, instanceId: string): RunState => {
       used++;
@@ -117,7 +117,7 @@ describe("typing turn state machine", () => {
   it("ends in loss when the enemy resolver defeats the player", () => {
     let now = 0;
     const source = { nowMs: () => now };
-    let run = beginPlayerTurn(readyRun(), source, DEFAULT_GAME_CONFIG);
+    let run = beginPlayerTurn(readyRun(), source, DEFAULT_GAME_CONFIG, validContent);
     now = 10_000;
     run = beginEnemyPhase(tickPlayerTurn(run, source, discard));
     run = completeEnemyPhase(run, (state) => ({ ...state, player: { ...state.player, hp: 0 } }));
