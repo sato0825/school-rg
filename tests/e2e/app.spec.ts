@@ -238,6 +238,19 @@ test("an elite formation accepts a typed single target and an all-enemy attack",
   await expect(page.locator(".enemy-slot")).toHaveCount(2);
   await expect(page.locator(".enemy-hud").nth(0)).toContainText("廊下の見回り");
   await expect(page.locator(".enemy-hud").nth(1)).toContainText("答案の切れ端");
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    for (const selector of [".enemy-slot", ".enemy-hud", ".intent-ticket"]) {
+      const boxes = await page.locator(selector).evaluateAll((nodes) => nodes.map((node) => {
+        const rect = node.getBoundingClientRect();
+        return { left: rect.left, right: rect.right, bottom: rect.bottom };
+      }));
+      expect(boxes[0]!.right).toBeLessThanOrEqual(boxes[1]!.left);
+      expect(boxes[1]!.right).toBeLessThanOrEqual(viewport.width + 1);
+      expect(boxes.every((box) => box.bottom <= page.viewportSize()!.height)).toBe(true);
+    }
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.keyboard.type("strike");
   await expect(page.locator(".typing-hint")).toContainText("攻撃対象の敵を選択");
   await page.locator(".enemy-slot").nth(1).click();

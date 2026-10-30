@@ -9,7 +9,7 @@ const allyPositions: Readonly<Record<number, readonly number[]>> = {
 const enemyPositions: Readonly<Record<number, readonly number[]>> = {
   0: [],
   1: [76],
-  2: [68, 85],
+  2: [62, 88],
   3: [62, 77, 92],
   4: [58, 69, 80, 91],
   5: [56, 65, 74, 83, 92],
