@@ -227,7 +227,7 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await expect(page.locator(".relic-row")).toContainText("図書室のしおり");
   await expect(page.locator(".pile-counts")).toContainText("捨て札 5");
   await expect(page.locator(".intent-ticket")).toContainText("遅刻札を投げる");
-  await page.keyboard.type("sweep");
+  await typeThroughBattle(page);
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
 });
 
