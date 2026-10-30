@@ -285,6 +285,46 @@ test("candidate pose preview follows enemy damage and typed activation", async (
   expect(heroBox!.x).toBeGreaterThanOrEqual(stage!.x);
 });
 
+test("one to three ally slots fit a shared stage at desktop and narrow widths", async ({ page }) => {
+  await page.addInitScript(() => localStorage.clear());
+  for (const count of [1, 2, 3]) {
+    await page.goto(count === 1 ? "/" : `/?layoutPreview=${count}`);
+    await page.getByRole("button", { name: "ランを始める" }).click();
+    await page.getByRole("button", { name: /文芸部/ }).click();
+    await enterNextNode(page);
+    await page.locator(".hero-art").evaluate(async (image) => (image as HTMLImageElement).decode());
+    await page.locator(".enemy-art").evaluate(async (image) => (image as HTMLImageElement).decode());
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+      const boxes = await page.evaluate(() => {
+        const rect = (selector: string) => Array.from(document.querySelectorAll(selector), (node) => node.getBoundingClientRect());
+        const stage = document.querySelector(".stage")!.getBoundingClientRect();
+        const previewLabel = document.querySelector(".layout-preview-label")?.getBoundingClientRect();
+        const playerHud = document.querySelector(".player-hud")!.getBoundingClientRect();
+        const intent = document.querySelector(".intent-ticket")!.getBoundingClientRect();
+        return { stage: { left: stage.left, right: stage.right, bottom: stage.bottom },
+          allies: rect(".ally-slot").map((box) => ({ left: box.left, right: box.right, bottom: box.bottom })),
+          enemies: rect(".enemy-slot").map((box) => ({ left: box.left, right: box.right, bottom: box.bottom })),
+          label: previewLabel && { left: previewLabel.left, right: previewLabel.right },
+          hudRight: playerHud.right, intentLeft: intent.left };
+      });
+      expect(boxes.allies).toHaveLength(count);
+      for (const box of [...boxes.allies, ...boxes.enemies]) {
+        expect(box.left).toBeGreaterThanOrEqual(boxes.stage.left - 1);
+        expect(box.right).toBeLessThanOrEqual(boxes.stage.right + 1);
+        expect(box.bottom).toBeLessThanOrEqual(boxes.stage.bottom + 1);
+      }
+      for (let index = 1; index < boxes.allies.length; index++) expect(boxes.allies[index - 1]!.right).toBeLessThanOrEqual(boxes.allies[index]!.left + 1);
+      expect(boxes.allies.at(-1)!.right).toBeLessThanOrEqual(boxes.enemies[0]!.left + 1);
+      if (count > 1) {
+        expect(boxes.label!.left).toBeGreaterThanOrEqual(boxes.hudRight - 1);
+        expect(boxes.label!.right).toBeLessThanOrEqual(boxes.intentLeft + 1);
+      }
+      await expect(page.locator(".control-deck")).toBeVisible();
+    }
+  }
+});
+
 test("a full Act can be finished through typed combat, rewards and a boss", async ({ page }) => {
   test.setTimeout(60_000);
   await page.clock.install();

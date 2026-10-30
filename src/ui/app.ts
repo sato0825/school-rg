@@ -44,6 +44,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let run: RunState = session.run;
   const params = new URLSearchParams(window.location.search);
   const previewArt = params.get("artPreview") === "1";
+  const layoutPreview = Number(params.get("layoutPreview"));
   const playtestEnabled = params.get("playtest") === "1";
   let metrics: PlaytestTracker | null = null;
   let metricsLoadError = false;
@@ -57,7 +58,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   const artPreloads = Object.values(view.art.heroPosesByClubId ?? {}).flatMap((poses) => Object.values(poses)).map((url) => {
     const image = new Image();
     image.src = url;
