@@ -186,12 +186,11 @@ test("art club types a distinct card and retains a frame through timeout", async
   await page.getByRole("button", { name: /美術部/ }).click();
   await enterNextNode(page);
   await expect(page.locator(".relic-row")).toContainText("ポケットスケッチ帳");
-  const words = await page.locator(".card-word").allTextContents();
-  const unique = ["sketch", "frame"].find((word) => words.includes(word));
-  expect(unique).toBeDefined();
-  await page.keyboard.type(unique!);
-  await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
-  for (let turn = 0; turn < 3 && !(await page.locator(".card-word").allTextContents()).includes("frame"); turn++) await page.clock.runFor(11_000);
+  for (let turn = 0; turn < 3 && !(await page.locator(".card-word").allTextContents()).includes("sketch"); turn++) await page.clock.runFor(11_000);
+  await expect(page.locator(".card-word").filter({ hasText: /^sketch$/ })).toHaveCount(1);
+  await page.keyboard.type("sketch");
+  await expect(page.locator(".battle-message")).toContainText("sketch を発動");
+  for (let turn = 0; turn < 5 && !(await page.locator(".card-word").allTextContents()).includes("frame"); turn++) await page.clock.runFor(11_000);
   const frame = page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: /^frame$/ }) });
   await expect(frame).toHaveCount(1);
   await page.clock.runFor(11_000);
