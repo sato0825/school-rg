@@ -39,3 +39,13 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await page.keyboard.type("strike");
   await expect(page.getByRole("dialog")).toContainText("勝利");
 });
+
+test("the combatants and controls remain visible on a narrow viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(page.locator(".hero-art")).toBeInViewport();
+  await expect(page.locator(".enemy-art")).toBeInViewport();
+  await expect(page.locator(".intent-ticket")).toBeInViewport();
+  await expect(page.getByRole("button", { name: "一時停止" })).toBeInViewport();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+});
