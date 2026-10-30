@@ -4,6 +4,7 @@ import { selectEnemyIntent, type EnemyAiRegistry } from "./enemy-ai.js";
 import { createEventQueue } from "./event-queue.js";
 import type { GameConfig } from "./config.js";
 import type { ContentRegistry, Intent, RunState } from "./schema.js";
+import { ascensionEnemyHp } from "./ascension.js";
 
 const nonNegative = z.number().int().nonnegative();
 const target = z.enum(["self", "player"]);
@@ -40,8 +41,8 @@ function summonEnemy(run: RunState, enemyId: string, ai: EnemyAiRegistry, conten
       enemies: [...run.combat!.enemies, {
         instanceId,
         enemyId,
-        hp: definition.maxHp,
-        maxHp: definition.maxHp,
+        hp: ascensionEnemyHp(definition.maxHp, run.ascensionLevel),
+        maxHp: ascensionEnemyHp(definition.maxHp, run.ascensionLevel),
         block: 0,
         intentId: definition.intentIds[0]!,
         intentHistoryIds: [],

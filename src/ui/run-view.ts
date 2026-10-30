@@ -4,6 +4,7 @@ import type { ContentRegistry, MapNode } from "../domain/schema.js";
 import { describeCard } from "./battle-view.js";
 import type { BattleArt } from "./battle-view.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
+import { ASCENSION_RULES, unlockedLevel, type Progression } from "../domain/ascension.js";
 
 const kindNames: Record<MapNode["kind"], string> = {
   start: "開始", combat: "戦闘", elite: "強敵", event: "イベント", shop: "購買", rest: "休憩", treasure: "宝箱", boss: "ボス",
@@ -24,9 +25,12 @@ export function renderRunTitle(root: HTMLElement, art: BattleArt): void {
   root.innerHTML = shell("放課後から始まる", `<section class="front-panel title-panel"><div class="front-copy"><span class="eyebrow">TYPE YOUR NEXT MOVE</span><h2>放課後を、打ち抜く。</h2><p>カード名を入力して行動する、学園タイピングローグライク。</p><div class="front-actions"><button type="button" data-action="open-clubs">ランを始める</button><button type="button" data-action="open-compendium">図鑑を見る</button></div><p class="front-note">現在は文芸部の検証用コンテンツを公開中です。5部活の固有デッキは制作中です。</p></div><img class="front-hero" src="${html(art.heroUrl)}" alt="文芸部の生徒" /></section>`, art);
 }
 
-export function renderClubSelect(root: HTMLElement, content: ContentRegistry, art: BattleArt): void {
-  const clubs = content.clubs.map((club) => `<button type="button" class="club-choice" data-action="choose-club" data-id="${html(club.id)}"><img src="${html(art.heroUrl)}" alt="" /><span><small>CLUB</small><strong>${html(club.name)}</strong><em>初期HP ${club.startingHp} · デッキ ${club.starterCardIds.length}枚</em></span></button>`).join("");
-  root.innerHTML = shell("部活を選ぶ", `<section class="front-panel club-panel"><span class="eyebrow">CHOOSE YOUR CLUB</span><h2>所属する部活を選ぶ</h2><p>部活ごとに初期デッキとカードプールが変わります。</p><div class="club-choices">${clubs}</div><button type="button" class="front-back" data-action="front-back">タイトルへ戻る</button></section>`, art);
+export function renderClubSelect(root: HTMLElement, content: ContentRegistry, art: BattleArt, progression: Progression, selectedLevel: number, loadError: boolean): void {
+  const club = content.clubs[0];
+  const unlocked = club ? unlockedLevel(progression, club.id) : 0;
+  const levels = [0, ...ASCENSION_RULES.map((rule) => rule.level)].map((level) => `<button type="button" class="ascension-choice" data-action="ascension-level" data-id="${level}" aria-pressed="${selectedLevel === level}" ${level > unlocked || loadError ? "disabled" : ""}>難度 ${level}${level === 0 ? " · 通常" : ` · ${html(ASCENSION_RULES[level - 1]!.label)}`}</button>`).join("");
+  const clubs = content.clubs.map((item) => `<button type="button" class="club-choice" data-action="choose-club" data-id="${html(item.id)}"><img src="${html(art.heroUrl)}" alt="" /><span><small>CLUB</small><strong>${html(item.name)}</strong><em>初期HP ${item.startingHp} · デッキ ${item.starterCardIds.length}枚 · 解放難度 ${unlockedLevel(progression, item.id)}</em></span></button>`).join("");
+  root.innerHTML = shell("部活を選ぶ", `<section class="front-panel club-panel"><span class="eyebrow">CHOOSE YOUR CLUB</span><h2>所属する部活を選ぶ</h2><p>部活ごとに初期デッキとカードプールが変わります。</p><div class="ascension-choices" aria-label="難度選択">${levels}</div><p>${loadError ? "解放状態を読めません。保存データを確認してください。" : "3 Actを完走すると、その部活の次の難度が解放されます。"}</p><div class="club-choices">${clubs}</div><button type="button" class="front-back" data-action="front-back">タイトルへ戻る</button></section>`, art);
 }
 
 export function renderCompendium(root: HTMLElement, content: ContentRegistry, art: BattleArt): void {

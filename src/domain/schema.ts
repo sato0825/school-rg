@@ -103,6 +103,7 @@ export const EnemyInstanceSchema = z.strictObject({
 export const MapNodeSchema = z.strictObject({
   id,
   act: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+  ascensionLevel: nonNegativeInt.default(0),
   floor: nonNegativeInt,
   kind: z.enum(["start", "combat", "elite", "event", "shop", "rest", "treasure", "boss"]),
   nextIds: z.array(id),
