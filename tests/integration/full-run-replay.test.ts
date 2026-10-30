@@ -6,8 +6,8 @@ import { parseRunState } from "../../src/domain/validate.js";
 
 const mapOptions = { floorsPerAct: 2, lanes: 3, kindWeights: { combat: 1, elite: 0, event: 0, shop: 0, rest: 0, treasure: 0 } };
 
-function replay(seed: number, reloadAtActTwo: boolean, ascensionLevel = 0): { session: RunSession; trace: string[] } {
-  let session = createRunSession(seed, "literature-demo", demoContent, mapOptions, undefined, ascensionLevel);
+function replay(seed: number, reloadAtActTwo: boolean, ascensionLevel = 0, clubId = "literature-demo"): { session: RunSession; trace: string[] } {
+  let session = createRunSession(seed, clubId, demoContent, mapOptions, undefined, ascensionLevel);
   const trace: string[] = [];
   let battles = 0;
   for (let step = 0; step < 20 && session.screen !== "won"; step++) {
@@ -51,5 +51,12 @@ describe("seeded full-run replay", () => {
     expect(original.session.run.player.maxHp).toBe(35);
     expect(original.session.run.ascensionLevel).toBe(2);
     expect(replay(142, true, 2)).toEqual(original);
+  });
+
+  it("reproduces a science run across all three Acts and save/load", () => {
+    const original = replay(142, false, 0, "science-demo");
+    expect(original.session.run.clubId).toBe("science-demo");
+    expect(replay(142, true, 0, "science-demo")).toEqual(original);
+    expect(replay(143, false, 0, "science-demo").trace).not.toEqual(original.trace);
   });
 });

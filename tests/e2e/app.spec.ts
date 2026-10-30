@@ -227,10 +227,7 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
   await expect(page.locator(".run-header")).toContainText("ACT 2 · 0F");
 });
 
-test("a seeded run clears all three Acts with typed combat", async ({ page }) => {
-  test.setTimeout(120_000);
-  await page.clock.install();
-  await startDemoRun(page);
+async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ battles: number; bosses: number }> {
   let battles = 0;
   let bosses = 0;
   for (let step = 0; step < 36 && !(await page.locator(".run-result").count()); step++) {
@@ -260,6 +257,14 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   expect(bosses).toBe(3);
   expect(battles).toBeGreaterThanOrEqual(3);
   await expect(page.locator(".run-header")).toContainText("全Act完走");
+  return { battles, bosses };
+}
+
+test("a seeded run clears all three Acts with typed combat", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.clock.install();
+  await startDemoRun(page);
+  await clearThreeActs(page);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["literature-demo"])).toBe(1);
   await page.getByRole("button", { name: "新しいランを始める" }).click();
   await page.getByRole("button", { name: "ランを始める" }).click();
@@ -270,6 +275,16 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await expect(page.locator(".map-stats")).toContainText("難度 1");
   await enterNextNode(page);
   await expect(page.locator(".enemy-hud")).toContainText("32/32");
+});
+
+test("science deck clears three Acts by typing and unlocks its own Ascension", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.clock.install();
+  await page.goto("/");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /科学部/ }).click();
+  await clearThreeActs(page);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["science-demo"])).toBe(1);
 });
 
 test("treasure offers survive reload and a focused choice completes its node", async ({ page }) => {
