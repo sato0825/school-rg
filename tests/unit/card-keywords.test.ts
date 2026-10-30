@@ -62,6 +62,9 @@ describe("card keyword lifecycle", () => {
     expect(opening.innateIds).toEqual(["c", "a"]);
     expect(opening.combat.drawPile).toEqual(["b", "d", "e"]);
     expect(opening.events).toEqual([{ instanceId: "c", kind: "innate" }, { instanceId: "a", kind: "innate" }]);
+    const cappedOpening = prepareOpeningHand(run.combat!, content, 1);
+    expect(cappedOpening.innateIds).toEqual(["c"]);
+    expect(cappedOpening.combat.drawPile).toEqual(["a", "b", "d", "e"]);
     const config = parseGameConfig({ ...DEFAULT_GAME_CONFIG, cardsDrawnPerTurn: { ...DEFAULT_GAME_CONFIG.cardsDrawnPerTurn, value: 3 } });
     const counted = beginPlayerTurn(run, { nowMs: () => 0 }, config, content);
     expect(counted.combat!.hand).toEqual(["c", "a", "e"]);

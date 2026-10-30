@@ -21,9 +21,14 @@ export function cardHasKeyword(combat: CombatState, content: ContentRegistry, in
 export function prepareOpeningHand(
   combat: CombatState,
   content: ContentRegistry,
+  maxHandSize: number | null = null,
 ): { combat: CombatState; innateIds: string[]; events: CardLifecycleEvent[] } {
   if (combat.turn !== 1 || combat.phase !== "PLAYER_START") throw new Error("Innate is prepared only at the first turn start");
-  const innateIds = [...combat.drawPile].reverse().filter((id) => cardHasKeyword(combat, content, id, "innate"));
+  if (maxHandSize !== null && (!Number.isSafeInteger(maxHandSize) || maxHandSize < 1 || combat.hand.length > maxHandSize)) {
+    throw new RangeError("invalid hand limit");
+  }
+  const innateIds = [...combat.drawPile].reverse().filter((id) => cardHasKeyword(combat, content, id, "innate"))
+    .slice(0, maxHandSize === null ? undefined : maxHandSize - combat.hand.length);
   if (innateIds.length === 0) return { combat, innateIds, events: [] };
   const innateSet = new Set(innateIds);
   const hand = [...combat.hand, ...innateIds];

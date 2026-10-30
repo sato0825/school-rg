@@ -60,7 +60,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = GameConfigSchema.parse({
   punctuationPolicy: { status: "provisional", value: "literal", source: typingIssue, ownerIssue: 5 },
   caseSensitiveInput: { status: "provisional", value: false, source: typingIssue, ownerIssue: 5 },
   sameNameCardPolicy: { status: "provisional", value: "select_instance", source: selectionIssue, ownerIssue: 6 },
-  handLimit: { status: "unresolved", value: null, source: designDoc, ownerIssue: 8 },
+  handLimit: { status: "provisional", value: 10, source: "https://github.com/sato0825/school-rg/issues/8", ownerIssue: 8 },
   timeCapMs: { status: "provisional", value: 30_000, source: "https://github.com/sato0825/school-rg/issues/11", ownerIssue: 11 },
   xRoundingPolicy: { status: "provisional", value: "floor", source: "https://github.com/sato0825/school-rg/issues/11", ownerIssue: 11 },
   clubNames: { status: "unresolved", value: null, source: designDoc, ownerIssue: 12 },
