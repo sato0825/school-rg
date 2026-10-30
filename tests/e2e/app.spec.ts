@@ -512,7 +512,6 @@ test("ordinary new runs draw independent seeds and reload preserves a run seed",
   expect(firstSeed).toBeGreaterThanOrEqual(0);
   expect(firstSeed).toBeLessThanOrEqual(0xffffffff);
   await page.reload();
-  await page.getByRole("button", { name: "再開" }).click();
   await expect(page.locator(".map-stats")).toContainText(`シード ${firstSeed}`);
 
   const otherContext = await browser.newContext();
