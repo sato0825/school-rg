@@ -166,7 +166,7 @@ test("unsupported save versions leave the stored data intact", async ({ page }) 
   const key = "school-rg-run-v1";
   const original = await page.evaluate((saveKey) => localStorage.getItem(saveKey), key);
   const unsupported = JSON.stringify({ formatVersion: 99, session: {} });
-  await page.addInitScript(([saveKey, data]) => localStorage.setItem(saveKey, data), [key, unsupported]);
+  await page.addInitScript(({ saveKey, data }) => localStorage.setItem(saveKey, data), { saveKey: key, data: unsupported });
   await page.reload();
   await expect(page.getByRole("heading", { name: "保存データを読み込めません" })).toBeVisible();
   expect(await page.evaluate((saveKey) => localStorage.getItem(saveKey), key)).toBe(unsupported);
