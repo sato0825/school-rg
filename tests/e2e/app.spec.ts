@@ -602,10 +602,12 @@ async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ 
   for (let step = 0; step < 36 && !(await page.locator(".run-result").count()); step++) {
     if (await page.locator(".map-panel").count()) {
       const available = page.locator(".map-node.available");
+      const hp = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.player.hp as number);
+      const rest = available.filter({ hasText: "休憩" });
       // A fixed three-Act smoke route should use recovery and rewards when the map offers them.
       // Bosses remain mandatory, and dedicated tests cover normal and elite encounters.
       const respite = available.filter({ hasText: /休憩|宝箱|購買|イベント/ });
-      await (await respite.count() ? respite.first() : available.first()).focus();
+      await (hp <= 24 && await rest.count() ? rest.first() : await respite.count() ? respite.first() : available.first()).focus();
       await page.keyboard.press("Enter");
     } else if (await page.locator(".treasure-panel").count()) {
       await page.locator(".treasure-offer:not(:disabled)").first().focus();
@@ -617,8 +619,15 @@ async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ 
       if (await page.getByRole("button", { name: "購買を出る" }).count()) await page.getByRole("button", { name: "購買を出る" }).click();
       else await page.locator("[data-action=rest-heal]").click();
     } else if (await page.locator(".event-panel").count()) {
-      await page.locator(".event-choice:not(:disabled)").filter({ hasNotText: "戦う" }).first().click();
+      const choices = page.locator(".event-choice:not(:disabled)").filter({ hasNotText: "戦う" });
+      const heal = choices.filter({ hasText: /回復|手当て|深呼吸/ });
+      await (await heal.count() ? heal.first() : choices.first()).click();
     } else if (await page.locator(".enemy-slot").count()) {
+      const hp = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.player.hp as number);
+      if (hp <= 24 && await page.locator(".potion").filter({ hasText: "bandage" }).count()) {
+        await page.keyboard.press("F2");
+        await page.keyboard.type("bandage");
+      }
       if ((await page.locator(".run-meta").innerText()).includes("boss")) {
         await expect(page.locator(".enemy-hud")).toContainText(bossNames[bosses]!);
         bosses++;
