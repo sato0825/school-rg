@@ -40,7 +40,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
   relics: [
     { id: "library-bookmark", name: "図書室のしおり", triggerIds: ["bookmark-acquired", "bookmark-turn", "bookmark-skill"], effectIds: [] },
     { id: "lab-glasses", name: "観察眼鏡", triggerIds: ["lab-glasses-combat-start"], effectIds: [] },
-    { id: "bamboo-grip", name: "竹刀の握り", triggerIds: ["bamboo-grip-combat-start"], effectIds: [] },
+    { id: "bamboo-grip", name: "竹刀の握り", triggerIds: ["bamboo-grip-turn-start"], effectIds: [] },
   ],
   potions: [
     { id: "potion-time", name: "時間の小瓶", input: { text: "clock", locale: "en" }, target: "self", effectIds: ["potion-time-effect"] },
@@ -105,7 +105,7 @@ export const demoRelicRules: RelicRule[] = [
   { id: "lab-glasses-combat-start", on: "combat_start", priority: 0, stackMode: "each", apply: (run, _event, stacks) => ({
     ...run, combat: run.combat ? { ...run.combat, statuses: { ...run.combat.statuses, player: { ...run.combat.statuses.player, strength: (run.combat.statuses.player.strength ?? 0) + stacks } } } : null,
   }) },
-  { id: "bamboo-grip-combat-start", on: "combat_start", priority: 0, stackMode: "each", apply: (run, _event, stacks) => ({
+  { id: "bamboo-grip-turn-start", on: "turn_start", priority: 0, stackMode: "each", apply: (run, _event, stacks) => ({
     ...run, combat: run.combat ? { ...run.combat, statuses: { ...run.combat.statuses, player: { ...run.combat.statuses.player, thorns: (run.combat.statuses.player.thorns ?? 0) + stacks } } } : null,
   }) },
 ];

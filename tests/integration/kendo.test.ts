@@ -1,21 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { demoContent, demoRelicRules } from "../../src/content/demo-battle.js";
+import { demoContent, demoEncounterTable, demoEnemyAi, demoRelicRules } from "../../src/content/demo-battle.js";
 import { kendoCardDefinitions } from "../../src/content/kendo-cards.js";
 import { useCardEffects } from "../../src/domain/card-effects.js";
 import { DEFAULT_GAME_CONFIG } from "../../src/domain/config.js";
 import { enqueueEffectAction, resolveDueEffects, type EffectEvent } from "../../src/domain/effect-primitives.js";
 import { createEventQueue } from "../../src/domain/event-queue.js";
 import { emitRelicEvent } from "../../src/domain/relic-hooks.js";
+import { availableRunNodes, createRunSession, enterRunNode } from "../../src/domain/run-flow.js";
 import type { RunState } from "../../src/domain/schema.js";
 import { submitPlayerKey } from "../../src/domain/turn-state.js";
 import { parseRunState } from "../../src/domain/validate.js";
-import { validRun } from "../fixtures/domain.js";
 
 function typedKendoCard(cardId: string, enemyHp = 20): RunState {
   const card = kendoCardDefinitions.find((item) => item.id === cardId)!;
-  let run = structuredClone(validRun);
-  run.clubId = "kendo-demo";
+  const mapOptions = { floorsPerAct: 1, lanes: 2, kindWeights: { combat: 1, elite: 0, event: 0, shop: 0, rest: 0, treasure: 0 } };
+  const start = createRunSession(42, "kendo-demo", demoContent, mapOptions);
+  let run = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, demoEncounterTable).run;
   run.combat!.cards = [{ instanceId: "combat-1", cardId, upgraded: false }];
+  run.combat!.phase = "PLAYER_INPUT";
   run.combat!.hand = ["combat-1"];
   run.combat!.drawPile = [];
   run.combat!.discardPile = [];
@@ -41,7 +43,7 @@ describe("kendo guard and counter", () => {
     expect(club.starterCardIds.filter((id) => id.startsWith("KEN-"))).toHaveLength(4);
     expect(kendoCardDefinitions.every((card) => club.cardPoolIds.includes(card.id))).toBe(true);
     expect(club.startingRelicId).toBe("bamboo-grip");
-    const withRelic = emitRelicEvent({ ...typedKendoCard("KEN-001"), relicIds: ["bamboo-grip"] }, "combat_start", demoRelicRules, demoContent).run;
+    const withRelic = emitRelicEvent({ ...typedKendoCard("KEN-001"), relicIds: ["bamboo-grip"] }, "turn_start", demoRelicRules, demoContent).run;
     expect(withRelic.combat!.statuses.player.thorns).toBe(3);
   });
 
@@ -54,7 +56,7 @@ describe("kendo guard and counter", () => {
     });
     const resolved = resolveDueEffects(guarded, queue, 100, DEFAULT_GAME_CONFIG);
     expect(resolved.trace.map((item) => item.kind)).toEqual(["damage", "counter"]);
-    expect(resolved.run.player.hp).toBe(39);
+    expect(resolved.run.player.hp).toBe(43);
     expect(resolved.run.combat!.enemies[0]!.hp).toBe(18);
   });
 
