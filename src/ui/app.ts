@@ -13,6 +13,7 @@ import { emitRelicEvent, type RelicEventKind, type RelicEvent } from "../domain/
 import { discardPotion, selectPotionEnemy, selectPotionSlot, setPotionInputActive, submitPotionKey } from "../domain/potions.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { candidateBattleArt, demoBattleArt } from "./demo-art.js";
+import { MOTION_MS } from "./motion-timing.js";
 import { renderClubSelect, renderCompendium, renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
@@ -43,7 +44,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let run: RunState = session.run;
   const previewArt = new URLSearchParams(window.location.search).get("artPreview") === "1";
   const layoutPreview = Number(new URLSearchParams(window.location.search).get("layoutPreview"));
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   const artPreloads = Object.values(view.art.heroPosesByClubId ?? {}).flatMap((poses) => Object.values(poses)).map((url) => {
     const image = new Image();
     image.src = url;
@@ -51,6 +52,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   });
   let enemyPending = false;
   let generation = 0;
+  const setMotion = (motion: BattleView["motion"]) => { view.motion = motion; view.motionStartedAtMs = motion ? clock.nowMs() : null; };
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
     emitRelicEvent(state, kind, demoRelicRules, demoContent, detail).run;
   const startCombat = () => {
@@ -75,7 +77,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt);
     else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt);
     else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt);
-    else renderBattle(root, run, demoContent, view);
+    else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
     persist();
   };
 
@@ -101,11 +103,12 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       targetDebuff: view.selectedDebuff as "weak" | "vulnerable" | "frail" | "poison" | null,
     }, config, demoContent);
     view.message = `${card.input.text} を発動`;
-    view.motion = "hero";
+    setMotion("hero");
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
     const currentGeneration = generation;
-    window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hero") { view.motion = null; render(); } }, 380);
+    const startedAtMs = view.motionStartedAtMs;
+    window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hero" && view.motionStartedAtMs === startedAtMs) { setMotion(null); render(); } }, MOTION_MS.hero);
     return fireRelic(updated, "card_used", { cardInstanceId: instanceId });
   };
 
@@ -123,7 +126,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     }
     if (run.combat?.phase === "WON" || run.combat?.phase === "LOST") { settleIfFinished(); render(); return; }
     enemyPending = true;
-    view.motion = "enemy";
+    setMotion("enemy");
     view.message = "敵が予告した行動を実行します。";
     render();
     const currentGeneration = generation;
@@ -138,22 +141,22 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
               return fireRelic(hitState, "hit_taken", { hpLost });
             })), config);
         enemyPending = false;
-        view.motion = receivedHit ? "hit" : null;
+        setMotion(receivedHit ? "hit" : null);
         if (run.combat?.phase === "PLAYER_START") {
           run = beginPlayerTurn(run, clock, config, demoContent);
           run = fireRelic(run, "turn_start");
           view.message = "次のターン。カード名をタイプしてください。";
         } else settleIfFinished();
         render();
-        if (receivedHit) window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hit") { view.motion = null; render(); } }, 420);
+        if (receivedHit) window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hit") { setMotion(null); render(); } }, MOTION_MS.hit);
       } catch (error) { handleError(error); }
-    }, 650);
+    }, MOTION_MS.enemyPhase);
   }
 
   function restart(): void {
     generation++;
     enemyPending = false;
-    view.motion = null;
+    setMotion(null);
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
     session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);

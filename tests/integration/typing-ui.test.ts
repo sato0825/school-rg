@@ -11,6 +11,8 @@ const view: BattleView = {
   selectedDiscardId: null,
   selectedDebuff: null,
   motion: null,
+  motionStartedAtMs: null,
+  animationNowMs: 0,
   potionModeKey: "F2",
   potionSlotLimit: 3,
 };
