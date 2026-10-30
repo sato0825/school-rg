@@ -94,6 +94,18 @@ test("rest choice accepts focused keyboard activation", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
 });
 
+test("a defeated run reaches its result and returns to the title by keyboard", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.clock.install();
+  await startDemoRun(page);
+  await enterNextNode(page);
+  for (let turn = 0; turn < 25 && !(await page.locator(".run-result").count()); turn++) await page.clock.runFor(11_000);
+  await expect(page.getByRole("heading", { name: "敗北" })).toBeVisible();
+  await page.getByRole("button", { name: "新しいランを始める" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "放課後を、打ち抜く。" })).toBeVisible();
+});
+
 test("renders the combat HUD and accepts direct keyboard input", async ({ page }) => {
   await startDemoRun(page);
   await expect(page.getByRole("heading", { name: "学園タイピングローグライク" })).toBeVisible();
@@ -176,9 +188,13 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
     await typeThroughBattle(page);
     await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
     if (encounter === 0) {
-      await page.locator(".reward-card").first().click();
+      await page.locator(".reward-card").first().focus();
+      await page.keyboard.press("Enter");
       await expect(page.locator(".map-stats")).toContainText("デッキ 11枚");
-    } else await page.getByRole("button", { name: "報酬を受け取らず進む" }).click();
+    } else {
+      await page.getByRole("button", { name: "報酬を受け取らず進む" }).focus();
+      await page.keyboard.press("Enter");
+    }
   }
   await expect(page.locator(".run-header")).toContainText("ACT 1 · 3F");
   await expect(page.locator(".map-node.available")).toHaveCount(1);
