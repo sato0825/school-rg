@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { mountApp } from "../../src/ui/app.js";
 
-describe("typing combat HUD", () => {
+describe("run and typing combat HUD", () => {
   beforeEach(() => {
     document.body.innerHTML = '<div id="app"></div>';
   });
@@ -12,6 +12,8 @@ describe("typing combat HUD", () => {
     if (!root) throw new Error("Missing test root");
     const unmount = mountApp(root);
     expect(root.querySelector("h1")?.textContent).toBe("学園タイピングローグライク");
+    expect(root.textContent).toContain("次の行き先を選ぶ");
+    root.querySelector<HTMLButtonElement>(".map-node.available")?.click();
     expect(root.querySelectorAll(".card")).toHaveLength(5);
     expect(root.textContent).toContain("飛び散る答案");
     expect(root.textContent).toContain("山札 5");

@@ -19,7 +19,7 @@ function html(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
 }
 
-function describe(card: Card, content: ContentRegistry): string {
+export function describeCard(card: Card, content: ContentRegistry): string {
   const effect = content.effects.find((item) => item.id === card.effectIds[0]);
   if (!effect) return "効果";
   const value = Number(effect.parameters.amount ?? effect.parameters.amountMs ?? effect.parameters.count ?? 0);
@@ -69,9 +69,9 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
       <span class="enemy-status">${statusMarkup(combat.statuses.enemies[enemy.instanceId] ?? {})}</span>
     </button>`;
   }).join("");
-  const cards = hand.map(({ instanceId, card }, index) => `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-action="card" data-id="${instanceId}" aria-label="${html(card.input.text)} ${html(describe(card, content))}">
+  const cards = hand.map(({ instanceId, card }, index) => `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-action="card" data-id="${instanceId}" aria-label="${html(card.input.text)} ${html(describeCard(card, content))}">
     <span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-kind">${html(card.type.toUpperCase())}</span>
-    <strong class="card-word">${wordMarkup(card.input.text, combat.typing.buffer)}</strong><span class="card-effect">${html(describe(card, content))}</span>
+    <strong class="card-word">${wordMarkup(card.input.text, combat.typing.buffer)}</strong><span class="card-effect">${html(describeCard(card, content))}</span>
   </button>`).join("");
   const discard = combat.discardPile.map((instanceId) => {
     const cardId = combat.cards.find((item) => item.instanceId === instanceId)?.cardId;
