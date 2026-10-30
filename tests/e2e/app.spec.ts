@@ -515,7 +515,7 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await page.getByRole("button", { name: /文芸部/ }).click();
   await expect(page.locator(".map-stats")).toContainText("難度 1");
   await enterNextNode(page);
-  await expect(page.locator(".enemy-hud")).toContainText("32/32");
+  await expect(page.locator(".enemy-hud")).toContainText("29/29");
 });
 
 test("regular runs use the provisional full map while short E2E runs require an explicit flag", async ({ page, browser }) => {
