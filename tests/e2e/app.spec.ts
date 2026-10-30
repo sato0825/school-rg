@@ -86,7 +86,7 @@ test("shop and event choices accept focused keyboard activation", async ({ page 
 
 test("rest choice accepts focused keyboard activation", async ({ page }) => {
   await startDemoRun(page);
-  await page.locator(".map-node.available").filter({ hasText: "休憩" }).focus();
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).first().focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
   await page.locator("[data-action=rest-heal]").focus();
@@ -215,6 +215,9 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
       const fight = available.filter({ hasText: /戦闘|強敵|ボス/ });
       await (await fight.count() ? fight.first() : available.first()).focus();
       await page.keyboard.press("Enter");
+    } else if (await page.locator(".treasure-panel").count()) {
+      await page.locator(".treasure-offer:not(:disabled)").first().focus();
+      await page.keyboard.press("Enter");
     } else if (await page.locator(".reward-panel:not(.run-result):not(.economy-panel):not(.event-panel)").count()) {
       await page.getByRole("button", { name: "報酬を受け取らず進む" }).focus();
       await page.keyboard.press("Enter");
@@ -235,9 +238,29 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await expect(page.locator(".run-header")).toContainText("全Act完走");
 });
 
+test("treasure offers survive reload and a focused choice completes its node", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.clock.install();
+  await startDemoRun(page);
+  await enterNextNode(page);
+  await typeThroughBattle(page);
+  await page.getByRole("button", { name: "報酬を受け取らず進む" }).click();
+  await page.locator(".map-node.available").filter({ hasText: "宝箱" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "宝箱から1つ選ぶ" })).toBeVisible();
+  const offers = await page.locator(".treasure-offer").allTextContents();
+  await page.reload();
+  await expect(page.locator(".treasure-offer")).toHaveText(offers);
+  await page.locator(".treasure-offer").first().focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.relicIds)).toHaveLength(2);
+  await expect(page.locator(".map-node.current")).toBeDisabled();
+});
+
 test("a route can upgrade at rest and buy once at the shop", async ({ page }) => {
   await startDemoRun(page);
-  await page.locator(".map-node.available").filter({ hasText: "休憩" }).click();
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).last().click();
   await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
@@ -299,7 +322,7 @@ test("reload preserves an unfinished potion word and its inventory", async ({ pa
 
 test("reload preserves a shop purchase and an unfinished typed card", async ({ page }) => {
   await startDemoRun(page);
-  await page.locator(".map-node.available").filter({ hasText: "休憩" }).click();
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).last().click();
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
   await page.locator(".reward-card").first().click();

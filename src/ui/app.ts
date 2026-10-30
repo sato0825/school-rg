@@ -2,7 +2,7 @@ import { useCardEffects } from "../domain/card-effects.js";
 import { DEFAULT_GAME_CONFIG, requireSetting } from "../domain/config.js";
 import { resolveEnemyIntents } from "../domain/enemy-ai.js";
 import { executeEnemyIntentEffects } from "../domain/enemy-intent-effects.js";
-import { buyRunShopCard, chooseRunEventChoice, chooseRunReward, createRunSession, enterRunNode, leaveRunShop, removeRunShopCard, settleRunCombat, useRunRest } from "../domain/run-flow.js";
+import { buyRunShopCard, chooseRunEventChoice, chooseRunReward, chooseRunTreasure, createRunSession, enterRunNode, leaveRunShop, removeRunShopCard, settleRunCombat, useRunRest } from "../domain/run-flow.js";
 import type { MapGenerationOptions } from "../domain/map-generation.js";
 import type { RunState } from "../domain/schema.js";
 import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, pausePlayerTurn, resumePlayerTurn, selectTypedCard, selectTypedEnemyTarget, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../domain/turn-state.js";
@@ -12,14 +12,14 @@ import { emitRelicEvent, type RelicEventKind, type RelicEvent } from "../domain/
 import { discardPotion, selectPotionEnemy, selectPotionSlot, setPotionInputActive, submitPotionKey } from "../domain/potions.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { demoBattleArt } from "./demo-art.js";
-import { renderClubSelect, renderCompendium, renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderSaveRecovery } from "./run-view.js";
+import { renderClubSelect, renderCompendium, renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserSaveStore, type SaveStore } from "./save-store.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = () => "discard" as const;
-/** The visible run is a compact provisional Act with battle, shop and rest routes. */
-const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 3, elite: 0, event: 1, shop: 1, rest: 1, treasure: 0 } };
+/** The visible run is a compact provisional Act with all implemented node kinds. */
+const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 2, treasure: 2 } };
 
 export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore()): () => void {
   const clock = { nowMs: () => Math.floor(performance.now()) };
@@ -54,6 +54,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (frontScreen === "compendium") renderCompendium(root, demoContent, demoBattleArt);
     else if (session.screen === "map") renderRunMap(root, session, demoBattleArt);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
+    else if (session.screen === "treasure") renderRunTreasure(root, session, demoContent, demoBattleArt, config);
     else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message);
     else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt);
     else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt);
@@ -190,6 +191,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (session.screen === "reward" && (action === "reward-card" || action === "skip-reward")) {
         session = chooseRunReward(session, action === "skip-reward" ? null : id);
         run = session.run;
+        render();
+        return;
+      }
+      if (session.screen === "treasure" && (action === "treasure-offer" || action === "skip-treasure")) {
+        const relicCount = run.relicIds.length;
+        session = chooseRunTreasure(session, action === "skip-treasure" ? null : id, demoContent, config);
+        run = session.run;
+        for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
         render();
         return;
       }

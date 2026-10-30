@@ -7,8 +7,9 @@ import { randomInt, shuffle } from "./random.js";
 import type { CombatState, ContentRegistry, MapNode, RunState } from "./schema.js";
 import { createTypingState } from "./typing.js";
 import { parseRunState } from "./validate.js";
+import { claimTreasure, leaveTreasure, openTreasure, type TreasureOptions, DEFAULT_TREASURE_OPTIONS } from "./treasure.js";
 
-export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "won" | "lost";
+export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "treasure" | "won" | "lost";
 export type EncounterTable = Readonly<Record<"combat" | "elite" | "boss", readonly string[]>>;
 export type RunSession = {
   run: RunState;
@@ -31,7 +32,7 @@ export function createRunSession(seed: number, clubId: string, content: ContentR
   const run = parseRunState({
     schemaVersion: 1, seed, rngState: map.rngState, clubId, act: 1,
     player: { hp: club.startingHp, maxHp: club.startingHp, block: 0 },
-    deck, relicIds: club.startingRelicId ? [club.startingRelicId] : [], potionIds: club.startingPotionIds ?? [], gold: economy.startingGold, shop: null, event: null,
+    deck, relicIds: club.startingRelicId ? [club.startingRelicId] : [], potionIds: club.startingPotionIds ?? [], gold: economy.startingGold, shop: null, event: null, treasure: null,
     map: { nodes: map.nodes, currentNodeId: map.currentNodeId }, combat: null,
   }, content);
   return { run, screen: "map", completedNodeIds: [map.currentNodeId], rewardCardIds: [] };
@@ -58,7 +59,7 @@ function createEncounter(run: RunState, enemyId: string, content: ContentRegistr
   return selectEnemyIntent({ ...run, rngState: shuffled.state, player: { ...run.player, block: 0 }, combat }, enemyInstanceId, ai, content, 1);
 }
 
-export function enterRunNode(session: RunSession, nextNodeId: string, content: ContentRegistry, ai: EnemyAiRegistry, encounters: EncounterTable, economy: EconomyOptions = DEFAULT_ECONOMY_OPTIONS): RunSession {
+export function enterRunNode(session: RunSession, nextNodeId: string, content: ContentRegistry, ai: EnemyAiRegistry, encounters: EncounterTable, economy: EconomyOptions = DEFAULT_ECONOMY_OPTIONS, treasureOptions: TreasureOptions = DEFAULT_TREASURE_OPTIONS): RunSession {
   if (session.screen !== "map") throw new Error("expected map screen");
   const next = availableRunNodes(session).find((node) => node.id === nextNodeId);
   if (!next) throw new RangeError(`node is not available: ${nextNodeId}`);
@@ -72,6 +73,7 @@ export function enterRunNode(session: RunSession, nextNodeId: string, content: C
   }
   if (next.kind === "rest") return { ...session, run: moveToConnectedNode(session.run, next.id), screen: "rest" };
   if (next.kind === "event") return { ...session, run: openRandomEvent(moveToConnectedNode(session.run, next.id), content), screen: "event" };
+  if (next.kind === "treasure") return { ...session, run: openTreasure(moveToConnectedNode(session.run, next.id), content, treasureOptions), screen: "treasure" };
   if (next.kind !== "combat" && next.kind !== "elite" && next.kind !== "boss") {
     throw new Error(`node kind ${next.kind} requires its own system before entry`);
   }
@@ -81,6 +83,12 @@ export function enterRunNode(session: RunSession, nextNodeId: string, content: C
   const enemyId = pool[draw.value]!;
   const moved = moveToConnectedNode({ ...session.run, rngState: draw.state }, next.id);
   return { ...session, run: createEncounter(moved, enemyId, content, ai), screen: "combat", rewardCardIds: [] };
+}
+
+export function chooseRunTreasure(session: RunSession, offerId: string | null, content: ContentRegistry, config: GameConfig = DEFAULT_GAME_CONFIG): RunSession {
+  if (session.screen !== "treasure") throw new Error("expected treasure screen");
+  const run = offerId === null ? leaveTreasure(session.run) : claimTreasure(session.run, offerId, content, config);
+  return { ...session, run, screen: "map", completedNodeIds: [...session.completedNodeIds, run.map.currentNodeId] };
 }
 
 export function settleRunCombat(session: RunSession, content: ContentRegistry, economy: EconomyOptions = DEFAULT_ECONOMY_OPTIONS): RunSession {
