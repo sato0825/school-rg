@@ -118,6 +118,11 @@ export const TurnClockStateSchema = z.strictObject({
   paused: z.boolean(),
 });
 
+export const CombatStatusesSchema = z.strictObject({
+  player: z.record(z.string(), z.number().int()),
+  enemies: z.record(z.string(), z.record(z.string(), z.number().int())),
+});
+
 export const CombatStateSchema = z.strictObject({
   phase: z.enum(["PLAYER_START", "PLAYER_INPUT", "PLAYER_END", "ENEMY_PHASE", "WON", "LOST"]),
   turn: positiveInt,
@@ -129,6 +134,7 @@ export const CombatStateSchema = z.strictObject({
   enemies: z.array(EnemyInstanceSchema),
   typing: TypingStateSchema,
   clock: TurnClockStateSchema,
+  statuses: CombatStatusesSchema.default({ player: {}, enemies: {} }),
 });
 
 export const RunStateSchema = z.strictObject({
@@ -157,3 +163,4 @@ export type CombatState = z.infer<typeof CombatStateSchema>;
 export type RunState = z.infer<typeof RunStateSchema>;
 export type TurnClockState = z.infer<typeof TurnClockStateSchema>;
 export type TypingState = z.infer<typeof TypingStateSchema>;
+export type CombatStatuses = z.infer<typeof CombatStatusesSchema>;

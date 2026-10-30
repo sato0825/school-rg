@@ -37,6 +37,11 @@ export const GameConfigSchema = z.strictObject({
   deadlineTiePolicy: setting(z.enum(["timeout_wins", "input_wins"])),
   etherealRetainPriority: setting(z.enum(["ethereal", "retain"])),
   innateCountsTowardDraw: setting(z.boolean()),
+  weakMultiplierPercent: setting(positiveInt),
+  vulnerableMultiplierPercent: setting(positiveInt),
+  frailMultiplierPercent: setting(positiveInt),
+  poisonTickTiming: setting(z.enum(["owner_start", "owner_end"])),
+  debuffDecayTiming: setting(z.enum(["owner_start", "owner_end"])),
 });
 
 export type GameConfig = z.infer<typeof GameConfigSchema>;
@@ -64,6 +69,11 @@ export const DEFAULT_GAME_CONFIG: GameConfig = GameConfigSchema.parse({
   deadlineTiePolicy: { status: "provisional", value: "timeout_wins", source: "https://github.com/sato0825/school-rg/issues/4", ownerIssue: 4 },
   etherealRetainPriority: { status: "provisional", value: "ethereal", source: "https://github.com/sato0825/school-rg/issues/8", ownerIssue: 8 },
   innateCountsTowardDraw: { status: "provisional", value: true, source: "https://github.com/sato0825/school-rg/issues/8", ownerIssue: 8 },
+  weakMultiplierPercent: { status: "provisional", value: 75, source: "https://github.com/sato0825/school-rg/issues/10", ownerIssue: 10 },
+  vulnerableMultiplierPercent: { status: "provisional", value: 150, source: "https://github.com/sato0825/school-rg/issues/10", ownerIssue: 10 },
+  frailMultiplierPercent: { status: "provisional", value: 75, source: "https://github.com/sato0825/school-rg/issues/10", ownerIssue: 10 },
+  poisonTickTiming: { status: "provisional", value: "owner_start", source: "https://github.com/sato0825/school-rg/issues/10", ownerIssue: 10 },
+  debuffDecayTiming: { status: "provisional", value: "owner_end", source: "https://github.com/sato0825/school-rg/issues/10", ownerIssue: 10 },
 });
 
 export function parseGameConfig(value: unknown): GameConfig {

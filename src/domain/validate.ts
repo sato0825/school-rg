@@ -128,6 +128,7 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
       if (enemy.hp > enemy.maxHp) issues.push({ code: "INVALID_STATE", path: `combat.enemies.${i}.hp`, message: "HP exceeds maximum" });
     });
     if (combat.typing.targetEnemyInstanceId) known(combat.typing.targetEnemyInstanceId, enemyInstanceIds, "combat.typing.targetEnemyInstanceId", issues);
+    Object.keys(combat.statuses.enemies).forEach((instanceId) => known(instanceId, enemyInstanceIds, `combat.statuses.enemies.${instanceId}`, issues));
   }
   if (issues.length) throw new DomainValidationError(issues);
   return run;
