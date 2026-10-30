@@ -252,6 +252,34 @@ test("the combatants and controls remain visible on a narrow viewport", async ({
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
 });
 
+test("candidate pose preview follows enemy damage and typed activation", async ({ page }) => {
+  await page.clock.install();
+  await page.goto("/?artPreview=1");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /科学部/ }).click();
+  await enterNextNode(page);
+  const hero = page.locator(".hero-art");
+  await expect(page.locator(".art-preview-label")).toContainText("未採用");
+  await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v1/);
+  await page.clock.runFor(10_000);
+  await page.clock.runFor(650);
+  await expect(hero).toHaveAttribute("src", /serious-student-hit-candidate-v1/);
+  await page.clock.runFor(420);
+  await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v1/);
+  const word = await page.locator(".card-word").first().innerText();
+  await page.keyboard.type(word);
+  await expect(hero).toHaveAttribute("src", /serious-student-activate-candidate-v1/);
+  await page.clock.runFor(380);
+  await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v1/);
+  await page.setViewportSize({ width: 390, height: 844 });
+  const [stage, controls, heroBox] = await Promise.all([
+    page.locator(".stage").boundingBox(), page.locator(".control-deck").boundingBox(), hero.boundingBox(),
+  ]);
+  expect(stage && controls && heroBox).toBeTruthy();
+  expect(heroBox!.y + heroBox!.height).toBeLessThanOrEqual(controls!.y);
+  expect(heroBox!.x).toBeGreaterThanOrEqual(stage!.x);
+});
+
 test("a full Act can be finished through typed combat, rewards and a boss", async ({ page }) => {
   test.setTimeout(60_000);
   await page.clock.install();

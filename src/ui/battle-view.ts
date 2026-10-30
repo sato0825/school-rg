@@ -3,6 +3,8 @@ import type { Card, ContentRegistry, RunState } from "../domain/schema.js";
 export type BattleArt = {
   stageUrl: string;
   heroUrl: string;
+  heroPosesByClubId?: Readonly<Record<string, { idle: string; activate: string; hit: string }>>;
+  previewLabel?: string;
   enemyUrlById: Readonly<Record<string, string>>;
 };
 
@@ -12,7 +14,7 @@ export type BattleView = {
   message: string;
   selectedDiscardId: string | null;
   selectedDebuff: string | null;
-  motion: "hero" | "enemy" | null;
+  motion: "hero" | "enemy" | "hit" | null;
   potionModeKey: string;
   potionSlotLimit: number;
 };
@@ -73,6 +75,8 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
   const remaining = (combat.clock.remainingMs / 1_000).toFixed(1);
   const timeRatio = Math.max(0, Math.min(100, combat.clock.remainingMs / view.baseTurnMs * 100));
   const clubName = content.clubs.find((club) => club.id === run.clubId)?.name ?? run.clubId;
+  const heroPoses = view.art.heroPosesByClubId?.[run.clubId];
+  const heroUrl = view.motion === "hero" ? heroPoses?.activate : view.motion === "hit" ? heroPoses?.hit : heroPoses?.idle;
   const relicNames = run.relicIds.map((id) => content.relics.find((relic) => relic.id === id)?.name ?? id);
   const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
   const enemies = combat.enemies.filter((enemy) => enemy.hp > 0).map((enemy) => {
@@ -109,7 +113,7 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
   const terminal = combat.phase === "WON" || combat.phase === "LOST";
   root.innerHTML = `<main class="game" aria-label="学園タイピングローグライク戦闘">
     <header class="topbar"><div class="brand"><span class="brand-mark">✦</span><div><small>SCHOOL ROGUELIKE</small><h1>学園タイピングローグライク</h1></div></div><div class="run-meta"><span>ACT ${run.act}</span><span>${node?.floor ?? 0}F · ${html(node?.kind ?? "combat")}</span><span>TURN ${combat.turn}</span></div><button type="button" class="pause-button" data-action="pause" ${combat.phase !== "PLAYER_INPUT" ? "disabled" : ""}>${combat.clock.paused ? "再開" : "一時停止"}</button></header>
-    <section class="stage" aria-label="戦闘ステージ" style="background-image:url('${html(view.art.stageUrl)}')"><div class="stage-vignette"></div><div class="ally-group"><div class="ally-slot"><img class="hero-art ${view.motion === "hero" ? "act" : ""}" src="${html(view.art.heroUrl)}" alt="${html(clubName)}の生徒" /><div class="hero-shadow"></div></div></div><div class="enemy-group">${enemies}</div><div class="player-hud"><span class="hud-name">${html(clubName)}</span><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><b>◇ ${run.player.block}</b><div class="status-row">${statusMarkup(combat.statuses.player)}</div><div class="relic-row" aria-label="レリック">${relicNames.map((name) => `<span class="relic-chip" title="${html(name)}">✦ ${html(name)}</span>`).join("")}</div></div></section>
+    <section class="stage" aria-label="戦闘ステージ" style="background-image:url('${html(view.art.stageUrl)}')"><div class="stage-vignette"></div>${view.art.previewLabel ? `<span class="art-preview-label">${html(view.art.previewLabel)}</span>` : ""}<div class="ally-group"><div class="ally-slot"><img class="hero-art ${view.motion === "hero" ? "act" : view.motion === "hit" ? "react" : ""}" src="${html(heroUrl ?? view.art.heroUrl)}" alt="${html(clubName)}の生徒" /><div class="hero-shadow"></div></div></div><div class="enemy-group">${enemies}</div><div class="player-hud"><span class="hud-name">${html(clubName)}</span><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><b>◇ ${run.player.block}</b><div class="status-row">${statusMarkup(combat.statuses.player)}</div><div class="relic-row" aria-label="レリック">${relicNames.map((name) => `<span class="relic-chip" title="${html(name)}">✦ ${html(name)}</span>`).join("")}</div></div></section>
     <section class="control-deck" aria-label="タイピング戦闘操作"><div class="time-row"><div class="time-label"><span>PLAYER INPUT</span><strong data-role="time" aria-label="残り時間 ${remaining}秒">${remaining}<small> sec</small></strong></div><div class="time-track"><div class="time-fill" data-role="time-fill" style="width:${timeRatio}%"></div></div><div class="pile-counts"><span>山札 ${combat.drawPile.length}</span><span>捨て札 ${combat.discardPile.length}</span><span>除外 ${combat.exhaustPile.length}</span></div></div>
       <div class="typing-row"><span class="typing-caption">TYPE A CARD NAME</span><div class="typing-buffer">${combat.typing.buffer ? html(combat.typing.buffer) : `<span class="placeholder">ここに入力が表示されます</span>`}<span class="caret"></span></div><span class="typing-hint" role="status">${typingHint}</span></div>
       <div class="potion-row" aria-label="ポーション"><button type="button" class="potion-mode ${potionActive ? "active" : ""}" data-action="potion-mode" aria-pressed="${potionActive}">ポーション ${run.potionIds.length}/${view.potionSlotLimit} · 入力 ${html(view.potionModeKey)}</button><span class="potion-buffer" role="status">${potionTargetHint ?? (potionActive ? html(potionControl!.typing.buffer) || "入力待ち" : `${html(view.potionModeKey)} またはボタンで入力`)}</span>${potions || `<span class="shelf-empty">空き</span>`}</div>
