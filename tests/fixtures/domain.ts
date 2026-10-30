@@ -28,6 +28,7 @@ export const validRun: RunState = {
   rngState: 42,
   clubId: "club-a",
   act: 1,
+  ascensionLevel: 0,
   player: { hp: 40, maxHp: 40, block: 0 },
   deck: [{ instanceId: "deck-1", cardId: "card-strike", upgraded: false }],
   relicIds: ["relic-sample"],

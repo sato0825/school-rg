@@ -6,14 +6,19 @@ import { parseRunState } from "../../src/domain/validate.js";
 
 const mapOptions = { floorsPerAct: 2, lanes: 3, kindWeights: { combat: 1, elite: 0, event: 0, shop: 0, rest: 0, treasure: 0 } };
 
-function replay(seed: number, reloadAtActTwo: boolean): { session: RunSession; trace: string[] } {
-  let session = createRunSession(seed, "literature-demo", demoContent, mapOptions);
+function replay(seed: number, reloadAtActTwo: boolean, ascensionLevel = 0): { session: RunSession; trace: string[] } {
+  let session = createRunSession(seed, "literature-demo", demoContent, mapOptions, undefined, ascensionLevel);
   const trace: string[] = [];
   let battles = 0;
   for (let step = 0; step < 20 && session.screen !== "won"; step++) {
     const node = availableRunNodes(session)[0];
     if (!node) throw new Error(`run stopped at step ${step}`);
     session = enterRunNode(session, node.id, demoContent, demoEnemyAi, demoEncounterTable);
+    if (session.run.combat && ascensionLevel > 0) {
+      const enemy = session.run.combat.enemies[0]!;
+      const baseHp = demoContent.enemies.find((item) => item.id === enemy.enemyId)!.maxHp;
+      expect(enemy.maxHp).toBe(Math.ceil(baseHp * 1.2));
+    }
     trace.push(`${node.id}:${node.kind}:${session.run.rngState}:${session.run.combat?.enemies[0]?.intentId ?? "-"}`);
     if (session.screen === "combat") {
       battles++;
@@ -39,5 +44,12 @@ describe("seeded full-run replay", () => {
     expect(replay(142, false)).toEqual(original);
     expect(replay(142, true)).toEqual(original);
     expect(replay(143, false).trace).not.toEqual(original.trace);
+  });
+
+  it("replays cumulative Ascension rules across three Acts and save/load", () => {
+    const original = replay(142, false, 2);
+    expect(original.session.run.player.maxHp).toBe(35);
+    expect(original.session.run.ascensionLevel).toBe(2);
+    expect(replay(142, true, 2)).toEqual(original);
   });
 });

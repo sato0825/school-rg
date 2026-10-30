@@ -16,7 +16,7 @@ Issue #25 の検証境界です。以下の自動テストは、ゲーム完成�
 | 安定したアート制作と動作 | 代表画像と簡易アニメーションのみ。基準画・編集可能原本・継続制作ゲートは未完 | [#29](https://github.com/sato0825/school-rg/issues/29) |
 | 複数味方の採用判断 | 戦闘仕様が未決定。採用有無と可変配置の検証が必要 | [#30](https://github.com/sato0825/school-rg/issues/30) |
 | `finish` の条件 | HP50％以下を暫定値として使用中 | [#48](https://github.com/sato0825/school-rg/issues/48) |
-| Ascension | 難度段階・解放・修飾・保存・画面は未実装 | [#66](https://github.com/sato0825/school-rg/issues/66) |
+| Ascensionの段階数・難度調整 | 難度0〜2と累積修飾は仮設定。正式な段階数・効果量・語彙難度は未確定 | [#71](https://github.com/sato0825/school-rg/issues/71) |
 | 3 Actのコンテンツ量と約60分 | 検証ランは短縮階層・少数敵/イベント。全カード相互作用と実プレイ時間の受入は未実施 | [#68](https://github.com/sato0825/school-rg/issues/68) |
 
 同一シードの自動再現、短縮3 Actの完走、各IssueのDoD、実プレイの品質判断は別の証拠として管理します。

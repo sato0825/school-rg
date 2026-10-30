@@ -193,6 +193,7 @@ export const RunStateSchema = z.strictObject({
   rngState: z.number().int().min(0).max(0xffffffff),
   clubId: id,
   act: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+  ascensionLevel: nonNegativeInt.default(0),
   player: z.strictObject({ hp: nonNegativeInt, maxHp: positiveInt, block: nonNegativeInt }),
   deck: z.array(CardInstanceSchema),
   relicIds: z.array(id),
