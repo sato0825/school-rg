@@ -53,7 +53,8 @@ export function resolveRelicHooks(
   const contentById = new Map(content.relics.map((relic) => [relic.id, relic]));
   let queue = createEventQueue<RelicEvent>();
   for (const event of events) {
-    if (!event.id) throw new RangeError("relic event ID is required");
+    if (!/^[A-Za-z0-9][A-Za-z0-9_.-]*$/.test(event.id)) throw new RangeError("valid relic event ID is required");
+    if (event.kind === "acquired" && !event.relicId) throw new RangeError("acquired relic ID is required");
     queue = enqueueEvent(queue, 0, event);
   }
   const trace: RelicHookTrace[] = [];
@@ -67,6 +68,7 @@ export function resolveRelicHooks(
     current.relicIds.forEach((relicId, ownerIndex) => {
       const relic = contentById.get(relicId);
       if (!relic) throw new RangeError(`unknown owned relic: ${relicId}`);
+      for (const triggerId of relic.triggerIds) if (!ruleIds.has(triggerId)) throw new RangeError(`unknown relic rule: ${triggerId}`);
       const group = groups.get(relicId);
       if (group) group.count++;
       else groups.set(relicId, { relicId, count: 1, ownerIndex });

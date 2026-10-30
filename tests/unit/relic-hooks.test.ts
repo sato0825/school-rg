@@ -31,6 +31,8 @@ describe("relic hook dispatch", () => {
 
   it("marks an event before handler execution so recursive dispatch cannot double fire", () => {
     const { content, run } = fixture();
+    content.relics[0]!.triggerIds = ["guard"];
+    run.relicIds = ["bell"];
     const rules: RelicRule[] = [{ id: "guard", on: "combat_start", priority: 0, stackMode: "aggregate", apply: (state) => {
       const nested = resolveRelicHooks(state, [{ id: "same-event", kind: "combat_start" }], rules, content);
       expect(nested.trace).toEqual([]);

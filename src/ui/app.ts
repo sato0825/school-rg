@@ -86,10 +86,9 @@ export function mountApp(root: HTMLElement): () => void {
     window.setTimeout(() => {
       if (currentGeneration !== generation) return;
       try {
-        const hpBefore = run.player.hp;
         run = completeEnemyPhase(run, (state) => resolveEnemyIntents(state, demoEnemyAi, demoContent,
-          (live, enemyInstanceId, intent) => executeEnemyIntentEffects(live, enemyInstanceId, intent, demoEnemyAi, demoContent, config)), config);
-        if (run.player.hp < hpBefore) run = fireRelic(run, "hit_taken", { hpLost: hpBefore - run.player.hp });
+          (live, enemyInstanceId, intent) => executeEnemyIntentEffects(live, enemyInstanceId, intent, demoEnemyAi, demoContent, config,
+            (hitState, hpLost) => fireRelic(hitState, "hit_taken", { hpLost }))), config);
         enemyPending = false;
         view.motion = null;
         if (run.combat?.phase === "PLAYER_START") {
