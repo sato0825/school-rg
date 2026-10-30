@@ -96,10 +96,12 @@ test("shop and event choices accept focused keyboard activation", async ({ page 
 test("shop relic, potion and card purchases persist and respect one-time stock", async ({ page }) => {
   await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
-  await page.evaluate(() => {
+  await page.addInitScript(() => {
+    if (sessionStorage.getItem("test-shop-gold-set")) return;
     const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
     saved.session.run.gold = 200;
     localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
+    sessionStorage.setItem("test-shop-gold-set", "1");
   });
   await page.reload();
   const relic = page.locator(".shop-relic-offer");
@@ -703,12 +705,12 @@ test("a route can upgrade at rest and buy once at the shop", async ({ page }) =>
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
   await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
-  await expect(page.locator(".reward-card")).toHaveCount(3);
+  await expect(page.locator("[data-action=buy-offer]")).toHaveCount(3);
   await page.locator(".reward-card").first().click();
   await expect(page.locator(".reward-panel")).toContainText("所持金 10G");
   await expect(page.locator(".reward-card").first()).toBeDisabled();
-  await page.locator(".reward-card").nth(1).click();
-  await expect(page.getByRole("status")).toContainText("所持金が足りません。");
+  await expect(page.locator("[data-action=buy-offer]").nth(1)).toBeDisabled();
+  await expect(page.locator("[data-action=buy-offer]").nth(1)).toContainText("所持金不足");
   await page.getByRole("button", { name: "購買を出る" }).click();
   await expect(page.locator(".map-node.available")).toContainText("ボス");
 });

@@ -80,7 +80,8 @@ export function openShop(run: RunState, content: ContentRegistry, options: Econo
   const pool = [...new Set(club.cardPoolIds)];
   if (pool.length === 0) throw new RangeError("shop card pool is empty");
   const shuffled = shuffle(run.rngState, pool);
-  const relics = shuffle(shuffled.state, content.relics.map((item) => item.id).filter((id) => !run.relicIds.includes(id)));
+  const starterRelics = new Set(content.clubs.map((club) => club.startingRelicId).filter((id): id is string => id !== null));
+  const relics = shuffle(shuffled.state, content.relics.map((item) => item.id).filter((id) => !starterRelics.has(id) && !run.relicIds.includes(id)));
   const potions = shuffle(relics.state, content.potions.map((item) => item.id));
   const price = nonNegative(options.cardPrice, "cardPrice");
   const relicPrice = nonNegative(options.relicPrice, "relicPrice");
