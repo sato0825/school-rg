@@ -53,6 +53,8 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
   });
   const selected = combat.typing.selectedCardInstanceId;
   const pendingHandTarget = selected && hand.find((entry) => entry.instanceId === selected)?.card.target === "hand";
+  const pendingEnemyTarget = selected && hand.find((entry) => entry.instanceId === selected)?.card.target === "enemy" && !combat.typing.targetEnemyInstanceId && combat.enemies.filter((enemy) => enemy.hp > 0).length > 1;
+  const typingHint = pendingHandTarget ? "対象にする手札を選んでください" : combat.typing.buffer && combat.typing.candidateCardInstanceIds.length > 1 ? `候補 ${combat.typing.candidateCardInstanceIds.length}枚 · 使うカードを選択` : pendingEnemyTarget ? "攻撃対象の敵を選択" : "カード名を入力 · Escで取消";
   const remaining = (combat.clock.remainingMs / 1_000).toFixed(1);
   const timeRatio = Math.max(0, Math.min(100, combat.clock.remainingMs / view.baseTurnMs * 100));
   const clubName = content.clubs.find((club) => club.id === run.clubId)?.name ?? run.clubId;
@@ -62,14 +64,15 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     const intent = content.intents.find((item) => item.id === enemy.intentId);
     const intentEffect = content.effects.find((item) => item.id === intent?.effectIds[0]);
     const amount = intentEffect?.parameters.amount;
-    return `<button type="button" class="enemy-slot ${combat.typing.targetEnemyInstanceId === enemy.instanceId ? "targeted" : ""}" data-action="enemy" data-id="${enemy.instanceId}" aria-label="${html(definition?.name ?? "敵")}を対象に選ぶ">
+    const targeted = combat.typing.targetEnemyInstanceId === enemy.instanceId;
+    return `<button type="button" class="enemy-slot ${targeted ? "targeted" : ""}" data-action="enemy" data-id="${enemy.instanceId}" aria-pressed="${targeted}" aria-label="${html(definition?.name ?? "敵")}を対象に選ぶ${targeted ? "（選択中）" : ""}">
       <span class="intent-ticket"><small>INTENT</small><strong>${html(intent?.label ?? "行動")}</strong>${amount ? `<b>${amount}</b>` : ""}</span>
       <img class="enemy-art ${view.motion === "enemy" ? "act" : ""}" src="${html(view.art.enemyUrlById[enemy.enemyId] ?? "")}" alt="${html(definition?.name ?? "敵")}" />
-      <span class="enemy-hud"><strong>${html(definition?.name ?? "敵")}</strong><span>♥ ${enemy.hp}/${enemy.maxHp} · ◇ ${enemy.block}</span></span>
+      <span class="enemy-hud"><strong>${targeted ? "対象: " : ""}${html(definition?.name ?? "敵")}</strong><span>♥ ${enemy.hp}/${enemy.maxHp} · ◇ ${enemy.block}</span></span>
       <span class="enemy-status">${statusMarkup(combat.statuses.enemies[enemy.instanceId] ?? {})}</span>
     </button>`;
   }).join("");
-  const cards = hand.map(({ instanceId, card }, index) => `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-action="card" data-id="${instanceId}" aria-label="${html(card.input.text)} ${html(describeCard(card, content))}">
+  const cards = hand.map(({ instanceId, card }, index) => `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-action="card" data-id="${instanceId}" aria-pressed="${selected === instanceId}" aria-label="${html(card.input.text)} ${html(describeCard(card, content))}${selected === instanceId ? "（選択中）" : ""}">
     <span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-kind">${html(card.type.toUpperCase())}</span>
     <strong class="card-word">${wordMarkup(card.input.text, combat.typing.buffer)}</strong><span class="card-effect">${html(describeCard(card, content))}</span>
   </button>`).join("");
@@ -86,7 +89,7 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     <header class="topbar"><div class="brand"><span class="brand-mark">✦</span><div><small>SCHOOL ROGUELIKE</small><h1>学園タイピングローグライク</h1></div></div><div class="run-meta"><span>ACT ${run.act}</span><span>${node?.floor ?? 0}F · ${html(node?.kind ?? "combat")}</span><span>TURN ${combat.turn}</span></div><button type="button" class="pause-button" data-action="pause" ${combat.phase !== "PLAYER_INPUT" ? "disabled" : ""}>${combat.clock.paused ? "再開" : "一時停止"}</button></header>
     <section class="stage" aria-label="戦闘ステージ" style="background-image:url('${html(view.art.stageUrl)}')"><div class="stage-vignette"></div><div class="ally-group"><div class="ally-slot"><img class="hero-art ${view.motion === "hero" ? "act" : ""}" src="${html(view.art.heroUrl)}" alt="${html(clubName)}の生徒" /><div class="hero-shadow"></div></div></div><div class="enemy-group">${enemies}</div><div class="player-hud"><span class="hud-name">${html(clubName)}</span><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><b>◇ ${run.player.block}</b><div class="status-row">${statusMarkup(combat.statuses.player)}</div></div></section>
     <section class="control-deck" aria-label="タイピング戦闘操作"><div class="time-row"><div class="time-label"><span>PLAYER INPUT</span><strong data-role="time" aria-label="残り時間 ${remaining}秒">${remaining}<small> sec</small></strong></div><div class="time-track"><div class="time-fill" data-role="time-fill" style="width:${timeRatio}%"></div></div><div class="pile-counts"><span>山札 ${combat.drawPile.length}</span><span>捨て札 ${combat.discardPile.length}</span><span>除外 ${combat.exhaustPile.length}</span></div></div>
-      <div class="typing-row"><span class="typing-caption">TYPE A CARD NAME</span><div class="typing-buffer">${combat.typing.buffer ? html(combat.typing.buffer) : `<span class="placeholder">ここに入力が表示されます</span>`}<span class="caret"></span></div><span class="typing-hint">${pendingHandTarget ? "対象にする手札を選んでください" : "カード名を入力 · Escで取消"}</span></div>
+      <div class="typing-row"><span class="typing-caption">TYPE A CARD NAME</span><div class="typing-buffer">${combat.typing.buffer ? html(combat.typing.buffer) : `<span class="placeholder">ここに入力が表示されます</span>`}<span class="caret"></span></div><span class="typing-hint" role="status">${typingHint}</span></div>
       <div class="hand" aria-label="手札">${cards || `<p class="empty-hand">手札がありません。残り時間で敵の行動へ進みます。</p>`}</div>
       <div class="selection-shelf"><div><span class="shelf-label">捨て札から選択</span><div class="choice-list">${discard || `<span class="shelf-empty">なし</span>`}</div></div><div><span class="shelf-label">解除する状態</span><div class="choice-list">${debuffs || `<span class="shelf-empty">なし</span>`}</div></div></div><p class="battle-message" role="status" aria-live="polite">${html(view.message)}</p>
     </section>
