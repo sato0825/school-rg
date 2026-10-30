@@ -3,6 +3,7 @@ import { prepareOpeningHand } from "./card-keywords.js";
 import { createTurnClock, pauseTurnClock, resumeTurnClock, advanceTurnClock, type MonotonicClock } from "./clock.js";
 import { assessCombatOutcome } from "./combat-outcome.js";
 import { requireSetting, type GameConfig } from "./config.js";
+import { tickStatuses } from "./status-engine.js";
 import type { ContentRegistry, RunState } from "./schema.js";
 import { chooseTypingCard, chooseTypingEnemyTarget, pressTypingKey, type SelectionResult, type TypableCard, type TypingKeyEvent } from "./typing.js";
 
@@ -58,14 +59,15 @@ function advanceSelectionTime(run: RunState, clock: MonotonicClock, config: Game
 }
 
 export function beginPlayerTurn(run: RunState, clock: MonotonicClock, config: GameConfig, content: ContentRegistry): RunState {
-  const combat = requirePhase(run, "PLAYER_START");
-  const outcome = assessCombatOutcome(run);
+  requirePhase(run, "PLAYER_START");
+  const outcome = assessCombatOutcome(tickStatuses(run, "player_start", config).run);
   if (outcome.combat!.phase !== "PLAYER_START") return outcome;
+  const combat = outcome.combat!;
   const opening = combat.turn === 1 ? prepareOpeningHand(combat, content) : { combat, innateIds: [] };
   const count = requireSetting(config.cardsDrawnPerTurn) - (requireSetting(config.innateCountsTowardDraw) ? opening.innateIds.length : 0);
-  const drawn = drawCards(opening.combat, run.rngState, Math.max(0, count));
+  const drawn = drawCards(opening.combat, outcome.rngState, Math.max(0, count));
   return {
-    ...run,
+    ...outcome,
     rngState: drawn.rngState,
     combat: { ...drawn.combat, phase: "PLAYER_INPUT", clock: createTurnClock(requireSetting(config.playerTurnMs), clock) },
   };
@@ -142,15 +144,16 @@ export function resumePlayerTurn(run: RunState, clock: MonotonicClock): RunState
   return { ...run, combat: { ...combat, clock: resumeTurnClock(combat.clock, clock) } };
 }
 
-export function beginEnemyPhase(run: RunState): RunState {
-  const combat = requirePhase(run, "PLAYER_END");
-  const outcome = assessCombatOutcome(run);
+export function beginEnemyPhase(run: RunState, config: GameConfig): RunState {
+  requirePhase(run, "PLAYER_END");
+  const outcome = assessCombatOutcome(tickStatuses(run, "player_end", config).run);
   if (outcome.combat!.phase !== "PLAYER_END") return outcome;
-  return { ...run, combat: { ...combat, phase: "ENEMY_PHASE" } };
+  const enemyPhase = { ...outcome, combat: { ...outcome.combat!, phase: "ENEMY_PHASE" as const } };
+  return tickStatuses(enemyPhase, "enemy_start", config).run;
 }
 
 /** Enemy AI #13 supplies one deterministic resolution of every visible Intent. */
-export function completeEnemyPhase(run: RunState, resolve: ResolveEnemyActions): RunState {
+export function completeEnemyPhase(run: RunState, resolve: ResolveEnemyActions, config: GameConfig): RunState {
   const combat = requirePhase(run, "ENEMY_PHASE");
   const resolved = resolve(run);
   if (!resolved.combat || resolved.combat.turn !== combat.turn || !["ENEMY_PHASE", "WON", "LOST"].includes(resolved.combat.phase)) {
@@ -158,5 +161,7 @@ export function completeEnemyPhase(run: RunState, resolve: ResolveEnemyActions):
   }
   const outcome = assessCombatOutcome(resolved);
   if (outcome.combat!.phase === "WON" || outcome.combat!.phase === "LOST") return outcome;
-  return { ...outcome, combat: { ...outcome.combat!, phase: "PLAYER_START", turn: outcome.combat!.turn + 1 } };
+  const ended = tickStatuses(outcome, "enemy_end", config).run;
+  if (ended.combat!.phase === "WON" || ended.combat!.phase === "LOST") return ended;
+  return { ...ended, combat: { ...ended.combat!, phase: "PLAYER_START", turn: ended.combat!.turn + 1 } };
 }

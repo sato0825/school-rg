@@ -3,6 +3,7 @@ import { DEFAULT_GAME_CONFIG, parseGameConfig } from "../../src/domain/config.js
 import { createEventQueue } from "../../src/domain/event-queue.js";
 import { enqueueEffectAction, resolveDueEffects, type ActorRef, type EffectEvent } from "../../src/domain/effect-primitives.js";
 import type { RunState } from "../../src/domain/schema.js";
+import { statusAmount } from "../../src/domain/status-engine.js";
 import { validRun } from "../fixtures/domain.js";
 
 const player: ActorRef = { side: "player" };
@@ -97,5 +98,34 @@ describe("effect primitives", () => {
     expect(result.trace.map((entry) => entry.kind)).toEqual(["damage", "damage"]);
     expect(result.run.combat!.phase).toBe("WON");
     expect(result.queue.pending).toHaveLength(1);
+  });
+
+  it("applies status changes in queue order before attack and block modifiers", () => {
+    const run = freshRun();
+    let pending = enqueueEffectAction(queue(), run, 0, { kind: "status", target: player, status: "strength", delta: 2 });
+    pending = enqueueEffectAction(pending, run, 0, { kind: "status", target: enemy, status: "vulnerable", delta: 1 });
+    pending = enqueueEffectAction(pending, run, 0, { kind: "attack", source: player, target: enemy, amount: 4, hits: 1, pierceBlock: false });
+    pending = enqueueEffectAction(pending, run, 0, { kind: "status", target: player, status: "dexterity", delta: 2 });
+    pending = enqueueEffectAction(pending, run, 0, { kind: "status", target: player, status: "frail", delta: 1 });
+    pending = enqueueEffectAction(pending, run, 0, { kind: "block", target: player, amount: 6 });
+    const result = resolveDueEffects(run, pending, 0, DEFAULT_GAME_CONFIG);
+    expect(result.run.combat!.enemies[0]!.hp).toBe(11);
+    expect(result.run.player.block).toBe(6);
+    expect(result.trace.map((entry) => entry.kind)).toEqual(["status", "status", "damage", "status", "status", "block"]);
+    expect(result.trace[2]).toMatchObject({ requested: 9 });
+  });
+
+  it("cleanses debuffs while retaining buffs and restores the resulting state", () => {
+    const run = freshRun();
+    let pending = enqueueEffectAction(queue(), run, 0, { kind: "status", target: player, status: "strength", delta: 3 });
+    pending = enqueueEffectAction(pending, run, 0, { kind: "status", target: player, status: "weak", delta: 2 });
+    pending = enqueueEffectAction(pending, run, 0, { kind: "status", target: player, status: "poison", delta: 2 });
+    pending = enqueueEffectAction(pending, run, 0, { kind: "cleanse", target: player, status: "all_debuffs" });
+    const result = resolveDueEffects(run, pending, 0, DEFAULT_GAME_CONFIG);
+    expect(statusAmount(result.run, player, "strength")).toBe(3);
+    expect(statusAmount(result.run, player, "weak")).toBe(0);
+    expect(statusAmount(result.run, player, "poison")).toBe(0);
+    expect(JSON.parse(JSON.stringify(result.run))).toEqual(result.run);
+    expect(() => enqueueEffectAction(queue(), run, 0, { kind: "status", target: enemy, status: "poison", delta: 0.5 })).toThrow(RangeError);
   });
 });
