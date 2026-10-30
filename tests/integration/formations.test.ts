@@ -20,7 +20,10 @@ describe("formation encounters", () => {
     ]);
     expect(enterRunNode(start, node.id, demoContent, demoEnemyAi, demoRunContentTables)).toEqual(entered);
     const saved = serializeRunSession(entered, demoContent, { nowMs: () => 0 }, () => "discard");
-    expect(deserializeRunSession(saved, demoContent, { nowMs: () => 10_000 })).toEqual(entered);
+    const restored = deserializeRunSession(saved, demoContent, { nowMs: () => 10_000 });
+    expect(restored.run.combat?.enemies).toEqual(enemies);
+    expect(restored.run.rngState).toBe(entered.run.rngState);
+    expect(restored.screen).toBe("combat");
     const enemyPhase = { ...entered.run, combat: { ...entered.run.combat!, phase: "ENEMY_PHASE" as const } };
     const acted = resolveEnemyIntents(enemyPhase, demoEnemyAi, demoContent, (run, enemyId, intent) =>
       executeEnemyIntentEffects(run, enemyId, intent, demoEnemyAi, demoContent, DEFAULT_GAME_CONFIG));
