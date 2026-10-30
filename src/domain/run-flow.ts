@@ -12,7 +12,8 @@ import { ascensionEnemyHp, ascensionStartingHp, assertAscensionLevel } from "./a
 import { generateCardRewards, type RewardGenerator } from "./card-rewards.js";
 
 export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "treasure" | "won" | "lost";
-export type EncounterPool = Readonly<Record<"combat" | "elite" | "boss", readonly string[]>>;
+export type EncounterCandidate = string | { readonly id: string; readonly enemyIds: readonly string[] };
+export type EncounterPool = Readonly<Record<"combat" | "elite" | "boss", readonly EncounterCandidate[]>>;
 export type EncounterTable = EncounterPool | { readonly byAct: Readonly<Record<1 | 2 | 3, EncounterPool>> };
 export type RunContentTables = { readonly enemies: EncounterTable; readonly events?: EventPools };
 
@@ -56,20 +57,30 @@ export function availableRunNodes(session: RunSession): MapNode[] {
   return availableNextNodes(session.run.map);
 }
 
-function createEncounter(run: RunState, enemyId: string, content: ContentRegistry, ai: EnemyAiRegistry): RunState {
-  const definition = content.enemies.find((item) => item.id === enemyId);
-  if (!definition) throw new RangeError(`unknown encounter enemy: ${enemyId}`);
+function createEncounter(run: RunState, encounter: string | readonly string[], content: ContentRegistry, ai: EnemyAiRegistry): RunState {
+  const enemyIds = typeof encounter === "string" ? [encounter] : encounter;
+  if (enemyIds.length < 1 || enemyIds.length > 5) throw new RangeError("encounter must have 1–5 enemies");
+  const definitions = enemyIds.map((enemyId) => {
+    const definition = content.enemies.find((item) => item.id === enemyId);
+    if (!definition) throw new RangeError(`unknown encounter enemy: ${enemyId}`);
+    return definition;
+  });
   const cards = run.deck.map((card, index) => ({ ...card, instanceId: `combat-${index + 1}` }));
   const shuffled = shuffle(run.rngState, cards.map((card) => card.instanceId));
-  const enemyInstanceId = "enemy-1";
   const combat: CombatState = {
     phase: "PLAYER_START", turn: 1, cards, drawPile: shuffled.items,
     hand: [], discardPile: [], exhaustPile: [], resolvingPile: [],
-    enemies: [{ instanceId: enemyInstanceId, enemyId, hp: ascensionEnemyHp(definition.maxHp, run.ascensionLevel), maxHp: ascensionEnemyHp(definition.maxHp, run.ascensionLevel), block: 0, intentId: definition.intentIds[0]!, intentHistoryIds: [] }],
+    enemies: definitions.map((definition, index) => ({
+      instanceId: `enemy-${index + 1}`, enemyId: definition.id,
+      hp: ascensionEnemyHp(definition.maxHp, run.ascensionLevel), maxHp: ascensionEnemyHp(definition.maxHp, run.ascensionLevel),
+      block: 0, intentId: definition.intentIds[0]!, intentHistoryIds: [],
+    })),
     typing: createTypingState([]), clock: { remainingMs: 0, lastEventAtMs: 0, paused: false }, nextTurnBonusMs: 0,
     statuses: { player: {}, enemies: {} },
   };
-  return selectEnemyIntent({ ...run, rngState: shuffled.state, player: { ...run.player, block: 0 }, combat }, enemyInstanceId, ai, content, 1);
+  let entered: RunState = { ...run, rngState: shuffled.state, player: { ...run.player, block: 0 }, combat };
+  for (const enemy of combat.enemies) entered = selectEnemyIntent(entered, enemy.instanceId, ai, content, 1);
+  return entered;
 }
 
 export function enterRunNode(session: RunSession, nextNodeId: string, content: ContentRegistry, ai: EnemyAiRegistry, tables: EncounterTable | RunContentTables, economy: EconomyOptions = DEFAULT_ECONOMY_OPTIONS, treasureOptions: TreasureOptions = DEFAULT_TREASURE_OPTIONS): RunSession {
@@ -99,9 +110,11 @@ export function enterRunNode(session: RunSession, nextNodeId: string, content: C
   const pool = encounterPool(encounters, next.act)[next.kind];
   if (!pool.length) throw new RangeError(`empty encounter pool for ${next.kind}`);
   const draw = randomInt(session.run.rngState, pool.length);
-  const enemyId = pool[draw.value]!;
+  const choice = pool[draw.value]!;
+  if (typeof choice !== "string" && !choice.id.trim()) throw new RangeError("encounter formation ID is empty");
+  const enemyIds = typeof choice === "string" ? choice : choice.enemyIds;
   const moved = moveToConnectedNode({ ...session.run, rngState: draw.state }, next.id);
-  return { ...session, run: createEncounter(moved, enemyId, content, ai), screen: "combat", rewardCardIds: [] };
+  return { ...session, run: createEncounter(moved, enemyIds, content, ai), screen: "combat", rewardCardIds: [] };
 }
 
 export function chooseRunTreasure(session: RunSession, offerId: string | null, content: ContentRegistry, config: GameConfig = DEFAULT_GAME_CONFIG): RunSession {

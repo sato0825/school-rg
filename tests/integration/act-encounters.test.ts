@@ -22,6 +22,7 @@ describe("Act-specific encounters", () => {
         const entered = enterRunNode(session, fight.id, demoContent, demoEnemyAi, demoEncounterTable);
         const enemy = entered.run.combat?.enemies[0];
         expect(enemy?.enemyId).toBe(expected[act][kind]);
+        if (act === 1 && kind === "elite") expect(entered.run.combat?.enemies.map((item) => item.enemyId)).toEqual(["hall-monitor", "paper-scrap"]);
         expect(demoContent.enemies.find((item) => item.id === enemy?.enemyId)?.intentIds).toContain(enemy?.intentId);
         expect(demoContent.intents.find((item) => item.id === enemy?.intentId)).toBeDefined();
         expect(enterRunNode(session, fight.id, demoContent, demoEnemyAi, demoEncounterTable)).toEqual(entered);
