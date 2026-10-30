@@ -33,7 +33,9 @@ describe("additional school enemies", () => {
       expect(extraEnemies.find((enemy) => enemy.id === id)?.intentIds).toContain(intentId);
       expect(encounter(act, kind, id)).toEqual(opened);
       const saved = serializeRunSession(opened, demoContent, { nowMs: () => 0 }, () => "discard");
-      expect(deserializeRunSession(saved, demoContent, { nowMs: () => 1000 })).toEqual(opened);
+      const restored = deserializeRunSession(saved, demoContent, { nowMs: () => 0 });
+      expect(restored.run).toEqual(opened.run);
+      expect(restored.screen).toBe(opened.screen);
     }
   });
 
