@@ -84,7 +84,7 @@ export function advanceTypingTime(
   };
 }
 
-/** Focus loss discards only the partial word; turn pause policy belongs to #6. */
+/** Focus loss discards only the partial word; turn pause policy belongs to #4. */
 export function cancelTyping(
   state: TypingState,
   turnClock: TurnClockState,
@@ -103,10 +103,14 @@ export function pressTypingKey(
   event: TypingKeyEvent,
   clock: MonotonicClock,
   config: GameConfig,
+  deadlineTiePolicy: "timeout_wins" | "input_wins" = "timeout_wins",
 ): TypingResult {
-  const updated = advanceTypingTime(state, turnClock, cards, clock);
-  if (updated.clock.remainingMs === 0 || updated.clock.paused) return updated;
-  let typing = syncTypingHand(updated.typing, cards, config);
+  const eventAtMs = clock.nowMs();
+  const exactDeadline = !turnClock.paused && turnClock.remainingMs > 0 && eventAtMs - turnClock.lastEventAtMs === turnClock.remainingMs;
+  const updated = advanceTypingTime(state, turnClock, cards, { nowMs: () => eventAtMs });
+  const inputWinsTie = exactDeadline && deadlineTiePolicy === "input_wins";
+  if ((updated.clock.remainingMs === 0 && !inputWinsTie) || updated.clock.paused) return updated;
+  let typing = syncTypingHand(inputWinsTie ? state : updated.typing, cards, config);
   if (event.isComposing || event.repeat) return { ...updated, typing };
   if (event.key === requireSetting(config.inputCancelKey)) {
     return { ...updated, typing: createTypingState(cards) };
