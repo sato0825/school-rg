@@ -18,14 +18,19 @@ export function drawCards(
   combat: CombatState,
   rngState: RandomState,
   count: number,
+  maxHandSize: number | null = null,
 ): { combat: CombatState; rngState: RandomState; drawnIds: string[] } {
   if (!Number.isSafeInteger(count) || count < 0) throw new RangeError("draw count must be a nonnegative integer");
+  if (maxHandSize !== null && (!Number.isSafeInteger(maxHandSize) || maxHandSize < 1 || combat.hand.length > maxHandSize)) {
+    throw new RangeError("invalid hand limit");
+  }
   let currentRngState = rngState;
   let drawPile = [...combat.drawPile];
   let discardPile = [...combat.discardPile];
   const hand = [...combat.hand];
   const drawnIds: string[] = [];
   for (let index = 0; index < count; index++) {
+    if (maxHandSize !== null && hand.length >= maxHandSize) break;
     if (drawPile.length === 0 && discardPile.length > 0) {
       const shuffled = shuffle(currentRngState, discardPile);
       currentRngState = shuffled.state;

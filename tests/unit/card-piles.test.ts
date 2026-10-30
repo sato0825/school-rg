@@ -45,6 +45,17 @@ describe("card piles", () => {
     expect(() => drawCards(before, 42, -1)).toThrow(RangeError);
   });
 
+  it("leaves undrawn cards in place when the provisional hand cap is reached", () => {
+    const before = combatWithPiles();
+    const capped = drawCards(before, 42, 4, 2);
+    expect(capped.drawnIds).toEqual(["b"]);
+    expect(capped.combat.hand).toEqual(["c", "b"]);
+    expect(capped.combat.drawPile).toEqual(["a"]);
+    expect(capped.combat.discardPile).toEqual(["d"]);
+    expect(placedIds(capped.combat)).toEqual(["a", "b", "c", "d"]);
+    expect(() => drawCards(before, 42, 1, 0)).toThrow(RangeError);
+  });
+
   it("does not auto-draw when the hand is empty", () => {
     const before = { ...combatWithPiles(), hand: [], typing: { ...combatWithPiles().typing, candidateCardInstanceIds: [] }, discardPile: ["c", "d"] };
     const settled = settleHandAtTurnEnd(before, () => "discard");

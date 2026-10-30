@@ -63,9 +63,10 @@ export function beginPlayerTurn(run: RunState, clock: MonotonicClock, config: Ga
   const outcome = assessCombatOutcome(tickStatuses(run, "player_start", config).run);
   if (outcome.combat!.phase !== "PLAYER_START") return outcome;
   const combat = outcome.combat!;
-  const opening = combat.turn === 1 ? prepareOpeningHand(combat, content) : { combat, innateIds: [] };
+  const handLimit = requireSetting(config.handLimit);
+  const opening = combat.turn === 1 ? prepareOpeningHand(combat, content, handLimit) : { combat, innateIds: [] };
   const count = requireSetting(config.cardsDrawnPerTurn) - (requireSetting(config.innateCountsTowardDraw) ? opening.innateIds.length : 0);
-  const drawn = drawCards(opening.combat, outcome.rngState, Math.max(0, count));
+  const drawn = drawCards(opening.combat, outcome.rngState, Math.max(0, count), handLimit);
   const duration = Math.min(requireSetting(config.timeCapMs), requireSetting(config.playerTurnMs) + combat.nextTurnBonusMs);
   if (!Number.isSafeInteger(duration)) throw new RangeError("turn duration overflow");
   return {

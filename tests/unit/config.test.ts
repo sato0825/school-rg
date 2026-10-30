@@ -14,7 +14,7 @@ describe("provisional game configuration", () => {
   });
 
   it("refuses unresolved decisions and invalid config values", () => {
-    expect(() => requireSetting(DEFAULT_GAME_CONFIG.handLimit)).toThrow("issue #8");
+    expect(requireSetting(DEFAULT_GAME_CONFIG.handLimit)).toBe(10);
     expect(() => parseGameConfig({ ...DEFAULT_GAME_CONFIG, handLimit: { status: "provisional", value: 0, source: DEFAULT_GAME_CONFIG.handLimit.source, ownerIssue: 7 } })).toThrow();
     expect(() => parseGameConfig({ ...DEFAULT_GAME_CONFIG, clubNames: { status: "provisional", value: ["one"], source: DEFAULT_GAME_CONFIG.clubNames.source, ownerIssue: 12 } })).toThrow();
   });
