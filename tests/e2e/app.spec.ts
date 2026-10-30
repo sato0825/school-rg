@@ -391,6 +391,34 @@ test("a potion is typed in its own mode and consumed after extending the active 
   expect(after).toBeGreaterThan(before + 2);
 });
 
+test("three new potions can be typed in combat with visible block, damage and healing", async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 390, height: 844 });
+  const base = createRunSession(42, "literature-demo", demoContent);
+  const from: MapNode = { id: "potion-start", act: 1, floor: 0, kind: "start", nextIds: ["potion-fight"] };
+  const fight: MapNode = { id: "potion-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+  const mapped = { ...base, run: { ...base.run, map: { currentNodeId: from.id, nodes: [from, fight] } }, completedNodeIds: [from.id] };
+  const entered = enterRunNode(mapped, fight.id, demoContent, demoEnemyAi, { combat: ["paper-heap"], elite: ["paper-heap"], boss: ["final-exam"] });
+  const stocked = { ...entered, run: { ...entered.run, potionIds: ["potion-splash", "potion-guard", "potion-tea"], player: { ...entered.run.player, hp: 20 } } };
+  const saved = serializeRunSession(stocked, demoContent, { nowMs: () => 0 }, () => "discard");
+  await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+  await page.goto("/");
+  await expect(page.locator(".potion-slot")).toHaveCount(3);
+  if (process.env.SCHOOL_RG_CAPTURE_POTIONS === "1") {
+    await page.screenshot({ path: "docs/content/previews/issue118-potions-narrow-20261031.png", fullPage: true });
+  }
+  await page.keyboard.press("F2");
+  await page.keyboard.type("splash");
+  await expect(page.locator(".enemy-hud")).toContainText("22/26");
+  await page.keyboard.press("F2");
+  await page.keyboard.type("shield");
+  await expect(page.locator(".player-hud")).toContainText("◇ 8");
+  await page.keyboard.press("F2");
+  await page.keyboard.type("tea");
+  await expect(page.locator(".player-hud")).toContainText("23/40");
+  await expect(page.locator(".potion-slot")).toHaveCount(0);
+});
+
 test("the combatants and controls remain visible on a narrow viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await startDemoRun(page);
