@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { Buffer } from "node:buffer";
+import console from "node:console";
 import { readFile, access } from "node:fs/promises";
 import { resolve, relative, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
