@@ -43,6 +43,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let run: RunState = session.run;
   const previewArt = new URLSearchParams(window.location.search).get("artPreview") === "1";
   const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
+  const artPreloads = Object.values(view.art.heroPosesByClubId ?? {}).flatMap((poses) => Object.values(poses)).map((url) => {
+    const image = new Image();
+    image.src = url;
+    return image;
+  });
   let enemyPending = false;
   let generation = 0;
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
@@ -336,6 +341,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   render();
   if (session.screen === "combat") enemyPhase();
   return () => {
+    artPreloads.length = 0;
     window.clearInterval(timer);
     window.clearInterval(saveTimer);
     root.removeEventListener("click", onClick);
