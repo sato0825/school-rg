@@ -31,6 +31,8 @@ export function describeCard(card: Card, content: ContentRegistry): string {
       case "block": return `防御 ${value}`;
       case "draw": return `${value}枚ドロー`;
       case "apply_poison": return `毒 ${value}`;
+      case "apply_weak": return `弱体 ${effect.parameters.turns}`;
+      case "damage_if_status": return `攻撃 ${value} · 毒時 ${effect.parameters.conditionalAmount}`;
       case "add_time": return `時間 +${value / 1_000}秒`;
       case "thorns": return `反撃 ${value}`;
       case "retrieve_discard": return "捨て札を1枚回収";

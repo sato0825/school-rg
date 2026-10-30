@@ -28,6 +28,11 @@ const conditional = z.strictObject({
   condition: z.literal("target_hp_at_most_percent"),
   thresholdPercent: z.number().int().min(0).max(100),
 });
+const conditionalStatus = z.strictObject({
+  status: z.enum(["poison", "weak"]),
+  amount: z.number().int().nonnegative(),
+  conditionalAmount: z.number().int().nonnegative(),
+});
 const removeBlock = z.strictObject({ all: z.literal(true) });
 const perTurn = z.strictObject({ amountPerTurn: z.number().int().nonnegative() });
 const payment = z.strictObject({ hpCost: z.number().int().nonnegative(), drawCount: z.number().int().nonnegative() });
@@ -106,6 +111,12 @@ function resolveEffect(
       const target = targetEnemy(run, selection.targetEnemyInstanceId);
       const enemy = run.combat!.enemies.find((item) => item.instanceId === selection.targetEnemyInstanceId)!;
       const active = enemy.hp * 100 <= enemy.maxHp * parameters.thresholdPercent;
+      return applyAction(run, { kind: "attack", source: player, target, amount: active ? parameters.conditionalAmount : parameters.amount, hits: 1, pierceBlock: false }, nowMs, config);
+    }
+    case "damage_if_status": {
+      const parameters = conditionalStatus.parse(effect.parameters);
+      const target = targetEnemy(run, selection.targetEnemyInstanceId);
+      const active = statusAmount(run, target, parameters.status) > 0;
       return applyAction(run, { kind: "attack", source: player, target, amount: active ? parameters.conditionalAmount : parameters.amount, hits: 1, pierceBlock: false }, nowMs, config);
     }
     case "remove_block": {

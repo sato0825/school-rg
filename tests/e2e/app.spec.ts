@@ -13,7 +13,7 @@ async function enterNextNode(page: import("@playwright/test").Page): Promise<voi
 }
 
 async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
-  const priorities = ["heavy strike", "sweep", "proof", "verse", "strike", "jot", "finish", "poison", "leaf", "outline", "defend", "counter", "draw", "boost", "delay"];
+  const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "outline", "defend", "counter", "draw", "boost", "delay"];
   for (let turn = 0; turn < 12; turn++) {
     for (let use = 0; use < 12; use++) {
       if (await page.locator(completion).count()) return;
@@ -128,6 +128,20 @@ test("literature starter can activate a unique card by typing its word", async (
   await enterNextNode(page);
   const words = await page.locator(".card-word").allTextContents();
   const unique = ["jot", "leaf", "verse", "outline"].find((word) => words.includes(word));
+  expect(unique).toBeDefined();
+  await page.keyboard.type(unique!);
+  await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
+});
+
+test("science club starts with a distinct deck and types a preparation card", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /科学部/ }).click();
+  await expect(page.locator(".map-stats")).toContainText("38/38");
+  await enterNextNode(page);
+  await expect(page.locator(".relic-row")).toContainText("観察眼鏡");
+  const words = await page.locator(".card-word").allTextContents();
+  const unique = ["sample", "observe", "reaction", "formula"].find((word) => words.includes(word));
   expect(unique).toBeDefined();
   await page.keyboard.type(unique!);
   await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
