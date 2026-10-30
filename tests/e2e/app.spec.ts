@@ -29,11 +29,13 @@ async function scriptActiveEvent(page: import("@playwright/test").Page, eventId:
 
 async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
   const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "thrust", "riposte", "final cut", "beat", "chorus", "crescendo", "mural", "sketch", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "parry", "stance", "kata", "tempo", "sync", "rest", "frame", "outline", "defend", "counter", "draw", "boost", "delay"];
+  const artPriorities = ["frame", "defend", ...priorities.filter((word) => word !== "frame" && word !== "defend")];
+  const isArt = (await page.locator(".player-hud").innerText()).includes("美術部");
   for (let turn = 0; turn < 20; turn++) {
     for (let use = 0; use < 12; use++) {
       if (await page.locator(completion).count()) return;
       const words = await page.locator(".card-word").allInnerTexts();
-      const word = priorities.find((item) => words.includes(item));
+      const word = (isArt ? artPriorities : priorities).find((item) => words.includes(item));
       if (!word) break;
       // Keep the long-run bot independent of CI host key-dispatch latency.
       await page.evaluate((value) => {
@@ -511,14 +513,15 @@ for (const [clubId, label, name] of [
     const hero = page.locator(".hero-art");
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
     await expect(page.locator(".intent-ticket")).toContainText("紙片が飛ぶ");
-    await page.keyboard.type(await page.locator(".card-word").first().innerText());
+    const attack = page.locator(".card").filter({ has: page.locator(".card-kind").filter({ hasText: "ATTACK" }) }).first();
+    await page.keyboard.type(await (await attack.count() ? attack.locator(".card-word") : page.locator(".card-word").first()).innerText());
     const activateVersion = name === "kendo" ? "v3" : "v2";
     const hitVersion = name === "art" ? "v3" : "v2";
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-activate-candidate-${activateVersion}`));
     await page.clock.runFor(420);
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
     // A typed defensive card may absorb the first attack; advance until HP is actually lost.
-    for (let turn = 0; turn < 4 && !((await hero.getAttribute("src")) ?? "").includes(`${name}-hit-candidate-${hitVersion}`); turn++) {
+    for (let turn = 0; turn < 6 && !((await hero.getAttribute("src")) ?? "").includes(`${name}-hit-candidate-${hitVersion}`); turn++) {
       await page.clock.runFor(10_000);
       await page.clock.runFor(650);
     }
