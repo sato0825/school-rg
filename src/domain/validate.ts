@@ -63,6 +63,13 @@ export function parseContentRegistry(value: unknown): ContentRegistry {
   content.clubs.forEach((club, i) => {
     club.starterCardIds.forEach((cardId, j) => known(cardId, cards, `clubs.${i}.starterCardIds.${j}`, issues));
     club.cardPoolIds.forEach((cardId, j) => known(cardId, cards, `clubs.${i}.cardPoolIds.${j}`, issues));
+    const signatureIds = new Set<string>();
+    club.signatureCardIds?.forEach((cardId, j) => {
+      known(cardId, cards, `clubs.${i}.signatureCardIds.${j}`, issues);
+      if (!club.cardPoolIds.includes(cardId)) issues.push({ code: "INVALID_STATE", path: `clubs.${i}.signatureCardIds.${j}`, message: `Signature card is outside the club pool: ${cardId}` });
+      if (signatureIds.has(cardId)) issues.push({ code: "DUPLICATE_ID", path: `clubs.${i}.signatureCardIds.${j}`, message: `Duplicate signature card: ${cardId}` });
+      signatureIds.add(cardId);
+    });
     if (club.startingRelicId) known(club.startingRelicId, relics, `clubs.${i}.startingRelicId`, issues);
     club.startingPotionIds?.forEach((potionId, j) => known(potionId, new Set(content.potions.map((potion) => potion.id)), `clubs.${i}.startingPotionIds.${j}`, issues));
   });

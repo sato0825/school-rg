@@ -68,6 +68,7 @@ export const ClubSchema = z.strictObject({
   startingHp: positiveInt,
   starterCardIds: z.array(id).min(1),
   cardPoolIds: z.array(id).min(1),
+  signatureCardIds: z.array(id).optional(),
   startingRelicId: id.nullable(),
   startingPotionIds: z.array(id).optional(),
 });

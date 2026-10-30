@@ -58,3 +58,5 @@
   .mock-ally-body{width:11vw;min-width:38px;height:82%;padding:3px;font-size:7px}
   .layout-preview-label{top:5px;left:53%;max-width:45%;font-size:8px;white-space:normal;text-align:center}
 }
+.reward-card.signature{border-color:#688fa7;background:linear-gradient(150deg,#fffef8,#e3f2f1)}
+.reward-card.signature small{color:#2d6d7b}

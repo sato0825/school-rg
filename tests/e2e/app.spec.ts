@@ -344,6 +344,8 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
     if (encounter === 2) await expect(page.locator(".enemy-hud")).toContainText("追試の番人");
     await typeThroughBattle(page);
     await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
+    await expect(page.locator(".reward-card.signature")).not.toHaveCount(0);
+    await expect(page.locator(".reward-card.signature").first()).toContainText("部活固有");
     if (encounter === 0) {
       await page.locator(".reward-card").first().focus();
       await page.keyboard.press("Enter");
