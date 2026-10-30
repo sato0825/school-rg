@@ -153,6 +153,20 @@ test("an event choice can start typed combat and cannot be entered twice", async
   await expect(page.locator(".map-node.current")).toBeDisabled();
 });
 
+test("an event potion can be typed during combat and damages its enemy target", async ({ page }) => {
+  await page.clock.install();
+  await page.goto("/");
+  await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
+  await page.getByRole("button", { name: "購買を出る" }).click();
+  await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
+  await page.locator("[data-action=event-choice][data-id=ink]").click();
+  await expect(page.locator(".potion-slot")).toHaveCount(3);
+  await page.keyboard.press("F2");
+  await page.keyboard.type("ink");
+  await expect(page.locator(".enemy-hud")).toContainText("19/26");
+  await expect(page.locator(".potion-slot")).toHaveCount(2);
+});
+
 test("reload preserves a shop purchase and an unfinished typed card", async ({ page }) => {
   await page.goto("/");
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).click();

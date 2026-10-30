@@ -44,6 +44,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
         { id: "help", label: "掲示物を整理する · 15G", requires: [], effects: [{ kind: "gold", amount: 15 }] },
         { id: "borrow", label: "資料を借りる · 10Gでdrawを追加", requires: [{ kind: "gold_at_least", amount: 10 }], effects: [{ kind: "gold", amount: -10 }, { kind: "add_card", cardId: "BASE-007" }] },
         { id: "fight", label: "散らかった答案に立ち向かう", requires: [], effects: [{ kind: "battle", enemyId: "paper-heap" }] },
+        { id: "ink", label: "インクの小瓶を拾って戦う", requires: [{ kind: "potion_slot_available" }], effects: [{ kind: "add_potion", potionId: "potion-ink" }, { kind: "battle", enemyId: "paper-heap" }] },
       ],
     },
     {
@@ -52,7 +53,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
         { id: "pass", label: "静かに通り過ぎる · 5G", requires: [], effects: [{ kind: "gold", amount: 5 }] },
         { id: "recover", label: "落ち着いて手当てする · HP4回復", requires: [{ kind: "hp_at_most_percent", percent: 50 }], effects: [{ kind: "hp", amount: 4 }] },
         { id: "bookmark", label: "しおりを見つける · レリックを取得", requires: [], effects: [{ kind: "add_relic", relicId: "library-bookmark" }] },
-        { id: "ink", label: "インクの小瓶を拾う", requires: [{ kind: "potion_slot_available" }], effects: [{ kind: "add_potion", potionId: "potion-ink" }] },
+        { id: "ink", label: "インクの小瓶を拾って戦う", requires: [{ kind: "potion_slot_available" }], effects: [{ kind: "add_potion", potionId: "potion-ink" }, { kind: "battle", enemyId: "paper-heap" }] },
         { id: "fight", label: "箱を開けて戦う", requires: [], effects: [{ kind: "battle", enemyId: "paper-heap" }] },
       ],
     },

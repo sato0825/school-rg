@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_GAME_CONFIG, parseGameConfig } from "../../src/domain/config.js";
+import { availableEventChoices, resolveEventChoice } from "../../src/domain/events.js";
 import { collectPotion, discardPotion, selectPotionEnemy, setPotionInputActive, submitPotionKey } from "../../src/domain/potions.js";
 import { parseRunState } from "../../src/domain/validate.js";
 import { validContent, validRun } from "../fixtures/domain.js";
+import { demoContent } from "../../src/content/demo-battle.js";
 
 const disposition = () => "discard" as const;
 
@@ -35,6 +37,13 @@ describe("typed potion use", () => {
     expect(() => collectPotion(full, "bandage", content, DEFAULT_GAME_CONFIG)).toThrow("full");
     expect(discardPotion(full, 1).potionIds).toEqual(["clock", "ink"]);
     expect(() => discardPotion(full, 3)).toThrow("slot");
+  });
+
+  it("uses the configured slot count for event availability and acquisition", () => {
+    const config = parseGameConfig({ ...DEFAULT_GAME_CONFIG, potionSlots: { ...DEFAULT_GAME_CONFIG.potionSlots, value: 2 } });
+    const run = { ...structuredClone(validRun), potionIds: ["potion-time", "potion-heal"], event: { nodeId: "node-start", eventId: "collection-box", choiceId: null, pendingCombat: false } };
+    expect(availableEventChoices(run, demoContent, config).find((item) => item.choice.id === "ink")?.available).toBe(false);
+    expect(() => resolveEventChoice(run, "ink", demoContent, config)).toThrow("conditions");
   });
 
   it("ignores a wrong key, uses a time potion once, and preserves the remaining clock", () => {

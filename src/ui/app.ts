@@ -169,7 +169,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (session.screen === "event" && action === "event-choice") {
         const relicCount = run.relicIds.length;
-        session = chooseRunEventChoice(session, id, demoContent, demoEnemyAi);
+        session = chooseRunEventChoice(session, id, demoContent, demoEnemyAi, config);
         run = session.run;
         for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
         if (session.screen === "combat") startCombat();
