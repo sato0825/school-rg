@@ -30,7 +30,7 @@ export function renderRunMap(root: HTMLElement, session: RunSession, art: Battle
     const visited = session.completedNodeIds.includes(node.id);
     return `<button type="button" class="map-node ${node.id === current.id ? "current" : ""} ${visited ? "visited" : ""} ${enabled ? "available" : ""}" data-action="enter-node" data-id="${node.id}" ${enabled ? "" : "disabled"} aria-label="${floor}階 ${html(kindNames[node.kind])}${enabled ? " 選択可能" : ""}"><span>${kindIcons[node.kind]}</span><small>${html(kindNames[node.kind])}</small></button>`;
   }).join("")}</div></div>`).join("");
-  root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><span>ROUTE SELECT</span><h2>次の行き先を選ぶ</h2><p>接続された場所だけに進めます。戦闘ではカード名を直接タイプします。</p><div class="map-stats">♥ ${run.player.hp}/${run.player.maxHp} · デッキ ${run.deck.length}枚 · シード ${run.seed}</div></div><div class="map-scroll" aria-label="Act ${run.act} マップ">${rows}</div></section>`, art);
+  root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><span>ROUTE SELECT</span><h2>次の行き先を選ぶ</h2><p>接続された場所だけに進めます。戦闘ではカード名を直接タイプします。</p><div class="map-stats">♥ ${run.player.hp}/${run.player.maxHp} · ${run.gold}G · デッキ ${run.deck.length}枚 · シード ${run.seed}</div></div><div class="map-scroll" aria-label="Act ${run.act} マップ">${rows}</div></section>`, art);
 }
 
 export function renderRunReward(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
@@ -38,7 +38,29 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
     const card = content.cards.find((item) => item.id === cardId)!;
     return `<button type="button" class="reward-card" data-action="reward-card" data-id="${card.id}"><small>${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span></button>`;
   }).join("");
-  root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><p>選んだカードはこのランのデッキへ加わります。</p><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · デッキ ${session.run.deck.length}枚</div></section>`, art);
+  root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><p>選んだカードはこのランのデッキへ加わります。</p><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art);
+}
+
+export function renderRunShop(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
+  const shop = session.run.shop;
+  if (!shop) throw new Error("shop screen requires active stock");
+  const offers = shop.offers.map((offer) => {
+    const card = content.cards.find((item) => item.id === offer.cardId)!;
+    return `<button type="button" class="reward-card" data-action="buy-offer" data-id="${offer.offerId}" ${offer.purchased ? "disabled" : ""}><small>${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span><b>${offer.purchased ? "購入済み" : `${offer.price}G`}</b></button>`;
+  }).join("");
+  const removal = session.run.deck.map((instance) => {
+    const card = content.cards.find((item) => item.id === instance.cardId)!;
+    return `<button type="button" class="mini-choice" data-action="remove-shop-card" data-id="${instance.instanceId}" ${shop.removalUsed ? "disabled" : ""}>${html(card.input.text)}${instance.upgraded ? "+" : ""}</button>`;
+  }).join("");
+  root.innerHTML = shell("購買", `<section class="reward-panel economy-panel"><span class="eyebrow">SCHOOL SHOP</span><h2>購買</h2><p>所持金 ${session.run.gold}G。商品は一度ずつ購入できます。</p><div class="reward-options">${offers}</div><div class="economy-section"><h3>カード削除 · ${shop.removalPrice}G</h3><div class="choice-list">${removal}</div></div><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button></section>`, art);
+}
+
+export function renderRunRest(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
+  const choices = session.run.deck.filter((instance) => !instance.upgraded).map((instance) => {
+    const card = content.cards.find((item) => item.id === instance.cardId)!;
+    return `<button type="button" class="mini-choice" data-action="rest-upgrade" data-id="${instance.instanceId}">${html(card.input.text)}</button>`;
+  }).join("");
+  root.innerHTML = shell("休憩", `<section class="reward-panel economy-panel"><span class="eyebrow">REST STOP</span><h2>休憩</h2><p>回復するか、デッキのカードを1枚強化します。</p><div class="rest-actions"><button type="button" class="skip-reward" data-action="rest-heal">休んで回復 · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</button><div class="economy-section"><h3>強化するカード</h3><div class="choice-list">${choices || "強化可能なカードなし"}</div></div></div></section>`, art);
 }
 
 export function renderRunResult(root: HTMLElement, session: RunSession, art: BattleArt): void {

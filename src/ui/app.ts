@@ -2,14 +2,14 @@ import { useCardEffects } from "../domain/card-effects.js";
 import { DEFAULT_GAME_CONFIG, requireSetting } from "../domain/config.js";
 import { resolveEnemyIntents } from "../domain/enemy-ai.js";
 import { executeEnemyIntentEffects } from "../domain/enemy-intent-effects.js";
-import { chooseRunReward, createRunSession, enterRunNode, settleRunCombat } from "../domain/run-flow.js";
+import { buyRunShopCard, chooseRunReward, createRunSession, enterRunNode, leaveRunShop, removeRunShopCard, settleRunCombat, useRunRest } from "../domain/run-flow.js";
 import type { MapGenerationOptions } from "../domain/map-generation.js";
 import type { RunState } from "../domain/schema.js";
 import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, pausePlayerTurn, resumePlayerTurn, selectTypedCard, selectTypedEnemyTarget, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../domain/turn-state.js";
 import { demoContent, demoEncounterTable, demoEnemyAi } from "../content/demo-battle.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { demoBattleArt } from "./demo-art.js";
-import { renderRunMap, renderRunResult, renderRunReward } from "./run-view.js";
+import { renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop } from "./run-view.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = () => "discard" as const;
@@ -26,6 +26,8 @@ export function mountApp(root: HTMLElement): () => void {
   const render = () => {
     if (session.screen === "map") renderRunMap(root, session, demoBattleArt);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
+    else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt);
+    else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt);
     else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt);
     else renderBattle(root, run, demoContent, view);
   };
@@ -125,6 +127,20 @@ export function mountApp(root: HTMLElement): () => void {
       }
       if (session.screen === "reward" && (action === "reward-card" || action === "skip-reward")) {
         session = chooseRunReward(session, action === "skip-reward" ? null : id);
+        run = session.run;
+        render();
+        return;
+      }
+      if (session.screen === "shop") {
+        if (action === "buy-offer") session = buyRunShopCard(session, id);
+        else if (action === "remove-shop-card") session = removeRunShopCard(session, id);
+        else if (action === "leave-shop") session = leaveRunShop(session);
+        run = session.run;
+        render();
+        return;
+      }
+      if (session.screen === "rest" && (action === "rest-heal" || action === "rest-upgrade")) {
+        session = useRunRest(session, action === "rest-heal" ? { kind: "heal" } : { kind: "upgrade", cardInstanceId: id });
         run = session.run;
         render();
         return;
