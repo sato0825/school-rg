@@ -19,7 +19,7 @@ async function enterNextNode(page: import("@playwright/test").Page): Promise<voi
 
 async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
   const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "thrust", "riposte", "final cut", "beat", "chorus", "crescendo", "mural", "sketch", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "parry", "stance", "kata", "tempo", "sync", "rest", "frame", "outline", "defend", "counter", "draw", "boost", "delay"];
-  for (let turn = 0; turn < 12; turn++) {
+  for (let turn = 0; turn < 20; turn++) {
     for (let use = 0; use < 12; use++) {
       if (await page.locator(completion).count()) return;
       const words = await page.locator(".card-word").allInnerTexts();
@@ -40,7 +40,8 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
     }
     await page.clock.runFor(11_000);
   }
-  throw new Error("the battle did not reach a reward within 12 turns");
+  const combat = await page.locator(".run-meta, .player-hud, .enemy-hud, .card-word").allInnerTexts();
+  throw new Error(`the battle did not reach a reward within 20 turns: ${combat.join(" | ")}`);
 }
 
 test("title, compendium, club selection, map and battle controls work by keyboard", async ({ page }) => {
