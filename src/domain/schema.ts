@@ -160,6 +160,7 @@ export const EventEffectSchema = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("gold"), amount: z.number().int() }),
   z.strictObject({ kind: z.literal("hp"), amount: z.number().int() }),
   z.strictObject({ kind: z.literal("add_card"), cardId: id }),
+  z.strictObject({ kind: z.literal("add_relic"), relicId: id }),
   z.strictObject({ kind: z.literal("battle"), enemyId: id }),
 ]);
 
@@ -186,6 +187,8 @@ export const RunStateSchema = z.strictObject({
   player: z.strictObject({ hp: nonNegativeInt, maxHp: positiveInt, block: nonNegativeInt }),
   deck: z.array(CardInstanceSchema),
   relicIds: z.array(id),
+  relicHookHistory: z.array(id).optional(),
+  relicEventCounter: nonNegativeInt.optional(),
   potionIds: z.array(id),
   gold: nonNegativeInt.default(0),
   shop: ShopStateSchema.nullable().default(null),

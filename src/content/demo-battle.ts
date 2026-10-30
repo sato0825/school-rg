@@ -5,6 +5,7 @@ import { createTypingState } from "../domain/typing.js";
 import { parseContentRegistry, parseRunState } from "../domain/validate.js";
 import type { EnemyAiRegistry } from "../domain/enemy-ai.js";
 import type { EncounterTable } from "../domain/run-flow.js";
+import type { RelicRule } from "../domain/relic-hooks.js";
 
 /** One complete combat encounter for #14. Full run content belongs to #15–#24. */
 export const demoContent: ContentRegistry = parseContentRegistry({
@@ -27,7 +28,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "paper-heap", name: "答案のかたまり", maxHp: 26, intentIds: ["paper-intent-hit", "paper-intent-guard"] },
     { id: "final-exam", name: "追試の番人", maxHp: 38, intentIds: ["exam-intent-hit", "exam-intent-guard"] },
   ],
-  relics: [],
+  relics: [{ id: "library-bookmark", name: "図書室のしおり", triggerIds: ["bookmark-acquired", "bookmark-turn", "bookmark-skill"], effectIds: [] }],
   potions: [],
   events: [
     {
@@ -43,6 +44,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
       choices: [
         { id: "pass", label: "静かに通り過ぎる · 5G", requires: [], effects: [{ kind: "gold", amount: 5 }] },
         { id: "recover", label: "落ち着いて手当てする · HP4回復", requires: [{ kind: "hp_at_most_percent", percent: 50 }], effects: [{ kind: "hp", amount: 4 }] },
+        { id: "bookmark", label: "しおりを見つける · レリックを取得", requires: [], effects: [{ kind: "add_relic", relicId: "library-bookmark" }] },
         { id: "fight", label: "箱を開けて戦う", requires: [], effects: [{ kind: "battle", enemyId: "paper-heap" }] },
       ],
     },
@@ -51,7 +53,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     id: "literature-demo", name: "文芸部", startingHp: 40,
     starterCardIds: ["BASE-001", "BASE-001", "BASE-002", "BASE-003", "BASE-007", "BASE-010", "BASE-011", "BASE-013", "BASE-017", "BASE-023"],
     cardPoolIds: baseCardDefinitions.map((card) => card.id),
-    startingRelicId: null,
+    startingRelicId: "library-bookmark",
   }],
 });
 
@@ -59,6 +61,16 @@ export const demoEnemyAi: EnemyAiRegistry = {
   "paper-heap": { kind: "sequence", intentIds: ["paper-intent-hit", "paper-intent-guard"] },
   "final-exam": { kind: "sequence", intentIds: ["exam-intent-hit", "exam-intent-guard"] },
 };
+
+/** Provisional content values; the reusable hook dispatcher lives in the domain. */
+export const demoRelicRules: RelicRule[] = [
+  { id: "bookmark-acquired", on: "acquired", priority: 0, stackMode: "aggregate", apply: (run) => ({ ...run, gold: run.gold + 2 }) },
+  { id: "bookmark-turn", on: "turn_start", priority: 0, stackMode: "each", apply: (run) => ({ ...run, player: { ...run.player, block: run.player.block + 1 } }) },
+  { id: "bookmark-skill", on: "card_used", priority: 1, stackMode: "aggregate", condition: (run, event) => {
+    const cardId = run.combat?.cards.find((card) => card.instanceId === event.cardInstanceId)?.cardId;
+    return run.combat?.phase === "PLAYER_INPUT" && !!demoContent.cards.find((card) => card.id === cardId && card.type === "skill");
+  }, apply: (run, _event, stacks) => ({ ...run, player: { ...run.player, block: run.player.block + stacks } }) },
+];
 
 export const demoEncounterTable: EncounterTable = {
   combat: ["paper-heap"],

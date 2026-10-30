@@ -115,6 +115,7 @@ export function resolveDueEffects(
   nowMs: number,
   config: GameConfig,
   counterDamage: CounterDamage = { player: 0, enemies: {} },
+  onDamage?: (run: RunState, trace: Extract<EffectTrace, { kind: "damage" | "counter" }>) => RunState,
 ): { run: RunState; queue: EventQueue<EffectEvent>; trace: EffectTrace[] } {
   if (!run.combat) throw new Error("combat is required");
   unsigned(counterDamage.player, "player counter damage");
@@ -146,6 +147,7 @@ export function resolveDueEffects(
       const first = damage(current, event.source, event.target, amount, event.pierceBlock, "damage");
       current = first.run;
       trace.push(first.trace);
+      if (onDamage && first.trace.kind === "damage" && first.trace.hpLost > 0) current = onDamage(current, first.trace);
       const defender = actor(current, event.target)!;
       const counterBase = event.target.side === "player" ? counterDamage.player : (counterDamage.enemies[event.target.instanceId] ?? 0);
       const counter = counterBase + statusAmount(current, event.target, "thorns");

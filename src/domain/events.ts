@@ -1,4 +1,5 @@
 import { randomInt } from "./random.js";
+import { acquireRelic } from "./relic-hooks.js";
 import type { ContentRegistry, EventChoice, EventCondition, EventDefinition, RunState } from "./schema.js";
 
 function nextDeckInstanceId(run: RunState): string {
@@ -64,6 +65,10 @@ export function resolveEventChoice(run: RunState, choiceId: string, content: Con
       case "add_card": {
         if (!content.cards.some((card) => card.id === effect.cardId)) throw new RangeError(`unknown event card: ${effect.cardId}`);
         current = { ...current, deck: [...current.deck, { instanceId: nextDeckInstanceId(current), cardId: effect.cardId, upgraded: false }] };
+        break;
+      }
+      case "add_relic": {
+        current = acquireRelic(current, effect.relicId, content);
         break;
       }
       case "battle": {

@@ -61,7 +61,8 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await page.getByRole("button", { name: "再開" }).click();
   await page.clock.runFor(11_000);
   await expect(page.locator(".run-meta")).toContainText("TURN 2");
-  await expect(page.locator(".player-hud")).toContainText("35/40");
+  await expect(page.locator(".player-hud")).toContainText("36/40");
+  await expect(page.locator(".relic-row")).toContainText("図書室のしおり");
   await expect(page.locator(".pile-counts")).toContainText("捨て札 5");
   await expect(page.locator(".intent-ticket")).toContainText("机を積む");
   await page.keyboard.type("sweep");

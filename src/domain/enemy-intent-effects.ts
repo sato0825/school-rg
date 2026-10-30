@@ -59,6 +59,7 @@ export function executeEnemyIntentEffects(
   ai: EnemyAiRegistry,
   content: ContentRegistry,
   config: GameConfig,
+  onPlayerHit?: (run: RunState, hpLost: number) => RunState,
 ): RunState {
   if (run.combat?.phase !== "ENEMY_PHASE") throw new Error("expected ENEMY_PHASE");
   let current = run;
@@ -88,7 +89,8 @@ export function executeEnemyIntentEffects(
       throw new RangeError(`unsupported enemy effect kind: ${effect.kind}`);
     }
     const queue = enqueueEffectAction(createEventQueue<EffectEvent>(), current, 0, action);
-    current = resolveDueEffects(current, queue, 0, config).run;
+    current = resolveDueEffects(current, queue, 0, config, undefined, (state, trace) =>
+      trace.target.side === "player" && trace.hpLost > 0 && onPlayerHit ? onPlayerHit(state, trace.hpLost) : state).run;
   }
   return current;
 }
