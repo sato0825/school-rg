@@ -125,6 +125,7 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
     });
   }
   if (run.treasure) {
+    if (run.combat || run.shop || run.event) issues.push({ code: "INVALID_STATE", path: "treasure", message: "Treasure cannot overlap another active encounter" });
     known(run.treasure.nodeId, mapIds, "treasure.nodeId", issues);
     if (run.treasure.nodeId !== run.map.currentNodeId) issues.push({ code: "INVALID_STATE", path: "treasure.nodeId", message: "Treasure is not at the current node" });
     if (run.map.nodes.find((node) => node.id === run.treasure!.nodeId)?.kind !== "treasure") issues.push({ code: "INVALID_STATE", path: "treasure.nodeId", message: "Treasure state is not on a treasure node" });

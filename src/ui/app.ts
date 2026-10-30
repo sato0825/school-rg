@@ -19,7 +19,7 @@ import { browserSaveStore, type SaveStore } from "./save-store.js";
 const config = DEFAULT_GAME_CONFIG;
 const disposition = () => "discard" as const;
 /** The visible run is a compact provisional Act with battle, shop and rest routes. */
-const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 3, elite: 0, event: 1, shop: 1, rest: 1, treasure: 0 } };
+const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 2, treasure: 2 } };
 
 export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore()): () => void {
   const clock = { nowMs: () => Math.floor(performance.now()) };
