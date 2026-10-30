@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { baseCardDefinitions, baseCardEffects, baseCardSpecs } from "../../src/content/base-cards.js";
+import { baseCardDefinitions, baseCardEffects, baseCardSpecs, provisionalUpgradePlans } from "../../src/content/base-cards.js";
 import { parseContentRegistry } from "../../src/domain/validate.js";
 import { validContent } from "../fixtures/domain.js";
 
@@ -26,6 +26,9 @@ describe("basic card catalog from the source sheet", () => {
     expect(baseCardDefinitions.filter((card) => card.target === "hand").map((card) => card.id)).toEqual(["BASE-015", "BASE-016"]);
     expect(baseCardEffects.find((effect) => effect.id === "BASE-022-effect")?.parameters).toMatchObject({ thresholdPercent: 50 });
     expect(baseCardSpecs.find((spec) => spec.id === "BASE-022")?.decisionIssue).toBe(48);
+    expect(Object.keys(provisionalUpgradePlans).sort()).toEqual(baseCardDefinitions.map((card) => card.id).sort());
+    expect(baseCardDefinitions.every((card) => (card.upgradeEffectIds?.length ?? 0) > 0)).toBe(true);
+    expect(baseCardDefinitions.every((card) => card.upgradeEffectIds!.every((effectId) => baseCardEffects.some((effect) => effect.id === effectId)))).toBe(true);
   });
 
   it("rejects a missing future upgrade effect reference", () => {

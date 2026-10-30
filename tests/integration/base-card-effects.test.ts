@@ -15,10 +15,10 @@ const content: ContentRegistry = {
   effects: [...validContent.effects, ...baseCardEffects],
 };
 
-function typedCard(cardId: string, setup?: (run: RunState) => void, extraSelection: Partial<CardEffectSelection> = {}): RunState {
+function typedCard(cardId: string, setup?: (run: RunState) => void, extraSelection: Partial<CardEffectSelection> = {}, upgraded = false): RunState {
   const card = baseCardDefinitions.find((item) => item.id === cardId)!;
   let run = structuredClone(validRun);
-  run.combat!.cards = [{ instanceId: "combat-1", cardId, upgraded: false }];
+  run.combat!.cards = [{ instanceId: "combat-1", cardId, upgraded }];
   run.combat!.hand = ["combat-1"];
   run.combat!.drawPile = [];
   run.combat!.discardPile = [];
@@ -172,5 +172,41 @@ describe("typed basic card effects", () => {
     run.combat!.cards[0]!.cardId = "BASE-014";
     expect(() => useCardEffects(run, "combat-1", { targetEnemyInstanceId: null }, DEFAULT_GAME_CONFIG, content)).toThrow("discard card must be selected");
     expect(run.combat!.resolvingPile).toEqual([]);
+  });
+
+  it("types and resolves every provisional upgraded card through its declared targets", () => {
+    for (const card of baseCardDefinitions) {
+      const selection: Partial<CardEffectSelection> = {};
+      const setup = (run: RunState) => {
+        if (["BASE-014", "BASE-015", "BASE-016"].includes(card.id)) {
+          run.combat!.cards.push({ instanceId: "combat-2", cardId: "card-draft", upgraded: false });
+          if (card.id === "BASE-014") {
+            run.combat!.discardPile.push("combat-2");
+            selection.targetDiscardInstanceId = "combat-2";
+          } else {
+            run.combat!.hand.push("combat-2");
+            run.combat!.typing.candidateCardInstanceIds.push("combat-2");
+            selection.targetHandInstanceId = "combat-2";
+          }
+        }
+        if (card.id === "BASE-018") {
+          run.combat!.statuses.player = { poison: 2 };
+          run.player.hp = 30;
+          selection.targetDebuff = "poison";
+        }
+        if (["BASE-007", "BASE-015", "BASE-021"].includes(card.id)) {
+          run.combat!.cards.push({ instanceId: "combat-3", cardId: "card-strike", upgraded: false });
+          run.combat!.drawPile.push("combat-3");
+        }
+        if (card.id === "BASE-021") run.player.hp = 4;
+        if (card.id === "BASE-024") run.combat!.enemies[0]!.block = 10;
+      };
+      const result = typedCard(card.id, setup, selection, true);
+      expect(result.combat!.resolvingPile, card.id).toEqual([]);
+      expect(result.combat!.discardPile.includes("combat-1") || result.combat!.exhaustPile.includes("combat-1"), card.id).toBe(true);
+    }
+    expect(typedCard("BASE-001", undefined, {}, true).combat!.enemies[0]!.hp).toBe(12);
+    expect(typedCard("BASE-019", undefined, {}, true).combat!.statuses.player.barrier).toBe(4);
+    expect(typedCard("BASE-024", (run) => { run.combat!.enemies[0]!.block = 10; }, {}, true).combat!.enemies[0]).toMatchObject({ hp: 17, block: 0 });
   });
 });
