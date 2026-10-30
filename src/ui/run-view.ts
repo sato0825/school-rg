@@ -5,6 +5,7 @@ import { describeCard } from "./battle-view.js";
 import type { BattleArt } from "./battle-view.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
 import { ASCENSION_RULES, unlockedLevel, type Progression } from "../domain/ascension.js";
+import { formatPlaytestTime, type PlaytestRecord } from "./playtest-metrics.js";
 
 const kindNames: Record<MapNode["kind"], string> = {
   start: "開始", combat: "戦闘", elite: "強敵", event: "イベント", shop: "購買", rest: "休憩", treasure: "宝箱", boss: "ボス",
@@ -42,7 +43,7 @@ export function renderCompendium(root: HTMLElement, content: ContentRegistry, ar
   root.innerHTML = shell("図鑑", `<section class="front-panel compendium-panel"><span class="eyebrow">COMPENDIUM</span><h2>学園図鑑</h2><p>掲載内容は現在の検証用コンテンツです。</p><div class="compendium-list"><details open><summary>カード · ${content.cards.length}</summary><ul>${cardRows}</ul></details><details><summary>レリック · ${content.relics.length}</summary><ul>${relicRows}</ul></details><details><summary>ポーション · ${content.potions.length}</summary><ul>${potionRows}</ul></details><details><summary>敵 · ${content.enemies.length}</summary><ul>${enemyRows}</ul></details></div><button type="button" class="front-back" data-action="front-back">戻る</button></section>`, art);
 }
 
-export function renderRunMap(root: HTMLElement, session: RunSession, art: BattleArt): void {
+export function renderRunMap(root: HTMLElement, session: RunSession, art: BattleArt, playtest: PlaytestRecord | null = null, playtestError = false): void {
   const run = session.run;
   const current = run.map.nodes.find((node) => node.id === run.map.currentNodeId)!;
   const available = new Set(availableRunNodes(session).map((node) => node.id));
@@ -54,7 +55,7 @@ export function renderRunMap(root: HTMLElement, session: RunSession, art: Battle
     const visited = session.completedNodeIds.includes(node.id);
     return `<button type="button" class="map-node ${node.id === current.id ? "current" : ""} ${visited ? "visited" : ""} ${enabled ? "available" : ""}" data-action="enter-node" data-id="${node.id}" ${enabled ? "" : "disabled"} aria-label="${floor}階 ${html(kindNames[node.kind])}${enabled ? " 選択可能" : ""}"><span>${kindIcons[node.kind]}</span><small>${html(kindNames[node.kind])}</small></button>`;
   }).join("")}</div></div>`).join("");
-  root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><span>ROUTE SELECT</span><h2>次の行き先を選ぶ</h2><p>接続された場所だけに進めます。戦闘ではカード名を直接タイプします。</p><div class="map-stats">♥ ${run.player.hp}/${run.player.maxHp} · ${run.gold}G · デッキ ${run.deck.length}枚 · 難度 ${run.ascensionLevel} · シード ${run.seed}</div><button type="button" class="map-compendium" data-action="open-compendium">図鑑</button></div><div class="map-scroll" aria-label="Act ${run.act} マップ">${rows}</div></section>`, art);
+  root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><span>ROUTE SELECT</span><h2>次の行き先を選ぶ</h2><p>接続された場所だけに進めます。戦闘ではカード名を直接タイプします。</p><div class="map-stats">♥ ${run.player.hp}/${run.player.maxHp} · ${run.gold}G · デッキ ${run.deck.length}枚 · 難度 ${run.ascensionLevel} · シード ${run.seed}</div>${playtest ? `<p class="playtest-stats">実操作 ${formatPlaytestTime(playtest.activeMs)} · 訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</p>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : ""}<button type="button" class="map-compendium" data-action="open-compendium">図鑑</button></div><div class="map-scroll" aria-label="Act ${run.act} マップ">${rows}</div></section>`, art);
 }
 
 export function renderRunReward(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
@@ -106,9 +107,9 @@ export function renderRunEvent(root: HTMLElement, session: RunSession, content: 
   root.innerHTML = shell("校内イベント", `<section class="reward-panel event-panel"><span class="eyebrow">AFTER SCHOOL</span><h2>${html(event.title)}</h2><p>${html(event.description)}</p><div class="event-choices">${choices}</div><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art);
 }
 
-export function renderRunResult(root: HTMLElement, session: RunSession, art: BattleArt): void {
+export function renderRunResult(root: HTMLElement, session: RunSession, art: BattleArt, playtest: PlaytestRecord | null = null, playtestError = false): void {
   const won = session.screen === "won";
-  root.innerHTML = shell(won ? "全Act完走" : "ラン終了", `<section class="reward-panel run-result"><span class="eyebrow">RUN RESULT</span><h2>${won ? "全Actクリア" : "敗北"}</h2><p>${won ? "3つのActのボスを突破しました。" : "次のランで再挑戦できます。"}</p><div class="map-stats">ACT ${session.run.act} · 難度 ${session.run.ascensionLevel} · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</div><button type="button" class="skip-reward" data-action="new-run">新しいランを始める</button></section>`, art);
+  root.innerHTML = shell(won ? "全Act完走" : "ラン終了", `<section class="reward-panel run-result"><span class="eyebrow">RUN RESULT</span><h2>${won ? "全Actクリア" : "敗北"}</h2><p>${won ? "3つのActのボスを突破しました。" : "次のランで再挑戦できます。"}</p><div class="map-stats">ACT ${session.run.act} · 難度 ${session.run.ascensionLevel} · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</div>${playtest ? `<div class="playtest-result"><strong>実操作 ${formatPlaytestTime(playtest.activeMs)}</strong><span>訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</span><button type="button" data-action="export-playtest">計測JSONを保存</button></div>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : ""}<button type="button" class="skip-reward" data-action="new-run">新しいランを始める</button></section>`, art);
 }
 
 export function renderSaveRecovery(root: HTMLElement, art: BattleArt): void {

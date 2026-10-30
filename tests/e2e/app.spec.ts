@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 async function startDemoRun(page: import("@playwright/test").Page): Promise<void> {
   await page.goto("/");
@@ -357,6 +358,45 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await expect(page.locator(".map-stats")).toContainText("難度 1");
   await enterNextNode(page);
   await expect(page.locator(".enemy-hud")).toContainText("32/32");
+});
+
+test("opt-in playtest report survives reload, excludes pause and exports after three Acts", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.clock.install();
+  await page.goto("/?playtest=1");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await page.clock.runFor(5_000);
+  await enterNextNode(page);
+  const readMetrics = () => page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-playtest-v1")!));
+  const beforeReload = await readMetrics();
+  expect(beforeReload.activeMs).toBeGreaterThanOrEqual(5_000);
+  expect(beforeReload.visits).toHaveLength(2);
+  expect(beforeReload.battleNodeIds).toHaveLength(1);
+  await page.reload();
+  await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
+  const pausedAt = (await readMetrics()).activeMs;
+  await page.clock.runFor(3_000);
+  expect((await readMetrics()).activeMs).toBe(pausedAt);
+  await page.getByRole("button", { name: "再開" }).click();
+  await page.clock.runFor(1_000);
+  const resumedAt = (await readMetrics()).activeMs;
+  expect(resumedAt).toBeGreaterThanOrEqual(pausedAt + 1_000);
+  await page.getByRole("button", { name: "一時停止" }).click();
+  await page.clock.runFor(3_000);
+  expect((await readMetrics()).activeMs).toBe(resumedAt);
+  await page.getByRole("button", { name: "再開" }).click();
+  await clearThreeActs(page);
+  await expect(page.locator(".playtest-result")).toContainText("実操作");
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "計測JSONを保存" }).click();
+  const download = await downloadPromise;
+  const report = JSON.parse(await readFile((await download.path())!, "utf8"));
+  expect(report.result).toBe("won");
+  expect(report.partial).toBe(false);
+  expect(report.visits.length).toBeGreaterThanOrEqual(9);
+  expect(report.battleNodeIds.length).toBeGreaterThanOrEqual(3);
+  expect(report.activeMs).toBeGreaterThanOrEqual(resumedAt);
 });
 
 test("science deck clears three Acts by typing and unlocks its own Ascension", async ({ page }) => {

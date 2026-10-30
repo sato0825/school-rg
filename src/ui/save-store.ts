@@ -5,6 +5,20 @@ export interface SaveStore {
 
 export const RUN_SAVE_KEY = "school-rg-run-v1";
 export const PROGRESSION_SAVE_KEY = "school-rg-progression-v1";
+export const PLAYTEST_SAVE_KEY = "school-rg-playtest-v1";
+
+/** Opt-in playtest measurements stay on this device until explicitly exported. */
+export function browserPlaytestStore(): SaveStore {
+  try {
+    const storage = window.localStorage;
+    return {
+      read: () => storage.getItem(PLAYTEST_SAVE_KEY),
+      write: (value) => storage.setItem(PLAYTEST_SAVE_KEY, value),
+    };
+  } catch {
+    return { read: () => null, write: () => undefined };
+  }
+}
 
 /** Progression has its own lifetime and format, independent of an active run. */
 export function browserProgressStore(): SaveStore {
