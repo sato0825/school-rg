@@ -363,10 +363,15 @@ test("the combatants and controls remain visible on a narrow viewport", async ({
 
 test("candidate pose preview follows enemy damage and typed activation", async ({ page }) => {
   await page.clock.install();
+  const start = createRunSession(42, "science-demo", demoContent);
+  const from: MapNode = { id: "pose-start", act: 1, floor: 0, kind: "start", nextIds: ["pose-fight"] };
+  const fight: MapNode = { id: "pose-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+  const session = { ...start, run: { ...start.run, map: { currentNodeId: from.id, nodes: [from, fight] } }, completedNodeIds: [from.id] };
+  const entered = enterRunNode(session, fight.id, demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["final-exam"] });
+  const saved = serializeRunSession(entered, demoContent, { nowMs: () => 0 }, () => "discard");
+  await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
   await page.goto("/?artPreview=1&shortRun=1&seed=42");
-  await page.getByRole("button", { name: "ランを始める" }).click();
-  await page.getByRole("button", { name: /科学部/ }).click();
-  await enterNextNode(page);
+  await expect(page.locator(".enemy-hud")).toContainText("答案の切れ端");
   const hero = page.locator(".hero-art");
   const decoded = () => hero.evaluate((image) => (image as HTMLImageElement).naturalWidth);
   await expect(page.locator(".art-preview-label")).toContainText("未採用");
