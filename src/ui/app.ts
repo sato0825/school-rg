@@ -13,6 +13,7 @@ import { emitRelicEvent, type RelicEventKind, type RelicEvent } from "../domain/
 import { discardPotion, selectPotionEnemy, selectPotionSlot, setPotionInputActive, submitPotionKey } from "../domain/potions.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { candidateBattleArt, demoBattleArt } from "./demo-art.js";
+import { cardFxForUse } from "./card-fx.js";
 import { MOTION_MS } from "./motion-timing.js";
 import { renderClubSelect, renderCompendium, renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
@@ -62,7 +63,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   const artPreloads = [...Object.values(view.art.heroUrlByClubId ?? {}), ...Object.values(view.art.heroPosesByClubId ?? {}).flatMap((poses) => Object.values(poses))].map((url) => {
     const image = new Image();
     image.src = url;
@@ -77,6 +78,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     && document.visibilityState === "visible" && !(run.combat?.clock.paused ?? false);
   const observeMetrics = () => { if (metrics) metrics = observePlaytest(metrics, clock.nowMs(), metricsActive()); };
   const startCombat = () => {
+    view.cardFx = null;
     if (metrics) metrics = recordPlaytestBattle(metrics, run.map.currentNodeId);
     run = fireRelic(run, "combat_start");
     run = beginPlayerTurn(run, clock, config, demoContent);
@@ -122,6 +124,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   const useCard = (state: RunState, instanceId: string, targetEnemyInstanceId: string | null, targetHandInstanceId: string | null): RunState => {
     const cardId = state.combat!.cards.find((item) => item.instanceId === instanceId)!.cardId;
     const card = demoContent.cards.find((item) => item.id === cardId)!;
+    const cardFx = cardFxForUse(card, state, targetEnemyInstanceId, view.layoutPreviewAllies ?? 1, clock.nowMs());
     const updated = useCardEffects(state, instanceId, {
       targetEnemyInstanceId,
       targetHandInstanceId,
@@ -129,12 +132,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       targetDebuff: view.selectedDebuff as "weak" | "vulnerable" | "frail" | "poison" | null,
     }, config, demoContent);
     view.message = `${card.input.text} を発動`;
+    view.cardFx = cardFx;
     setMotion("hero");
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
     const currentGeneration = generation;
     const startedAtMs = view.motionStartedAtMs;
-    window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hero" && view.motionStartedAtMs === startedAtMs) { setMotion(null); render(); } }, MOTION_MS.hero);
+    window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hero" && view.motionStartedAtMs === startedAtMs) { view.cardFx = null; setMotion(null); render(); } }, MOTION_MS.hero);
     return fireRelic(updated, "card_used", { cardInstanceId: instanceId });
   };
 
@@ -183,6 +187,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     generation++;
     enemyPending = false;
     setMotion(null);
+    view.cardFx = null;
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
     session = createRunSession(0, "literature-demo", demoContent, mapOptions);
