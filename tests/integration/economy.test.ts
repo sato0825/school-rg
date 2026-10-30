@@ -56,7 +56,8 @@ describe("shop and rest nodes", () => {
     expect(shop.run.shop?.potionOffers).toHaveLength(1);
     const relic = shop.run.shop!.relicOffers[0]!;
     const potion = shop.run.shop!.potionOffers[0]!;
-    expect(["spare-shoes", "hallway-clock"]).toContain(relic.contentId);
+    expect(demoContent.relics.map((item) => item.id)).toContain(relic.contentId);
+    expect(demoContent.clubs.map((club) => club.startingRelicId)).not.toContain(relic.contentId);
     const withRelic = buyRunShopRelic(shop, relic.offerId, demoContent);
     expect(withRelic.run.relicIds).toContain(relic.contentId);
     expect(withRelic.run.gold).toBe(110);
