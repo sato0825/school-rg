@@ -1,9 +1,14 @@
 import type { Card, ContentRegistry, RunState } from "../domain/schema.js";
 
-const heroImage = new URL("../assets/girl-notebook-v1.png", import.meta.url).href;
-const enemyImage = new URL("../assets/enemy-paper-v1.png", import.meta.url).href;
+export type BattleArt = {
+  stageUrl: string;
+  heroUrl: string;
+  enemyUrlById: Readonly<Record<string, string>>;
+};
 
 export type BattleView = {
+  art: BattleArt;
+  baseTurnMs: number;
   message: string;
   selectedDiscardId: string | null;
   selectedDebuff: string | null;
@@ -49,7 +54,9 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
   const selected = combat.typing.selectedCardInstanceId;
   const pendingHandTarget = selected && hand.find((entry) => entry.instanceId === selected)?.card.target === "hand";
   const remaining = (combat.clock.remainingMs / 1_000).toFixed(1);
-  const timeRatio = Math.max(0, Math.min(100, combat.clock.remainingMs / 10_000 * 100));
+  const timeRatio = Math.max(0, Math.min(100, combat.clock.remainingMs / view.baseTurnMs * 100));
+  const clubName = content.clubs.find((club) => club.id === run.clubId)?.name ?? run.clubId;
+  const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
   const enemies = combat.enemies.filter((enemy) => enemy.hp > 0).map((enemy) => {
     const definition = content.enemies.find((item) => item.id === enemy.enemyId);
     const intent = content.intents.find((item) => item.id === enemy.intentId);
@@ -57,8 +64,8 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     const amount = intentEffect?.parameters.amount;
     return `<button type="button" class="enemy-slot ${combat.typing.targetEnemyInstanceId === enemy.instanceId ? "targeted" : ""}" data-action="enemy" data-id="${enemy.instanceId}" aria-label="${html(definition?.name ?? "敵")}を対象に選ぶ">
       <span class="intent-ticket"><small>INTENT</small><strong>${html(intent?.label ?? "行動")}</strong>${amount ? `<b>${amount}</b>` : ""}</span>
-      <img class="enemy-art ${view.motion === "enemy" ? "act" : ""}" src="${enemyImage}" alt="答案と机でできた敵" />
-      <span class="enemy-hud"><strong>${html(definition?.name ?? "敵")}</strong><span>♥ ${enemy.hp}/${enemy.maxHp}　◇ ${enemy.block}</span></span>
+      <img class="enemy-art ${view.motion === "enemy" ? "act" : ""}" src="${html(view.art.enemyUrlById[enemy.enemyId] ?? "")}" alt="${html(definition?.name ?? "敵")}" />
+      <span class="enemy-hud"><strong>${html(definition?.name ?? "敵")}</strong><span>♥ ${enemy.hp}/${enemy.maxHp} · ◇ ${enemy.block}</span></span>
       <span class="enemy-status">${statusMarkup(combat.statuses.enemies[enemy.instanceId] ?? {})}</span>
     </button>`;
   }).join("");
@@ -76,8 +83,8 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     .map((kind) => `<button type="button" class="mini-choice ${view.selectedDebuff === kind ? "chosen" : ""}" data-action="debuff" data-id="${kind}">${kind} ${combat.statuses.player[kind]}</button>`).join("");
   const terminal = combat.phase === "WON" || combat.phase === "LOST";
   root.innerHTML = `<main class="game" aria-label="学園タイピングローグライク戦闘">
-    <header class="topbar"><div class="brand"><span class="brand-mark">✦</span><div><small>SCHOOL ROGUELIKE</small><h1>学園タイピングローグライク</h1></div></div><div class="run-meta"><span>ACT 1</span><span>1F · 廊下</span><span>TURN ${combat.turn}</span></div><button type="button" class="pause-button" data-action="pause" ${combat.phase !== "PLAYER_INPUT" ? "disabled" : ""}>${combat.clock.paused ? "再開" : "一時停止"}</button></header>
-    <section class="stage" aria-label="戦闘ステージ"><div class="stage-vignette"></div><div class="ally-group"><div class="ally-slot"><img class="hero-art ${view.motion === "hero" ? "act" : ""}" src="${heroImage}" alt="ノートを持つ文芸部の少女" /><div class="hero-shadow"></div></div></div><div class="enemy-group">${enemies}</div><div class="player-hud"><span class="hud-name">文芸部</span><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><b>◇ ${run.player.block}</b><div class="status-row">${statusMarkup(combat.statuses.player)}</div></div></section>
+    <header class="topbar"><div class="brand"><span class="brand-mark">✦</span><div><small>SCHOOL ROGUELIKE</small><h1>学園タイピングローグライク</h1></div></div><div class="run-meta"><span>ACT ${run.act}</span><span>${node?.floor ?? 0}F · ${html(node?.kind ?? "combat")}</span><span>TURN ${combat.turn}</span></div><button type="button" class="pause-button" data-action="pause" ${combat.phase !== "PLAYER_INPUT" ? "disabled" : ""}>${combat.clock.paused ? "再開" : "一時停止"}</button></header>
+    <section class="stage" aria-label="戦闘ステージ" style="background-image:url('${html(view.art.stageUrl)}')"><div class="stage-vignette"></div><div class="ally-group"><div class="ally-slot"><img class="hero-art ${view.motion === "hero" ? "act" : ""}" src="${html(view.art.heroUrl)}" alt="${html(clubName)}の生徒" /><div class="hero-shadow"></div></div></div><div class="enemy-group">${enemies}</div><div class="player-hud"><span class="hud-name">${html(clubName)}</span><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><b>◇ ${run.player.block}</b><div class="status-row">${statusMarkup(combat.statuses.player)}</div></div></section>
     <section class="control-deck" aria-label="タイピング戦闘操作"><div class="time-row"><div class="time-label"><span>PLAYER INPUT</span><strong data-role="time" aria-label="残り時間 ${remaining}秒">${remaining}<small> sec</small></strong></div><div class="time-track"><div class="time-fill" data-role="time-fill" style="width:${timeRatio}%"></div></div><div class="pile-counts"><span>山札 ${combat.drawPile.length}</span><span>捨て札 ${combat.discardPile.length}</span><span>除外 ${combat.exhaustPile.length}</span></div></div>
       <div class="typing-row"><span class="typing-caption">TYPE A CARD NAME</span><div class="typing-buffer">${combat.typing.buffer ? html(combat.typing.buffer) : `<span class="placeholder">ここに入力が表示されます</span>`}<span class="caret"></span></div><span class="typing-hint">${pendingHandTarget ? "対象にする手札を選んでください" : "カード名を入力 · Escで取消"}</span></div>
       <div class="hand" aria-label="手札">${cards || `<p class="empty-hand">手札がありません。残り時間で敵の行動へ進みます。</p>`}</div>

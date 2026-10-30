@@ -1,18 +1,19 @@
 import { useCardEffects } from "../domain/card-effects.js";
-import { DEFAULT_GAME_CONFIG } from "../domain/config.js";
+import { DEFAULT_GAME_CONFIG, requireSetting } from "../domain/config.js";
 import { resolveEnemyIntents } from "../domain/enemy-ai.js";
 import { executeEnemyIntentEffects } from "../domain/enemy-intent-effects.js";
 import type { RunState } from "../domain/schema.js";
 import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, pausePlayerTurn, resumePlayerTurn, selectTypedCard, selectTypedEnemyTarget, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../domain/turn-state.js";
 import { demoContent, demoEnemyAi, createDemoBattle } from "../content/demo-battle.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
+import { demoBattleArt } from "./demo-art.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = () => "discard" as const;
 
 export function mountApp(root: HTMLElement): () => void {
   let run: RunState = createDemoBattle();
-  const view: BattleView = { message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
+  const view: BattleView = { art: demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
   let enemyPending = false;
   let generation = 0;
   const clock = { nowMs: () => Math.floor(performance.now()) };
@@ -98,6 +99,8 @@ export function mountApp(root: HTMLElement): () => void {
       if (action === "pause" && run.combat?.phase === "PLAYER_INPUT") {
         run = run.combat.clock.paused ? resumePlayerTurn(run, clock) : pausePlayerTurn(run, clock, disposition);
         view.message = run.combat?.clock.paused ? "一時停止中です。" : "入力を再開しました。";
+      } else if (run.combat?.clock.paused) {
+        return;
       } else if (run.combat?.phase === "PLAYER_INPUT" && action === "enemy") {
         run = selectTypedEnemyTarget(run, id, clock, config, demoContent, useCard, disposition);
       } else if (run.combat?.phase === "PLAYER_INPUT" && action === "card") {
@@ -138,7 +141,7 @@ export function mountApp(root: HTMLElement): () => void {
       time.innerHTML = `${seconds}<small> sec</small>`;
       time.setAttribute("aria-label", `残り時間 ${seconds}秒`);
     }
-    if (fill) fill.style.width = `${Math.max(0, Math.min(100, remainingMs / 10_000 * 100))}%`;
+    if (fill) fill.style.width = `${Math.max(0, Math.min(100, remainingMs / view.baseTurnMs * 100))}%`;
   }
 
   root.addEventListener("click", onClick);
