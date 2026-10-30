@@ -4,6 +4,7 @@ import { DEFAULT_GAME_CONFIG, parseGameConfig } from "../../src/domain/config.js
 import { createEventQueue } from "../../src/domain/event-queue.js";
 import { enqueueEffectAction, resolveDueEffects, type EffectEvent } from "../../src/domain/effect-primitives.js";
 import type { RunState } from "../../src/domain/schema.js";
+import { applyStatus, statusAmount } from "../../src/domain/status-engine.js";
 import {
   beginEnemyPhase,
   beginPlayerTurn,
@@ -59,7 +60,7 @@ describe("typing turn state machine", () => {
     expect(run.combat!.phase).toBe("PLAYER_END");
     expect(run.combat!.hand).toEqual([]);
     expect(run.combat!.discardPile).toEqual(["combat-1"]);
-    run = beginEnemyPhase(run);
+    run = beginEnemyPhase(run, DEFAULT_GAME_CONFIG);
     expect(run.combat!.phase).toBe("ENEMY_PHASE");
     run = completeEnemyPhase(run, (state) => {
       let queue = createEventQueue<EffectEvent>();
@@ -67,7 +68,7 @@ describe("typing turn state machine", () => {
         kind: "attack", source: { side: "enemy", instanceId: "enemy-1" }, target: { side: "player" }, amount: 6, hits: 1, pierceBlock: false,
       });
       return resolveDueEffects(state, queue, now, DEFAULT_GAME_CONFIG).run;
-    });
+    }, DEFAULT_GAME_CONFIG);
     expect(run.player.hp).toBe(34);
     expect(run.combat!.phase).toBe("PLAYER_START");
     expect(run.combat!.turn).toBe(2);
@@ -119,9 +120,41 @@ describe("typing turn state machine", () => {
     const source = { nowMs: () => now };
     let run = beginPlayerTurn(readyRun(), source, DEFAULT_GAME_CONFIG, validContent);
     now = 10_000;
-    run = beginEnemyPhase(tickPlayerTurn(run, source, discard));
-    run = completeEnemyPhase(run, (state) => ({ ...state, player: { ...state.player, hp: 0 } }));
+    run = beginEnemyPhase(tickPlayerTurn(run, source, discard), DEFAULT_GAME_CONFIG);
+    run = completeEnemyPhase(run, (state) => ({ ...state, player: { ...state.player, hp: 0 } }), DEFAULT_GAME_CONFIG);
     expect(run.combat!.phase).toBe("LOST");
     expect(run.combat!.turn).toBe(1);
+  });
+
+  it("poison can defeat the player before drawing at player start", () => {
+    let run = readyRun();
+    run.player.hp = 2;
+    run = applyStatus(run, { side: "player" }, "poison", 3);
+    const result = beginPlayerTurn(run, { nowMs: () => 0 }, DEFAULT_GAME_CONFIG, validContent);
+    expect(result.combat!.phase).toBe("LOST");
+    expect(result.combat!.hand).toEqual([]);
+    expect(result.player.hp).toBe(0);
+  });
+
+  it("decays player debuffs, then enemy poison can win before enemy actions", () => {
+    let run = beginPlayerTurn(readyRun(), { nowMs: () => 0 }, DEFAULT_GAME_CONFIG, validContent);
+    run = applyStatus(run, { side: "player" }, "weak", 2);
+    run = applyStatus(run, { side: "enemy", instanceId: "enemy-1" }, "poison", 21);
+    run = tickPlayerTurn(run, { nowMs: () => 10_000 }, discard);
+    const ended = beginEnemyPhase(run, DEFAULT_GAME_CONFIG);
+    expect(ended.combat!.phase).toBe("WON");
+    expect(statusAmount(ended, { side: "player" }, "weak")).toBe(1);
+    expect(ended.combat!.enemies[0]!.hp).toBe(0);
+  });
+
+  it("decays enemy debuffs after its action and advances once", () => {
+    let run = beginPlayerTurn(readyRun(), { nowMs: () => 0 }, DEFAULT_GAME_CONFIG, validContent);
+    run = applyStatus(run, { side: "enemy", instanceId: "enemy-1" }, "weak", 2);
+    run = tickPlayerTurn(run, { nowMs: () => 10_000 }, discard);
+    run = beginEnemyPhase(run, DEFAULT_GAME_CONFIG);
+    expect(statusAmount(run, { side: "enemy", instanceId: "enemy-1" }, "weak")).toBe(2);
+    const result = completeEnemyPhase(run, (state) => state, DEFAULT_GAME_CONFIG);
+    expect(statusAmount(result, { side: "enemy", instanceId: "enemy-1" }, "weak")).toBe(1);
+    expect(result.combat!.turn).toBe(2);
   });
 });

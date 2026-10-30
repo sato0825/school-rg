@@ -2,13 +2,16 @@ import { requireSetting, type GameConfig } from "./config.js";
 import { assessCombatOutcome } from "./combat-outcome.js";
 import { enqueueEvent, takeNextDueEvent, type EventQueue } from "./event-queue.js";
 import type { RunState } from "./schema.js";
+import { applyStatus, clearStatus, cleanseDebuffs, modifiedAttackAmount, modifiedBlockAmount, statusAmount, type StatusKind } from "./status-engine.js";
 
 export type ActorRef = { side: "player" } | { side: "enemy"; instanceId: string };
 export type EffectAction =
   | { kind: "attack"; source: ActorRef; target: ActorRef | "all_enemies"; amount: number; hits: number; pierceBlock: boolean }
   | { kind: "block"; target: ActorRef; amount: number }
   | { kind: "heal"; target: ActorRef; amount: number }
-  | { kind: "max_hp"; target: ActorRef; delta: number; healByIncrease: boolean };
+  | { kind: "max_hp"; target: ActorRef; delta: number; healByIncrease: boolean }
+  | { kind: "status"; target: ActorRef; status: StatusKind; delta: number }
+  | { kind: "cleanse"; target: ActorRef; status: StatusKind | "all_debuffs" };
 
 export type EffectEvent =
   | { kind: "hit"; source: ActorRef; target: ActorRef; amount: number; pierceBlock: boolean }
@@ -17,6 +20,8 @@ export type EffectEvent =
 export type EffectTrace =
   | { kind: "damage" | "counter"; source: ActorRef; target: ActorRef; requested: number; blockSpent: number; hpLost: number }
   | { kind: "block" | "heal" | "max_hp"; target: ActorRef; before: number; after: number }
+  | { kind: "status"; target: ActorRef; status: StatusKind; before: number; after: number }
+  | { kind: "cleanse"; target: ActorRef; status: StatusKind | "all_debuffs" }
   | { kind: "skipped"; event: EffectEvent; reason: "source_dead" | "target_dead" | "target_missing" };
 
 export interface CounterDamage {
@@ -73,10 +78,9 @@ export function enqueueEffectAction(
       }
     }
   } else {
-    const value = action.kind === "max_hp" ? action.delta : action.amount;
-    if (action.kind === "max_hp") {
-      if (!Number.isSafeInteger(value)) throw new RangeError("max HP delta must be a safe integer");
-    } else unsigned(value, `${action.kind} amount`);
+    if (action.kind === "max_hp" && !Number.isSafeInteger(action.delta)) throw new RangeError("max HP delta must be a safe integer");
+    if (action.kind === "status" && !Number.isSafeInteger(action.delta)) throw new RangeError("status delta must be a safe integer");
+    if (action.kind === "block" || action.kind === "heal") unsigned(action.amount, `${action.kind} amount`);
     requireKnownActor(run, action.target);
     next = enqueueEvent(next, dueAtMs, action);
   }
@@ -137,12 +141,13 @@ export function resolveDueEffects(
         trace.push({ kind: "skipped", event, reason: "source_dead" });
         continue;
       }
-      const first = damage(current, event.source, event.target, event.amount, event.pierceBlock, "damage");
+      const amount = modifiedAttackAmount(current, event.source, event.target, event.amount, config);
+      const first = damage(current, event.source, event.target, amount, event.pierceBlock, "damage");
       current = first.run;
       trace.push(first.trace);
       const defender = actor(current, event.target)!;
       const counter = event.target.side === "player" ? counterDamage.player : (counterDamage.enemies[event.target.instanceId] ?? 0);
-      if (counter > 0 && event.amount > 0 && (defender.hp > 0 || requireSetting(config.counterAfterLethal))) {
+      if (counter > 0 && amount > 0 && (defender.hp > 0 || requireSetting(config.counterAfterLethal))) {
         const reaction = damage(current, event.target, event.source, counter, false, "counter");
         current = reaction.run;
         trace.push(reaction.trace);
@@ -151,7 +156,7 @@ export function resolveDueEffects(
       continue;
     }
     if (event.kind === "block") {
-      const after = target.block + event.amount;
+      const after = target.block + modifiedBlockAmount(current, event.target, event.amount, config);
       if (!Number.isSafeInteger(after)) throw new RangeError("block overflow");
       current = replaceActor(current, event.target, { ...target, block: after });
       trace.push({ kind: "block", target: event.target, before: target.block, after });
@@ -159,6 +164,13 @@ export function resolveDueEffects(
       const after = Math.min(target.maxHp, target.hp + event.amount);
       current = replaceActor(current, event.target, { ...target, hp: after });
       trace.push({ kind: "heal", target: event.target, before: target.hp, after });
+    } else if (event.kind === "status") {
+      const before = statusAmount(current, event.target, event.status);
+      current = applyStatus(current, event.target, event.status, event.delta);
+      trace.push({ kind: "status", target: event.target, status: event.status, before, after: statusAmount(current, event.target, event.status) });
+    } else if (event.kind === "cleanse") {
+      current = event.status === "all_debuffs" ? cleanseDebuffs(current, event.target) : clearStatus(current, event.target, event.status);
+      trace.push({ kind: "cleanse", target: event.target, status: event.status });
     } else {
       const maxHp = target.maxHp + event.delta;
       if (!Number.isSafeInteger(maxHp) || maxHp < 1) throw new RangeError("resulting max HP must be positive");
