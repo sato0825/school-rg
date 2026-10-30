@@ -109,6 +109,9 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
         located.add(instanceId);
       });
     }
+    combat.cards.forEach((card, i) => {
+      if (!located.has(card.instanceId)) issues.push({ code: "INVALID_STATE", path: `combat.cards.${i}.instanceId`, message: `Card is not in any pile: ${card.instanceId}` });
+    });
     const hand = new Set(combat.hand);
     combat.typing.candidateCardInstanceIds.forEach((instanceId, i) => known(instanceId, hand, `combat.typing.candidateCardInstanceIds.${i}`, issues));
     if (combat.typing.selectedCardInstanceId) known(combat.typing.selectedCardInstanceId, hand, "combat.typing.selectedCardInstanceId", issues);
