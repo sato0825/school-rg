@@ -96,6 +96,7 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
   if (run.shop) {
     known(run.shop.nodeId, mapIds, "shop.nodeId", issues);
     if (run.shop.nodeId !== run.map.currentNodeId) issues.push({ code: "INVALID_STATE", path: "shop.nodeId", message: "Shop is not at the current node" });
+    if (run.map.nodes.find((node) => node.id === run.shop!.nodeId)?.kind !== "shop") issues.push({ code: "INVALID_STATE", path: "shop.nodeId", message: "Shop stock belongs to a non-shop node" });
     const offerIds = new Set<string>();
     run.shop.offers.forEach((offer, i) => {
       known(offer.cardId, cards, `shop.offers.${i}.cardId`, issues);

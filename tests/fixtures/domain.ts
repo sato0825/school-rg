@@ -31,6 +31,8 @@ export const validRun: RunState = {
   deck: [{ instanceId: "deck-1", cardId: "card-strike", upgraded: false }],
   relicIds: ["relic-sample"],
   potionIds: ["potion-sample"],
+  gold: 0,
+  shop: null,
   map: {
     currentNodeId: "node-start",
     nodes: [

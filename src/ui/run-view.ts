@@ -41,7 +41,7 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
   root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><p>選んだカードはこのランのデッキへ加わります。</p><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art);
 }
 
-export function renderRunShop(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
+export function renderRunShop(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, message: string): void {
   const shop = session.run.shop;
   if (!shop) throw new Error("shop screen requires active stock");
   const offers = shop.offers.map((offer) => {
@@ -52,7 +52,7 @@ export function renderRunShop(root: HTMLElement, session: RunSession, content: C
     const card = content.cards.find((item) => item.id === instance.cardId)!;
     return `<button type="button" class="mini-choice" data-action="remove-shop-card" data-id="${instance.instanceId}" ${shop.removalUsed ? "disabled" : ""}>${html(card.input.text)}${instance.upgraded ? "+" : ""}</button>`;
   }).join("");
-  root.innerHTML = shell("購買", `<section class="reward-panel economy-panel"><span class="eyebrow">SCHOOL SHOP</span><h2>購買</h2><p>所持金 ${session.run.gold}G。商品は一度ずつ購入できます。</p><div class="reward-options">${offers}</div><div class="economy-section"><h3>カード削除 · ${shop.removalPrice}G</h3><div class="choice-list">${removal}</div></div><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button></section>`, art);
+  root.innerHTML = shell("購買", `<section class="reward-panel economy-panel"><span class="eyebrow">SCHOOL SHOP</span><h2>購買</h2><p>所持金 ${session.run.gold}G。商品は一度ずつ購入できます。</p><div class="reward-options">${offers}</div><div class="economy-section"><h3>カード削除 · ${shop.removalPrice}G</h3><div class="choice-list">${removal}</div></div><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button><p class="economy-message" role="status">${html(message)}</p></section>`, art);
 }
 
 export function renderRunRest(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {

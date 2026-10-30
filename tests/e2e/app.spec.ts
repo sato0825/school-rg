@@ -99,3 +99,20 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
   await enterNextNode(page);
   await expect(page.locator(".run-header")).toContainText("ACT 2 · 0F");
 });
+
+test("a route can upgrade at rest and buy once at the shop", async ({ page }) => {
+  await page.goto("/");
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).click();
+  await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
+  await page.locator("[data-action=rest-upgrade]").first().click();
+  await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
+  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
+  await expect(page.locator(".reward-card")).toHaveCount(3);
+  await page.locator(".reward-card").first().click();
+  await expect(page.locator(".reward-panel")).toContainText("所持金 10G");
+  await expect(page.locator(".reward-card").first()).toBeDisabled();
+  await page.locator(".reward-card").nth(1).click();
+  await expect(page.getByRole("status")).toContainText("所持金が足りません。");
+  await page.getByRole("button", { name: "購買を出る" }).click();
+  await expect(page.locator(".map-node.available")).toContainText("ボス");
+});

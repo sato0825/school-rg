@@ -85,7 +85,8 @@ export function settleRunCombat(session: RunSession, content: ContentRegistry, e
   if (session.run.combat.phase === "LOST") return { ...session, screen: "lost" };
   if (session.run.combat.phase !== "WON") throw new Error("combat has not ended");
   const node = currentNode(session.run);
-  const rewardedRun = awardEncounterGold(session.run, node.kind as "combat" | "elite" | "boss", economy);
+  if (node.kind !== "combat" && node.kind !== "elite" && node.kind !== "boss") throw new Error("combat ended at a non-combat node");
+  const rewardedRun = awardEncounterGold(session.run, node.kind, economy);
   const club = content.clubs.find((item) => item.id === session.run.clubId);
   if (!club) throw new RangeError(`unknown club: ${session.run.clubId}`);
   const shuffled = shuffle(rewardedRun.rngState, [...new Set(club.cardPoolIds)]);
