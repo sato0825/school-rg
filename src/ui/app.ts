@@ -4,7 +4,7 @@ import { DEFAULT_GAME_CONFIG, requireSetting } from "../domain/config.js";
 import { resolveEnemyIntents } from "../domain/enemy-ai.js";
 import { executeEnemyIntentEffects } from "../domain/enemy-intent-effects.js";
 import { buyRunShopCard, chooseRunEventChoice, chooseRunReward, chooseRunTreasure, createRunSession, enterRunNode, leaveRunShop, removeRunShopCard, settleRunCombat, useRunRest } from "../domain/run-flow.js";
-import type { MapGenerationOptions } from "../domain/map-generation.js";
+import { DEFAULT_MAP_OPTIONS, type MapGenerationOptions } from "../domain/map-generation.js";
 import type { RunState } from "../domain/schema.js";
 import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, pausePlayerTurn, resumePlayerTurn, selectTypedCard, selectTypedEnemyTarget, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../domain/turn-state.js";
 import { demoContent, demoEncounterTable, demoEnemyAi } from "../content/demo-battle.js";
@@ -22,10 +22,12 @@ import { finishPlaytest, observePlaytest, parsePlaytestRecord, recordPlaytestBat
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
-/** The visible run is a compact provisional Act with all implemented node kinds. */
-const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 2, treasure: 2 } };
+/** Explicit short path for development and E2E; regular runs use the provisional full map. */
+const shortMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 2, treasure: 2 } };
 
 export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(), progressStore: SaveStore = browserProgressStore(), playtestStore: SaveStore = browserPlaytestStore()): () => void {
+  const params = new URLSearchParams(window.location.search);
+  const mapOptions = import.meta.env.DEV && params.get("shortRun") === "1" ? shortMapOptions : DEFAULT_MAP_OPTIONS;
   const clock = { nowMs: () => Math.floor(performance.now()) };
   let progression = emptyProgression();
   let progressionLoadError = false;
@@ -34,7 +36,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (savedProgression) progression = parseProgression(JSON.parse(savedProgression), demoContent);
   } catch { progressionLoadError = true; }
   const selectedAscensionLevels: Record<string, number> = {};
-  let session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
+  let session = createRunSession(42, "literature-demo", demoContent, mapOptions);
   let frontScreen: "title" | "clubs" | "compendium" | null = "title";
   let frontReturn: "title" | null = "title";
   let restoreError = false;
@@ -43,7 +45,6 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (saved) { session = deserializeRunSession(saved, demoContent, clock); session = { ...session, runId: session.runId ?? crypto.randomUUID() }; frontScreen = null; }
   } catch { restoreError = true; }
   let run: RunState = session.run;
-  const params = new URLSearchParams(window.location.search);
   const previewArt = params.get("artPreview") === "1";
   const layoutPreview = Number(params.get("layoutPreview"));
   const playtestEnabled = params.get("playtest") === "1";
@@ -182,7 +183,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     setMotion(null);
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
-    session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
+    session = createRunSession(42, "literature-demo", demoContent, mapOptions);
     run = session.run;
     metrics = null;
     frontScreen = "title";
@@ -227,7 +228,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (action === "choose-club" && frontScreen === "clubs") {
         const level = Math.min(selectedAscensionLevels[id] ?? 0, unlockedLevel(progression, id));
-        session = { ...createRunSession(42, id, demoContent, demoMapOptions, undefined, level), runId: crypto.randomUUID() };
+        session = { ...createRunSession(42, id, demoContent, mapOptions, undefined, level), runId: crypto.randomUUID() };
         run = session.run;
         frontScreen = null;
         metricsLoadError = false;
