@@ -304,6 +304,47 @@ test("an elite formation accepts a typed single target and an all-enemy attack",
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
 });
 
+test("typed card effects stay on their target layer and clear without delaying combat", async ({ page }) => {
+  await page.clock.install();
+  await page.goto("/?seed=42&layoutPreview=3");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await page.locator(".map-node.available").filter({ hasText: "強敵" }).first().click();
+  await page.keyboard.type("strike");
+  await page.locator(".enemy-slot").last().click();
+  const fx = page.locator(".card-fx-layer");
+  await expect(fx).toHaveAttribute("data-kind", "attack");
+  await expect(fx).toHaveAttribute("data-target-count", "1");
+  await expect(fx.locator(".card-fx-mark")).toHaveAttribute("style", /left:88%/);
+  expect(await fx.evaluate((element) => getComputedStyle(element).pointerEvents)).toBe("none");
+  await page.keyboard.type("sweep");
+  await expect(fx).toHaveAttribute("data-target-count", "2");
+  await expect(fx.locator(".card-fx-mark")).toHaveCount(2);
+  await page.setViewportSize({ width: 390, height: 844 });
+  const stage = await page.locator(".stage").boundingBox();
+  const marks = await fx.locator(".card-fx-mark").evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().right));
+  expect(marks.every((right) => right <= stage!.x + stage!.width + 1)).toBe(true);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect(await fx.locator(".card-fx-mark").first().evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
+  await page.clock.runFor(380);
+  await expect(fx).toHaveCount(0);
+  await expect(page.locator(".enemy-slot")).toHaveCount(2);
+});
+
+test("a typed support card keeps its flash by the player", async ({ page }) => {
+  await page.clock.install();
+  await startDemoRun(page);
+  await enterNextNode(page);
+  const supportCard = page.locator(".card").filter({ has: page.locator(".card-kind").filter({ hasText: "SKILL" }) }).first();
+  await page.keyboard.type(await supportCard.locator(".card-word").innerText());
+  const fx = page.locator(".card-fx-layer");
+  await expect(fx).toHaveAttribute("data-kind", "support");
+  await expect(fx.locator(".card-fx-mark.support")).toHaveAttribute("style", /left:22%/);
+  await expect(fx.locator(".card-fx-trail")).toHaveCount(0);
+  await page.clock.runFor(380);
+  await expect(fx).toHaveCount(0);
+});
+
 for (const [act, kind, enemyId, name] of [
   [1, "combat", "late-pass", "遅刻札の影"],
   [1, "elite", "notice-board", "動く掲示板"],
