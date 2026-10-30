@@ -37,6 +37,9 @@ export function describeCard(card: Card, content: ContentRegistry): string {
       case "add_time": return `時間 +${value / 1_000}秒`;
       case "thorns": return `反撃 ${value}`;
       case "retrieve_discard": return "捨て札を1枚回収";
+      case "copy_card": return "手札を1枚複製";
+      case "exhaust_card": return "手札を1枚除外";
+      case "transform_card": return "手札を1枚変化";
       default: return "特殊効果";
     }
   }).join(" · ");

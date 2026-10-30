@@ -1,4 +1,5 @@
 import { useCardEffects } from "../domain/card-effects.js";
+import { dispositionForCard } from "../domain/card-keywords.js";
 import { DEFAULT_GAME_CONFIG, requireSetting } from "../domain/config.js";
 import { resolveEnemyIntents } from "../domain/enemy-ai.js";
 import { executeEnemyIntentEffects } from "../domain/enemy-intent-effects.js";
@@ -18,7 +19,7 @@ import { browserProgressStore, browserSaveStore, type SaveStore } from "./save-s
 import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, MAX_ASCENSION_LEVEL } from "../domain/ascension.js";
 
 const config = DEFAULT_GAME_CONFIG;
-const disposition = () => "discard" as const;
+const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
 /** The visible run is a compact provisional Act with all implemented node kinds. */
 const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 2, treasure: 2 } };
 

@@ -7,7 +7,7 @@ import { tickStatuses } from "./status-engine.js";
 import type { ContentRegistry, RunState } from "./schema.js";
 import { chooseTypingCard, chooseTypingEnemyTarget, chooseTypingHandTarget, pressTypingKey, type SelectionResult, type TypableCard, type TypingKeyEvent } from "./typing.js";
 
-export type TurnEndDisposition = (instanceId: string) => CardDisposition;
+export type TurnEndDisposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => CardDisposition;
 export type UseTypedCard = (run: RunState, instanceId: string, targetEnemyInstanceId: string | null, targetHandInstanceId: string | null) => RunState;
 export type ResolveEnemyActions = (run: RunState) => RunState;
 

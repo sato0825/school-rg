@@ -3,6 +3,7 @@ import { literatureCardDefinitions, literatureCardEffects } from "./literature-c
 import { scienceCardDefinitions, scienceCardEffects } from "./science-cards.js";
 import { kendoCardDefinitions, kendoCardEffects } from "./kendo-cards.js";
 import { musicCardDefinitions, musicCardEffects } from "./music-cards.js";
+import { artCardDefinitions, artCardEffects } from "./art-cards.js";
 import { DEFAULT_GAME_CONFIG } from "../domain/config.js";
 import { addCurrentTurnTime } from "../domain/time-resource.js";
 import { shuffle } from "../domain/random.js";
@@ -22,6 +23,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     ...scienceCardEffects,
     ...kendoCardEffects,
     ...musicCardEffects,
+    ...artCardEffects,
     { id: "paper-hit", kind: "damage", parameters: { amount: 5 } },
     { id: "paper-guard", kind: "block", parameters: { amount: 4 } },
     { id: "exam-hit", kind: "damage", parameters: { amount: 7 } },
@@ -30,7 +32,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "potion-heal-effect", kind: "heal", parameters: { amount: 5 } },
     { id: "potion-ink-effect", kind: "damage", parameters: { amount: 7 } },
   ],
-  cards: [...baseCardDefinitions, ...literatureCardDefinitions, ...scienceCardDefinitions, ...kendoCardDefinitions, ...musicCardDefinitions],
+  cards: [...baseCardDefinitions, ...literatureCardDefinitions, ...scienceCardDefinitions, ...kendoCardDefinitions, ...musicCardDefinitions, ...artCardDefinitions],
   intents: [
     { id: "paper-intent-hit", label: "飛び散る答案", category: "attack", effectIds: ["paper-hit"] },
     { id: "paper-intent-guard", label: "机を積む", category: "defend", effectIds: ["paper-guard"] },
@@ -46,6 +48,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "lab-glasses", name: "観察眼鏡", triggerIds: ["lab-glasses-combat-start"], effectIds: [] },
     { id: "bamboo-grip", name: "竹刀の握り", triggerIds: ["bamboo-grip-turn-start"], effectIds: [] },
     { id: "metronome", name: "部室のメトロノーム", triggerIds: ["metronome-turn-start"], effectIds: [] },
+    { id: "sketchbook", name: "ポケットスケッチ帳", triggerIds: ["sketchbook-card-used"], effectIds: [] },
   ],
   potions: [
     { id: "potion-time", name: "時間の小瓶", input: { text: "clock", locale: "en" }, target: "self", effectIds: ["potion-time-effect"] },
@@ -97,6 +100,12 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     cardPoolIds: [...baseCardDefinitions.map((card) => card.id), ...musicCardDefinitions.map((card) => card.id)],
     startingRelicId: "metronome",
     startingPotionIds: ["potion-time"],
+  }, {
+    id: "art-demo", name: "美術部", startingHp: 40,
+    starterCardIds: ["BASE-001", "BASE-001", "BASE-002", "BASE-003", "BASE-011", "ART-001", "ART-002", "ART-003", "ART-004", "BASE-016"],
+    cardPoolIds: [...baseCardDefinitions.map((card) => card.id), ...artCardDefinitions.map((card) => card.id)],
+    startingRelicId: "sketchbook",
+    startingPotionIds: ["potion-heal"],
   }],
 });
 
@@ -121,6 +130,10 @@ export const demoRelicRules: RelicRule[] = [
   }) },
   { id: "metronome-turn-start", on: "turn_start", priority: 0, stackMode: "each", apply: (run, _event, stacks) =>
     addCurrentTurnTime(run, 1_000 * stacks, { nowMs: () => run.combat!.clock.lastEventAtMs }, DEFAULT_GAME_CONFIG) },
+  { id: "sketchbook-card-used", on: "card_used", priority: 0, stackMode: "each", condition: (run, event) => {
+    const cardId = run.combat?.cards.find((card) => card.instanceId === event.cardInstanceId)?.cardId;
+    return run.combat?.phase === "PLAYER_INPUT" && !!cardId?.startsWith("ART-");
+  }, apply: (run, _event, stacks) => ({ ...run, player: { ...run.player, block: run.player.block + stacks } }) },
 ];
 
 export const demoEncounterTable: EncounterTable = {

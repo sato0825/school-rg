@@ -17,6 +17,15 @@ export function cardHasKeyword(combat: CombatState, content: ContentRegistry, in
   return keywordsFor(combat, content, instanceId).has(keyword);
 }
 
+export function dispositionForCard(combat: CombatState, content: ContentRegistry, config: GameConfig, instanceId: string): CardDisposition {
+  const keywords = keywordsFor(combat, content, instanceId);
+  const retain = keywords.has("retain");
+  const ethereal = keywords.has("ethereal");
+  if (retain && ethereal) return requireSetting(config.etherealRetainPriority) === "ethereal" ? "exhaust" : "retain";
+  if (ethereal) return "exhaust";
+  return retain ? "retain" : "discard";
+}
+
 /** Innate cards are pulled from the draw pile in top-to-bottom order. */
 export function prepareOpeningHand(
   combat: CombatState,
@@ -56,13 +65,7 @@ export function settleHandWithKeywords(
 ): { combat: CombatState; events: CardLifecycleEvent[] } {
   const events: CardLifecycleEvent[] = [];
   const dispositionFor = (instanceId: string): CardDisposition => {
-    const keywords = keywordsFor(combat, content, instanceId);
-    const retain = keywords.has("retain");
-    const ethereal = keywords.has("ethereal");
-    let disposition: CardDisposition = "discard";
-    if (retain && ethereal) disposition = requireSetting(config.etherealRetainPriority) === "ethereal" ? "exhaust" : "retain";
-    else if (ethereal) disposition = "exhaust";
-    else if (retain) disposition = "retain";
+    const disposition = dispositionForCard(combat, content, config, instanceId);
     events.push({ instanceId, kind: disposition === "retain" ? "retained" : disposition === "exhaust" ? "exhausted" : "discarded" });
     return disposition;
   };

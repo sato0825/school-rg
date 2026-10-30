@@ -6,6 +6,7 @@ export type ClubCardSpec = {
   word: string;
   type: Card["type"];
   target: Card["target"];
+  keywordIds?: readonly string[];
   effects: readonly CardEffectSpec[];
   upgrades: readonly CardEffectSpec[];
 };
@@ -15,7 +16,7 @@ export function buildCardSuite(specs: readonly ClubCardSpec[]): { cards: Card[];
   return {
     cards: specs.map((spec) => ({
       id: spec.id, name: spec.word, type: spec.type, target: spec.target,
-      input: { text: spec.word, locale: "en" }, keywordIds: [],
+      input: { text: spec.word, locale: "en" }, keywordIds: [...(spec.keywordIds ?? [])],
       effectIds: spec.effects.map((_, index) => `${spec.id}-effect-${index + 1}`),
       upgradeEffectIds: spec.upgrades.map((_, index) => `${spec.id}-upgrade-${index + 1}`),
     })),

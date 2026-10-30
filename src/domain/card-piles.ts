@@ -70,13 +70,13 @@ export function moveCardFromHand(
 /** Call at player turn end; keyword/effect rules supply each card's disposition. */
 export function settleHandAtTurnEnd(
   combat: CombatState,
-  dispositionFor: (instanceId: string) => CardDisposition,
+  dispositionFor: (instanceId: string, combat: CombatState) => CardDisposition,
 ): CombatState {
   const hand: string[] = [];
   const discardPile = [...combat.discardPile];
   const exhaustPile = [...combat.exhaustPile];
   for (const instanceId of combat.hand) {
-    const disposition = dispositionFor(instanceId);
+    const disposition = dispositionFor(instanceId, combat);
     if (disposition === "retain") hand.push(instanceId);
     else if (disposition === "discard") discardPile.push(instanceId);
     else if (disposition === "exhaust") exhaustPile.push(instanceId);
