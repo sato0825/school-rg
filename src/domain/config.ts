@@ -42,19 +42,19 @@ const epic = "https://github.com/sato0825/school-rg/issues/27";
 const typingIssue = "https://github.com/sato0825/school-rg/issues/5";
 
 export const DEFAULT_GAME_CONFIG: GameConfig = GameConfigSchema.parse({
-  cardsDrawnPerTurn: { status: "provisional", value: 5, source: designDoc, ownerIssue: 6 },
-  playerTurnMs: { status: "provisional", value: 10_000, source: designDoc, ownerIssue: 6 },
-  prefixConfirmKey: { status: "provisional", value: "Enter", source: designDoc, ownerIssue: 5 },
+  cardsDrawnPerTurn: { status: "provisional", value: 5, source: designDoc, ownerIssue: 4 },
+  playerTurnMs: { status: "provisional", value: 10_000, source: designDoc, ownerIssue: 4 },
+  prefixConfirmKey: { status: "provisional", value: "Enter", source: designDoc, ownerIssue: 6 },
   inputCancelKey: { status: "provisional", value: "Escape", source: designDoc, ownerIssue: 5 },
   whitespacePolicy: { status: "provisional", value: "literal", source: typingIssue, ownerIssue: 5 },
   punctuationPolicy: { status: "provisional", value: "literal", source: typingIssue, ownerIssue: 5 },
   caseSensitiveInput: { status: "provisional", value: false, source: typingIssue, ownerIssue: 5 },
-  sameNameCardPolicy: { status: "unresolved", value: null, source: designDoc, ownerIssue: 4 },
-  handLimit: { status: "unresolved", value: null, source: designDoc, ownerIssue: 7 },
-  timeCapMs: { status: "unresolved", value: null, source: designDoc, ownerIssue: 6 },
-  xRoundingPolicy: { status: "unresolved", value: null, source: designDoc, ownerIssue: 9 },
+  sameNameCardPolicy: { status: "unresolved", value: null, source: designDoc, ownerIssue: 6 },
+  handLimit: { status: "unresolved", value: null, source: designDoc, ownerIssue: 8 },
+  timeCapMs: { status: "unresolved", value: null, source: designDoc, ownerIssue: 11 },
+  xRoundingPolicy: { status: "unresolved", value: null, source: designDoc, ownerIssue: 11 },
   clubNames: { status: "unresolved", value: null, source: designDoc, ownerIssue: 12 },
-  energyEquivalentMs: { status: "confirmed", value: 2_000, source: epic, ownerIssue: 9 },
+  energyEquivalentMs: { status: "confirmed", value: 2_000, source: epic, ownerIssue: 11 },
 });
 
 export function parseGameConfig(value: unknown): GameConfig {
