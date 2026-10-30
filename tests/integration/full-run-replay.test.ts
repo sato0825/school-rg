@@ -59,4 +59,11 @@ describe("seeded full-run replay", () => {
     expect(replay(142, true, 0, "science-demo")).toEqual(original);
     expect(replay(143, false, 0, "science-demo").trace).not.toEqual(original.trace);
   });
+
+  it("reproduces a kendo run across all three Acts and save/load", () => {
+    const original = replay(142, false, 0, "kendo-demo");
+    expect(original.session.run.clubId).toBe("kendo-demo");
+    expect(replay(142, true, 0, "kendo-demo")).toEqual(original);
+    expect(replay(143, false, 0, "kendo-demo").trace).not.toEqual(original.trace);
+  });
 });
