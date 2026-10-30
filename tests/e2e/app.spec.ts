@@ -13,7 +13,7 @@ async function enterNextNode(page: import("@playwright/test").Page): Promise<voi
 }
 
 async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
-  const priorities = ["heavy strike", "sweep", "strike", "finish", "poison", "defend", "counter", "draw", "boost", "delay"];
+  const priorities = ["heavy strike", "sweep", "proof", "verse", "strike", "jot", "finish", "poison", "leaf", "outline", "defend", "counter", "draw", "boost", "delay"];
   for (let turn = 0; turn < 12; turn++) {
     for (let use = 0; use < 12; use++) {
       if (await page.locator(completion).count()) return;
@@ -121,6 +121,16 @@ test("renders the combat HUD and accepts direct keyboard input", async ({ page }
   await page.keyboard.type("heavy strike");
   await expect(page.locator(".enemy-hud")).toContainText("12/26");
   await expect(page.locator(".card")).toHaveCount(4);
+});
+
+test("literature starter can activate a unique card by typing its word", async ({ page }) => {
+  await startDemoRun(page);
+  await enterNextNode(page);
+  const words = await page.locator(".card-word").allTextContents();
+  const unique = ["jot", "leaf", "verse", "outline"].find((word) => words.includes(word));
+  expect(unique).toBeDefined();
+  await page.keyboard.type(unique!);
+  await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
 });
 
 test("a typed battle reaches victory with the visible Intent and pile counts", async ({ page }) => {

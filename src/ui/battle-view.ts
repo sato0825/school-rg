@@ -22,18 +22,21 @@ function html(value: string): string {
 }
 
 export function describeCard(card: Card, content: ContentRegistry): string {
-  const effect = content.effects.find((item) => item.id === card.effectIds[0]);
-  if (!effect) return "効果";
-  const value = Number(effect.parameters.amount ?? effect.parameters.amountMs ?? effect.parameters.count ?? 0);
-  switch (effect.kind) {
-    case "damage": case "damage_multi": case "damage_all": case "damage_pierce": return `攻撃 ${value}${effect.kind === "damage_multi" ? ` × ${effect.parameters.hits}` : ""}`;
-    case "block": return `防御 ${value}`;
-    case "draw": return `${value}枚ドロー`;
-    case "apply_poison": return `毒 ${value}`;
-    case "add_time": return `時間 +${value / 1_000}秒`;
-    case "thorns": return `反撃 ${value}`;
-    default: return "特殊効果";
-  }
+  return card.effectIds.map((effectId) => {
+    const effect = content.effects.find((item) => item.id === effectId);
+    if (!effect) return "効果";
+    const value = Number(effect.parameters.amount ?? effect.parameters.amountMs ?? effect.parameters.count ?? 0);
+    switch (effect.kind) {
+      case "damage": case "damage_multi": case "damage_all": case "damage_pierce": return `攻撃 ${value}${effect.kind === "damage_multi" ? ` × ${effect.parameters.hits}` : ""}`;
+      case "block": return `防御 ${value}`;
+      case "draw": return `${value}枚ドロー`;
+      case "apply_poison": return `毒 ${value}`;
+      case "add_time": return `時間 +${value / 1_000}秒`;
+      case "thorns": return `反撃 ${value}`;
+      case "retrieve_discard": return "捨て札を1枚回収";
+      default: return "特殊効果";
+    }
+  }).join(" · ");
 }
 
 function wordMarkup(word: string, buffer: string): string {
