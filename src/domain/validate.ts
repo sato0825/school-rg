@@ -93,6 +93,17 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
   const mapIds = collectUnique(run.map.nodes, "map.nodes", issues);
   known(run.map.currentNodeId, mapIds, "map.currentNodeId", issues);
   run.map.nodes.forEach((node, i) => node.nextIds.forEach((nextId, j) => known(nextId, mapIds, `map.nodes.${i}.nextIds.${j}`, issues)));
+  if (run.shop) {
+    known(run.shop.nodeId, mapIds, "shop.nodeId", issues);
+    if (run.shop.nodeId !== run.map.currentNodeId) issues.push({ code: "INVALID_STATE", path: "shop.nodeId", message: "Shop is not at the current node" });
+    if (run.map.nodes.find((node) => node.id === run.shop!.nodeId)?.kind !== "shop") issues.push({ code: "INVALID_STATE", path: "shop.nodeId", message: "Shop stock belongs to a non-shop node" });
+    const offerIds = new Set<string>();
+    run.shop.offers.forEach((offer, i) => {
+      known(offer.cardId, cards, `shop.offers.${i}.cardId`, issues);
+      if (offerIds.has(offer.offerId)) issues.push({ code: "DUPLICATE_ID", path: `shop.offers.${i}.offerId`, message: `Duplicate shop offer: ${offer.offerId}` });
+      offerIds.add(offer.offerId);
+    });
+  }
 
   if (run.combat) {
     const combat = run.combat;

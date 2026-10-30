@@ -2,19 +2,19 @@ import { useCardEffects } from "../domain/card-effects.js";
 import { DEFAULT_GAME_CONFIG, requireSetting } from "../domain/config.js";
 import { resolveEnemyIntents } from "../domain/enemy-ai.js";
 import { executeEnemyIntentEffects } from "../domain/enemy-intent-effects.js";
-import { chooseRunReward, createRunSession, enterRunNode, settleRunCombat } from "../domain/run-flow.js";
+import { buyRunShopCard, chooseRunReward, createRunSession, enterRunNode, leaveRunShop, removeRunShopCard, settleRunCombat, useRunRest } from "../domain/run-flow.js";
 import type { MapGenerationOptions } from "../domain/map-generation.js";
 import type { RunState } from "../domain/schema.js";
 import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, pausePlayerTurn, resumePlayerTurn, selectTypedCard, selectTypedEnemyTarget, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../domain/turn-state.js";
 import { demoContent, demoEncounterTable, demoEnemyAi } from "../content/demo-battle.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { demoBattleArt } from "./demo-art.js";
-import { renderRunMap, renderRunResult, renderRunReward } from "./run-view.js";
+import { renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop } from "./run-view.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = () => "discard" as const;
-/** Combat-only content permits a complete Act while event and shop systems are built in #17/#18. */
-const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 0, shop: 0, rest: 0, treasure: 0 } };
+/** The visible run is a compact provisional Act with battle, shop and rest routes. */
+const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 3, elite: 0, event: 0, shop: 1, rest: 1, treasure: 0 } };
 
 export function mountApp(root: HTMLElement): () => void {
   let session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
@@ -26,6 +26,8 @@ export function mountApp(root: HTMLElement): () => void {
   const render = () => {
     if (session.screen === "map") renderRunMap(root, session, demoBattleArt);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
+    else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message);
+    else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt);
     else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt);
     else renderBattle(root, run, demoContent, view);
   };
@@ -55,7 +57,8 @@ export function mountApp(root: HTMLElement): () => void {
   };
 
   function handleError(error: unknown): void {
-    view.message = error instanceof Error ? error.message : "操作を確認してください。";
+    const message = error instanceof Error ? error.message : "操作を確認してください。";
+    view.message = message === "insufficient gold" ? "所持金が足りません。" : message;
     render();
   }
 
@@ -119,12 +122,26 @@ export function mountApp(root: HTMLElement): () => void {
         session = enterRunNode(session, id, demoContent, demoEnemyAi, demoEncounterTable);
         run = session.run;
         if (session.screen === "combat") run = beginPlayerTurn(run, clock, config, demoContent);
-        view.message = "カード名をタイプして発動。誤入力は無視されます。";
+        view.message = session.screen === "shop" ? "購入するカードを選んでください。" : "カード名をタイプして発動。誤入力は無視されます。";
         render();
         return;
       }
       if (session.screen === "reward" && (action === "reward-card" || action === "skip-reward")) {
         session = chooseRunReward(session, action === "skip-reward" ? null : id);
+        run = session.run;
+        render();
+        return;
+      }
+      if (session.screen === "shop") {
+        if (action === "buy-offer") { session = buyRunShopCard(session, id); view.message = "カードを購入しました。"; }
+        else if (action === "remove-shop-card") { session = removeRunShopCard(session, id); view.message = "カードを削除しました。"; }
+        else if (action === "leave-shop") session = leaveRunShop(session);
+        run = session.run;
+        render();
+        return;
+      }
+      if (session.screen === "rest" && (action === "rest-heal" || action === "rest-upgrade")) {
+        session = useRunRest(session, action === "rest-heal" ? { kind: "heal" } : { kind: "upgrade", cardInstanceId: id });
         run = session.run;
         render();
         return;

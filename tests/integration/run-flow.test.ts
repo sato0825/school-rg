@@ -10,6 +10,7 @@ describe("run encounter and reward loop", () => {
     const start = createRunSession(42, "literature-demo", demoContent, combatOnlyMap);
     expect(createRunSession(42, "literature-demo", demoContent, combatOnlyMap)).toEqual(start);
     expect(start.screen).toBe("map");
+    expect(start.run.gold).toBe(50);
     expect(availableRunNodes(start)).toHaveLength(3);
     expect(() => enterRunNode(start, "a1-f3-n0", demoContent, demoEnemyAi, demoEncounterTable)).toThrow(/not available/);
     const first = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, demoEncounterTable);
@@ -21,6 +22,7 @@ describe("run encounter and reward loop", () => {
     const won = { ...first, run: { ...first.run, combat: { ...first.run.combat!, phase: "WON" as const, enemies: first.run.combat!.enemies.map((enemy) => ({ ...enemy, hp: 0 })) } } };
     const reward = settleRunCombat(won, demoContent);
     expect(reward.screen).toBe("reward");
+    expect(reward.run.gold).toBe(65);
     expect(reward.rewardCardIds).toHaveLength(3);
     expect(() => chooseRunReward(reward, "not-offered")).toThrow(/not a reward/);
     const skipped = chooseRunReward(reward, null);

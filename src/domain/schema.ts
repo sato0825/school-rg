@@ -142,6 +142,13 @@ export const CombatStateSchema = z.strictObject({
   statuses: CombatStatusesSchema.default({ player: {}, enemies: {} }),
 });
 
+export const ShopStateSchema = z.strictObject({
+  nodeId: id,
+  offers: z.array(z.strictObject({ offerId: id, cardId: id, price: nonNegativeInt, purchased: z.boolean() })),
+  removalPrice: nonNegativeInt,
+  removalUsed: z.boolean(),
+});
+
 export const RunStateSchema = z.strictObject({
   schemaVersion: z.literal(SCHEMA_VERSION),
   seed: z.number().int().min(0).max(0xffffffff),
@@ -152,6 +159,8 @@ export const RunStateSchema = z.strictObject({
   deck: z.array(CardInstanceSchema),
   relicIds: z.array(id),
   potionIds: z.array(id),
+  gold: nonNegativeInt.default(0),
+  shop: ShopStateSchema.nullable().default(null),
   map: z.strictObject({ nodes: z.array(MapNodeSchema), currentNodeId: id }),
   combat: CombatStateSchema.nullable(),
 });
@@ -170,3 +179,4 @@ export type RunState = z.infer<typeof RunStateSchema>;
 export type TurnClockState = z.infer<typeof TurnClockStateSchema>;
 export type TypingState = z.infer<typeof TypingStateSchema>;
 export type CombatStatuses = z.infer<typeof CombatStatusesSchema>;
+export type ShopState = z.infer<typeof ShopStateSchema>;
