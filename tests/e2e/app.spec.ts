@@ -447,21 +447,22 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await expect(page.locator(".enemy-hud")).toContainText("32/32");
 });
 
-test("regular runs use the provisional full map while short E2E runs require an explicit flag", async ({ page }) => {
+test("regular runs use the provisional full map while short E2E runs require an explicit flag", async ({ page, browser }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /文芸部/ }).click();
   await expect(page.locator(".map-node")).toHaveCount(50);
   await expect(page.locator(".map-node").last()).toHaveAttribute("aria-label", /13階 ボス/);
   await page.goto("/?shortRun=1");
-  await page.getByRole("button", { name: "再開" }).click();
   await expect(page.locator(".map-node")).toHaveCount(50);
-  await page.evaluate(() => localStorage.clear());
-  await page.goto("/?shortRun=1");
-  await page.getByRole("button", { name: "ランを始める" }).click();
-  await page.getByRole("button", { name: /文芸部/ }).click();
-  await expect(page.locator(".map-node")).toHaveCount(10);
-  await expect(page.locator(".map-node").last()).toHaveAttribute("aria-label", /3階 ボス/);
+  const shortContext = await browser.newContext();
+  const shortPage = await shortContext.newPage();
+  await shortPage.goto(page.url());
+  await shortPage.getByRole("button", { name: "ランを始める" }).click();
+  await shortPage.getByRole("button", { name: /文芸部/ }).click();
+  await expect(shortPage.locator(".map-node")).toHaveCount(10);
+  await expect(shortPage.locator(".map-node").last()).toHaveAttribute("aria-label", /3階 ボス/);
+  await shortContext.close();
 });
 
 test("opt-in playtest report survives reload, excludes pause and exports after three Acts", async ({ page }) => {
