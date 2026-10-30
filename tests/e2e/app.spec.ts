@@ -509,8 +509,10 @@ async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ 
   for (let step = 0; step < 36 && !(await page.locator(".run-result").count()); step++) {
     if (await page.locator(".map-panel").count()) {
       const available = page.locator(".map-node.available");
-      const fight = available.filter({ hasText: /戦闘|強敵|ボス/ });
-      await (await fight.count() ? fight.first() : available.first()).focus();
+      // A fixed three-Act smoke route should use recovery and rewards when the map offers them.
+      // Bosses remain mandatory, and dedicated tests cover normal and elite encounters.
+      const respite = available.filter({ hasText: /休憩|宝箱|購買|イベント/ });
+      await (await respite.count() ? respite.first() : available.first()).focus();
       await page.keyboard.press("Enter");
     } else if (await page.locator(".treasure-panel").count()) {
       await page.locator(".treasure-offer:not(:disabled)").first().focus();
