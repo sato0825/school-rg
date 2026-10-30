@@ -69,6 +69,7 @@ export const ClubSchema = z.strictObject({
   starterCardIds: z.array(id).min(1),
   cardPoolIds: z.array(id).min(1),
   startingRelicId: id.nullable(),
+  startingPotionIds: z.array(id).optional(),
 });
 
 export const ContentRegistrySchema = z.strictObject({
@@ -155,6 +156,7 @@ export const EventConditionSchema = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("gold_at_least"), amount: nonNegativeInt }),
   z.strictObject({ kind: z.literal("hp_at_most_percent"), percent: z.number().int().min(0).max(100) }),
   z.strictObject({ kind: z.literal("has_card"), cardId: id }),
+  z.strictObject({ kind: z.literal("potion_slot_available") }),
 ]);
 
 export const EventEffectSchema = z.discriminatedUnion("kind", [
@@ -162,6 +164,7 @@ export const EventEffectSchema = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("hp"), amount: z.number().int() }),
   z.strictObject({ kind: z.literal("add_card"), cardId: id }),
   z.strictObject({ kind: z.literal("add_relic"), relicId: id }),
+  z.strictObject({ kind: z.literal("add_potion"), potionId: id }),
   z.strictObject({ kind: z.literal("battle"), enemyId: id }),
 ]);
 

@@ -30,7 +30,7 @@ export function createRunSession(seed: number, clubId: string, content: ContentR
   const run = parseRunState({
     schemaVersion: 1, seed, rngState: map.rngState, clubId, act: 1,
     player: { hp: club.startingHp, maxHp: club.startingHp, block: 0 },
-    deck, relicIds: club.startingRelicId ? [club.startingRelicId] : [], potionIds: [], gold: economy.startingGold, shop: null, event: null,
+    deck, relicIds: club.startingRelicId ? [club.startingRelicId] : [], potionIds: club.startingPotionIds ?? [], gold: economy.startingGold, shop: null, event: null,
     map: { nodes: map.nodes, currentNodeId: map.currentNodeId }, combat: null,
   }, content);
   return { run, screen: "map", completedNodeIds: [map.currentNodeId], rewardCardIds: [] };

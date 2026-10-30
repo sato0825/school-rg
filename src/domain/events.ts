@@ -1,4 +1,6 @@
 import { randomInt } from "./random.js";
+import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "./config.js";
+import { collectPotion } from "./potions.js";
 import { acquireRelic } from "./relic-hooks.js";
 import type { ContentRegistry, EventChoice, EventCondition, EventDefinition, RunState } from "./schema.js";
 
@@ -9,11 +11,12 @@ function nextDeckInstanceId(run: RunState): string {
   return `deck-${index}`;
 }
 
-export function eventConditionMet(run: RunState, condition: EventCondition): boolean {
+export function eventConditionMet(run: RunState, condition: EventCondition, config: GameConfig = DEFAULT_GAME_CONFIG): boolean {
   switch (condition.kind) {
     case "gold_at_least": return run.gold >= condition.amount;
     case "hp_at_most_percent": return run.player.hp * 100 <= run.player.maxHp * condition.percent;
     case "has_card": return run.deck.some((card) => card.cardId === condition.cardId);
+    case "potion_slot_available": return run.potionIds.length < requireSetting(config.potionSlots);
   }
 }
 
@@ -69,6 +72,10 @@ export function resolveEventChoice(run: RunState, choiceId: string, content: Con
       }
       case "add_relic": {
         current = acquireRelic(current, effect.relicId, content);
+        break;
+      }
+      case "add_potion": {
+        current = collectPotion(current, effect.potionId, content, DEFAULT_GAME_CONFIG);
         break;
       }
       case "battle": {
