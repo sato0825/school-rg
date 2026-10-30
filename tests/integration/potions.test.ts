@@ -41,7 +41,7 @@ describe("typed potion use", () => {
 
   it("uses the configured slot count for event availability and acquisition", () => {
     const config = parseGameConfig({ ...DEFAULT_GAME_CONFIG, potionSlots: { ...DEFAULT_GAME_CONFIG.potionSlots, value: 2 } });
-    const run = { ...structuredClone(validRun), potionIds: ["potion-time", "potion-heal"], event: { nodeId: "node-start", eventId: "collection-box", choiceId: null, pendingCombat: false } };
+    const run = { ...structuredClone(validRun), combat: null, potionIds: ["potion-time", "potion-heal"], event: { nodeId: "node-start", eventId: "collection-box", choiceId: null, pendingCombat: false } };
     expect(availableEventChoices(run, demoContent, config).find((item) => item.choice.id === "ink")?.available).toBe(false);
     expect(() => resolveEventChoice(run, "ink", demoContent, config)).toThrow("conditions");
   });
