@@ -103,7 +103,7 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
       instanceIds.add(card.instanceId);
     });
     const located = new Set<string>();
-    for (const [pileName, pile] of Object.entries({ drawPile: combat.drawPile, hand: combat.hand, discardPile: combat.discardPile, exhaustPile: combat.exhaustPile })) {
+    for (const [pileName, pile] of Object.entries({ drawPile: combat.drawPile, hand: combat.hand, discardPile: combat.discardPile, exhaustPile: combat.exhaustPile, resolvingPile: combat.resolvingPile })) {
       pile.forEach((instanceId, i) => {
         known(instanceId, instanceIds, `combat.${pileName}.${i}`, issues);
         if (located.has(instanceId)) issues.push({ code: "INVALID_STATE", path: `combat.${pileName}.${i}`, message: `Card appears in multiple piles: ${instanceId}` });

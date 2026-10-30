@@ -11,7 +11,8 @@ export type EffectAction =
   | { kind: "heal"; target: ActorRef; amount: number }
   | { kind: "max_hp"; target: ActorRef; delta: number; healByIncrease: boolean }
   | { kind: "status"; target: ActorRef; status: StatusKind; delta: number }
-  | { kind: "cleanse"; target: ActorRef; status: StatusKind | "all_debuffs" };
+  | { kind: "cleanse"; target: ActorRef; status: StatusKind | "all_debuffs" }
+  | { kind: "remove_block"; target: ActorRef };
 
 export type EffectEvent =
   | { kind: "hit"; source: ActorRef; target: ActorRef; amount: number; pierceBlock: boolean }
@@ -19,7 +20,7 @@ export type EffectEvent =
 
 export type EffectTrace =
   | { kind: "damage" | "counter"; source: ActorRef; target: ActorRef; requested: number; blockSpent: number; hpLost: number }
-  | { kind: "block" | "heal" | "max_hp"; target: ActorRef; before: number; after: number }
+  | { kind: "block" | "heal" | "max_hp" | "remove_block"; target: ActorRef; before: number; after: number }
   | { kind: "status"; target: ActorRef; status: StatusKind; before: number; after: number }
   | { kind: "cleanse"; target: ActorRef; status: StatusKind | "all_debuffs" }
   | { kind: "skipped"; event: EffectEvent; reason: "source_dead" | "target_dead" | "target_missing" };
@@ -171,6 +172,9 @@ export function resolveDueEffects(
     } else if (event.kind === "cleanse") {
       current = event.status === "all_debuffs" ? cleanseDebuffs(current, event.target) : clearStatus(current, event.target, event.status);
       trace.push({ kind: "cleanse", target: event.target, status: event.status });
+    } else if (event.kind === "remove_block") {
+      current = replaceActor(current, event.target, { ...target, block: 0 });
+      trace.push({ kind: "remove_block", target: event.target, before: target.block, after: 0 });
     } else {
       const maxHp = target.maxHp + event.delta;
       if (!Number.isSafeInteger(maxHp) || maxHp < 1) throw new RangeError("resulting max HP must be positive");

@@ -133,6 +133,7 @@ export const CombatStateSchema = z.strictObject({
   hand: z.array(id),
   discardPile: z.array(id),
   exhaustPile: z.array(id),
+  resolvingPile: z.array(id).default([]),
   enemies: z.array(EnemyInstanceSchema),
   typing: TypingStateSchema,
   clock: TurnClockStateSchema,

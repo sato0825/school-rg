@@ -1,6 +1,6 @@
 import type { CombatState, ContentRegistry } from "./schema.js";
 
-export type CardZone = "drawPile" | "hand" | "discardPile" | "exhaustPile";
+export type CardZone = "drawPile" | "hand" | "discardPile" | "exhaustPile" | "resolvingPile";
 export type CardOperationEvent =
   | { kind: "created" | "duplicated"; instanceId: string; cardId: string; sourceInstanceId: string | null }
   | { kind: "moved"; instanceId: string; from: CardZone | null; to: CardZone }
@@ -12,7 +12,7 @@ export interface CardOperationPolicy {
   maxHandSize: number | null;
 }
 
-const zones: readonly CardZone[] = ["drawPile", "hand", "discardPile", "exhaustPile"];
+const zones: readonly CardZone[] = ["drawPile", "hand", "discardPile", "exhaustPile", "resolvingPile"];
 
 function assertPolicy(policy: CardOperationPolicy): void {
   if (policy.maxHandSize !== null && (!Number.isSafeInteger(policy.maxHandSize) || policy.maxHandSize < 1)) {
