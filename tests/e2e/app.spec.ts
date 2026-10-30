@@ -203,6 +203,38 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
   await expect(page.locator(".run-header")).toContainText("ACT 2 · 0F");
 });
 
+test("a seeded run clears all three Acts with typed combat", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.clock.install();
+  await startDemoRun(page);
+  let battles = 0;
+  let bosses = 0;
+  for (let step = 0; step < 36 && !(await page.locator(".run-result").count()); step++) {
+    if (await page.locator(".map-panel").count()) {
+      const available = page.locator(".map-node.available");
+      const fight = available.filter({ hasText: /戦闘|強敵|ボス/ });
+      await (await fight.count() ? fight.first() : available.first()).focus();
+      await page.keyboard.press("Enter");
+    } else if (await page.locator(".reward-panel:not(.run-result):not(.economy-panel):not(.event-panel)").count()) {
+      await page.getByRole("button", { name: "報酬を受け取らず進む" }).focus();
+      await page.keyboard.press("Enter");
+    } else if (await page.locator(".economy-panel").count()) {
+      if (await page.getByRole("button", { name: "購買を出る" }).count()) await page.getByRole("button", { name: "購買を出る" }).click();
+      else await page.locator("[data-action=rest-heal]").click();
+    } else if (await page.locator(".event-panel").count()) {
+      await page.locator(".event-choice:not(:disabled)").filter({ hasNotText: "戦う" }).first().click();
+    } else if (await page.locator(".enemy-slot").count()) {
+      if ((await page.locator(".run-meta").innerText()).includes("boss")) bosses++;
+      battles++;
+      await typeThroughBattle(page);
+    } else throw new Error(`unexpected run screen at step ${step}`);
+  }
+  await expect(page.getByRole("heading", { name: "全Actクリア" })).toBeVisible();
+  expect(bosses).toBe(3);
+  expect(battles).toBeGreaterThanOrEqual(3);
+  await expect(page.locator(".run-header")).toContainText("全Act完走");
+});
+
 test("a route can upgrade at rest and buy once at the shop", async ({ page }) => {
   await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).click();

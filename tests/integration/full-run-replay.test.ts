@@ -1,0 +1,43 @@
+import { describe, expect, it } from "vitest";
+import { demoContent, demoEncounterTable, demoEnemyAi } from "../../src/content/demo-battle.js";
+import { availableRunNodes, chooseRunReward, createRunSession, enterRunNode, settleRunCombat, type RunSession } from "../../src/domain/run-flow.js";
+import { deserializeRunSession, serializeRunSession } from "../../src/domain/save.js";
+import { parseRunState } from "../../src/domain/validate.js";
+
+const mapOptions = { floorsPerAct: 2, lanes: 3, kindWeights: { combat: 1, elite: 0, event: 0, shop: 0, rest: 0, treasure: 0 } };
+
+function replay(seed: number, reloadAtActTwo: boolean): { session: RunSession; trace: string[] } {
+  let session = createRunSession(seed, "literature-demo", demoContent, mapOptions);
+  const trace: string[] = [];
+  let battles = 0;
+  for (let step = 0; step < 20 && session.screen !== "won"; step++) {
+    const node = availableRunNodes(session)[0];
+    if (!node) throw new Error(`run stopped at step ${step}`);
+    session = enterRunNode(session, node.id, demoContent, demoEnemyAi, demoEncounterTable);
+    trace.push(`${node.id}:${node.kind}:${session.run.rngState}:${session.run.combat?.enemies[0]?.intentId ?? "-"}`);
+    if (session.screen === "combat") {
+      battles++;
+      const won: RunSession = { ...session, run: { ...session.run, combat: { ...session.run.combat!, phase: "WON", enemies: session.run.combat!.enemies.map((enemy) => ({ ...enemy, hp: 0 })) } } };
+      session = settleRunCombat(won, demoContent);
+      trace.push(`reward:${session.rewardCardIds.join(",")}:${session.run.gold}`);
+      if (session.screen === "reward") session = chooseRunReward(session, null);
+    }
+    expect(parseRunState(session.run, demoContent)).toEqual(session.run);
+    if (reloadAtActTwo && node.act === 2 && node.kind === "start") {
+      const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
+      session = deserializeRunSession(saved, demoContent, { nowMs: () => 10_000 });
+    }
+  }
+  expect(session.screen).toBe("won");
+  expect(battles).toBe(9);
+  return { session, trace };
+}
+
+describe("seeded full-run replay", () => {
+  it("reproduces all three Acts, including a save/load boundary", () => {
+    const original = replay(142, false);
+    expect(replay(142, false)).toEqual(original);
+    expect(replay(142, true)).toEqual(original);
+    expect(replay(143, false).trace).not.toEqual(original.trace);
+  });
+});
