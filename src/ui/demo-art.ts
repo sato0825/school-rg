@@ -57,7 +57,7 @@ export const candidateBattleArt: BattleArt = {
     },
     "kendo-demo": {
       idle: new URL("../../docs/art/candidates/kendo-idle-candidate-v1.png", import.meta.url).href,
-      activate: new URL("../../docs/art/candidates/kendo-activate-candidate-v2.png", import.meta.url).href,
+      activate: new URL("../../docs/art/candidates/kendo-activate-candidate-v3.png", import.meta.url).href,
       hit: new URL("../../docs/art/candidates/kendo-hit-candidate-v2.png", import.meta.url).href,
     },
     "music-demo": {
@@ -68,7 +68,7 @@ export const candidateBattleArt: BattleArt = {
     "art-demo": {
       idle: new URL("../../docs/art/candidates/art-idle-candidate-v1.png", import.meta.url).href,
       activate: new URL("../../docs/art/candidates/art-activate-candidate-v2.png", import.meta.url).href,
-      hit: new URL("../../docs/art/candidates/art-hit-candidate-v2.png", import.meta.url).href,
+      hit: new URL("../../docs/art/candidates/art-hit-candidate-v3.png", import.meta.url).href,
     },
   },
 };

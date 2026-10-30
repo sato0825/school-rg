@@ -277,6 +277,40 @@
       "generator": "built-in imagegen; model version not exposed",
       "editableSource": null,
       "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "kendo-activate-candidate-v3",
+      "file": "docs/art/candidates/kendo-activate-candidate-v3.png",
+      "sha256": "51faa1d1be669bf4174b2961048db18749a424bc655f1060df33df11bf5bd937",
+      "width": 1024,
+      "height": 1536,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "character-pose",
+      "characterId": "kendo-student",
+      "pose": "activate",
+      "referenceId": "kendo-idle-candidate-v1",
+      "promptFile": "docs/art/prompts/motion-corrections-v3.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "art-hit-candidate-v3",
+      "file": "docs/art/candidates/art-hit-candidate-v3.png",
+      "sha256": "e7e1ddd7774773200451ee8864a6044d65cc729c5f61669c19c14c32b4c5ad64",
+      "width": 1024,
+      "height": 1536,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "character-pose",
+      "characterId": "art-student",
+      "pose": "hit",
+      "referenceId": "art-idle-candidate-v1",
+      "promptFile": "docs/art/prompts/motion-corrections-v3.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
     }
   ]
 }

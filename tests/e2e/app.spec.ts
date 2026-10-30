@@ -460,15 +460,17 @@ for (const [clubId, label, name] of [
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
     await expect(page.locator(".intent-ticket")).toContainText("紙片が飛ぶ");
     await page.keyboard.type(await page.locator(".card-word").first().innerText());
-    await expect(hero).toHaveAttribute("src", new RegExp(`${name}-activate-candidate-v2`));
+    const activateVersion = name === "kendo" ? "v3" : "v2";
+    const hitVersion = name === "art" ? "v3" : "v2";
+    await expect(hero).toHaveAttribute("src", new RegExp(`${name}-activate-candidate-${activateVersion}`));
     await page.clock.runFor(420);
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
     // A typed defensive card may absorb the first attack; advance until HP is actually lost.
-    for (let turn = 0; turn < 4 && !((await hero.getAttribute("src")) ?? "").includes(`${name}-hit-candidate-v2`); turn++) {
+    for (let turn = 0; turn < 4 && !((await hero.getAttribute("src")) ?? "").includes(`${name}-hit-candidate-${hitVersion}`); turn++) {
       await page.clock.runFor(10_000);
       await page.clock.runFor(650);
     }
-    await expect(hero).toHaveAttribute("src", new RegExp(`${name}-hit-candidate-v2`));
+    await expect(hero).toHaveAttribute("src", new RegExp(`${name}-hit-candidate-${hitVersion}`));
     await page.clock.runFor(420);
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
   });
