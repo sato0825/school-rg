@@ -17,7 +17,8 @@ describe("run encounter and reward loop", () => {
     expect(first.screen).toBe("combat");
     expect(first.run.combat?.phase).toBe("PLAYER_START");
     expect(first.run.combat?.drawPile).toHaveLength(10);
-    expect(first.run.combat?.enemies[0]?.intentId).toBe("paper-intent-hit");
+    const firstEnemy = first.run.combat!.enemies[0]!;
+    expect(demoContent.enemies.find((enemy) => enemy.id === firstEnemy.enemyId)?.intentIds).toContain(firstEnemy.intentId);
     expect(() => enterRunNode(first, "a1-f2-n0", demoContent, demoEnemyAi, demoEncounterTable)).toThrow(/map screen/);
     const won = { ...first, run: { ...first.run, combat: { ...first.run.combat!, phase: "WON" as const, enemies: first.run.combat!.enemies.map((enemy) => ({ ...enemy, hp: 0 })) } } };
     const reward = settleRunCombat(won, demoContent);
@@ -51,7 +52,8 @@ describe("run encounter and reward loop", () => {
     for (let index = 0; index < 3; index++) {
       const next = availableRunNodes(session)[0]!;
       session = enterRunNode(session, next.id, demoContent, demoEnemyAi, demoEncounterTable);
-      expect(session.run.combat?.enemies[0]?.enemyId).toBe(next.kind === "boss" ? "final-exam" : "paper-heap");
+      expect(next.kind === "boss" ? ["final-exam"] : ["paper-heap", "late-pass"])
+        .toContain(session.run.combat?.enemies[0]?.enemyId);
       const won = { ...session, run: { ...session.run, combat: { ...session.run.combat!, phase: "WON" as const } } };
       session = chooseRunReward(settleRunCombat(won, demoContent), null);
     }

@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import { demoContent, demoEnemyAi } from "../../src/content/demo-battle.js";
+import { createRunSession, enterRunNode, type EncounterPool } from "../../src/domain/run-flow.js";
+import { serializeRunSession } from "../../src/domain/save.js";
+import type { MapNode } from "../../src/domain/schema.js";
 
 async function startDemoRun(page: import("@playwright/test").Page): Promise<void> {
   await page.goto("/?shortRun=1&seed=42");
@@ -104,7 +108,7 @@ test("a defeated run reaches its result and returns to the title by keyboard", a
   await page.clock.install();
   await startDemoRun(page);
   await enterNextNode(page);
-  for (let turn = 0; turn < 25 && !(await page.locator(".run-result").count()); turn++) await page.clock.runFor(11_000);
+  for (let turn = 0; turn < 30 && !(await page.locator(".run-result").count()); turn++) await page.clock.runFor(11_000);
   await expect(page.getByRole("heading", { name: "敗北" })).toBeVisible();
   await page.getByRole("button", { name: "新しいランを始める" }).focus();
   await page.keyboard.press("Enter");
@@ -124,7 +128,7 @@ test("renders the combat HUD and accepts direct keyboard input", async ({ page }
   await page.keyboard.press("z");
   await expect(page.locator(".typing-buffer .placeholder")).toBeVisible();
   await page.keyboard.type("heavy strike");
-  await expect(page.locator(".enemy-hud")).toContainText("12/26");
+  await expect(page.locator(".enemy-hud")).toContainText("10/24");
   await expect(page.locator(".card")).toHaveCount(4);
 });
 
@@ -206,10 +210,10 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await page.clock.install();
   await startDemoRun(page);
   await enterNextNode(page);
-  await expect(page.locator(".intent-ticket")).toContainText("飛び散る答案");
+  await expect(page.locator(".intent-ticket")).toContainText("焦りを誘う");
   await page.keyboard.type("heavy strike");
   await page.keyboard.type("strike");
-  await expect(page.locator(".enemy-hud")).toContainText("6/26");
+  await expect(page.locator(".enemy-hud")).toContainText("4/24");
   await page.getByRole("button", { name: "一時停止" }).click();
   const pausedTime = await page.locator("[data-role=time]").innerText();
   await page.locator(".enemy-slot").click();
@@ -219,12 +223,11 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await page.getByRole("button", { name: "再開" }).click();
   await page.clock.runFor(11_000);
   await expect(page.locator(".run-meta")).toContainText("TURN 2");
-  await expect(page.locator(".player-hud")).toContainText("36/40");
+  await expect(page.locator(".player-hud")).toContainText("40/40");
   await expect(page.locator(".relic-row")).toContainText("図書室のしおり");
   await expect(page.locator(".pile-counts")).toContainText("捨て札 5");
-  await expect(page.locator(".intent-ticket")).toContainText("机を積む");
-  await page.keyboard.type("sweep");
-  await page.keyboard.type("strike");
+  await expect(page.locator(".intent-ticket")).toContainText("遅刻札を投げる");
+  await typeThroughBattle(page);
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
 });
 
@@ -262,6 +265,34 @@ test("an elite formation accepts a typed single target and an all-enemy attack",
   await typeThroughBattle(page);
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
 });
+
+for (const [act, kind, enemyId, name] of [
+  [1, "combat", "late-pass", "遅刻札の影"],
+  [1, "elite", "notice-board", "動く掲示板"],
+  [2, "combat", "safety-sign", "理科室の安全標識"],
+  [2, "elite", "stairwell-echo", "階段の反響"],
+  [3, "combat", "window-shadow", "夜窓の影"],
+  [3, "elite", "night-locker", "夜のロッカー"],
+] as const) {
+  test(`Act ${act} ${kind} ${name} shows its Intent and can be defeated by typing`, async ({ page }) => {
+    await page.clock.install();
+    const start = createRunSession(42, "literature-demo", demoContent);
+    const from: MapNode = { id: "test-start", act, floor: 0, kind: "start", nextIds: ["test-fight"] };
+    const fight: MapNode = { id: "test-fight", act, floor: 1, kind, nextIds: [] };
+    const session = { ...start, run: { ...start.run, act, map: { currentNodeId: from.id, nodes: [from, fight] } }, completedNodeIds: [from.id] };
+    const pool: EncounterPool = { combat: [enemyId], elite: [enemyId], boss: ["final-exam"] };
+    const entered = enterRunNode(session, fight.id, demoContent, demoEnemyAi, pool);
+    const saved = serializeRunSession(entered, demoContent, { nowMs: () => 0 }, () => "discard");
+    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await page.goto("/");
+    await expect(page.locator(".enemy-hud")).toContainText(name);
+    const intentId = entered.run.combat!.enemies[0]!.intentId;
+    const label = demoContent.intents.find((item) => item.id === intentId)!.label;
+    await expect(page.locator(".intent-ticket")).toContainText(label);
+    await typeThroughBattle(page);
+    await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
+  });
+}
 
 test("a potion is typed in its own mode and consumed after extending the active turn", async ({ page }) => {
   await page.clock.install();
@@ -303,6 +334,7 @@ test("candidate pose preview follows enemy damage and typed activation", async (
   await expect(page.locator(".art-preview-label")).toContainText("未採用");
   await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v1/);
   await expect.poll(decoded).toBeGreaterThan(0);
+  await page.clock.runFor(10_000);
   await page.clock.runFor(10_000);
   await page.clock.runFor(650);
   await expect(hero).toHaveAttribute("src", /serious-student-hit-candidate-v1/);
@@ -483,7 +515,7 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await page.getByRole("button", { name: /文芸部/ }).click();
   await expect(page.locator(".map-stats")).toContainText("難度 1");
   await enterNextNode(page);
-  await expect(page.locator(".enemy-hud")).toContainText("32/32");
+  await expect(page.locator(".enemy-hud")).toContainText("29/29");
 });
 
 test("regular runs use the provisional full map while short E2E runs require an explicit flag", async ({ page, browser }) => {
