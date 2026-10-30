@@ -53,6 +53,7 @@ export function parseContentRegistry(value: unknown): ContentRegistry {
   collectUnique(content.clubs, "clubs", issues);
 
   content.cards.forEach((card, i) => card.effectIds.forEach((effectId, j) => known(effectId, effects, `cards.${i}.effectIds.${j}`, issues)));
+  content.cards.forEach((card, i) => card.upgradeEffectIds?.forEach((effectId, j) => known(effectId, effects, `cards.${i}.upgradeEffectIds.${j}`, issues)));
   content.intents.forEach((intent, i) => intent.effectIds.forEach((effectId, j) => known(effectId, effects, `intents.${i}.effectIds.${j}`, issues)));
   content.enemies.forEach((enemy, i) => enemy.intentIds.forEach((intentId, j) => known(intentId, intents, `enemies.${i}.intentIds.${j}`, issues)));
   content.relics.forEach((relic, i) => relic.effectIds.forEach((effectId, j) => known(effectId, effects, `relics.${i}.effectIds.${j}`, issues)));
