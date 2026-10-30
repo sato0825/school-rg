@@ -15,6 +15,7 @@ export const validContent: ContentRegistry = {
   enemies: [{ id: "enemy-paper", name: "Paper Shadow", maxHp: 20, intentIds: ["intent-hit"] }],
   relics: [{ id: "relic-sample", name: "Sample Relic", triggerIds: ["combat-start"], effectIds: ["effect-draw"] }],
   potions: [{ id: "potion-sample", name: "Sample Potion", input: { text: "potion", locale: "en" }, target: "self", effectIds: ["effect-draw"] }],
+  events: [],
   clubs: [
     { id: "club-a", name: "Synthetic Club A", startingHp: 40, starterCardIds: ["card-strike"], cardPoolIds: ["card-strike", "card-draft"], startingRelicId: "relic-sample" },
     { id: "club-b", name: "Synthetic Club B", startingHp: 38, starterCardIds: ["card-draft"], cardPoolIds: ["card-draft"], startingRelicId: null },
@@ -33,6 +34,7 @@ export const validRun: RunState = {
   potionIds: ["potion-sample"],
   gold: 0,
   shop: null,
+  event: null,
   map: {
     currentNodeId: "node-start",
     nodes: [

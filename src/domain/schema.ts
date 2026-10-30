@@ -80,6 +80,7 @@ export const ContentRegistrySchema = z.strictObject({
   relics: z.array(RelicSchema),
   potions: z.array(PotionSchema),
   clubs: z.array(ClubSchema),
+  events: z.array(z.lazy(() => EventDefinitionSchema)).default([]),
 });
 
 export const CardInstanceSchema = z.strictObject({
@@ -149,6 +150,33 @@ export const ShopStateSchema = z.strictObject({
   removalUsed: z.boolean(),
 });
 
+export const EventConditionSchema = z.discriminatedUnion("kind", [
+  z.strictObject({ kind: z.literal("gold_at_least"), amount: nonNegativeInt }),
+  z.strictObject({ kind: z.literal("hp_at_most_percent"), percent: z.number().int().min(0).max(100) }),
+  z.strictObject({ kind: z.literal("has_card"), cardId: id }),
+]);
+
+export const EventEffectSchema = z.discriminatedUnion("kind", [
+  z.strictObject({ kind: z.literal("gold"), amount: z.number().int() }),
+  z.strictObject({ kind: z.literal("hp"), amount: z.number().int() }),
+  z.strictObject({ kind: z.literal("add_card"), cardId: id }),
+  z.strictObject({ kind: z.literal("battle"), enemyId: id }),
+]);
+
+export const EventDefinitionSchema = z.strictObject({
+  id,
+  title: text,
+  description: text,
+  choices: z.array(z.strictObject({ id, label: text, requires: z.array(EventConditionSchema), effects: z.array(EventEffectSchema) })).min(1),
+});
+
+export const EventStateSchema = z.strictObject({
+  nodeId: id,
+  eventId: id,
+  choiceId: id.nullable(),
+  pendingCombat: z.boolean(),
+});
+
 export const RunStateSchema = z.strictObject({
   schemaVersion: z.literal(SCHEMA_VERSION),
   seed: z.number().int().min(0).max(0xffffffff),
@@ -161,6 +189,7 @@ export const RunStateSchema = z.strictObject({
   potionIds: z.array(id),
   gold: nonNegativeInt.default(0),
   shop: ShopStateSchema.nullable().default(null),
+  event: EventStateSchema.nullable().default(null),
   map: z.strictObject({ nodes: z.array(MapNodeSchema), currentNodeId: id }),
   combat: CombatStateSchema.nullable(),
 });
@@ -180,3 +209,7 @@ export type TurnClockState = z.infer<typeof TurnClockStateSchema>;
 export type TypingState = z.infer<typeof TypingStateSchema>;
 export type CombatStatuses = z.infer<typeof CombatStatusesSchema>;
 export type ShopState = z.infer<typeof ShopStateSchema>;
+export type EventDefinition = z.infer<typeof EventDefinitionSchema>;
+export type EventChoice = EventDefinition["choices"][number];
+export type EventCondition = z.infer<typeof EventConditionSchema>;
+export type EventEffect = z.infer<typeof EventEffectSchema>;
