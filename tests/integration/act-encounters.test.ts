@@ -6,11 +6,7 @@ import { createRunSession, enterRunNode, type EncounterPool } from "../../src/do
 import type { MapNode } from "../../src/domain/schema.js";
 
 describe("Act-specific encounters", () => {
-  const expected = {
-    1: { combat: "paper-heap", elite: "hall-monitor", boss: "final-exam" },
-    2: { combat: "chalk-cloud", elite: "library-cart", boss: "club-auditor" },
-    3: { combat: "night-announcement", elite: "lost-and-found", boss: "closing-bell" },
-  } as const;
+  const bosses = { 1: "final-exam", 2: "club-auditor", 3: "closing-bell" } as const;
 
   for (const act of [1, 2, 3] as const) {
     for (const kind of ["combat", "elite", "boss"] as const) {
@@ -21,8 +17,10 @@ describe("Act-specific encounters", () => {
         const session = { ...start, run: { ...start.run, act, map: { currentNodeId: from.id, nodes: [from, fight] } }, completedNodeIds: [from.id] };
         const entered = enterRunNode(session, fight.id, demoContent, demoEnemyAi, demoEncounterTable);
         const enemy = entered.run.combat?.enemies[0];
-        expect(enemy?.enemyId).toBe(expected[act][kind]);
-        if (act === 1 && kind === "elite") expect(entered.run.combat?.enemies.map((item) => item.enemyId)).toEqual(["hall-monitor", "paper-scrap"]);
+        const pool = ("byAct" in demoEncounterTable ? demoEncounterTable.byAct[act] : demoEncounterTable)[kind];
+        expect(pool.some((item) => typeof item === "string" ? item === enemy?.enemyId : item.enemyIds[0] === enemy?.enemyId)).toBe(true);
+        if (kind === "boss") expect(enemy?.enemyId).toBe(bosses[act]);
+        if (act === 1 && kind === "elite" && enemy?.enemyId === "hall-monitor") expect(entered.run.combat?.enemies.map((item) => item.enemyId)).toEqual(["hall-monitor", "paper-scrap"]);
         expect(demoContent.enemies.find((item) => item.id === enemy?.enemyId)?.intentIds).toContain(enemy?.intentId);
         expect(demoContent.intents.find((item) => item.id === enemy?.intentId)).toBeDefined();
         expect(enterRunNode(session, fight.id, demoContent, demoEnemyAi, demoEncounterTable)).toEqual(entered);

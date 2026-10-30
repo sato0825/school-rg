@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { demoContent, demoEncounterTable, demoEnemyAi, demoRelicRules } from "../../src/content/demo-battle.js";
+import { demoContent, demoEnemyAi, demoRelicRules } from "../../src/content/demo-battle.js";
 import { scienceCardDefinitions } from "../../src/content/science-cards.js";
 import { useCardEffects } from "../../src/domain/card-effects.js";
 import { DEFAULT_GAME_CONFIG } from "../../src/domain/config.js";
@@ -14,7 +14,7 @@ const combatMap = { floorsPerAct: 1, lanes: 2, kindWeights: { combat: 1, elite: 
 
 function scienceCombat(): RunState {
   const start = createRunSession(42, "science-demo", demoContent, combatMap);
-  const entered = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, demoEncounterTable);
+  const entered = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, { combat: ["paper-heap"], elite: ["paper-heap"], boss: ["final-exam"] });
   const combat = entered.run.combat!;
   const sample = combat.cards.find((card) => card.cardId === "SCI-001")!;
   const reaction = combat.cards.find((card) => card.cardId === "SCI-003")!;
