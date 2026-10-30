@@ -20,6 +20,12 @@ export const musicCardSpecs: readonly ClubCardSpec[] = [
   { id: "MUS-006", word: "crescendo", type: "attack", target: "enemy",
     effects: [{ kind: "damage_multi", parameters: { amount: 3, hits: 3 } }, { kind: "add_time", parameters: { amountMs: 2_000 } }],
     upgrades: [{ kind: "damage_multi", parameters: { amount: 4, hits: 3 } }, { kind: "add_time", parameters: { amountMs: 2_000 } }] },
+  { id: "MUS-007", word: "bridge", type: "skill", target: "self",
+    effects: [{ kind: "add_time", parameters: { amountMs: 1_000 } }, { kind: "draw", parameters: { count: 2 } }, { kind: "block", parameters: { amount: 2 } }],
+    upgrades: [{ kind: "add_time", parameters: { amountMs: 1_000 } }, { kind: "draw", parameters: { count: 2 } }, { kind: "block", parameters: { amount: 5 } }] },
+  { id: "MUS-008", word: "refrain", type: "attack", target: "all_enemies",
+    effects: [{ kind: "damage_all", parameters: { amount: 4 } }, { kind: "add_time", parameters: { amountMs: 2_000 } }],
+    upgrades: [{ kind: "damage_all", parameters: { amount: 6 } }, { kind: "add_time", parameters: { amountMs: 2_000 } }] },
 ];
 
 const suite = buildCardSuite(musicCardSpecs);

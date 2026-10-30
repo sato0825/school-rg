@@ -39,7 +39,7 @@ describe("science club setup and reaction", () => {
     const club = demoContent.clubs.find((item) => item.id === "science-demo")!;
     expect(club.startingRelicId).toBe("lab-glasses");
     expect(club.starterCardIds.filter((id) => id.startsWith("SCI-"))).toHaveLength(4);
-    expect(scienceCardDefinitions).toHaveLength(6);
+    expect(scienceCardDefinitions).toHaveLength(8);
     expect(scienceCardDefinitions.every((card) => club.cardPoolIds.includes(card.id))).toBe(true);
     expect(describeCard(scienceCardDefinitions.find((card) => card.id === "SCI-003")!, demoContent)).toBe("攻撃 6 · 毒時 12");
     const entered = scienceCombat();
