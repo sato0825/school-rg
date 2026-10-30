@@ -13,7 +13,7 @@ async function enterNextNode(page: import("@playwright/test").Page): Promise<voi
 }
 
 async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
-  const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "thrust", "riposte", "final cut", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "parry", "stance", "kata", "outline", "defend", "counter", "draw", "boost", "delay"];
+  const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "thrust", "riposte", "final cut", "beat", "chorus", "crescendo", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "parry", "stance", "kata", "tempo", "sync", "rest", "outline", "defend", "counter", "draw", "boost", "delay"];
   for (let turn = 0; turn < 12; turn++) {
     for (let use = 0; use < 12; use++) {
       if (await page.locator(completion).count()) return;
@@ -157,6 +157,22 @@ test("kendo club starts with counter equipment and types a guard card", async ({
   await expect(page.locator(".status-row")).toContainText("反撃 1");
   const words = await page.locator(".card-word").allTextContents();
   const unique = ["parry", "stance", "thrust", "riposte"].find((word) => words.includes(word));
+  expect(unique).toBeDefined();
+  await page.keyboard.type(unique!);
+  await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
+});
+
+test("music club starts with extra time and types a tempo card", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /軽音部/ }).click();
+  await expect(page.locator(".map-stats")).toContainText("39/39");
+  await enterNextNode(page);
+  await expect(page.locator(".relic-row")).toContainText("部室のメトロノーム");
+  const time = Number((await page.locator("[data-role=time]").innerText()).replace("sec", "").trim());
+  expect(time).toBeGreaterThan(10);
+  const words = await page.locator(".card-word").allTextContents();
+  const unique = ["tempo", "beat", "rest", "sync"].find((word) => words.includes(word));
   expect(unique).toBeDefined();
   await page.keyboard.type(unique!);
   await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
@@ -310,6 +326,16 @@ test("kendo deck clears three Acts by typing and unlocks its own Ascension", asy
   await page.getByRole("button", { name: /剣道部/ }).click();
   await clearThreeActs(page);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["kendo-demo"])).toBe(1);
+});
+
+test("music deck clears three Acts by typing and unlocks its own Ascension", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.clock.install();
+  await page.goto("/");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /軽音部/ }).click();
+  await clearThreeActs(page);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["music-demo"])).toBe(1);
 });
 
 test("treasure offers survive reload and a focused choice completes its node", async ({ page }) => {
