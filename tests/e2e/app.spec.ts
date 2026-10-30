@@ -134,3 +134,41 @@ test("an event choice can start typed combat and cannot be entered twice", async
   await expect(page.locator(".map-node.available")).toContainText("ボス");
   await expect(page.locator(".map-node.current")).toBeDisabled();
 });
+
+test("reload preserves a shop purchase and an unfinished typed card", async ({ page }) => {
+  await page.goto("/");
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).click();
+  await page.locator("[data-action=rest-upgrade]").first().click();
+  await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
+  await page.locator(".reward-card").first().click();
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
+  await expect(page.locator(".reward-panel")).toContainText("所持金 10G");
+  await expect(page.locator(".reward-card").first()).toBeDisabled();
+  await page.getByRole("button", { name: "購買を出る" }).click();
+  await page.locator(".map-node.available").click();
+  const word = await page.locator(".card-word").first().innerText();
+  await page.keyboard.type(word.slice(0, 1));
+  await expect(page.locator(".typing-buffer")).toContainText(word.slice(0, 1));
+  await page.reload();
+  await expect(page.locator(".typing-buffer")).toContainText(word.slice(0, 1));
+  await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
+  await page.getByRole("button", { name: "再開" }).click();
+  await page.keyboard.type(word.slice(1));
+  if ((await page.locator(".typing-buffer").innerText()).trim() === word) {
+    await page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: new RegExp(`^${word}$`) }) }).first().click();
+  }
+  await expect(page.locator(".battle-message")).toContainText(`${word} を発動`);
+});
+
+test("unsupported save versions leave the stored data intact", async ({ page }) => {
+  await page.goto("/");
+  const key = "school-rg-run-v1";
+  const original = await page.evaluate((saveKey) => localStorage.getItem(saveKey), key);
+  const unsupported = JSON.stringify({ formatVersion: 99, session: {} });
+  await page.addInitScript(([saveKey, data]) => localStorage.setItem(saveKey, data), [key, unsupported]);
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "保存データを読み込めません" })).toBeVisible();
+  expect(await page.evaluate((saveKey) => localStorage.getItem(saveKey), key)).toBe(unsupported);
+  expect(original).not.toBeNull();
+});
