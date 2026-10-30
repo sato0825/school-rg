@@ -7,7 +7,7 @@ import { buyRunShopCard, chooseRunEventChoice, chooseRunReward, chooseRunTreasur
 import { DEFAULT_MAP_OPTIONS, type MapGenerationOptions } from "../domain/map-generation.js";
 import type { RunState } from "../domain/schema.js";
 import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, pausePlayerTurn, resumePlayerTurn, selectTypedCard, selectTypedEnemyTarget, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../domain/turn-state.js";
-import { demoContent, demoEncounterTable, demoEnemyAi } from "../content/demo-battle.js";
+import { demoContent, demoRunContentTables, demoEnemyAi } from "../content/demo-battle.js";
 import { demoRelicRules } from "../content/demo-battle.js";
 import { emitRelicEvent, type RelicEventKind, type RelicEvent } from "../domain/relic-hooks.js";
 import { discardPotion, selectPotionEnemy, selectPotionSlot, setPotionInputActive, submitPotionKey } from "../domain/potions.js";
@@ -259,7 +259,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (session.screen === "map" && action === "enter-node") {
         observeMetrics();
-        session = enterRunNode(session, id, demoContent, demoEnemyAi, demoEncounterTable);
+        session = enterRunNode(session, id, demoContent, demoEnemyAi, demoRunContentTables);
         run = session.run;
         if (metrics) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === id)!);
         if (session.screen === "combat") startCombat();

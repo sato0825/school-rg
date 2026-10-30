@@ -1,6 +1,6 @@
 import { selectEnemyIntent, type EnemyAiRegistry } from "./enemy-ai.js";
 import { awardEncounterGold, buyShopCard, closeShop, DEFAULT_ECONOMY_OPTIONS, healAtRest, openShop, removeShopCard, upgradeAtRest, type EconomyOptions } from "./economy.js";
-import { openRandomEvent, resolveEventChoice } from "./events.js";
+import { openRandomEvent, resolveEventChoice, type EventPools } from "./events.js";
 import { DEFAULT_GAME_CONFIG, type GameConfig } from "./config.js";
 import { availableNextNodes, generateRunMap, moveToConnectedNode, type MapGenerationOptions } from "./map-generation.js";
 import { createRandomState, randomInt, shuffle } from "./random.js";
@@ -14,6 +14,7 @@ import { generateCardRewards, type RewardGenerator } from "./card-rewards.js";
 export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "treasure" | "won" | "lost";
 export type EncounterPool = Readonly<Record<"combat" | "elite" | "boss", readonly string[]>>;
 export type EncounterTable = EncounterPool | { readonly byAct: Readonly<Record<1 | 2 | 3, EncounterPool>> };
+export type RunContentTables = { readonly enemies: EncounterTable; readonly events?: EventPools };
 
 function encounterPool(encounters: EncounterTable, act: number): EncounterPool {
   if (!("byAct" in encounters)) return encounters;
@@ -71,7 +72,7 @@ function createEncounter(run: RunState, enemyId: string, content: ContentRegistr
   return selectEnemyIntent({ ...run, rngState: shuffled.state, player: { ...run.player, block: 0 }, combat }, enemyInstanceId, ai, content, 1);
 }
 
-export function enterRunNode(session: RunSession, nextNodeId: string, content: ContentRegistry, ai: EnemyAiRegistry, encounters: EncounterTable, economy: EconomyOptions = DEFAULT_ECONOMY_OPTIONS, treasureOptions: TreasureOptions = DEFAULT_TREASURE_OPTIONS): RunSession {
+export function enterRunNode(session: RunSession, nextNodeId: string, content: ContentRegistry, ai: EnemyAiRegistry, tables: EncounterTable | RunContentTables, economy: EconomyOptions = DEFAULT_ECONOMY_OPTIONS, treasureOptions: TreasureOptions = DEFAULT_TREASURE_OPTIONS): RunSession {
   if (session.screen !== "map") throw new Error("expected map screen");
   const next = availableRunNodes(session).find((node) => node.id === nextNodeId);
   if (!next) throw new RangeError(`node is not available: ${nextNodeId}`);
@@ -84,11 +85,17 @@ export function enterRunNode(session: RunSession, nextNodeId: string, content: C
     return { ...session, run: openShop(moved, content, economy), screen: "shop" };
   }
   if (next.kind === "rest") return { ...session, run: moveToConnectedNode(session.run, next.id), screen: "rest" };
-  if (next.kind === "event") return { ...session, run: openRandomEvent(moveToConnectedNode(session.run, next.id), content), screen: "event" };
+  if (next.kind === "event") {
+    const events = "enemies" in tables ? tables.events : undefined;
+    if (events && next.act !== 1 && next.act !== 2 && next.act !== 3) throw new RangeError(`unknown event Act: ${next.act}`);
+    const pool = events && (next.act === 1 || next.act === 2 || next.act === 3) ? events[next.act] : undefined;
+    return { ...session, run: openRandomEvent(moveToConnectedNode(session.run, next.id), content, pool), screen: "event" };
+  }
   if (next.kind === "treasure") return { ...session, run: openTreasure(moveToConnectedNode(session.run, next.id), content, treasureOptions), screen: "treasure" };
   if (next.kind !== "combat" && next.kind !== "elite" && next.kind !== "boss") {
     throw new Error(`node kind ${next.kind} requires its own system before entry`);
   }
+  const encounters = "enemies" in tables ? tables.enemies : tables;
   const pool = encounterPool(encounters, next.act)[next.kind];
   if (!pool.length) throw new RangeError(`empty encounter pool for ${next.kind}`);
   const draw = randomInt(session.run.rngState, pool.length);
