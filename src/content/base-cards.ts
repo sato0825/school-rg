@@ -42,11 +42,40 @@ export const baseCardSpecs: readonly BaseCardSpec[] = [
   { id: "BASE-024", input: "shield break", type: "attack", target: "enemy", effectKind: "remove_block", parameters: { all: true }, sourceRow: 25 },
 ];
 
-export const baseCardEffects: Effect[] = baseCardSpecs.map((spec) => ({
-  id: `${spec.id}-effect`,
-  kind: spec.effectKind,
-  parameters: spec.parameters,
-}));
+type UpgradeEffectSpec = { kind: string; parameters: Record<string, unknown> };
+
+/** Provisional upgrade values; the source sheet does not define upgrades. */
+export const provisionalUpgradePlans: Record<string, readonly UpgradeEffectSpec[]> = {
+  "BASE-001": [{ kind: "damage", parameters: { amount: 8 } }],
+  "BASE-002": [{ kind: "block", parameters: { amount: 7 } }],
+  "BASE-003": [{ kind: "damage", parameters: { amount: 17 } }],
+  "BASE-004": [{ kind: "damage_multi", parameters: { amount: 5, hits: 2 } }],
+  "BASE-005": [{ kind: "block", parameters: { amount: 11 } }],
+  "BASE-006": [{ kind: "heal", parameters: { amount: 8 } }],
+  "BASE-007": [{ kind: "draw", parameters: { count: 3 } }],
+  "BASE-008": [{ kind: "apply_strength", parameters: { amount: 3 } }],
+  "BASE-009": [{ kind: "apply_weak", parameters: { turns: 3 } }],
+  "BASE-010": [{ kind: "apply_poison", parameters: { amount: 6 } }],
+  "BASE-011": [{ kind: "damage_all", parameters: { amount: 7 } }],
+  "BASE-012": [{ kind: "damage_pierce", parameters: { amount: 11 } }],
+  "BASE-013": [{ kind: "thorns", parameters: { amount: 5 } }],
+  "BASE-014": [{ kind: "retrieve_discard", parameters: { count: 1 } }, { kind: "block", parameters: { amount: 3 } }],
+  "BASE-015": [{ kind: "exhaust_card", parameters: { count: 1 } }, { kind: "draw", parameters: { count: 1 } }],
+  "BASE-016": [{ kind: "copy_card", parameters: { count: 1 } }, { kind: "block", parameters: { amount: 3 } }],
+  "BASE-017": [{ kind: "add_time", parameters: { amountMs: 3_000 } }],
+  "BASE-018": [{ kind: "remove_debuff", parameters: { count: 1 } }, { kind: "heal", parameters: { amount: 3 } }],
+  "BASE-019": [{ kind: "persistent_block", parameters: { amountPerTurn: 4 } }],
+  "BASE-020": [{ kind: "persistent_strength", parameters: { amountPerTurn: 2 } }],
+  "BASE-021": [{ kind: "pay_hp_draw", parameters: { hpCost: 2, drawCount: 2 } }],
+  "BASE-022": [{ kind: "conditional_damage", parameters: { amount: 10, conditionalAmount: 20, condition: "target_hp_at_most_percent", thresholdPercent: 50 } }],
+  "BASE-023": [{ kind: "add_time", parameters: { amountMs: 5_000 } }],
+  "BASE-024": [{ kind: "remove_block", parameters: { all: true } }, { kind: "damage", parameters: { amount: 3 } }],
+};
+
+export const baseCardEffects: Effect[] = baseCardSpecs.flatMap((spec) => [
+  { id: `${spec.id}-effect`, kind: spec.effectKind, parameters: spec.parameters },
+  ...(provisionalUpgradePlans[spec.id] ?? []).map((effect, index) => ({ id: `${spec.id}-upgrade-${index + 1}`, ...effect })),
+]);
 
 export const baseCardDefinitions: Card[] = baseCardSpecs.map((spec) => ({
   id: spec.id,
@@ -55,6 +84,7 @@ export const baseCardDefinitions: Card[] = baseCardSpecs.map((spec) => ({
   target: spec.target,
   input: { text: spec.input, locale: "en" },
   effectIds: [`${spec.id}-effect`],
+  upgradeEffectIds: (provisionalUpgradePlans[spec.id] ?? []).map((_, index) => `${spec.id}-upgrade-${index + 1}`),
   keywordIds: [],
 }));
 
