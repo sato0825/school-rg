@@ -58,7 +58,7 @@ describe("treasure rewards", () => {
     expect(() => chooseRunTreasure(a, "missing", demoContent)).toThrow(/unknown treasure offer/);
     const broken = { ...a.run, treasure: { ...a.run.treasure!, offers: [{ offerId: "x", kind: "relic" as const, contentId: "missing" }] } };
     expect(() => parseRunState(broken, demoContent)).toThrow(/Unregistered ID/);
-    const overlap = { ...a.run, treasure: a.run.treasure, shop: { nodeId: a.run.map.currentNodeId, offers: [], removalUsed: false } };
+    const overlap = { ...a.run, treasure: a.run.treasure, shop: { nodeId: a.run.map.currentNodeId, offers: [], removalPrice: 0, removalUsed: false } };
     expect(() => parseRunState(overlap, demoContent)).toThrow(/Treasure cannot overlap/);
   });
 });

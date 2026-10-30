@@ -86,7 +86,7 @@ test("shop and event choices accept focused keyboard activation", async ({ page 
 
 test("rest choice accepts focused keyboard activation", async ({ page }) => {
   await startDemoRun(page);
-  await page.locator(".map-node.available").filter({ hasText: "休憩" }).focus();
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).first().focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
   await page.locator("[data-action=rest-heal]").focus();
@@ -248,7 +248,7 @@ test("treasure offers survive reload and a focused choice completes its node", a
   await page.locator(".map-node.available").filter({ hasText: "宝箱" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "宝箱から1つ選ぶ" })).toBeVisible();
-  const offers = await page.locator(".treasure-offer").allInnerTexts();
+  const offers = await page.locator(".treasure-offer").allTextContents();
   await page.reload();
   await expect(page.locator(".treasure-offer")).toHaveText(offers);
   await page.locator(".treasure-offer").first().focus();
@@ -260,7 +260,7 @@ test("treasure offers survive reload and a focused choice completes its node", a
 
 test("a route can upgrade at rest and buy once at the shop", async ({ page }) => {
   await startDemoRun(page);
-  await page.locator(".map-node.available").filter({ hasText: "休憩" }).click();
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).first().click();
   await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
@@ -322,7 +322,7 @@ test("reload preserves an unfinished potion word and its inventory", async ({ pa
 
 test("reload preserves a shop purchase and an unfinished typed card", async ({ page }) => {
   await startDemoRun(page);
-  await page.locator(".map-node.available").filter({ hasText: "休憩" }).click();
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).first().click();
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
   await page.locator(".reward-card").first().click();

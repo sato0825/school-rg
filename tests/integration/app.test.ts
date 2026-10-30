@@ -16,7 +16,7 @@ describe("run and typing combat HUD", () => {
     root.querySelector<HTMLButtonElement>("[data-action=open-clubs]")?.click();
     root.querySelector<HTMLButtonElement>("[data-action=choose-club]")?.click();
     expect(root.textContent).toContain("次の行き先を選ぶ");
-    root.querySelector<HTMLButtonElement>(".map-node.available")?.click();
+    root.querySelector<HTMLButtonElement>(".map-node.available[aria-label*='戦闘']")?.click();
     expect(root.querySelectorAll(".card")).toHaveLength(5);
     expect(root.textContent).toContain("飛び散る答案");
     expect(root.textContent).toContain("山札 5");
