@@ -122,4 +122,14 @@ describe("enemy Intent AI", () => {
     expect(result.combat!.turn).toBe(2);
     expect(result.combat!.enemies[0]!.intentId).toBe("intent-guard");
   });
+
+  it("evaluates next-turn conditions for the action being advertised", () => {
+    const { content, run } = setup();
+    const ai: EnemyAiRegistry = { "enemy-paper": { kind: "conditional", branches: [
+      { when: { kind: "turn_at_least", turn: 2 }, intentId: "intent-guard" },
+    ], fallbackIntentId: "intent-hit" } };
+    expect(selectEnemyIntent(run, "enemy-1", ai, content).combat!.enemies[0]!.intentId).toBe("intent-hit");
+    const acted = resolveEnemyIntents(run, ai, content, (state) => state);
+    expect(acted.combat!.enemies[0]!.intentId).toBe("intent-guard");
+  });
 });

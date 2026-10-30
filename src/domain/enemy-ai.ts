@@ -24,7 +24,7 @@ function requireEnemy(run: RunState, instanceId: string): EnemyInstance {
   return enemy;
 }
 
-function matches(run: RunState, enemy: EnemyInstance, condition: IntentCondition): boolean {
+function matches(run: RunState, enemy: EnemyInstance, condition: IntentCondition, intendedTurn: number): boolean {
   const combat = run.combat!;
   switch (condition.kind) {
     case "hp_at_most_percent":
@@ -32,7 +32,7 @@ function matches(run: RunState, enemy: EnemyInstance, condition: IntentCondition
       return enemy.hp * 100 <= enemy.maxHp * condition.percent;
     case "turn_at_least":
       if (!Number.isSafeInteger(condition.turn) || condition.turn < 1) throw new RangeError("invalid turn threshold");
-      return combat.turn >= condition.turn;
+      return intendedTurn >= condition.turn;
     case "living_allies_at_most":
       if (!Number.isSafeInteger(condition.count) || condition.count < 0) throw new RangeError("invalid ally threshold");
       return combat.enemies.filter((item) => item.instanceId !== enemy.instanceId && item.hp > 0).length <= condition.count;
@@ -42,13 +42,13 @@ function matches(run: RunState, enemy: EnemyInstance, condition: IntentCondition
   }
 }
 
-function choosePatternIntent(run: RunState, enemy: EnemyInstance, pattern: IntentPattern): { intentId: string; rngState: number } {
+function choosePatternIntent(run: RunState, enemy: EnemyInstance, pattern: IntentPattern, intendedTurn: number): { intentId: string; rngState: number } {
   if (pattern.kind === "sequence") {
     if (pattern.intentIds.length === 0) throw new RangeError("empty enemy sequence");
     return { intentId: pattern.intentIds[enemy.intentHistoryIds.length % pattern.intentIds.length]!, rngState: run.rngState };
   }
   if (pattern.kind === "conditional") {
-    const selected = pattern.branches.find((branch) => matches(run, enemy, branch.when));
+    const selected = pattern.branches.find((branch) => matches(run, enemy, branch.when, intendedTurn));
     return { intentId: selected?.intentId ?? pattern.fallbackIntentId, rngState: run.rngState };
   }
   if (pattern.choices.length === 0) throw new RangeError("empty enemy weights");
@@ -68,14 +68,15 @@ function choosePatternIntent(run: RunState, enemy: EnemyInstance, pattern: Inten
 }
 
 /** Selects and publishes the next Intent; the visible ID is the action to execute. */
-export function selectEnemyIntent(run: RunState, instanceId: string, ai: EnemyAiRegistry, content: ContentRegistry): RunState {
+export function selectEnemyIntent(run: RunState, instanceId: string, ai: EnemyAiRegistry, content: ContentRegistry, intendedTurn = run.combat?.turn): RunState {
+  if (!Number.isSafeInteger(intendedTurn) || intendedTurn === undefined || intendedTurn < 1) throw new RangeError("invalid intended turn");
   const enemy = requireEnemy(run, instanceId);
   if (enemy.hp === 0) throw new RangeError("defeated enemies cannot choose an Intent");
   const definition = content.enemies.find((item) => item.id === enemy.enemyId);
   if (!definition) throw new RangeError(`unknown enemy definition: ${enemy.enemyId}`);
   const pattern = ai[enemy.enemyId];
   if (!pattern) throw new RangeError(`missing AI pattern: ${enemy.enemyId}`);
-  const selected = choosePatternIntent(run, enemy, pattern);
+  const selected = choosePatternIntent(run, enemy, pattern, intendedTurn);
   if (!definition.intentIds.includes(selected.intentId)) throw new RangeError(`AI chose an unregistered Intent: ${selected.intentId}`);
   return {
     ...run,
@@ -114,7 +115,7 @@ export function resolveEnemyIntents(run: RunState, ai: EnemyAiRegistry, content:
       },
     };
     if (current.combat!.phase === "ENEMY_PHASE" && requireEnemy(current, instanceId).hp > 0) {
-      current = selectEnemyIntent(current, instanceId, ai, content);
+      current = selectEnemyIntent(current, instanceId, ai, content, current.combat!.turn + 1);
     }
   }
   return current;
