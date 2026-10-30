@@ -19,6 +19,7 @@ import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
 import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, MAX_ASCENSION_LEVEL } from "../domain/ascension.js";
 import { finishPlaytest, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
+import { browserRandomUint32, newRunSeed } from "./run-seed.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
@@ -28,6 +29,7 @@ const shortMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindW
 export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(), progressStore: SaveStore = browserProgressStore(), playtestStore: SaveStore = browserPlaytestStore()): () => void {
   const params = new URLSearchParams(window.location.search);
   const mapOptions = import.meta.env.DEV && params.get("shortRun") === "1" ? shortMapOptions : DEFAULT_MAP_OPTIONS;
+  const createSeed = () => newRunSeed(window.location.search, browserRandomUint32, import.meta.env.DEV);
   const clock = { nowMs: () => Math.floor(performance.now()) };
   let progression = emptyProgression();
   let progressionLoadError = false;
@@ -36,7 +38,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (savedProgression) progression = parseProgression(JSON.parse(savedProgression), demoContent);
   } catch { progressionLoadError = true; }
   const selectedAscensionLevels: Record<string, number> = {};
-  let session = createRunSession(42, "literature-demo", demoContent, mapOptions);
+  let session = createRunSession(0, "literature-demo", demoContent, mapOptions);
   let frontScreen: "title" | "clubs" | "compendium" | null = "title";
   let frontReturn: "title" | null = "title";
   let restoreError = false;
@@ -183,7 +185,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     setMotion(null);
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
-    session = createRunSession(42, "literature-demo", demoContent, mapOptions);
+    session = createRunSession(0, "literature-demo", demoContent, mapOptions);
     run = session.run;
     metrics = null;
     frontScreen = "title";
@@ -228,7 +230,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (action === "choose-club" && frontScreen === "clubs") {
         const level = Math.min(selectedAscensionLevels[id] ?? 0, unlockedLevel(progression, id));
-        session = { ...createRunSession(42, id, demoContent, mapOptions, undefined, level), runId: crypto.randomUUID() };
+        session = { ...createRunSession(createSeed(), id, demoContent, mapOptions, undefined, level), runId: crypto.randomUUID() };
         run = session.run;
         frontScreen = null;
         metricsLoadError = false;
