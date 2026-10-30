@@ -321,10 +321,11 @@ test("typed card effects stay on their target layer and clear without delaying c
   await expect(fx).toHaveAttribute("data-target-count", "2");
   await expect(fx.locator(".card-fx-mark")).toHaveCount(2);
   await page.setViewportSize({ width: 390, height: 844 });
-  const stage = await page.locator(".stage").boundingBox();
-  const marks = await fx.locator(".card-fx-mark").evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().right));
-  expect(marks.every((right) => right <= stage!.x + stage!.width + 1)).toBe(true);
   await page.emulateMedia({ reducedMotion: "reduce" });
+  const stage = await page.locator(".stage").boundingBox();
+  const intentBottom = await page.locator(".intent-ticket").evaluateAll((nodes) => Math.max(...nodes.map((node) => node.getBoundingClientRect().bottom)));
+  const marks = await fx.locator(".card-fx-mark").evaluateAll((nodes) => nodes.map((node) => ({ top: node.getBoundingClientRect().top, right: node.getBoundingClientRect().right })));
+  expect(marks.every((box) => box.right <= stage!.x + stage!.width + 1 && box.top > intentBottom)).toBe(true);
   expect(await fx.locator(".card-fx-mark").first().evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
   await page.clock.runFor(380);
   await expect(fx).toHaveCount(0);

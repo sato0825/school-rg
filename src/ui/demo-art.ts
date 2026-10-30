@@ -7,6 +7,13 @@ const placeholderEnemyUrl = new URL("../assets/enemy-paper-v1.png", import.meta.
 export const demoBattleArt: BattleArt = {
   stageUrl: new URL("../assets/stage-hallway-v1.png", import.meta.url).href,
   heroUrl: new URL("../assets/girl-notebook-v1.png", import.meta.url).href,
+  fxPaletteByClubId: {
+    "literature-demo": ["#f14a70", "#ffd3dc"],
+    "science-demo": ["#25afcc", "#c1f4fa"],
+    "kendo-demo": ["#4f91e6", "#d5e9ff"],
+    "music-demo": ["#9b62e2", "#e7d3ff"],
+    "art-demo": ["#30a994", "#c5f0de"],
+  },
   enemyUrlById: {
     "paper-heap": placeholderEnemyUrl,
     "paper-scrap": placeholderEnemyUrl,
