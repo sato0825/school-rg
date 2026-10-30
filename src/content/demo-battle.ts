@@ -15,6 +15,7 @@ import type { EncounterTable, RunContentTables } from "../domain/run-flow.js";
 import type { EventPools } from "../domain/events.js";
 import type { RelicRule } from "../domain/relic-hooks.js";
 import { variantEnemies, variantEnemyAi, variantEnemyEffects, variantEnemyIntents } from "./encounter-variants.js";
+import { extraConsumableEffects, extraPotions, extraRelicRules, extraRelics } from "./extra-consumables.js";
 
 /** One complete combat encounter for #14. Full run content belongs to #15–#24. */
 export const demoContent: ContentRegistry = parseContentRegistry({
@@ -48,6 +49,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "potion-time-effect", kind: "add_time", parameters: { amountMs: 3_000 } },
     { id: "potion-heal-effect", kind: "heal", parameters: { amount: 5 } },
     { id: "potion-ink-effect", kind: "damage", parameters: { amount: 7 } },
+    ...extraConsumableEffects,
     ...variantEnemyEffects,
   ],
   cards: [...baseCardDefinitions, ...literatureCardDefinitions, ...scienceCardDefinitions, ...kendoCardDefinitions, ...musicCardDefinitions, ...artCardDefinitions],
@@ -94,11 +96,13 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "sketchbook", name: "ポケットスケッチ帳", triggerIds: ["sketchbook-card-used"], effectIds: [] },
     { id: "spare-shoes", name: "予備の上履き", triggerIds: ["spare-shoes-turn-start"], effectIds: [] },
     { id: "hallway-clock", name: "廊下の小時計", triggerIds: ["hallway-clock-turn-start"], effectIds: [] },
+    ...extraRelics,
   ],
   potions: [
     { id: "potion-time", name: "時間の小瓶", input: { text: "clock", locale: "en" }, target: "self", effectIds: ["potion-time-effect"] },
     { id: "potion-heal", name: "保健室の包帯", input: { text: "bandage", locale: "en" }, target: "self", effectIds: ["potion-heal-effect"] },
     { id: "potion-ink", name: "インクの小瓶", input: { text: "ink", locale: "en" }, target: "enemy", effectIds: ["potion-ink-effect"] },
+    ...extraPotions,
   ],
   events: [
     {
@@ -207,6 +211,7 @@ export const demoEnemyAi: EnemyAiRegistry = {
 
 /** Provisional content values; the reusable hook dispatcher lives in the domain. */
 export const demoRelicRules: RelicRule[] = [
+  ...extraRelicRules,
   { id: "bookmark-acquired", on: "acquired", priority: 0, stackMode: "aggregate", apply: (run) => ({ ...run, gold: run.gold + 2 }) },
   { id: "bookmark-turn", on: "turn_start", priority: 0, stackMode: "each", apply: (run) => ({ ...run, player: { ...run.player, block: run.player.block + 1 } }) },
   { id: "bookmark-skill", on: "card_used", priority: 1, stackMode: "aggregate", condition: (run, event) => {
