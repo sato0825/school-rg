@@ -23,7 +23,8 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
       await page.keyboard.type(word);
       if (await page.locator(completion).count()) return;
       if ((await page.locator(".typing-buffer").innerText()).trim() === word) {
-        await page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: new RegExp(`^${word}$`) }) }).first().click();
+        await page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: new RegExp(`^${word}$`) }) }).first().focus();
+        await page.keyboard.press("Enter");
       }
       if (await page.locator(completion).count()) return;
       if ((await page.locator(".typing-buffer").innerText()).trim()) await page.keyboard.press("Escape");
@@ -48,6 +49,12 @@ test("title, compendium, club selection, map and battle controls work by keyboar
   await page.getByRole("button", { name: /文芸部/ }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+  await page.locator(".map-compendium").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "学園図鑑" })).toBeVisible();
+  await page.getByRole("button", { name: "戻る" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).first().focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".card")).toHaveCount(5);
@@ -57,6 +64,34 @@ test("title, compendium, club selection, map and battle controls work by keyboar
   await page.locator(".pause-button").focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".pause-button")).toHaveText("一時停止");
+});
+
+test("shop and event choices accept focused keyboard activation", async ({ page }) => {
+  await startDemoRun(page);
+  await page.locator(".map-node.available").filter({ hasText: "購買" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
+  await page.locator(".reward-card").first().focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".reward-card").first()).toBeDisabled();
+  await page.getByRole("button", { name: "購買を出る" }).focus();
+  await page.keyboard.press("Enter");
+  await page.locator(".map-node.available").filter({ hasText: "イベント" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".event-panel")).toBeVisible();
+  await page.locator("[data-action=event-choice][data-id=help], [data-action=event-choice][data-id=pass]").first().focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+});
+
+test("rest choice accepts focused keyboard activation", async ({ page }) => {
+  await startDemoRun(page);
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
+  await page.locator("[data-action=rest-heal]").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
 });
 
 test("renders the combat HUD and accepts direct keyboard input", async ({ page }) => {
