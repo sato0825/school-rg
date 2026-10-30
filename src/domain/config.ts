@@ -33,6 +33,7 @@ export const GameConfigSchema = z.strictObject({
   xRoundingPolicy: setting(xRoundingPolicy),
   clubNames: setting(z.array(z.string().min(1)).length(5)),
   energyEquivalentMs: setting(positiveInt),
+  counterAfterLethal: setting(z.boolean()),
 });
 
 export type GameConfig = z.infer<typeof GameConfigSchema>;
@@ -55,6 +56,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = GameConfigSchema.parse({
   xRoundingPolicy: { status: "unresolved", value: null, source: designDoc, ownerIssue: 11 },
   clubNames: { status: "unresolved", value: null, source: designDoc, ownerIssue: 12 },
   energyEquivalentMs: { status: "confirmed", value: 2_000, source: epic, ownerIssue: 11 },
+  counterAfterLethal: { status: "provisional", value: false, source: "https://github.com/sato0825/school-rg/issues/9", ownerIssue: 9 },
 });
 
 export function parseGameConfig(value: unknown): GameConfig {
