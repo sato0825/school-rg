@@ -66,10 +66,12 @@ export function beginPlayerTurn(run: RunState, clock: MonotonicClock, config: Ga
   const opening = combat.turn === 1 ? prepareOpeningHand(combat, content) : { combat, innateIds: [] };
   const count = requireSetting(config.cardsDrawnPerTurn) - (requireSetting(config.innateCountsTowardDraw) ? opening.innateIds.length : 0);
   const drawn = drawCards(opening.combat, outcome.rngState, Math.max(0, count));
+  const duration = Math.min(requireSetting(config.timeCapMs), requireSetting(config.playerTurnMs) + combat.nextTurnBonusMs);
+  if (!Number.isSafeInteger(duration)) throw new RangeError("turn duration overflow");
   return {
     ...outcome,
     rngState: drawn.rngState,
-    combat: { ...drawn.combat, phase: "PLAYER_INPUT", clock: createTurnClock(requireSetting(config.playerTurnMs), clock) },
+    combat: { ...drawn.combat, phase: "PLAYER_INPUT", nextTurnBonusMs: 0, clock: createTurnClock(duration, clock) },
   };
 }
 

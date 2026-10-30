@@ -49,6 +49,7 @@ export const validRun: RunState = {
     enemies: [{ instanceId: "enemy-1", enemyId: "enemy-paper", hp: 20, maxHp: 20, block: 0, intentId: "intent-hit", intentHistoryIds: [] }],
     typing: { buffer: "str", candidateCardInstanceIds: ["combat-1"], selectedCardInstanceId: "combat-1", progress: 3, targetEnemyInstanceId: "enemy-1" },
     clock: { remainingMs: 7_000, lastEventAtMs: 3_000, paused: false },
+    nextTurnBonusMs: 0,
     statuses: { player: {}, enemies: {} },
   },
 };

@@ -28,6 +28,7 @@ export const CardSchema = z.strictObject({
   input: InputWordSchema,
   effectIds: z.array(id),
   keywordIds: z.array(id),
+  xTimePolicy: z.strictObject({ rounding: z.enum(["floor", "ceil", "nearest", "default"]), consume: z.enum(["all", "units", "none"]) }).optional(),
 });
 
 export const IntentSchema = z.strictObject({
@@ -134,6 +135,7 @@ export const CombatStateSchema = z.strictObject({
   enemies: z.array(EnemyInstanceSchema),
   typing: TypingStateSchema,
   clock: TurnClockStateSchema,
+  nextTurnBonusMs: nonNegativeInt.default(0),
   statuses: CombatStatusesSchema.default({ player: {}, enemies: {} }),
 });
 
