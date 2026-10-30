@@ -15,3 +15,9 @@
 ブラウザで通常の12階層/Actを文芸部で進め、接続されたイベントを優先して選択した。各Actの画面を [Act 1](content/previews/issue102-act1-event-20261031.png)、[Act 2](content/previews/issue102-act2-event-20261031.png)、[Act 3](content/previews/issue102-act3-event-20261031.png) に保存した。選択肢はクリックで解決し、カード名を入力する戦闘と同じラン内でマップへ戻れた。3 Actともイベント名と選択肢は変わるが、背景と画面構成は共通の仮表示。試行経路は回復と報酬を多く選べたため、Act 3時点で所持金347G・HP40/40になった。選択価値と経済バランスは未合格の検討対象で、人間の60分プレイテストの代わりにはならない。
 
 390×844でも同じ経路を再生し、[Act 1](content/previews/issue102-act1-event-narrow-20261031.png)、[Act 2](content/previews/issue102-act2-event-narrow-20261031.png)、[Act 3](content/previews/issue102-act3-event-narrow-20261031.png) の見出し、選択肢、所持情報が画面内に収まることを確認した。
+
+## Issue #116 の追加確認
+
+新イベントの [Act 1](content/previews/issue116-act1-event-narrow-20261031.png)、[Act 2](content/previews/issue116-act2-event-narrow-20261031.png)、[Act 3](content/previews/issue116-act3-event-narrow-20261031.png) を390×844のブラウザで表示した。各画面で選択肢へフォーカスし、Enterで見送ってマップへ戻ることを確認した。Act 2・3では新イベントから既存敵との戦闘を始められ、通常のカード名入力による戦闘へ接続する。
+
+固定シード42から各Actの新イベントを直接開く比較では、初期HP40・50G・10枚・ポーションなしに対して、見送り3回は資源変化がない。体育倉庫で用具を運び、理科室でインクを拾い、試験資料を借りる経路ではHP33・50G・11枚・ポーション1本になる。原稿を借り、階段で休み、最終下校で時間の小瓶を拾う経路ではHP36・32G・11枚・ポーション1本になる。これはイベント選択の単独比較であり、マップ全体の出現頻度、戦闘被害、長期的なデッキ価値、約60分のバランス検証は #68 に残る。

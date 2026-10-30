@@ -18,7 +18,7 @@ async function enterNextNode(page: import("@playwright/test").Page): Promise<voi
 }
 
 async function scriptActiveEvent(page: import("@playwright/test").Page, eventId: string): Promise<void> {
-  await page.evaluate((id) => {
+  await page.addInitScript((id) => {
     const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
     saved.session.run.event.eventId = id;
     localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
@@ -807,29 +807,33 @@ test("an event potion can be typed during combat and damages its enemy target", 
 });
 
 test("new events in each Act render at narrow width and resolve by keyboard", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
   const samples = [
     { act: 1 as const, eventId: "gym-supply-locker", title: "体育倉庫の予備箱" },
     { act: 2 as const, eventId: "lab-cleanup", title: "理科室の後片づけ" },
     { act: 3 as const, eventId: "last-train-board", title: "最終下校の案内板" },
   ];
   for (const sample of samples) {
+    const eventPage = await page.context().newPage();
+    await eventPage.setViewportSize({ width: 390, height: 844 });
     const base = createRunSession(42, "literature-demo", demoContent);
     const start: MapNode = { id: `a${sample.act}-start`, act: sample.act, floor: 0, kind: "start", nextIds: [`a${sample.act}-event`] };
     const node: MapNode = { id: `a${sample.act}-event`, act: sample.act, floor: 1, kind: "event", nextIds: [] };
     const mapped = { ...base, run: { ...base.run, act: sample.act, map: { currentNodeId: start.id, nodes: [start, node] } }, completedNodeIds: [start.id] };
     const entered = enterRunNode(mapped, node.id, demoContent, demoEnemyAi, demoRunContentTables);
     const scripted = { ...entered, run: { ...entered.run, event: { ...entered.run.event!, eventId: sample.eventId } } };
-    const saved = serializeRunSession(scripted, demoContent, { nowMs: () => 0 }, "discard");
-    await page.goto("/");
-    await page.evaluate((value) => localStorage.setItem("school-rg-run-v1", value), saved);
-    await page.reload();
-    await expect(page.locator(".event-panel h2")).toHaveText(sample.title);
-    await expect(page.locator(".event-choice")).toHaveCount(sample.act === 1 ? 3 : 4);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-    await page.locator("[data-action=event-choice][data-id=leave]").focus();
-    await page.keyboard.press("Enter");
-    await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+    const saved = serializeRunSession(scripted, demoContent, { nowMs: () => 0 }, () => "discard");
+    await eventPage.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await eventPage.goto("/");
+    await expect(eventPage.locator(".event-panel h2")).toHaveText(sample.title);
+    await expect(eventPage.locator(".event-choice")).toHaveCount(sample.act === 1 ? 3 : 4);
+    expect(await eventPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    if (process.env.SCHOOL_RG_CAPTURE_EVENTS === "1") {
+      await eventPage.screenshot({ path: `docs/content/previews/issue116-act${sample.act}-event-narrow-20261031.png`, fullPage: true });
+    }
+    await eventPage.locator("[data-action=event-choice][data-id=leave]").focus();
+    await eventPage.keyboard.press("Enter");
+    await expect(eventPage.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+    await eventPage.close();
   }
 });
 

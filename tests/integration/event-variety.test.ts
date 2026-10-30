@@ -22,7 +22,7 @@ describe("expanded Act events", () => {
       const opened = eventSession(act);
       expect(demoEventPools[act]).toContain(opened.run.event?.eventId);
       expect(eventSession(act)).toEqual(opened);
-      const saved = serializeRunSession(opened, demoContent, { nowMs: () => 0 }, "discard");
+      const saved = serializeRunSession(opened, demoContent, { nowMs: () => 0 }, () => "discard");
       expect(deserializeRunSession(saved, demoContent, { nowMs: () => 1000 })).toEqual(opened);
     }
     expect(extraEvents).toHaveLength(6);
