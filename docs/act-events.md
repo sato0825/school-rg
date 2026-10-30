@@ -13,3 +13,5 @@
 ## 実画面の確認
 
 ブラウザで通常の12階層/Actを文芸部で進め、接続されたイベントを優先して選択した。各Actの画面を [Act 1](content/previews/issue102-act1-event-20261031.png)、[Act 2](content/previews/issue102-act2-event-20261031.png)、[Act 3](content/previews/issue102-act3-event-20261031.png) に保存した。選択肢はクリックで解決し、カード名を入力する戦闘と同じラン内でマップへ戻れた。3 Actともイベント名と選択肢は変わるが、背景と画面構成は共通の仮表示。試行経路は回復と報酬を多く選べたため、Act 3時点で所持金347G・HP40/40になった。選択価値と経済バランスは未合格の検討対象で、人間の60分プレイテストの代わりにはならない。
+
+390×844でも同じ経路を再生し、[Act 1](content/previews/issue102-act1-event-narrow-20261031.png)、[Act 2](content/previews/issue102-act2-event-narrow-20261031.png)、[Act 3](content/previews/issue102-act3-event-narrow-20261031.png) の見出し、選択肢、所持情報が画面内に収まることを確認した。
