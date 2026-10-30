@@ -1,8 +1,35 @@
 import { expect, test } from "@playwright/test";
 
+async function enterNextNode(page: import("@playwright/test").Page): Promise<void> {
+  await page.locator(".map-node.available").first().click();
+}
+
+async function typeThroughBattle(page: import("@playwright/test").Page): Promise<void> {
+  const priorities = ["heavy strike", "sweep", "strike", "finish", "poison", "defend", "counter", "draw", "boost", "delay"];
+  for (let turn = 0; turn < 12; turn++) {
+    for (let use = 0; use < 12; use++) {
+      if (await page.locator(".reward-panel").count()) return;
+      const words = await page.locator(".card-word").allInnerTexts();
+      const word = priorities.find((item) => words.includes(item));
+      if (!word) break;
+      await page.keyboard.type(word);
+      if (await page.locator(".reward-panel").count()) return;
+      if ((await page.locator(".typing-buffer").innerText()).trim() === word) {
+        await page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: new RegExp(`^${word}$`) }) }).first().click();
+      }
+      if (await page.locator(".reward-panel").count()) return;
+      if ((await page.locator(".typing-buffer").innerText()).trim()) await page.keyboard.press("Escape");
+    }
+    await page.clock.runFor(11_000);
+  }
+  throw new Error("the battle did not reach a reward within 12 turns");
+}
+
 test("renders the combat HUD and accepts direct keyboard input", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "学園タイピングローグライク" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+  await enterNextNode(page);
   await expect(page.locator(".card")).toHaveCount(5);
   await expect(page.locator(".enemy-slot")).toHaveCount(1);
   const seconds = Number((await page.locator("[data-role=time]").innerText()).replace("sec", "").trim());
@@ -10,18 +37,19 @@ test("renders the combat HUD and accepts direct keyboard input", async ({ page }
   expect(seconds).toBeLessThanOrEqual(10);
   await page.keyboard.press("z");
   await expect(page.locator(".typing-buffer .placeholder")).toBeVisible();
-  await page.keyboard.type("sweep");
-  await expect(page.locator(".enemy-hud")).toContainText("21/26");
+  await page.keyboard.type("heavy strike");
+  await expect(page.locator(".enemy-hud")).toContainText("12/26");
   await expect(page.locator(".card")).toHaveCount(4);
 });
 
 test("a typed battle reaches victory with the visible Intent and pile counts", async ({ page }) => {
   await page.clock.install();
   await page.goto("/");
+  await enterNextNode(page);
   await expect(page.locator(".intent-ticket")).toContainText("飛び散る答案");
-  await page.keyboard.type("sweep");
+  await page.keyboard.type("heavy strike");
   await page.keyboard.type("strike");
-  await expect(page.locator(".enemy-hud")).toContainText("15/26");
+  await expect(page.locator(".enemy-hud")).toContainText("6/26");
   await page.getByRole("button", { name: "一時停止" }).click();
   const pausedTime = await page.locator("[data-role=time]").innerText();
   await page.locator(".enemy-slot").click();
@@ -34,18 +62,40 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await expect(page.locator(".player-hud")).toContainText("35/40");
   await expect(page.locator(".pile-counts")).toContainText("捨て札 5");
   await expect(page.locator(".intent-ticket")).toContainText("机を積む");
-  await page.keyboard.type("heavy strike");
-  await expect(page.locator(".enemy-hud")).toContainText("1/26");
+  await page.keyboard.type("sweep");
   await page.keyboard.type("strike");
-  await expect(page.getByRole("dialog")).toContainText("勝利");
+  await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
 });
 
 test("the combatants and controls remain visible on a narrow viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  await expect(page.locator(".map-node.available").first()).toBeInViewport();
+  await enterNextNode(page);
   await expect(page.locator(".hero-art")).toBeInViewport();
   await expect(page.locator(".enemy-art")).toBeInViewport();
   await expect(page.locator(".intent-ticket")).toBeInViewport();
   await expect(page.getByRole("button", { name: "一時停止" })).toBeInViewport();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+});
+
+test("a full Act can be finished through typed combat, rewards and a boss", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.clock.install();
+  await page.goto("/");
+  for (let encounter = 0; encounter < 3; encounter++) {
+    await enterNextNode(page);
+    if (encounter === 2) await expect(page.locator(".enemy-hud")).toContainText("追試の番人");
+    await typeThroughBattle(page);
+    await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
+    if (encounter === 0) {
+      await page.locator(".reward-card").first().click();
+      await expect(page.locator(".map-stats")).toContainText("デッキ 11枚");
+    } else await page.getByRole("button", { name: "報酬を受け取らず進む" }).click();
+  }
+  await expect(page.locator(".run-header")).toContainText("ACT 1 · 3F");
+  await expect(page.locator(".map-node.available")).toHaveCount(1);
+  await expect(page.locator(".map-node.available")).toContainText("開始");
+  await enterNextNode(page);
+  await expect(page.locator(".run-header")).toContainText("ACT 2 · 0F");
 });

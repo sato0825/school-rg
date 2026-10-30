@@ -2,22 +2,39 @@ import { useCardEffects } from "../domain/card-effects.js";
 import { DEFAULT_GAME_CONFIG, requireSetting } from "../domain/config.js";
 import { resolveEnemyIntents } from "../domain/enemy-ai.js";
 import { executeEnemyIntentEffects } from "../domain/enemy-intent-effects.js";
+import { chooseRunReward, createRunSession, enterRunNode, settleRunCombat } from "../domain/run-flow.js";
+import type { MapGenerationOptions } from "../domain/map-generation.js";
 import type { RunState } from "../domain/schema.js";
 import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, pausePlayerTurn, resumePlayerTurn, selectTypedCard, selectTypedEnemyTarget, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../domain/turn-state.js";
-import { demoContent, demoEnemyAi, createDemoBattle } from "../content/demo-battle.js";
+import { demoContent, demoEncounterTable, demoEnemyAi } from "../content/demo-battle.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { demoBattleArt } from "./demo-art.js";
+import { renderRunMap, renderRunResult, renderRunReward } from "./run-view.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = () => "discard" as const;
+/** Combat-only content permits a complete Act while event and shop systems are built in #17/#18. */
+const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 0, shop: 0, rest: 0, treasure: 0 } };
 
 export function mountApp(root: HTMLElement): () => void {
-  let run: RunState = createDemoBattle();
+  let session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
+  let run: RunState = session.run;
   const view: BattleView = { art: demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
   let enemyPending = false;
   let generation = 0;
   const clock = { nowMs: () => Math.floor(performance.now()) };
-  const render = () => renderBattle(root, run, demoContent, view);
+  const render = () => {
+    if (session.screen === "map") renderRunMap(root, session, demoBattleArt);
+    else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
+    else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt);
+    else renderBattle(root, run, demoContent, view);
+  };
+
+  function settleIfFinished(): void {
+    if (session.screen !== "combat" || (run.combat?.phase !== "WON" && run.combat?.phase !== "LOST")) return;
+    session = settleRunCombat({ ...session, run }, demoContent);
+    run = session.run;
+  }
 
   const useCard = (state: RunState, instanceId: string, targetEnemyInstanceId: string | null, targetHandInstanceId: string | null): RunState => {
     const cardId = state.combat!.cards.find((item) => item.instanceId === instanceId)!.cardId;
@@ -45,7 +62,7 @@ export function mountApp(root: HTMLElement): () => void {
   function enemyPhase(): void {
     if (run.combat?.phase !== "PLAYER_END" || enemyPending) return;
     run = beginEnemyPhase(run, config);
-    if (run.combat?.phase === "WON" || run.combat?.phase === "LOST") { render(); return; }
+    if (run.combat?.phase === "WON" || run.combat?.phase === "LOST") { settleIfFinished(); render(); return; }
     enemyPending = true;
     view.motion = "enemy";
     view.message = "敵が予告した行動を実行します。";
@@ -61,7 +78,7 @@ export function mountApp(root: HTMLElement): () => void {
         if (run.combat?.phase === "PLAYER_START") {
           run = beginPlayerTurn(run, clock, config, demoContent);
           view.message = "次のターン。カード名をタイプしてください。";
-        } else view.message = run.combat?.phase === "WON" ? "勝利しました。" : "敗北しました。";
+        } else settleIfFinished();
         render();
       } catch (error) { handleError(error); }
     }, 650);
@@ -73,16 +90,18 @@ export function mountApp(root: HTMLElement): () => void {
     view.motion = null;
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
-    run = beginPlayerTurn(createDemoBattle(), clock, config, demoContent);
+    session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
+    run = session.run;
     view.message = "カード名をタイプして発動。誤入力は無視されます。";
     render();
   }
 
   function onKeyDown(event: KeyboardEvent): void {
-    if (event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
+    if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
     if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape") event.preventDefault();
     try {
       run = submitPlayerKey(run, { key: event.key, repeat: event.repeat, isComposing: event.isComposing }, clock, config, demoContent, useCard, disposition);
+      settleIfFinished();
       render();
       enemyPhase();
     } catch (error) { handleError(error); }
@@ -95,7 +114,22 @@ export function mountApp(root: HTMLElement): () => void {
     const action = button.dataset.action;
     const id = button.dataset.id ?? "";
     try {
-      if (action === "restart") { restart(); return; }
+      if (action === "new-run" || action === "restart") { restart(); return; }
+      if (session.screen === "map" && action === "enter-node") {
+        session = enterRunNode(session, id, demoContent, demoEnemyAi, demoEncounterTable);
+        run = session.run;
+        if (session.screen === "combat") run = beginPlayerTurn(run, clock, config, demoContent);
+        view.message = "カード名をタイプして発動。誤入力は無視されます。";
+        render();
+        return;
+      }
+      if (session.screen === "reward" && (action === "reward-card" || action === "skip-reward")) {
+        session = chooseRunReward(session, action === "skip-reward" ? null : id);
+        run = session.run;
+        render();
+        return;
+      }
+      if (session.screen !== "combat") return;
       if (action === "pause" && run.combat?.phase === "PLAYER_INPUT") {
         run = run.combat.clock.paused ? resumePlayerTurn(run, clock) : pausePlayerTurn(run, clock, disposition);
         view.message = run.combat?.clock.paused ? "一時停止中です。" : "入力を再開しました。";
@@ -119,13 +153,14 @@ export function mountApp(root: HTMLElement): () => void {
         view.selectedDebuff = id;
         view.message = "解除する状態を選びました。";
       }
+      settleIfFinished();
       render();
       enemyPhase();
     } catch (error) { handleError(error); }
   }
 
   function onVisibility(): void {
-    if (document.hidden && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) {
+    if (session.screen === "combat" && document.hidden && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) {
       run = pausePlayerTurn(run, clock, disposition);
       view.message = "画面を離れたため一時停止しました。";
       render();
@@ -148,14 +183,13 @@ export function mountApp(root: HTMLElement): () => void {
   window.addEventListener("keydown", onKeyDown);
   document.addEventListener("visibilitychange", onVisibility);
   const timer = window.setInterval(() => {
-    if (run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
+    if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
     try {
       run = tickPlayerTurn(run, clock, disposition);
       if (run.combat?.phase === "PLAYER_INPUT") refreshTime();
       else { render(); enemyPhase(); }
     } catch (error) { handleError(error); }
   }, 80);
-  run = beginPlayerTurn(run, clock, config, demoContent);
   render();
   return () => {
     window.clearInterval(timer);

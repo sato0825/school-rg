@@ -4,6 +4,7 @@ import type { ContentRegistry, RunState } from "../domain/schema.js";
 import { createTypingState } from "../domain/typing.js";
 import { parseContentRegistry, parseRunState } from "../domain/validate.js";
 import type { EnemyAiRegistry } from "../domain/enemy-ai.js";
+import type { EncounterTable } from "../domain/run-flow.js";
 
 /** One complete combat encounter for #14. Full run content belongs to #15–#24. */
 export const demoContent: ContentRegistry = parseContentRegistry({
@@ -12,13 +13,20 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     ...baseCardEffects,
     { id: "paper-hit", kind: "damage", parameters: { amount: 5 } },
     { id: "paper-guard", kind: "block", parameters: { amount: 4 } },
+    { id: "exam-hit", kind: "damage", parameters: { amount: 7 } },
+    { id: "exam-guard", kind: "block", parameters: { amount: 6 } },
   ],
   cards: baseCardDefinitions,
   intents: [
     { id: "paper-intent-hit", label: "飛び散る答案", category: "attack", effectIds: ["paper-hit"] },
     { id: "paper-intent-guard", label: "机を積む", category: "defend", effectIds: ["paper-guard"] },
+    { id: "exam-intent-hit", label: "追試の鐘", category: "attack", effectIds: ["exam-hit"] },
+    { id: "exam-intent-guard", label: "答案を隠す", category: "defend", effectIds: ["exam-guard"] },
   ],
-  enemies: [{ id: "paper-heap", name: "答案のかたまり", maxHp: 26, intentIds: ["paper-intent-hit", "paper-intent-guard"] }],
+  enemies: [
+    { id: "paper-heap", name: "答案のかたまり", maxHp: 26, intentIds: ["paper-intent-hit", "paper-intent-guard"] },
+    { id: "final-exam", name: "追試の番人", maxHp: 38, intentIds: ["exam-intent-hit", "exam-intent-guard"] },
+  ],
   relics: [],
   potions: [],
   clubs: [{
@@ -31,6 +39,13 @@ export const demoContent: ContentRegistry = parseContentRegistry({
 
 export const demoEnemyAi: EnemyAiRegistry = {
   "paper-heap": { kind: "sequence", intentIds: ["paper-intent-hit", "paper-intent-guard"] },
+  "final-exam": { kind: "sequence", intentIds: ["exam-intent-hit", "exam-intent-guard"] },
+};
+
+export const demoEncounterTable: EncounterTable = {
+  combat: ["paper-heap"],
+  elite: ["final-exam"],
+  boss: ["final-exam"],
 };
 
 export function createDemoBattle(seed = 42): RunState {
