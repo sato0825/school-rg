@@ -27,16 +27,16 @@ export const demoBattleArt: BattleArt = {
   },
 };
 
-/** #84/#96 development preview only. These candidate images are not approved runtime art. */
+/** #84/#96/#112 development preview only. These candidate images are not approved runtime art. */
 export const candidateBattleArt: BattleArt = {
   ...demoBattleArt,
   previewLabel: "制作候補プレビュー · 未採用",
   previewLabelByClubId: {
-    "literature-demo": "文芸部候補 · 静止画のみ · 未採用",
+    "literature-demo": "文芸部候補 · 3ポーズ比較 · 未採用",
     "science-demo": "科学部候補 · 3ポーズ比較 · 未採用",
-    "kendo-demo": "剣道部候補 · 静止画のみ · 未採用",
-    "music-demo": "軽音部候補 · 静止画のみ · 未採用",
-    "art-demo": "美術部候補 · 静止画のみ · 未採用",
+    "kendo-demo": "剣道部候補 · 3ポーズ比較 · 未採用",
+    "music-demo": "軽音部候補 · 3ポーズ比較 · 未採用",
+    "art-demo": "美術部候補 · 3ポーズ比較 · 未採用",
   },
   heroUrlByClubId: {
     "literature-demo": new URL("../../docs/art/candidates/literature-idle-candidate-v1.png", import.meta.url).href,
@@ -45,10 +45,30 @@ export const candidateBattleArt: BattleArt = {
     "art-demo": new URL("../../docs/art/candidates/art-idle-candidate-v1.png", import.meta.url).href,
   },
   heroPosesByClubId: {
+    "literature-demo": {
+      idle: new URL("../../docs/art/candidates/literature-idle-candidate-v1.png", import.meta.url).href,
+      activate: new URL("../../docs/art/candidates/literature-activate-candidate-v2.png", import.meta.url).href,
+      hit: new URL("../../docs/art/candidates/literature-hit-candidate-v2.png", import.meta.url).href,
+    },
     "science-demo": {
       idle: new URL("../../docs/art/candidates/serious-student-idle-candidate-v1.png", import.meta.url).href,
       activate: new URL("../../docs/art/candidates/serious-student-activate-candidate-v1.png", import.meta.url).href,
       hit: new URL("../../docs/art/candidates/serious-student-hit-candidate-v1.png", import.meta.url).href,
+    },
+    "kendo-demo": {
+      idle: new URL("../../docs/art/candidates/kendo-idle-candidate-v1.png", import.meta.url).href,
+      activate: new URL("../../docs/art/candidates/kendo-activate-candidate-v3.png", import.meta.url).href,
+      hit: new URL("../../docs/art/candidates/kendo-hit-candidate-v2.png", import.meta.url).href,
+    },
+    "music-demo": {
+      idle: new URL("../../docs/art/candidates/music-idle-candidate-v1.png", import.meta.url).href,
+      activate: new URL("../../docs/art/candidates/music-activate-candidate-v2.png", import.meta.url).href,
+      hit: new URL("../../docs/art/candidates/music-hit-candidate-v2.png", import.meta.url).href,
+    },
+    "art-demo": {
+      idle: new URL("../../docs/art/candidates/art-idle-candidate-v1.png", import.meta.url).href,
+      activate: new URL("../../docs/art/candidates/art-activate-candidate-v2.png", import.meta.url).href,
+      hit: new URL("../../docs/art/candidates/art-hit-candidate-v3.png", import.meta.url).href,
     },
   },
 };
