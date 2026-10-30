@@ -27,6 +27,7 @@ export const CardSchema = z.strictObject({
   target: z.enum(["self", "enemy", "all_enemies", "hand", "none"]),
   input: InputWordSchema,
   effectIds: z.array(id),
+  upgradeEffectIds: z.array(id).optional(),
   keywordIds: z.array(id),
   xTimePolicy: z.strictObject({ rounding: z.enum(["floor", "ceil", "nearest", "default"]), consume: z.enum(["all", "units", "none"]) }).optional(),
 });
