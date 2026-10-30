@@ -1,4 +1,5 @@
 import { baseCardDefinitions, baseCardEffects } from "./base-cards.js";
+import { literatureCardDefinitions, literatureCardEffects } from "./literature-cards.js";
 import { shuffle } from "../domain/random.js";
 import type { ContentRegistry, RunState } from "../domain/schema.js";
 import { createTypingState } from "../domain/typing.js";
@@ -12,6 +13,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
   schemaVersion: 1,
   effects: [
     ...baseCardEffects,
+    ...literatureCardEffects,
     { id: "paper-hit", kind: "damage", parameters: { amount: 5 } },
     { id: "paper-guard", kind: "block", parameters: { amount: 4 } },
     { id: "exam-hit", kind: "damage", parameters: { amount: 7 } },
@@ -20,7 +22,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "potion-heal-effect", kind: "heal", parameters: { amount: 5 } },
     { id: "potion-ink-effect", kind: "damage", parameters: { amount: 7 } },
   ],
-  cards: baseCardDefinitions,
+  cards: [...baseCardDefinitions, ...literatureCardDefinitions],
   intents: [
     { id: "paper-intent-hit", label: "飛び散る答案", category: "attack", effectIds: ["paper-hit"] },
     { id: "paper-intent-guard", label: "机を積む", category: "defend", effectIds: ["paper-guard"] },
@@ -60,8 +62,8 @@ export const demoContent: ContentRegistry = parseContentRegistry({
   ],
   clubs: [{
     id: "literature-demo", name: "文芸部", startingHp: 40,
-    starterCardIds: ["BASE-001", "BASE-001", "BASE-002", "BASE-003", "BASE-007", "BASE-010", "BASE-011", "BASE-013", "BASE-017", "BASE-023"],
-    cardPoolIds: baseCardDefinitions.map((card) => card.id),
+    starterCardIds: ["BASE-001", "BASE-001", "BASE-002", "BASE-003", "BASE-007", "LIT-001", "BASE-011", "LIT-002", "LIT-003", "LIT-004"],
+    cardPoolIds: [...baseCardDefinitions.map((card) => card.id), ...literatureCardDefinitions.map((card) => card.id)],
     startingRelicId: "library-bookmark",
     startingPotionIds: ["potion-time", "potion-heal"],
   }],
