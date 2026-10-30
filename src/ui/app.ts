@@ -11,20 +11,27 @@ import { demoRelicRules } from "../content/demo-battle.js";
 import { emitRelicEvent, type RelicEventKind, type RelicEvent } from "../domain/relic-hooks.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { demoBattleArt } from "./demo-art.js";
-import { renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop } from "./run-view.js";
+import { renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderSaveRecovery } from "./run-view.js";
+import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
+import { browserSaveStore, type SaveStore } from "./save-store.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = () => "discard" as const;
 /** The visible run is a compact provisional Act with battle, shop and rest routes. */
 const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 3, elite: 0, event: 1, shop: 1, rest: 1, treasure: 0 } };
 
-export function mountApp(root: HTMLElement): () => void {
+export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore()): () => void {
+  const clock = { nowMs: () => Math.floor(performance.now()) };
   let session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
+  let restoreError = false;
+  try {
+    const saved = store.read();
+    if (saved) session = deserializeRunSession(saved, demoContent, clock);
+  } catch { restoreError = true; }
   let run: RunState = session.run;
   const view: BattleView = { art: demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
   let enemyPending = false;
   let generation = 0;
-  const clock = { nowMs: () => Math.floor(performance.now()) };
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
     emitRelicEvent(state, kind, demoRelicRules, demoContent, detail).run;
   const startCombat = () => {
@@ -32,14 +39,21 @@ export function mountApp(root: HTMLElement): () => void {
     run = beginPlayerTurn(run, clock, config, demoContent);
     run = fireRelic(run, "turn_start");
   };
+  const persist = () => {
+    if (restoreError) return;
+    try { store.write(serializeRunSession({ ...session, run }, demoContent, clock, disposition)); }
+    catch { view.message = "保存できませんでした。"; }
+  };
   const render = () => {
-    if (session.screen === "map") renderRunMap(root, session, demoBattleArt);
+    if (restoreError) renderSaveRecovery(root, demoBattleArt);
+    else if (session.screen === "map") renderRunMap(root, session, demoBattleArt);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
     else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message);
     else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt);
     else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt);
     else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt);
     else renderBattle(root, run, demoContent, view);
+    persist();
   };
 
   function settleIfFinished(): void {
@@ -74,9 +88,11 @@ export function mountApp(root: HTMLElement): () => void {
   }
 
   function enemyPhase(): void {
-    if (run.combat?.phase !== "PLAYER_END" || enemyPending) return;
-    run = beginEnemyPhase(run, config);
-    run = fireRelic(run, "turn_end");
+    if (enemyPending || (run.combat?.phase !== "PLAYER_END" && run.combat?.phase !== "ENEMY_PHASE")) return;
+    if (run.combat.phase === "PLAYER_END") {
+      run = beginEnemyPhase(run, config);
+      run = fireRelic(run, "turn_end");
+    }
     if (run.combat?.phase === "WON" || run.combat?.phase === "LOST") { settleIfFinished(); render(); return; }
     enemyPending = true;
     view.motion = "enemy";
@@ -109,6 +125,7 @@ export function mountApp(root: HTMLElement): () => void {
     view.selectedDebuff = null;
     session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
     run = session.run;
+    restoreError = false;
     view.message = "カード名をタイプして発動。誤入力は無視されます。";
     render();
   }
@@ -132,6 +149,7 @@ export function mountApp(root: HTMLElement): () => void {
     const id = button.dataset.id ?? "";
     try {
       if (action === "new-run" || action === "restart") { restart(); return; }
+      if (restoreError) return;
       if (session.screen === "map" && action === "enter-node") {
         session = enterRunNode(session, id, demoContent, demoEnemyAi, demoEncounterTable);
         run = session.run;
@@ -208,6 +226,8 @@ export function mountApp(root: HTMLElement): () => void {
     }
   }
 
+  function onPageHide(): void { persist(); }
+
   function refreshTime(): void {
     const remainingMs = run.combat!.clock.remainingMs;
     const time = root.querySelector<HTMLElement>("[data-role=time]");
@@ -223,6 +243,7 @@ export function mountApp(root: HTMLElement): () => void {
   root.addEventListener("click", onClick);
   window.addEventListener("keydown", onKeyDown);
   document.addEventListener("visibilitychange", onVisibility);
+  window.addEventListener("pagehide", onPageHide);
   const timer = window.setInterval(() => {
     if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
     try {
@@ -231,12 +252,17 @@ export function mountApp(root: HTMLElement): () => void {
       else { render(); enemyPhase(); }
     } catch (error) { handleError(error); }
   }, 80);
+  const saveTimer = window.setInterval(persist, 1_000);
+  if (session.screen === "combat" && run.combat?.phase === "PLAYER_START") startCombat();
   render();
+  if (session.screen === "combat") enemyPhase();
   return () => {
     window.clearInterval(timer);
+    window.clearInterval(saveTimer);
     root.removeEventListener("click", onClick);
     window.removeEventListener("keydown", onKeyDown);
     document.removeEventListener("visibilitychange", onVisibility);
+    window.removeEventListener("pagehide", onPageHide);
     generation++;
   };
 }
