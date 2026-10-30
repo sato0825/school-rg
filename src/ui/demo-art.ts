@@ -9,6 +9,7 @@ export const demoBattleArt: BattleArt = {
   heroUrl: new URL("../assets/girl-notebook-v1.png", import.meta.url).href,
   enemyUrlById: {
     "paper-heap": placeholderEnemyUrl,
+    "paper-scrap": placeholderEnemyUrl,
     "hall-monitor": placeholderEnemyUrl,
     "final-exam": placeholderEnemyUrl,
     "chalk-cloud": placeholderEnemyUrl,

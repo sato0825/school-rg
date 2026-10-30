@@ -27,6 +27,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     ...artCardEffects,
     { id: "paper-hit", kind: "damage", parameters: { amount: 5 } },
     { id: "paper-guard", kind: "block", parameters: { amount: 4 } },
+    { id: "scrap-hit", kind: "damage", parameters: { amount: 2 } },
     { id: "exam-hit", kind: "damage", parameters: { amount: 7 } },
     { id: "exam-guard", kind: "block", parameters: { amount: 6 } },
     { id: "hall-hit", kind: "damage", parameters: { amount: 4 } },
@@ -51,6 +52,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
   intents: [
     { id: "paper-intent-hit", label: "飛び散る答案", category: "attack", effectIds: ["paper-hit"] },
     { id: "paper-intent-guard", label: "机を積む", category: "defend", effectIds: ["paper-guard"] },
+    { id: "scrap-intent-hit", label: "紙片が飛ぶ", category: "attack", effectIds: ["scrap-hit"] },
     { id: "exam-intent-hit", label: "追試の鐘", category: "attack", effectIds: ["exam-hit"] },
     { id: "exam-intent-guard", label: "答案を隠す", category: "defend", effectIds: ["exam-guard"] },
     { id: "hall-intent-hit", label: "廊下を巡回", category: "attack", effectIds: ["hall-hit"] },
@@ -70,6 +72,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
   ],
   enemies: [
     { id: "paper-heap", name: "答案のかたまり", maxHp: 26, intentIds: ["paper-intent-hit", "paper-intent-guard"] },
+    { id: "paper-scrap", name: "答案の切れ端", maxHp: 12, intentIds: ["scrap-intent-hit"] },
     { id: "final-exam", name: "追試の番人", maxHp: 38, intentIds: ["exam-intent-hit", "exam-intent-guard"] },
     { id: "hall-monitor", name: "廊下の見回り", maxHp: 30, intentIds: ["hall-intent-hit", "hall-intent-guard"] },
     { id: "chalk-cloud", name: "チョークの雲", maxHp: 27, intentIds: ["chalk-intent-hit", "chalk-intent-weak"] },
@@ -184,6 +187,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
 
 export const demoEnemyAi: EnemyAiRegistry = {
   "paper-heap": { kind: "sequence", intentIds: ["paper-intent-hit", "paper-intent-guard"] },
+  "paper-scrap": { kind: "sequence", intentIds: ["scrap-intent-hit"] },
   "final-exam": { kind: "sequence", intentIds: ["exam-intent-hit", "exam-intent-guard"] },
   "hall-monitor": { kind: "sequence", intentIds: ["hall-intent-hit", "hall-intent-guard"] },
   "chalk-cloud": { kind: "sequence", intentIds: ["chalk-intent-weak", "chalk-intent-hit"] },
@@ -218,7 +222,7 @@ export const demoRelicRules: RelicRule[] = [
 
 export const demoEncounterTable: EncounterTable = {
   byAct: {
-    1: { combat: ["paper-heap"], elite: ["hall-monitor"], boss: ["final-exam"] },
+    1: { combat: ["paper-heap"], elite: [{ id: "hall-and-scrap", enemyIds: ["hall-monitor", "paper-scrap"] }], boss: ["final-exam"] },
     2: { combat: ["chalk-cloud"], elite: ["library-cart"], boss: ["club-auditor"] },
     3: { combat: ["night-announcement"], elite: ["lost-and-found"], boss: ["closing-bell"] },
   },

@@ -23,6 +23,10 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
       if (!word) break;
       await page.keyboard.type(word);
       if (await page.locator(completion).count()) return;
+      if (await page.locator(".typing-hint").filter({ hasText: "攻撃対象の敵を選択" }).count()) {
+        await page.locator(".enemy-slot").last().click();
+      }
+      if (await page.locator(completion).count()) return;
       if ((await page.locator(".typing-buffer").innerText()).trim() === word) {
         await page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: new RegExp(`^${word}$`) }) }).first().focus();
         await page.keyboard.press("Enter");
@@ -221,6 +225,28 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await expect(page.locator(".intent-ticket")).toContainText("机を積む");
   await page.keyboard.type("sweep");
   await page.keyboard.type("strike");
+  await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
+});
+
+test("an elite formation accepts a typed single target and an all-enemy attack", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.clock.install();
+  await page.goto("/");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await page.locator(".map-node.available").filter({ hasText: "強敵" }).first().click();
+  await expect(page.locator(".enemy-slot")).toHaveCount(2);
+  await expect(page.locator(".enemy-hud").nth(0)).toContainText("廊下の見回り");
+  await expect(page.locator(".enemy-hud").nth(1)).toContainText("答案の切れ端");
+  await page.keyboard.type("strike");
+  await expect(page.locator(".typing-hint")).toContainText("攻撃対象の敵を選択");
+  await page.locator(".enemy-slot").nth(1).click();
+  await expect(page.locator(".enemy-hud").nth(0)).toContainText("30/30");
+  await expect(page.locator(".enemy-hud").nth(1)).toContainText("6/12");
+  await page.keyboard.type("sweep");
+  await expect(page.locator(".enemy-hud").nth(0)).toContainText("25/30");
+  await expect(page.locator(".enemy-hud").nth(1)).toContainText("1/12");
+  await typeThroughBattle(page);
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
 });
 
