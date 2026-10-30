@@ -11,7 +11,8 @@ import type { ContentRegistry, RunState } from "../domain/schema.js";
 import { createTypingState } from "../domain/typing.js";
 import { parseContentRegistry, parseRunState } from "../domain/validate.js";
 import type { EnemyAiRegistry } from "../domain/enemy-ai.js";
-import type { EncounterTable } from "../domain/run-flow.js";
+import type { EncounterTable, RunContentTables } from "../domain/run-flow.js";
+import type { EventPools } from "../domain/events.js";
 import type { RelicRule } from "../domain/relic-hooks.js";
 
 /** One complete combat encounter for #14. Full run content belongs to #15–#24. */
@@ -110,6 +111,38 @@ export const demoContent: ContentRegistry = parseContentRegistry({
         { id: "fight", label: "箱を開けて戦う", requires: [], effects: [{ kind: "battle", enemyId: "paper-heap" }] },
       ],
     },
+    {
+      id: "archive-inventory", title: "資料室の棚卸し", description: "古い資料が廊下まで積み上がっている。手を貸せば、使える記録も見つかりそうだ。",
+      choices: [
+        { id: "sort", label: "資料を整理する · 12G", requires: [], effects: [{ kind: "gold", amount: 12 }] },
+        { id: "borrow", label: "10Gで弱体の記録を借りる", requires: [{ kind: "gold_at_least", amount: 10 }], effects: [{ kind: "gold", amount: -10 }, { kind: "add_card", cardId: "BASE-009" }] },
+        { id: "fight", label: "動く図書台車を止める", requires: [], effects: [{ kind: "battle", enemyId: "library-cart" }] },
+      ],
+    },
+    {
+      id: "lab-ventilation", title: "理科室の換気", description: "窓の向こうへチョークの粉が流れる。片づける間に一息つけそうだ。",
+      choices: [
+        { id: "rest", label: "窓を開けて休む · HP5回復", requires: [], effects: [{ kind: "hp", amount: 5 }] },
+        { id: "ink", label: "インクの小瓶を拾う", requires: [{ kind: "potion_slot_available" }], effects: [{ kind: "add_potion", potionId: "potion-ink" }] },
+        { id: "fight", label: "チョークの雲を払う", requires: [], effects: [{ kind: "battle", enemyId: "chalk-cloud" }] },
+      ],
+    },
+    {
+      id: "closing-library", title: "閉館前の図書室", description: "最後の貸出票だけが机に残っている。返却前に、今日の記録を見直せる。",
+      choices: [
+        { id: "study", label: "15Gで追加ドローの資料を借りる", requires: [{ kind: "gold_at_least", amount: 15 }], effects: [{ kind: "gold", amount: -15 }, { kind: "add_card", cardId: "BASE-007" }] },
+        { id: "bookmark", label: "しおりを受け取る", requires: [], effects: [{ kind: "add_relic", relicId: "library-bookmark" }] },
+        { id: "leave", label: "返却を手伝う · 5G", requires: [], effects: [{ kind: "gold", amount: 5 }] },
+      ],
+    },
+    {
+      id: "night-broadcast", title: "夜の校内放送", description: "誰もいない放送室から声がする。時計は止まったままだ。",
+      choices: [
+        { id: "recover", label: "落ち着いて深呼吸 · HP5回復", requires: [], effects: [{ kind: "hp", amount: 5 }] },
+        { id: "clock", label: "時間の小瓶を持って行く", requires: [{ kind: "potion_slot_available" }], effects: [{ kind: "add_potion", potionId: "potion-time" }] },
+        { id: "fight", label: "放送室を調べる", requires: [], effects: [{ kind: "battle", enemyId: "night-announcement" }] },
+      ],
+    },
   ],
   clubs: [{
     id: "literature-demo", name: "文芸部", startingHp: 40,
@@ -190,6 +223,14 @@ export const demoEncounterTable: EncounterTable = {
     3: { combat: ["night-announcement"], elite: ["lost-and-found"], boss: ["closing-bell"] },
   },
 };
+
+export const demoEventPools: EventPools = {
+  1: ["after-school-board", "collection-box"],
+  2: ["archive-inventory", "lab-ventilation"],
+  3: ["closing-library", "night-broadcast"],
+};
+
+export const demoRunContentTables: RunContentTables = { enemies: demoEncounterTable, events: demoEventPools };
 
 export function createDemoBattle(seed = 42): RunState {
   const club = demoContent.clubs[0]!;

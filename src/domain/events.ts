@@ -4,6 +4,8 @@ import { collectPotion } from "./potions.js";
 import { acquireRelic } from "./relic-hooks.js";
 import type { ContentRegistry, EventChoice, EventCondition, EventDefinition, RunState } from "./schema.js";
 
+export type EventPools = Readonly<Record<1 | 2 | 3, readonly string[]>>;
+
 function nextDeckInstanceId(run: RunState): string {
   const existing = new Set(run.deck.map((card) => card.instanceId));
   let index = run.deck.length + 1;
@@ -27,12 +29,16 @@ export function availableEventChoices(run: RunState, content: ContentRegistry, c
   return definition.choices.map((choice) => ({ choice, available: choice.requires.every((condition) => eventConditionMet(run, condition, config)) }));
 }
 
-export function openRandomEvent(run: RunState, content: ContentRegistry): RunState {
+export function openRandomEvent(run: RunState, content: ContentRegistry, eventIds?: readonly string[]): RunState {
   const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
   if (node?.kind !== "event" || run.combat || run.shop || run.event) throw new Error("expected unopened event node outside combat");
-  if (content.events.length === 0) throw new RangeError("event pool is empty");
-  const draw = randomInt(run.rngState, content.events.length);
-  const definition = content.events[draw.value]!;
+  const pool = eventIds ?? content.events.map((event) => event.id);
+  if (pool.length === 0) throw new RangeError("event pool is empty");
+  if (new Set(pool).size !== pool.length || pool.some((id) => !content.events.some((event) => event.id === id))) {
+    throw new RangeError("event pool contains duplicate or unknown IDs");
+  }
+  const draw = randomInt(run.rngState, pool.length);
+  const definition = content.events.find((event) => event.id === pool[draw.value])!;
   return { ...run, rngState: draw.state, event: { nodeId: node.id, eventId: definition.id, choiceId: null, pendingCombat: false } };
 }
 
