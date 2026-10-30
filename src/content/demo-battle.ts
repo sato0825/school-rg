@@ -28,6 +28,20 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "paper-guard", kind: "block", parameters: { amount: 4 } },
     { id: "exam-hit", kind: "damage", parameters: { amount: 7 } },
     { id: "exam-guard", kind: "block", parameters: { amount: 6 } },
+    { id: "hall-hit", kind: "damage", parameters: { amount: 4 } },
+    { id: "hall-guard", kind: "block", parameters: { amount: 5 } },
+    { id: "chalk-hit", kind: "damage", parameters: { amount: 4 } },
+    { id: "chalk-weak", kind: "status", parameters: { status: "weak", delta: 1, target: "player" } },
+    { id: "cart-hit", kind: "damage", parameters: { amount: 5 } },
+    { id: "cart-guard", kind: "block", parameters: { amount: 6 } },
+    { id: "auditor-hit", kind: "damage", parameters: { amount: 5 } },
+    { id: "auditor-focus", kind: "status", parameters: { status: "strength", delta: 1 } },
+    { id: "announcement-hit", kind: "damage", parameters: { amount: 5 } },
+    { id: "announcement-frail", kind: "status", parameters: { status: "frail", delta: 1, target: "player" } },
+    { id: "lost-hit", kind: "damage", parameters: { amount: 5, hits: 2 } },
+    { id: "lost-guard", kind: "block", parameters: { amount: 5 } },
+    { id: "bell-hit", kind: "damage", parameters: { amount: 6 } },
+    { id: "bell-guard", kind: "block", parameters: { amount: 7 } },
     { id: "potion-time-effect", kind: "add_time", parameters: { amountMs: 3_000 } },
     { id: "potion-heal-effect", kind: "heal", parameters: { amount: 5 } },
     { id: "potion-ink-effect", kind: "damage", parameters: { amount: 7 } },
@@ -38,10 +52,31 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "paper-intent-guard", label: "机を積む", category: "defend", effectIds: ["paper-guard"] },
     { id: "exam-intent-hit", label: "追試の鐘", category: "attack", effectIds: ["exam-hit"] },
     { id: "exam-intent-guard", label: "答案を隠す", category: "defend", effectIds: ["exam-guard"] },
+    { id: "hall-intent-hit", label: "廊下を巡回", category: "attack", effectIds: ["hall-hit"] },
+    { id: "hall-intent-guard", label: "通路を塞ぐ", category: "defend", effectIds: ["hall-guard"] },
+    { id: "chalk-intent-hit", label: "粉を散らす", category: "attack", effectIds: ["chalk-hit"] },
+    { id: "chalk-intent-weak", label: "視界を曇らせる", category: "debuff", effectIds: ["chalk-weak"] },
+    { id: "cart-intent-hit", label: "本を揺らす", category: "attack", effectIds: ["cart-hit"] },
+    { id: "cart-intent-guard", label: "本棚で守る", category: "defend", effectIds: ["cart-guard"] },
+    { id: "auditor-intent-hit", label: "記録を突きつける", category: "attack", effectIds: ["auditor-hit"] },
+    { id: "auditor-intent-focus", label: "採点を厳しくする", category: "buff", effectIds: ["auditor-focus"] },
+    { id: "announcement-intent-hit", label: "放送を響かせる", category: "attack", effectIds: ["announcement-hit"] },
+    { id: "announcement-intent-frail", label: "集中を乱す", category: "debuff", effectIds: ["announcement-frail"] },
+    { id: "lost-intent-hit", label: "忘れ物を投げる", category: "attack", effectIds: ["lost-hit"] },
+    { id: "lost-intent-guard", label: "荷物に隠れる", category: "defend", effectIds: ["lost-guard"] },
+    { id: "bell-intent-hit", label: "鐘を鳴らす", category: "attack", effectIds: ["bell-hit"] },
+    { id: "bell-intent-guard", label: "時を止める", category: "defend", effectIds: ["bell-guard"] },
   ],
   enemies: [
     { id: "paper-heap", name: "答案のかたまり", maxHp: 26, intentIds: ["paper-intent-hit", "paper-intent-guard"] },
     { id: "final-exam", name: "追試の番人", maxHp: 38, intentIds: ["exam-intent-hit", "exam-intent-guard"] },
+    { id: "hall-monitor", name: "廊下の見回り", maxHp: 30, intentIds: ["hall-intent-hit", "hall-intent-guard"] },
+    { id: "chalk-cloud", name: "チョークの雲", maxHp: 27, intentIds: ["chalk-intent-hit", "chalk-intent-weak"] },
+    { id: "library-cart", name: "動く図書台車", maxHp: 32, intentIds: ["cart-intent-hit", "cart-intent-guard"] },
+    { id: "club-auditor", name: "部活監査の影", maxHp: 38, intentIds: ["auditor-intent-hit", "auditor-intent-focus"] },
+    { id: "night-announcement", name: "夜の校内放送", maxHp: 28, intentIds: ["announcement-intent-hit", "announcement-intent-frail"] },
+    { id: "lost-and-found", name: "忘れ物の山", maxHp: 34, intentIds: ["lost-intent-hit", "lost-intent-guard"] },
+    { id: "closing-bell", name: "終業の鐘", maxHp: 40, intentIds: ["bell-intent-hit", "bell-intent-guard"] },
   ],
   relics: [
     { id: "library-bookmark", name: "図書室のしおり", triggerIds: ["bookmark-acquired", "bookmark-turn", "bookmark-skill"], effectIds: [] },
@@ -117,6 +152,13 @@ export const demoContent: ContentRegistry = parseContentRegistry({
 export const demoEnemyAi: EnemyAiRegistry = {
   "paper-heap": { kind: "sequence", intentIds: ["paper-intent-hit", "paper-intent-guard"] },
   "final-exam": { kind: "sequence", intentIds: ["exam-intent-hit", "exam-intent-guard"] },
+  "hall-monitor": { kind: "sequence", intentIds: ["hall-intent-hit", "hall-intent-guard"] },
+  "chalk-cloud": { kind: "sequence", intentIds: ["chalk-intent-weak", "chalk-intent-hit"] },
+  "library-cart": { kind: "sequence", intentIds: ["cart-intent-guard", "cart-intent-hit"] },
+  "club-auditor": { kind: "sequence", intentIds: ["auditor-intent-focus", "auditor-intent-hit"] },
+  "night-announcement": { kind: "sequence", intentIds: ["announcement-intent-frail", "announcement-intent-hit"] },
+  "lost-and-found": { kind: "sequence", intentIds: ["lost-intent-hit", "lost-intent-guard"] },
+  "closing-bell": { kind: "sequence", intentIds: ["bell-intent-guard", "bell-intent-hit"] },
 };
 
 /** Provisional content values; the reusable hook dispatcher lives in the domain. */
@@ -142,9 +184,11 @@ export const demoRelicRules: RelicRule[] = [
 ];
 
 export const demoEncounterTable: EncounterTable = {
-  combat: ["paper-heap"],
-  elite: ["final-exam"],
-  boss: ["final-exam"],
+  byAct: {
+    1: { combat: ["paper-heap"], elite: ["hall-monitor"], boss: ["final-exam"] },
+    2: { combat: ["chalk-cloud"], elite: ["library-cart"], boss: ["club-auditor"] },
+    3: { combat: ["night-announcement"], elite: ["lost-and-found"], boss: ["closing-bell"] },
+  },
 };
 
 export function createDemoBattle(seed = 42): RunState {

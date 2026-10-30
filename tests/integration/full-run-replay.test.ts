@@ -19,7 +19,7 @@ function replay(seed: number, reloadAtActTwo: boolean, ascensionLevel = 0, clubI
       const baseHp = demoContent.enemies.find((item) => item.id === enemy.enemyId)!.maxHp;
       expect(enemy.maxHp).toBe(Math.ceil(baseHp * 1.2));
     }
-    trace.push(`${node.id}:${node.kind}:${session.run.rngState}:${session.run.combat?.enemies[0]?.intentId ?? "-"}`);
+    trace.push(`${node.id}:${node.kind}:${session.run.rngState}:${session.run.combat?.enemies[0]?.enemyId ?? "-"}:${session.run.combat?.enemies[0]?.intentId ?? "-"}`);
     if (session.screen === "combat") {
       battles++;
       const won: RunSession = { ...session, run: { ...session.run, combat: { ...session.run.combat!, phase: "WON", enemies: session.run.combat!.enemies.map((enemy) => ({ ...enemy, hp: 0 })) } } };
@@ -41,6 +41,11 @@ function replay(seed: number, reloadAtActTwo: boolean, ascensionLevel = 0, clubI
 describe("seeded full-run replay", () => {
   it("reproduces all three Acts, including a save/load boundary", () => {
     const original = replay(142, false);
+    expect(original.trace.filter((line) => line.includes(":boss:"))).toEqual(expect.arrayContaining([
+      expect.stringContaining(":final-exam:"),
+      expect.stringContaining(":club-auditor:"),
+      expect.stringContaining(":closing-bell:"),
+    ]));
     expect(replay(142, false)).toEqual(original);
     expect(replay(142, true)).toEqual(original);
     expect(replay(143, false).trace).not.toEqual(original.trace);

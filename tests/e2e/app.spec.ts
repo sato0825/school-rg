@@ -396,6 +396,7 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
 async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ battles: number; bosses: number }> {
   let battles = 0;
   let bosses = 0;
+  const bossNames = ["追試の番人", "部活監査の影", "終業の鐘"];
   for (let step = 0; step < 36 && !(await page.locator(".run-result").count()); step++) {
     if (await page.locator(".map-panel").count()) {
       const available = page.locator(".map-node.available");
@@ -414,7 +415,10 @@ async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ 
     } else if (await page.locator(".event-panel").count()) {
       await page.locator(".event-choice:not(:disabled)").filter({ hasNotText: "戦う" }).first().click();
     } else if (await page.locator(".enemy-slot").count()) {
-      if ((await page.locator(".run-meta").innerText()).includes("boss")) bosses++;
+      if ((await page.locator(".run-meta").innerText()).includes("boss")) {
+        await expect(page.locator(".enemy-hud")).toContainText(bossNames[bosses]!);
+        bosses++;
+      }
       battles++;
       await typeThroughBattle(page);
     } else throw new Error(`unexpected run screen at step ${step}`);

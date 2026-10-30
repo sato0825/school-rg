@@ -1,12 +1,22 @@
 import type { BattleArt } from "./battle-view.js";
 
+/** Shared placeholder until #29/#68 supply distinct approved enemy art. */
+const placeholderEnemyUrl = new URL("../assets/enemy-paper-v1.png", import.meta.url).href;
+
 /** Demo presentation is kept outside battle logic so later club and enemy art can replace it. */
 export const demoBattleArt: BattleArt = {
   stageUrl: new URL("../assets/stage-hallway-v1.png", import.meta.url).href,
   heroUrl: new URL("../assets/girl-notebook-v1.png", import.meta.url).href,
   enemyUrlById: {
-    "paper-heap": new URL("../assets/enemy-paper-v1.png", import.meta.url).href,
-    "final-exam": new URL("../assets/enemy-paper-v1.png", import.meta.url).href,
+    "paper-heap": placeholderEnemyUrl,
+    "hall-monitor": placeholderEnemyUrl,
+    "final-exam": placeholderEnemyUrl,
+    "chalk-cloud": placeholderEnemyUrl,
+    "library-cart": placeholderEnemyUrl,
+    "club-auditor": placeholderEnemyUrl,
+    "night-announcement": placeholderEnemyUrl,
+    "lost-and-found": placeholderEnemyUrl,
+    "closing-bell": placeholderEnemyUrl,
   },
 };
 
