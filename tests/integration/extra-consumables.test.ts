@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import { createDemoBattle, demoContent, demoRelicRules } from "../../src/content/demo-battle.js";
 import { extraConsumableBalance, extraPotions, extraRelics } from "../../src/content/extra-consumables.js";
 import { DEFAULT_GAME_CONFIG } from "../../src/domain/config.js";
+import { openShop } from "../../src/domain/economy.js";
 import { collectPotion, setPotionInputActive, submitPotionKey } from "../../src/domain/potions.js";
 import { emitRelicEvent } from "../../src/domain/relic-hooks.js";
+import { openTreasure } from "../../src/domain/treasure.js";
 import { parseRunState } from "../../src/domain/validate.js";
 
 const disposition = () => "discard" as const;
@@ -31,6 +33,25 @@ describe("additional relic and potion content", () => {
     run = collectPotion(run, "potion-splash", demoContent, DEFAULT_GAME_CONFIG);
     run = { ...run, relicIds: ["attendance-stamp", "practice-timer"] };
     expect(parseRunState(JSON.parse(JSON.stringify(run)), demoContent)).toEqual(run);
+  });
+
+  it("makes every new item reachable through deterministic shop or treasure stock", () => {
+    const offeredRelics = new Set<string>();
+    const offeredPotions = new Set<string>();
+    for (let seed = 1; seed <= 96; seed++) {
+      const base = { ...createDemoBattle(seed), combat: null };
+      const shopRun = { ...base, map: { currentNodeId: "shop-node", nodes: [{ id: "shop-node", act: 1 as const, floor: 1, kind: "shop" as const, nextIds: [] }] } };
+      const treasureRun = { ...base, map: { currentNodeId: "treasure-node", nodes: [{ id: "treasure-node", act: 1 as const, floor: 1, kind: "treasure" as const, nextIds: [] }] } };
+      const shop = openShop(shopRun, demoContent);
+      const treasure = openTreasure(treasureRun, demoContent);
+      expect(openShop(shopRun, demoContent)).toEqual(shop);
+      expect(openTreasure(treasureRun, demoContent)).toEqual(treasure);
+      for (const item of shop.shop!.relicOffers) offeredRelics.add(item.contentId);
+      for (const item of shop.shop!.potionOffers) offeredPotions.add(item.contentId);
+      for (const item of treasure.treasure!.offers) (item.kind === "relic" ? offeredRelics : offeredPotions).add(item.contentId);
+    }
+    expect(extraRelics.every((item) => offeredRelics.has(item.id))).toBe(true);
+    expect(extraPotions.every((item) => offeredPotions.has(item.id))).toBe(true);
   });
 
   it("resolves acquired, combat-end, hit and card hooks once in priority order", () => {
