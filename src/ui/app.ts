@@ -27,7 +27,7 @@ const shortMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindW
 
 export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(), progressStore: SaveStore = browserProgressStore(), playtestStore: SaveStore = browserPlaytestStore()): () => void {
   const params = new URLSearchParams(window.location.search);
-  const mapOptions = params.get("shortRun") === "1" ? shortMapOptions : DEFAULT_MAP_OPTIONS;
+  const mapOptions = import.meta.env.DEV && params.get("shortRun") === "1" ? shortMapOptions : DEFAULT_MAP_OPTIONS;
   const clock = { nowMs: () => Math.floor(performance.now()) };
   let progression = emptyProgression();
   let progressionLoadError = false;
