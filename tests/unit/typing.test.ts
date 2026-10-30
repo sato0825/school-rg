@@ -60,6 +60,27 @@ describe("typing card names", () => {
     expect(longer.typing.buffer).toBe("fireb");
   });
 
+  it("can switch the provisional same-name policy without changing input code", () => {
+    let now = 0;
+    const source = { nowMs: () => now };
+    const cards = [{ instanceId: "first", word: "fire" }, { instanceId: "second", word: "fire" }];
+    const config = parseGameConfig({
+      ...DEFAULT_GAME_CONFIG,
+      sameNameCardPolicy: { ...DEFAULT_GAME_CONFIG.sameNameCardPolicy, value: "first_in_hand" },
+    });
+    let typing = createTypingState(cards);
+    let clock = createTurnClock(10_000, source);
+    let completed: string | null = null;
+    for (const key of "fire") {
+      now += 10;
+      const result = pressTypingKey(typing, clock, cards, { key }, source, config);
+      typing = result.typing;
+      clock = result.clock;
+      completed = result.completedCardInstanceId;
+    }
+    expect(completed).toBe("first");
+  });
+
   it("ignores repeat and composition, cancels on Escape and focus loss", () => {
     let now = 0;
     const source = { nowMs: () => now };

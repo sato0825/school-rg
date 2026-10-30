@@ -5,6 +5,7 @@ import type { TurnClockState, TypingState } from "./schema.js";
 export interface TypableCard {
   instanceId: string;
   word: string;
+  target?: "self" | "enemy" | "all_enemies" | "hand" | "none";
 }
 
 export interface TypingKeyEvent {
@@ -17,6 +18,13 @@ export interface TypingResult {
   typing: TypingState;
   clock: TurnClockState;
   completedCardInstanceId: string | null;
+  completedTargetEnemyInstanceId: string | null;
+}
+
+export interface SelectionResult {
+  typing: TypingState;
+  completedCardInstanceId: string | null;
+  completedTargetEnemyInstanceId: string | null;
 }
 
 function normalizeText(word: string, config: GameConfig): string {
@@ -70,6 +78,66 @@ export function syncTypingHand(
   };
 }
 
+function activateExact(
+  typing: TypingState,
+  cards: readonly TypableCard[],
+  liveEnemyInstanceIds: readonly string[],
+  config: GameConfig,
+  explicitConfirmation: boolean,
+): SelectionResult {
+  const pending: SelectionResult = { typing, completedCardInstanceId: null, completedTargetEnemyInstanceId: null };
+  const candidates = cards.filter((card) => normalizedWord(card.word, config).startsWith(typing.buffer));
+  const exact = candidates.filter((card) => normalizedWord(card.word, config) === typing.buffer);
+  if (!typing.buffer || exact.length === 0) return pending;
+  if (!explicitConfirmation && candidates.length !== exact.length) return pending;
+  const selected = exact.find((card) => card.instanceId === typing.selectedCardInstanceId)
+    ?? (exact.length === 1 || requireSetting(config.sameNameCardPolicy) === "first_in_hand" ? exact[0] : undefined);
+  if (!selected) return pending;
+  if (selected.target === "hand") throw new Error("hand target selection is not yet available; see issue #8");
+  let targetEnemyInstanceId: string | null = null;
+  if (selected.target === "enemy") {
+    targetEnemyInstanceId = liveEnemyInstanceIds.includes(typing.targetEnemyInstanceId ?? "")
+      ? typing.targetEnemyInstanceId
+      : liveEnemyInstanceIds.length === 1 ? liveEnemyInstanceIds[0]! : null;
+    if (!targetEnemyInstanceId) {
+      return { ...pending, typing: { ...typing, selectedCardInstanceId: selected.instanceId, targetEnemyInstanceId: null } };
+    }
+  }
+  return {
+    typing: createTypingState(cards),
+    completedCardInstanceId: selected.instanceId,
+    completedTargetEnemyInstanceId: targetEnemyInstanceId,
+  };
+}
+
+/** Explicitly choose one complete same-name instance without guessing. */
+export function chooseTypingCard(
+  typing: TypingState,
+  cards: readonly TypableCard[],
+  instanceId: string,
+  liveEnemyInstanceIds: readonly string[],
+  config: GameConfig,
+): SelectionResult {
+  const card = cards.find((item) => item.instanceId === instanceId);
+  if (!card || normalizedWord(card.word, config) !== typing.buffer || !typing.candidateCardInstanceIds.includes(instanceId)) {
+    throw new RangeError(`card is not an exact typing candidate: ${instanceId}`);
+  }
+  return activateExact({ ...typing, selectedCardInstanceId: instanceId }, cards, liveEnemyInstanceIds, config, true);
+}
+
+/** A target is valid only while that enemy remains alive in the current combat. */
+export function chooseTypingEnemyTarget(
+  typing: TypingState,
+  cards: readonly TypableCard[],
+  instanceId: string,
+  liveEnemyInstanceIds: readonly string[],
+  config: GameConfig,
+): SelectionResult {
+  if (!liveEnemyInstanceIds.includes(instanceId)) throw new RangeError(`enemy target is not alive: ${instanceId}`);
+  const withTarget = { ...typing, targetEnemyInstanceId: instanceId };
+  return activateExact(withTarget, cards, liveEnemyInstanceIds, config, Boolean(withTarget.selectedCardInstanceId));
+}
+
 export function advanceTypingTime(
   state: TypingState,
   turnClock: TurnClockState,
@@ -81,6 +149,7 @@ export function advanceTypingTime(
     typing: updatedClock.remainingMs === 0 ? createTypingState(cards) : state,
     clock: updatedClock,
     completedCardInstanceId: null,
+    completedTargetEnemyInstanceId: null,
   };
 }
 
@@ -104,6 +173,7 @@ export function pressTypingKey(
   clock: MonotonicClock,
   config: GameConfig,
   deadlineTiePolicy: "timeout_wins" | "input_wins" = "timeout_wins",
+  liveEnemyInstanceIds: readonly string[] = [],
 ): TypingResult {
   const eventAtMs = clock.nowMs();
   const exactDeadline = !turnClock.paused && turnClock.remainingMs > 0 && eventAtMs - turnClock.lastEventAtMs === turnClock.remainingMs;
@@ -116,10 +186,8 @@ export function pressTypingKey(
     return { ...updated, typing: createTypingState(cards) };
   }
 
-  const exact = cards.filter((card) => normalizedWord(card.word, config) === typing.buffer);
   if (event.key === requireSetting(config.prefixConfirmKey)) {
-    if (exact.length !== 1) return { ...updated, typing };
-    return { ...updated, typing: createTypingState(cards), completedCardInstanceId: exact[0]!.instanceId };
+    return { ...updated, ...activateExact(typing, cards, liveEnemyInstanceIds, config, true) };
   }
 
   const key = normalizedKey(event.key, config);
@@ -131,12 +199,8 @@ export function pressTypingKey(
     ...typing,
     buffer: nextBuffer,
     candidateCardInstanceIds: candidates.map((card) => card.instanceId),
-    selectedCardInstanceId: null,
+    selectedCardInstanceId: candidates.some((card) => card.instanceId === typing.selectedCardInstanceId) ? typing.selectedCardInstanceId : null,
     progress: nextBuffer.length,
   };
-  const complete = candidates.filter((card) => normalizedWord(card.word, config) === nextBuffer);
-  if (complete.length === 1 && candidates.length === 1) {
-    return { ...updated, typing: createTypingState(cards), completedCardInstanceId: complete[0]!.instanceId };
-  }
-  return { ...updated, typing };
+  return { ...updated, ...activateExact(typing, cards, liveEnemyInstanceIds, config, false) };
 }

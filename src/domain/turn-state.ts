@@ -3,10 +3,10 @@ import { createTurnClock, pauseTurnClock, resumeTurnClock, advanceTurnClock, typ
 import { assessCombatOutcome } from "./combat-outcome.js";
 import { requireSetting, type GameConfig } from "./config.js";
 import type { ContentRegistry, RunState } from "./schema.js";
-import { pressTypingKey, type TypableCard, type TypingKeyEvent } from "./typing.js";
+import { chooseTypingCard, chooseTypingEnemyTarget, pressTypingKey, type SelectionResult, type TypableCard, type TypingKeyEvent } from "./typing.js";
 
 export type TurnEndDisposition = (instanceId: string) => CardDisposition;
-export type UseTypedCard = (run: RunState, instanceId: string) => RunState;
+export type UseTypedCard = (run: RunState, instanceId: string, targetEnemyInstanceId: string | null) => RunState;
 export type ResolveEnemyActions = (run: RunState) => RunState;
 
 function requirePhase(run: RunState, phase: NonNullable<RunState["combat"]>["phase"]): NonNullable<RunState["combat"]> {
@@ -20,15 +20,40 @@ function typableHand(run: RunState, content: ContentRegistry): TypableCard[] {
   const definitions = new Map(content.cards.map((card) => [card.id, card]));
   return combat.hand.map((instanceId) => {
     const card = instances.get(instanceId);
-    const word = card && definitions.get(card.cardId)?.input.text;
-    if (!word) throw new Error(`missing input word for card ${instanceId}`);
-    return { instanceId, word };
+    const definition = card && definitions.get(card.cardId);
+    if (!definition) throw new Error(`missing input word for card ${instanceId}`);
+    return { instanceId, word: definition.input.text, target: definition.target };
   });
 }
 
 function endExpiredTurn(run: RunState, dispositionFor: TurnEndDisposition): RunState {
   const combat = requirePhase(run, "PLAYER_INPUT");
   return { ...run, combat: { ...settleHandAtTurnEnd(combat, dispositionFor), phase: "PLAYER_END" } };
+}
+
+function applyCompletedInput(run: RunState, result: SelectionResult, useCard: UseTypedCard, dispositionFor: TurnEndDisposition): RunState {
+  const combat = requirePhase(run, "PLAYER_INPUT");
+  let updated: RunState = { ...run, combat: { ...combat, typing: result.typing } };
+  if (result.completedCardInstanceId) {
+    updated = useCard(updated, result.completedCardInstanceId, result.completedTargetEnemyInstanceId);
+    if (updated.combat?.hand.includes(result.completedCardInstanceId)) throw new Error("card use must move the completed card out of hand");
+    if (!updated.combat || !["PLAYER_INPUT", "WON", "LOST"].includes(updated.combat.phase)) throw new Error("card use returned an invalid phase");
+    updated = assessCombatOutcome(updated);
+  }
+  if (updated.combat?.phase === "WON" || updated.combat?.phase === "LOST") return updated;
+  return updated.combat?.clock.remainingMs === 0 ? endExpiredTurn(updated, dispositionFor) : updated;
+}
+
+function advanceSelectionTime(run: RunState, clock: MonotonicClock, config: GameConfig, dispositionFor: TurnEndDisposition): RunState {
+  const combat = requirePhase(run, "PLAYER_INPUT");
+  const eventAtMs = clock.nowMs();
+  const fixedClock = { nowMs: () => eventAtMs };
+  const exactDeadline = !combat.clock.paused && combat.clock.remainingMs > 0
+    && eventAtMs - combat.clock.lastEventAtMs === combat.clock.remainingMs;
+  if (exactDeadline && requireSetting(config.deadlineTiePolicy) === "input_wins") {
+    return { ...run, combat: { ...combat, clock: advanceTurnClock(combat.clock, fixedClock) } };
+  }
+  return tickPlayerTurn(run, fixedClock, dispositionFor);
 }
 
 export function beginPlayerTurn(run: RunState, clock: MonotonicClock, config: GameConfig): RunState {
@@ -63,16 +88,41 @@ export function submitPlayerKey(
   const combat = requirePhase(run, "PLAYER_INPUT");
   const outcome = assessCombatOutcome(run);
   if (outcome.combat!.phase !== "PLAYER_INPUT") return outcome;
-  const input = pressTypingKey(combat.typing, combat.clock, typableHand(run, content), event, clock, config, requireSetting(config.deadlineTiePolicy));
-  let updated: RunState = { ...run, combat: { ...combat, typing: input.typing, clock: input.clock } };
-  if (input.completedCardInstanceId) {
-    updated = useCard(updated, input.completedCardInstanceId);
-    if (updated.combat?.hand.includes(input.completedCardInstanceId)) throw new Error("card use must move the completed card out of hand");
-    if (!updated.combat || !["PLAYER_INPUT", "WON", "LOST"].includes(updated.combat.phase)) throw new Error("card use returned an invalid phase");
-    updated = assessCombatOutcome(updated);
-  }
-  if (updated.combat?.phase === "WON" || updated.combat?.phase === "LOST") return updated;
-  return updated.combat?.clock.remainingMs === 0 ? endExpiredTurn(updated, dispositionFor) : updated;
+  const liveEnemyIds = combat.enemies.filter((enemy) => enemy.hp > 0).map((enemy) => enemy.instanceId);
+  const input = pressTypingKey(combat.typing, combat.clock, typableHand(run, content), event, clock, config, requireSetting(config.deadlineTiePolicy), liveEnemyIds);
+  return applyCompletedInput({ ...run, combat: { ...combat, clock: input.clock } }, input, useCard, dispositionFor);
+}
+
+export function selectTypedCard(
+  run: RunState,
+  instanceId: string,
+  clock: MonotonicClock,
+  config: GameConfig,
+  content: ContentRegistry,
+  useCard: UseTypedCard,
+  dispositionFor: TurnEndDisposition,
+): RunState {
+  const current = advanceSelectionTime(run, clock, config, dispositionFor);
+  if (current.combat?.phase !== "PLAYER_INPUT") return current;
+  const liveEnemyIds = current.combat.enemies.filter((enemy) => enemy.hp > 0).map((enemy) => enemy.instanceId);
+  const selection = chooseTypingCard(current.combat.typing, typableHand(current, content), instanceId, liveEnemyIds, config);
+  return applyCompletedInput(current, selection, useCard, dispositionFor);
+}
+
+export function selectTypedEnemyTarget(
+  run: RunState,
+  enemyInstanceId: string,
+  clock: MonotonicClock,
+  config: GameConfig,
+  content: ContentRegistry,
+  useCard: UseTypedCard,
+  dispositionFor: TurnEndDisposition,
+): RunState {
+  const current = advanceSelectionTime(run, clock, config, dispositionFor);
+  if (current.combat?.phase !== "PLAYER_INPUT") return current;
+  const liveEnemyIds = current.combat.enemies.filter((enemy) => enemy.hp > 0).map((enemy) => enemy.instanceId);
+  const selection = chooseTypingEnemyTarget(current.combat.typing, typableHand(current, content), enemyInstanceId, liveEnemyIds, config);
+  return applyCompletedInput(current, selection, useCard, dispositionFor);
 }
 
 export function pausePlayerTurn(run: RunState, clock: MonotonicClock, dispositionFor: TurnEndDisposition): RunState {
