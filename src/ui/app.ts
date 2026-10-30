@@ -15,15 +15,16 @@ import { renderBattle, type BattleView } from "./battle-view.js";
 import { candidateBattleArt, demoBattleArt } from "./demo-art.js";
 import { renderClubSelect, renderCompendium, renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
-import { browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
+import { browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
 import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, MAX_ASCENSION_LEVEL } from "../domain/ascension.js";
+import { finishPlaytest, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
 /** The visible run is a compact provisional Act with all implemented node kinds. */
 const demoMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 2, treasure: 2 } };
 
-export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(), progressStore: SaveStore = browserProgressStore()): () => void {
+export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(), progressStore: SaveStore = browserProgressStore(), playtestStore: SaveStore = browserPlaytestStore()): () => void {
   const clock = { nowMs: () => Math.floor(performance.now()) };
   let progression = emptyProgression();
   let progressionLoadError = false;
@@ -38,11 +39,25 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let restoreError = false;
   try {
     const saved = store.read();
-    if (saved) { session = deserializeRunSession(saved, demoContent, clock); frontScreen = null; }
+    if (saved) { session = deserializeRunSession(saved, demoContent, clock); session = { ...session, runId: session.runId ?? crypto.randomUUID() }; frontScreen = null; }
   } catch { restoreError = true; }
   let run: RunState = session.run;
-  const previewArt = new URLSearchParams(window.location.search).get("artPreview") === "1";
-  const layoutPreview = Number(new URLSearchParams(window.location.search).get("layoutPreview"));
+  const params = new URLSearchParams(window.location.search);
+  const previewArt = params.get("artPreview") === "1";
+  const layoutPreview = Number(params.get("layoutPreview"));
+  const playtestEnabled = params.get("playtest") === "1";
+  let metrics: PlaytestTracker | null = null;
+  let metricsLoadError = false;
+  if (playtestEnabled && frontScreen === null && !restoreError) {
+    try {
+      const savedMetrics = playtestStore.read();
+      const parsedMetrics = savedMetrics ? parsePlaytestRecord(JSON.parse(savedMetrics)) : null;
+      metrics = parsedMetrics && parsedMetrics.runId === session.runId ? resumePlaytest(parsedMetrics, run, session.runId!, clock.nowMs(),
+        session.screen !== "won" && session.screen !== "lost" && !(run.combat?.clock.paused ?? false) && document.visibilityState === "visible")
+        : startPlaytest(run, session.runId!, clock.nowMs(), true);
+      if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
+    } catch { metricsLoadError = true; }
+  }
   const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   const artPreloads = Object.values(view.art.heroPosesByClubId ?? {}).flatMap((poses) => Object.values(poses)).map((url) => {
     const image = new Image();
@@ -53,28 +68,35 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let generation = 0;
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
     emitRelicEvent(state, kind, demoRelicRules, demoContent, detail).run;
+  const metricsActive = () => frontScreen === null && !restoreError && session.screen !== "won" && session.screen !== "lost"
+    && document.visibilityState === "visible" && !(run.combat?.clock.paused ?? false);
+  const observeMetrics = () => { if (metrics) metrics = observePlaytest(metrics, clock.nowMs(), metricsActive()); };
   const startCombat = () => {
+    if (metrics) metrics = recordPlaytestBattle(metrics, run.map.currentNodeId);
     run = fireRelic(run, "combat_start");
     run = beginPlayerTurn(run, clock, config, demoContent);
     run = fireRelic(run, "turn_start");
   };
   const persist = () => {
     if (restoreError || frontScreen !== null) return;
+    observeMetrics();
     try { store.write(serializeRunSession({ ...session, run }, demoContent, clock, disposition)); }
     catch { view.message = "保存できませんでした。"; }
+    if (metrics) try { playtestStore.write(JSON.stringify(metrics.record)); }
+    catch { metricsLoadError = true; }
   };
   const render = () => {
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
     else if (frontScreen === "title") renderRunTitle(root, demoBattleArt);
     else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError);
     else if (frontScreen === "compendium") renderCompendium(root, demoContent, demoBattleArt);
-    else if (session.screen === "map") renderRunMap(root, session, demoBattleArt);
+    else if (session.screen === "map") renderRunMap(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
     else if (session.screen === "treasure") renderRunTreasure(root, session, demoContent, demoBattleArt, config);
     else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message);
     else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt);
     else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt);
-    else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt);
+    else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);
     else renderBattle(root, run, demoContent, view);
     persist();
   };
@@ -84,6 +106,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     run = fireRelic(run, "combat_end");
     session = settleRunCombat({ ...session, run }, demoContent);
     run = session.run;
+    if (metrics && (session.screen === "won" || session.screen === "lost")) metrics = finishPlaytest(metrics, session.screen, clock.nowMs());
     if (session.screen === "won" && !progressionLoadError) {
       progression = unlockAfterVictory(progression, session);
       try { progressStore.write(JSON.stringify(progression)); }
@@ -158,6 +181,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     view.selectedDebuff = null;
     session = createRunSession(42, "literature-demo", demoContent, demoMapOptions);
     run = session.run;
+    metrics = null;
     frontScreen = "title";
     frontReturn = "title";
     restoreError = false;
@@ -200,9 +224,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (action === "choose-club" && frontScreen === "clubs") {
         const level = Math.min(selectedAscensionLevels[id] ?? 0, unlockedLevel(progression, id));
-        session = createRunSession(42, id, demoContent, demoMapOptions, undefined, level);
+        session = { ...createRunSession(42, id, demoContent, demoMapOptions, undefined, level), runId: crypto.randomUUID() };
         run = session.run;
         frontScreen = null;
+        metricsLoadError = false;
+        if (playtestEnabled) metrics = visitPlaytestNode(startPlaytest(run, session.runId!, clock.nowMs()), run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
         render();
         return;
       }
@@ -215,9 +241,23 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (action === "front-back" && frontScreen) { frontScreen = frontScreen === "clubs" ? "title" : frontReturn; render(); return; }
       if (frontScreen !== null || restoreError) return;
       if (restoreError) return;
+      if (session.screen === "won" || session.screen === "lost") {
+        if (action === "export-playtest" && metrics) {
+          const blob = new Blob([JSON.stringify(metrics.record, null, 2)], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `school-rg-playtest-${metrics.record.runId}.json`;
+          link.click();
+          window.setTimeout(() => URL.revokeObjectURL(url), 0);
+        }
+        return;
+      }
       if (session.screen === "map" && action === "enter-node") {
+        observeMetrics();
         session = enterRunNode(session, id, demoContent, demoEnemyAi, demoEncounterTable);
         run = session.run;
+        if (metrics) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === id)!);
         if (session.screen === "combat") startCombat();
         view.message = session.screen === "shop" ? "購入するカードを選んでください。" : "カード名をタイプして発動。誤入力は無視されます。";
         render();
@@ -304,11 +344,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   }
 
   function onVisibility(): void {
+    observeMetrics();
     if (session.screen === "combat" && document.hidden && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) {
       run = pausePlayerTurn(run, clock, disposition);
       view.message = "画面を離れたため一時停止しました。";
       render();
     }
+    persist();
   }
 
   function onPageHide(): void { persist(); }

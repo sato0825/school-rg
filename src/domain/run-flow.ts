@@ -13,6 +13,8 @@ import { ascensionEnemyHp, ascensionStartingHp, assertAscensionLevel } from "./a
 export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "treasure" | "won" | "lost";
 export type EncounterTable = Readonly<Record<"combat" | "elite" | "boss", readonly string[]>>;
 export type RunSession = {
+  /** UI-owned identity, preserved by saves so optional measurements cannot attach to a later run. */
+  runId?: string;
   run: RunState;
   screen: RunScreen;
   completedNodeIds: readonly string[];
