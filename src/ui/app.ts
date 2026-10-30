@@ -51,7 +51,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     try {
       const savedMetrics = playtestStore.read();
       const parsedMetrics = savedMetrics ? parsePlaytestRecord(JSON.parse(savedMetrics)) : null;
-      metrics = parsedMetrics?.runId === session.runId ? resumePlaytest(parsedMetrics, run, session.runId!, clock.nowMs(),
+      metrics = parsedMetrics && parsedMetrics.runId === session.runId ? resumePlaytest(parsedMetrics, run, session.runId!, clock.nowMs(),
         session.screen !== "won" && session.screen !== "lost" && !(run.combat?.clock.paused ?? false) && document.visibilityState === "visible")
         : startPlaytest(run, session.runId!, clock.nowMs(), true);
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
