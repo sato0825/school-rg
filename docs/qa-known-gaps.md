@@ -13,7 +13,7 @@ Issue #25 の検証境界です。以下の自動テストは、ゲーム完成�
 | 範囲 | 現状 | 追跡先 |
 | --- | --- | --- |
 | 5部活と固有デッキ | 文芸部に固有カード6枚の仮データを追加。他4部活と各部活の完成コンテンツ、正式なアートは未完 | [#31](https://github.com/sato0825/school-rg/issues/31) |
-| 安定したアート制作と動作 | 代表画像と簡易アニメーションのみ。基準画・編集可能原本・継続制作ゲートは未完 | [#29](https://github.com/sato0825/school-rg/issues/29) |
+| 安定したアート制作と動作 | 3ポーズ候補、生成指示・SHA台帳と自動検査を追加。編集可能原本、同一性の受入、ゲーム内動作は未完 | [#29](https://github.com/sato0825/school-rg/issues/29) |
 | 複数味方の採用判断 | 戦闘仕様が未決定。採用有無と可変配置の検証が必要 | [#30](https://github.com/sato0825/school-rg/issues/30) |
 | `finish` の条件 | HP50％以下を暫定値として使用中 | [#48](https://github.com/sato0825/school-rg/issues/48) |
 | Ascensionの段階数・難度調整 | 難度0〜2と累積修飾は仮設定。正式な段階数・効果量・語彙難度は未確定 | [#71](https://github.com/sato0825/school-rg/issues/71) |
