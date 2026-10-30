@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { baseCardDefinitions, baseCardEffects } from "../../src/content/base-cards.js";
-import { useCardEffects } from "../../src/domain/card-effects.js";
+import { useCardEffects, type CardEffectSelection } from "../../src/domain/card-effects.js";
 import { DEFAULT_GAME_CONFIG } from "../../src/domain/config.js";
 import { enqueueEffectAction, resolveDueEffects, type EffectEvent } from "../../src/domain/effect-primitives.js";
 import { createEventQueue } from "../../src/domain/event-queue.js";
 import type { ContentRegistry, RunState } from "../../src/domain/schema.js";
-import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, submitPlayerKey, tickPlayerTurn } from "../../src/domain/turn-state.js";
+import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../../src/domain/turn-state.js";
 import { parseRunState } from "../../src/domain/validate.js";
 import { validContent, validRun } from "../fixtures/domain.js";
 
@@ -15,7 +15,7 @@ const content: ContentRegistry = {
   effects: [...validContent.effects, ...baseCardEffects],
 };
 
-function typedCard(cardId: string, setup?: (run: RunState) => void): RunState {
+function typedCard(cardId: string, setup?: (run: RunState) => void, extraSelection: Partial<CardEffectSelection> = {}): RunState {
   const card = baseCardDefinitions.find((item) => item.id === cardId)!;
   let run = structuredClone(validRun);
   run.combat!.cards = [{ instanceId: "combat-1", cardId, upgraded: false }];
@@ -29,11 +29,15 @@ function typedCard(cardId: string, setup?: (run: RunState) => void): RunState {
   setup?.(run);
   let now = 0;
   const clock = { nowMs: () => now };
+  const use = (state: RunState, instanceId: string, targetEnemyInstanceId: string | null, targetHandInstanceId: string | null) =>
+    useCardEffects(state, instanceId, { ...extraSelection, targetEnemyInstanceId, targetHandInstanceId }, DEFAULT_GAME_CONFIG, content);
   for (const key of card.input.text) {
     now += 10;
-    run = submitPlayerKey(run, { key }, clock, DEFAULT_GAME_CONFIG, content,
-      (state, instanceId, targetEnemyInstanceId) => useCardEffects(state, instanceId, { targetEnemyInstanceId }, DEFAULT_GAME_CONFIG, content),
-      () => "discard");
+    run = submitPlayerKey(run, { key }, clock, DEFAULT_GAME_CONFIG, content, use, () => "discard");
+  }
+  if (card.target === "hand") {
+    now += 10;
+    run = selectTypedHandTarget(run, extraSelection.targetHandInstanceId ?? "", clock, DEFAULT_GAME_CONFIG, content, use, () => "discard");
   }
   expect(run.combat!.resolvingPile).toEqual([]);
   expect(run.combat!.hand).not.toContain("combat-1");
@@ -117,5 +121,56 @@ describe("typed basic card effects", () => {
     focus = completeEnemyPhase(focus, (state) => state, DEFAULT_GAME_CONFIG);
     focus = beginPlayerTurn(focus, { nowMs: () => 20_000 }, DEFAULT_GAME_CONFIG, content);
     expect(focus.combat!.statuses.player.strength).toBe(2);
+  });
+
+  it("recovers, exhausts and duplicates explicitly selected card instances", () => {
+    const recovered = typedCard("BASE-014", (run) => {
+      run.combat!.cards.push({ instanceId: "combat-2", cardId: "BASE-001", upgraded: false });
+      run.combat!.discardPile.push("combat-2");
+    }, { targetDiscardInstanceId: "combat-2" });
+    expect(recovered.combat!.hand).toEqual(["combat-2"]);
+    expect(recovered.combat!.discardPile).toEqual(["combat-1"]);
+
+    const setupHand = (run: RunState) => {
+      run.combat!.cards.push({ instanceId: "combat-2", cardId: "BASE-001", upgraded: false });
+      run.combat!.hand.push("combat-2");
+      run.combat!.typing.candidateCardInstanceIds.push("combat-2");
+    };
+    const exhausted = typedCard("BASE-015", setupHand, { targetHandInstanceId: "combat-2" });
+    expect(exhausted.combat!.exhaustPile).toEqual(["combat-2"]);
+    expect(exhausted.combat!.discardPile).toEqual(["combat-1"]);
+    const duplicated = typedCard("BASE-016", setupHand, { targetHandInstanceId: "combat-2" });
+    expect(duplicated.combat!.hand).toEqual(["combat-2", "created-1"]);
+    expect(duplicated.combat!.cards.find((card) => card.instanceId === "created-1")?.cardId).toBe("BASE-001");
+  });
+
+  it("cleanses one chosen debuff and pays HP before drawing", () => {
+    const cleansed = typedCard("BASE-018", (run) => {
+      run.combat!.statuses.player = { poison: 3, weak: 2 };
+    }, { targetDebuff: "poison" });
+    expect(cleansed.combat!.statuses.player).toEqual({ weak: 2 });
+
+    const paid = typedCard("BASE-021", (run) => {
+      run.combat!.cards.push(
+        { instanceId: "combat-2", cardId: "BASE-001", upgraded: false },
+        { instanceId: "combat-3", cardId: "BASE-002", upgraded: false },
+      );
+      run.combat!.drawPile = ["combat-2", "combat-3"];
+    });
+    expect(paid.player.hp).toBe(37);
+    expect(paid.combat!.hand).toEqual(["combat-3", "combat-2"]);
+    expect(paid.combat!.discardPile).toEqual(["combat-1"]);
+  });
+
+  it("rejects missing selections and insufficient HP before consuming the card", () => {
+    const run = structuredClone(validRun);
+    run.combat!.cards[0]!.cardId = "BASE-021";
+    run.combat!.clock = { remainingMs: 10_000, lastEventAtMs: 0, paused: false };
+    run.player.hp = 3;
+    expect(() => useCardEffects(run, "combat-1", { targetEnemyInstanceId: null }, DEFAULT_GAME_CONFIG, content)).toThrow("insufficient HP");
+    expect(run.combat!.hand).toEqual(["combat-1"]);
+    run.combat!.cards[0]!.cardId = "BASE-014";
+    expect(() => useCardEffects(run, "combat-1", { targetEnemyInstanceId: null }, DEFAULT_GAME_CONFIG, content)).toThrow("discard card must be selected");
+    expect(run.combat!.resolvingPile).toEqual([]);
   });
 });
