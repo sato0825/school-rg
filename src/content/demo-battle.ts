@@ -16,6 +16,7 @@ import type { EventPools } from "../domain/events.js";
 import type { RelicRule } from "../domain/relic-hooks.js";
 import { variantEnemies, variantEnemyAi, variantEnemyEffects, variantEnemyIntents } from "./encounter-variants.js";
 import { extraEvents } from "./extra-events.js";
+import { extraEnemies, extraEnemyAi, extraEnemyEffects, extraEnemyIntents } from "./extra-enemies.js";
 
 /** One complete combat encounter for #14. Full run content belongs to #15–#24. */
 export const demoContent: ContentRegistry = parseContentRegistry({
@@ -50,6 +51,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "potion-heal-effect", kind: "heal", parameters: { amount: 5 } },
     { id: "potion-ink-effect", kind: "damage", parameters: { amount: 7 } },
     ...variantEnemyEffects,
+    ...extraEnemyEffects,
   ],
   cards: [...baseCardDefinitions, ...literatureCardDefinitions, ...scienceCardDefinitions, ...kendoCardDefinitions, ...musicCardDefinitions, ...artCardDefinitions],
   intents: [
@@ -73,6 +75,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "bell-intent-hit", label: "鐘を鳴らす", category: "attack", effectIds: ["bell-hit"] },
     { id: "bell-intent-guard", label: "時を止める", category: "defend", effectIds: ["bell-guard"] },
     ...variantEnemyIntents,
+    ...extraEnemyIntents,
   ],
   enemies: [
     { id: "paper-heap", name: "答案のかたまり", maxHp: 26, intentIds: ["paper-intent-hit", "paper-intent-guard"] },
@@ -86,6 +89,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "lost-and-found", name: "忘れ物の山", maxHp: 34, intentIds: ["lost-intent-hit", "lost-intent-guard"] },
     { id: "closing-bell", name: "終業の鐘", maxHp: 40, intentIds: ["bell-intent-hit", "bell-intent-guard"] },
     ...variantEnemies,
+    ...extraEnemies,
   ],
   relics: [
     { id: "library-bookmark", name: "図書室のしおり", triggerIds: ["bookmark-acquired", "bookmark-turn", "bookmark-skill"], effectIds: [] },
@@ -205,6 +209,7 @@ export const demoEnemyAi: EnemyAiRegistry = {
   "lost-and-found": { kind: "sequence", intentIds: ["lost-intent-hit", "lost-intent-guard"] },
   "closing-bell": { kind: "sequence", intentIds: ["bell-intent-guard", "bell-intent-hit"] },
   ...variantEnemyAi,
+  ...extraEnemyAi,
 };
 
 /** Provisional content values; the reusable hook dispatcher lives in the domain. */
@@ -235,9 +240,9 @@ export const demoRelicRules: RelicRule[] = [
 
 export const demoEncounterTable: EncounterTable = {
   byAct: {
-    1: { combat: ["paper-heap", "late-pass"], elite: [{ id: "hall-and-scrap", enemyIds: ["hall-monitor", "paper-scrap"] }, "notice-board"], boss: ["final-exam"] },
-    2: { combat: ["chalk-cloud", "safety-sign"], elite: ["library-cart", "stairwell-echo"], boss: ["club-auditor"] },
-    3: { combat: ["night-announcement", "window-shadow"], elite: ["lost-and-found", "night-locker"], boss: ["closing-bell"] },
+    1: { combat: ["paper-heap", "late-pass", "lost-homework"], elite: [{ id: "hall-and-scrap", enemyIds: ["hall-monitor", "paper-scrap"] }, "notice-board", "school-gate"], boss: ["final-exam"] },
+    2: { combat: ["chalk-cloud", "safety-sign", "lab-magnet"], elite: ["library-cart", "stairwell-echo", "library-index"], boss: ["club-auditor"] },
+    3: { combat: ["night-announcement", "window-shadow", "empty-desk"], elite: ["lost-and-found", "night-locker", "last-bus"], boss: ["closing-bell"] },
   },
 };
 

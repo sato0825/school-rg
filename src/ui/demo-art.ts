@@ -31,6 +31,12 @@ export const demoBattleArt: BattleArt = {
     "stairwell-echo": placeholderEnemyUrl,
     "window-shadow": placeholderEnemyUrl,
     "night-locker": placeholderEnemyUrl,
+    "lost-homework": placeholderEnemyUrl,
+    "school-gate": placeholderEnemyUrl,
+    "lab-magnet": placeholderEnemyUrl,
+    "library-index": placeholderEnemyUrl,
+    "empty-desk": placeholderEnemyUrl,
+    "last-bus": placeholderEnemyUrl,
   },
 };
 
