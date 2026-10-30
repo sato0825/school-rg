@@ -132,6 +132,13 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
       if (offerIds.has(offer.offerId)) issues.push({ code: "DUPLICATE_ID", path: `shop.offers.${i}.offerId`, message: `Duplicate shop offer: ${offer.offerId}` });
       offerIds.add(offer.offerId);
     });
+    for (const [kind, offers, knownIds] of [["relicOffers", run.shop.relicOffers, relics], ["potionOffers", run.shop.potionOffers, potions]] as const) {
+      offers.forEach((offer, i) => {
+        known(offer.contentId, knownIds, `shop.${kind}.${i}.contentId`, issues);
+        if (offerIds.has(offer.offerId)) issues.push({ code: "DUPLICATE_ID", path: `shop.${kind}.${i}.offerId`, message: `Duplicate shop offer: ${offer.offerId}` });
+        offerIds.add(offer.offerId);
+      });
+    }
   }
   if (run.treasure) {
     if (run.combat || run.shop || run.event) issues.push({ code: "INVALID_STATE", path: "treasure", message: "Treasure cannot overlap another active encounter" });

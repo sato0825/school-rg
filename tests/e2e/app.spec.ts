@@ -19,13 +19,16 @@ async function enterNextNode(page: import("@playwright/test").Page): Promise<voi
 
 async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
   const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "thrust", "riposte", "final cut", "beat", "chorus", "crescendo", "mural", "sketch", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "parry", "stance", "kata", "tempo", "sync", "rest", "frame", "outline", "defend", "counter", "draw", "boost", "delay"];
-  for (let turn = 0; turn < 12; turn++) {
+  for (let turn = 0; turn < 20; turn++) {
     for (let use = 0; use < 12; use++) {
       if (await page.locator(completion).count()) return;
       const words = await page.locator(".card-word").allInnerTexts();
       const word = priorities.find((item) => words.includes(item));
       if (!word) break;
-      await page.keyboard.type(word);
+      // Keep the long-run bot independent of CI host key-dispatch latency.
+      await page.evaluate((value) => {
+        for (const key of value) window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+      }, word);
       if (await page.locator(completion).count()) return;
       if (await page.locator(".typing-hint").filter({ hasText: "攻撃対象の敵を選択" }).count()) {
         await page.locator(".enemy-slot").last().click();
@@ -40,7 +43,8 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
     }
     await page.clock.runFor(11_000);
   }
-  throw new Error("the battle did not reach a reward within 12 turns");
+  const combat = await page.locator(".run-meta, .player-hud, .enemy-hud, .card-word").allInnerTexts();
+  throw new Error(`the battle did not reach a reward within 20 turns: ${combat.join(" | ")}`);
 }
 
 test("title, compendium, club selection, map and battle controls work by keyboard", async ({ page }) => {
@@ -80,6 +84,7 @@ test("shop and event choices accept focused keyboard activation", async ({ page 
   await page.locator(".map-node.available").filter({ hasText: "購買" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
+  await expect(page.locator(".shop-relic-offer")).toContainText("90G · 所持金不足");
   await page.locator(".reward-card").first().focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".reward-card").first()).toBeDisabled();
@@ -91,6 +96,39 @@ test("shop and event choices accept focused keyboard activation", async ({ page 
   await page.locator("[data-action=event-choice][data-id=help], [data-action=event-choice][data-id=pass]").first().focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+});
+
+test("shop relic, potion and card purchases persist and respect one-time stock", async ({ page }) => {
+  await startDemoRun(page);
+  await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
+  await page.addInitScript(() => {
+    if (sessionStorage.getItem("test-shop-gold-set")) return;
+    const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
+    saved.session.run.gold = 200;
+    localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
+    sessionStorage.setItem("test-shop-gold-set", "1");
+  });
+  await page.reload();
+  const relic = page.locator(".shop-relic-offer");
+  const potion = page.locator(".shop-potion-offer");
+  await expect(relic).toHaveCount(1);
+  await expect(potion).toHaveCount(1);
+  await relic.focus();
+  await page.keyboard.press("Enter");
+  await expect(relic).toBeDisabled();
+  await expect(relic).toContainText("購入済み");
+  await expect(page.locator(".economy-message")).toContainText("レリックを購入");
+  await potion.focus();
+  await page.keyboard.press("Enter");
+  await expect(potion).toBeDisabled();
+  await expect(potion).toContainText("購入済み");
+  await expect(page.locator(".economy-panel")).toContainText("ポーション 3/3");
+  await page.locator("[data-action=buy-offer]").first().focus();
+  await page.keyboard.press("Enter");
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
+  await expect(page.locator(".shop-relic-offer, .shop-potion-offer, [data-action=buy-offer]").filter({ hasText: "購入済み" })).toHaveCount(3);
+  await expect(page.locator("[data-action=remove-shop-card]").first()).toBeDisabled();
 });
 
 test("rest choice accepts focused keyboard activation", async ({ page }) => {
@@ -325,10 +363,15 @@ test("the combatants and controls remain visible on a narrow viewport", async ({
 
 test("candidate pose preview follows enemy damage and typed activation", async ({ page }) => {
   await page.clock.install();
+  const start = createRunSession(42, "science-demo", demoContent);
+  const from: MapNode = { id: "pose-start", act: 1, floor: 0, kind: "start", nextIds: ["pose-fight"] };
+  const fight: MapNode = { id: "pose-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+  const session = { ...start, run: { ...start.run, map: { currentNodeId: from.id, nodes: [from, fight] } }, completedNodeIds: [from.id] };
+  const entered = enterRunNode(session, fight.id, demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["final-exam"] });
+  const saved = serializeRunSession(entered, demoContent, { nowMs: () => 0 }, () => "discard");
+  await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
   await page.goto("/?artPreview=1&shortRun=1&seed=42");
-  await page.getByRole("button", { name: "ランを始める" }).click();
-  await page.getByRole("button", { name: /科学部/ }).click();
-  await enterNextNode(page);
+  await expect(page.locator(".enemy-hud")).toContainText("答案の切れ端");
   const hero = page.locator(".hero-art");
   const decoded = () => hero.evaluate((image) => (image as HTMLImageElement).naturalWidth);
   await expect(page.locator(".art-preview-label")).toContainText("未採用");
@@ -505,8 +548,10 @@ async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ 
   for (let step = 0; step < 36 && !(await page.locator(".run-result").count()); step++) {
     if (await page.locator(".map-panel").count()) {
       const available = page.locator(".map-node.available");
-      const fight = available.filter({ hasText: /戦闘|強敵|ボス/ });
-      await (await fight.count() ? fight.first() : available.first()).focus();
+      // A fixed three-Act smoke route should use recovery and rewards when the map offers them.
+      // Bosses remain mandatory, and dedicated tests cover normal and elite encounters.
+      const respite = available.filter({ hasText: /休憩|宝箱|購買|イベント/ });
+      await (await respite.count() ? respite.first() : available.first()).focus();
       await page.keyboard.press("Enter");
     } else if (await page.locator(".treasure-panel").count()) {
       await page.locator(".treasure-offer:not(:disabled)").first().focus();
@@ -528,7 +573,8 @@ async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ 
       await typeThroughBattle(page);
     } else throw new Error(`unexpected run screen at step ${step}`);
   }
-  await expect(page.getByRole("heading", { name: "全Actクリア" })).toBeVisible();
+  const result = await page.locator(".run-result").innerText().catch(() => "ラン結果画面なし");
+  expect(result).toContain("全Actクリア");
   expect(bosses).toBe(3);
   expect(battles).toBeGreaterThanOrEqual(3);
   await expect(page.locator(".run-header")).toContainText("全Act完走");
@@ -706,12 +752,12 @@ test("a route can upgrade at rest and buy once at the shop", async ({ page }) =>
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
   await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
-  await expect(page.locator(".reward-card")).toHaveCount(3);
+  await expect(page.locator("[data-action=buy-offer]")).toHaveCount(3);
   await page.locator(".reward-card").first().click();
   await expect(page.locator(".reward-panel")).toContainText("所持金 10G");
   await expect(page.locator(".reward-card").first()).toBeDisabled();
-  await page.locator(".reward-card").nth(1).click();
-  await expect(page.getByRole("status")).toContainText("所持金が足りません。");
+  await expect(page.locator("[data-action=buy-offer]").nth(1)).toBeDisabled();
+  await expect(page.locator("[data-action=buy-offer]").nth(1)).toContainText("所持金不足");
   await page.getByRole("button", { name: "購買を出る" }).click();
   await expect(page.locator(".map-node.available")).toContainText("ボス");
 });

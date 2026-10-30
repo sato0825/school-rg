@@ -3,7 +3,7 @@ import { dispositionForCard } from "../domain/card-keywords.js";
 import { DEFAULT_GAME_CONFIG, requireSetting } from "../domain/config.js";
 import { resolveEnemyIntents } from "../domain/enemy-ai.js";
 import { executeEnemyIntentEffects } from "../domain/enemy-intent-effects.js";
-import { buyRunShopCard, chooseRunEventChoice, chooseRunReward, chooseRunTreasure, createRunSession, enterRunNode, leaveRunShop, removeRunShopCard, settleRunCombat, useRunRest } from "../domain/run-flow.js";
+import { buyRunShopCard, buyRunShopPotion, buyRunShopRelic, chooseRunEventChoice, chooseRunReward, chooseRunTreasure, createRunSession, enterRunNode, leaveRunShop, removeRunShopCard, settleRunCombat, useRunRest } from "../domain/run-flow.js";
 import { DEFAULT_MAP_OPTIONS, type MapGenerationOptions } from "../domain/map-generation.js";
 import type { RunState } from "../domain/schema.js";
 import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, pausePlayerTurn, resumePlayerTurn, selectTypedCard, selectTypedEnemyTarget, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../domain/turn-state.js";
@@ -295,6 +295,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (session.screen === "shop") {
         if (action === "buy-offer") { session = buyRunShopCard(session, id); view.message = "カードを購入しました。"; }
+        else if (action === "buy-relic") {
+          session = buyRunShopRelic(session, id, demoContent);
+          run = fireRelic(session.run, "acquired", { relicId: session.run.shop!.relicOffers.find((offer) => offer.offerId === id)!.contentId });
+          session = { ...session, run };
+          view.message = "レリックを購入しました。";
+        }
+        else if (action === "buy-potion") { session = buyRunShopPotion(session, id, demoContent, config); view.message = "ポーションを購入しました。"; }
         else if (action === "remove-shop-card") { session = removeRunShopCard(session, id); view.message = "カードを削除しました。"; }
         else if (action === "leave-shop") session = leaveRunShop(session);
         run = session.run;

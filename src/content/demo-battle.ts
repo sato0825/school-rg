@@ -92,6 +92,8 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "bamboo-grip", name: "竹刀の握り", triggerIds: ["bamboo-grip-turn-start"], effectIds: [] },
     { id: "metronome", name: "部室のメトロノーム", triggerIds: ["metronome-turn-start"], effectIds: [] },
     { id: "sketchbook", name: "ポケットスケッチ帳", triggerIds: ["sketchbook-card-used"], effectIds: [] },
+    { id: "spare-shoes", name: "予備の上履き", triggerIds: ["spare-shoes-turn-start"], effectIds: [] },
+    { id: "hallway-clock", name: "廊下の小時計", triggerIds: ["hallway-clock-turn-start"], effectIds: [] },
   ],
   potions: [
     { id: "potion-time", name: "時間の小瓶", input: { text: "clock", locale: "en" }, target: "self", effectIds: ["potion-time-effect"] },
@@ -223,6 +225,10 @@ export const demoRelicRules: RelicRule[] = [
     const cardId = run.combat?.cards.find((card) => card.instanceId === event.cardInstanceId)?.cardId;
     return run.combat?.phase === "PLAYER_INPUT" && !!cardId?.startsWith("ART-");
   }, apply: (run, _event, stacks) => ({ ...run, player: { ...run.player, block: run.player.block + stacks } }) },
+  { id: "spare-shoes-turn-start", on: "turn_start", priority: 0, stackMode: "each", apply: (run, _event, stacks) =>
+    ({ ...run, player: { ...run.player, block: run.player.block + 2 * stacks } }) },
+  { id: "hallway-clock-turn-start", on: "turn_start", priority: 0, stackMode: "each", apply: (run, _event, stacks) =>
+    addCurrentTurnTime(run, 500 * stacks, { nowMs: () => run.combat!.clock.lastEventAtMs }, DEFAULT_GAME_CONFIG) },
 ];
 
 export const demoEncounterTable: EncounterTable = {
