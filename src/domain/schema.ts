@@ -155,6 +155,7 @@ export type ContentRegistry = z.infer<typeof ContentRegistrySchema>;
 export type Card = z.infer<typeof CardSchema>;
 export type Effect = z.infer<typeof EffectSchema>;
 export type Enemy = z.infer<typeof EnemySchema>;
+export type EnemyInstance = z.infer<typeof EnemyInstanceSchema>;
 export type Intent = z.infer<typeof IntentSchema>;
 export type Relic = z.infer<typeof RelicSchema>;
 export type Potion = z.infer<typeof PotionSchema>;
