@@ -12,7 +12,7 @@ import { demoRelicRules } from "../content/demo-battle.js";
 import { emitRelicEvent, type RelicEventKind, type RelicEvent } from "../domain/relic-hooks.js";
 import { discardPotion, selectPotionEnemy, selectPotionSlot, setPotionInputActive, submitPotionKey } from "../domain/potions.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
-import { demoBattleArt } from "./demo-art.js";
+import { candidateBattleArt, demoBattleArt } from "./demo-art.js";
 import { renderClubSelect, renderCompendium, renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
@@ -41,7 +41,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (saved) { session = deserializeRunSession(saved, demoContent, clock); frontScreen = null; }
   } catch { restoreError = true; }
   let run: RunState = session.run;
-  const view: BattleView = { art: demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
+  const previewArt = new URLSearchParams(window.location.search).get("artPreview") === "1";
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null };
+  const artPreloads = Object.values(view.art.heroPosesByClubId ?? {}).flatMap((poses) => Object.values(poses)).map((url) => {
+    const image = new Image();
+    image.src = url;
+    return image;
+  });
   let enemyPending = false;
   let generation = 0;
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
@@ -98,7 +104,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
     const currentGeneration = generation;
-    window.setTimeout(() => { if (generation === currentGeneration) { view.motion = null; render(); } }, 380);
+    window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hero") { view.motion = null; render(); } }, 380);
     return fireRelic(updated, "card_used", { cardInstanceId: instanceId });
   };
 
@@ -123,17 +129,22 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     window.setTimeout(() => {
       if (currentGeneration !== generation) return;
       try {
+        let receivedHit = false;
         run = completeEnemyPhase(run, (state) => resolveEnemyIntents(state, demoEnemyAi, demoContent,
           (live, enemyInstanceId, intent) => executeEnemyIntentEffects(live, enemyInstanceId, intent, demoEnemyAi, demoContent, config,
-            (hitState, hpLost) => fireRelic(hitState, "hit_taken", { hpLost }))), config);
+            (hitState, hpLost) => {
+              if (hpLost > 0) receivedHit = true;
+              return fireRelic(hitState, "hit_taken", { hpLost });
+            })), config);
         enemyPending = false;
-        view.motion = null;
+        view.motion = receivedHit ? "hit" : null;
         if (run.combat?.phase === "PLAYER_START") {
           run = beginPlayerTurn(run, clock, config, demoContent);
           run = fireRelic(run, "turn_start");
           view.message = "次のターン。カード名をタイプしてください。";
         } else settleIfFinished();
         render();
+        if (receivedHit) window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hit") { view.motion = null; render(); } }, 420);
       } catch (error) { handleError(error); }
     }, 650);
   }
@@ -330,6 +341,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   render();
   if (session.screen === "combat") enemyPhase();
   return () => {
+    artPreloads.length = 0;
     window.clearInterval(timer);
     window.clearInterval(saveTimer);
     root.removeEventListener("click", onClick);
