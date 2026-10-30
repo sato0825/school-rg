@@ -13,7 +13,7 @@ async function enterNextNode(page: import("@playwright/test").Page): Promise<voi
 }
 
 async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
-  const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "thrust", "riposte", "final cut", "beat", "chorus", "crescendo", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "parry", "stance", "kata", "tempo", "sync", "rest", "outline", "defend", "counter", "draw", "boost", "delay"];
+  const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "thrust", "riposte", "final cut", "beat", "chorus", "crescendo", "mural", "sketch", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "parry", "stance", "kata", "tempo", "sync", "rest", "frame", "outline", "defend", "counter", "draw", "boost", "delay"];
   for (let turn = 0; turn < 12; turn++) {
     for (let use = 0; use < 12; use++) {
       if (await page.locator(completion).count()) return;
@@ -178,6 +178,25 @@ test("music club starts with extra time and types a tempo card", async ({ page }
   await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
 });
 
+test("art club types a distinct card and retains a frame through timeout", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.clock.install();
+  await page.goto("/");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /美術部/ }).click();
+  await enterNextNode(page);
+  await expect(page.locator(".relic-row")).toContainText("ポケットスケッチ帳");
+  for (let turn = 0; turn < 3 && !(await page.locator(".card-word").allTextContents()).includes("sketch"); turn++) await page.clock.runFor(11_000);
+  await expect(page.locator(".card-word").filter({ hasText: /^sketch$/ })).toHaveCount(1);
+  await page.keyboard.type("sketch");
+  await expect(page.locator(".battle-message")).toContainText("sketch を発動");
+  for (let turn = 0; turn < 5 && !(await page.locator(".card-word").allTextContents()).includes("frame"); turn++) await page.clock.runFor(11_000);
+  const frame = page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: /^frame$/ }) });
+  await expect(frame).toHaveCount(1);
+  await page.clock.runFor(11_000);
+  await expect(frame).toHaveCount(1);
+});
+
 test("a typed battle reaches victory with the visible Intent and pile counts", async ({ page }) => {
   await page.clock.install();
   await startDemoRun(page);
@@ -336,6 +355,16 @@ test("music deck clears three Acts by typing and unlocks its own Ascension", asy
   await page.getByRole("button", { name: /軽音部/ }).click();
   await clearThreeActs(page);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["music-demo"])).toBe(1);
+});
+
+test("art deck clears three Acts by typing and unlocks its own Ascension", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.clock.install();
+  await page.goto("/");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /美術部/ }).click();
+  await clearThreeActs(page);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["art-demo"])).toBe(1);
 });
 
 test("treasure offers survive reload and a focused choice completes its node", async ({ page }) => {

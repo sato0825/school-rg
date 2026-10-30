@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { destinationAfterUse } from "./card-keywords.js";
-import { duplicateCombatCard, moveCombatCard, recoverCombatCard } from "./card-operations.js";
+import { duplicateCombatCard, moveCombatCard, recoverCombatCard, transformCombatCard } from "./card-operations.js";
 import { drawCards } from "./card-piles.js";
 import { requireSetting, type GameConfig } from "./config.js";
 import { enqueueEffectAction, resolveDueEffects, type ActorRef, type EffectAction, type EffectEvent } from "./effect-primitives.js";
@@ -36,6 +36,7 @@ const conditionalStatus = z.strictObject({
 const removeBlock = z.strictObject({ all: z.literal(true) });
 const perTurn = z.strictObject({ amountPerTurn: z.number().int().nonnegative() });
 const payment = z.strictObject({ hpCost: z.number().int().nonnegative(), drawCount: z.number().int().nonnegative() });
+const transform = z.strictObject({ cardId: z.string().min(1), upgraded: z.boolean() });
 
 function requireOne(countValue: number): void {
   if (countValue !== 1) throw new RangeError("this card effect requires exactly one selected target");
@@ -80,6 +81,7 @@ function resolveEffect(
   selection: CardEffectSelection,
   clock: MonotonicClock,
   config: GameConfig,
+  content: ContentRegistry,
 ): RunState {
   const player: ActorRef = { side: "player" };
   const nowMs = clock.nowMs();
@@ -141,6 +143,11 @@ function resolveEffect(
       const result = duplicateCombatCard(run.combat!, selectedHandCard(run, usedCardInstanceId, selection), "hand", { maxHandSize: requireSetting(config.handLimit) });
       return { ...run, combat: result.combat };
     }
+    case "transform_card": {
+      const parameters = transform.parse(effect.parameters);
+      const result = transformCombatCard(run.combat!, content, selectedHandCard(run, usedCardInstanceId, selection), parameters.cardId, parameters.upgraded);
+      return { ...run, combat: result.combat };
+    }
     case "remove_debuff": {
       requireOne(count.parse(effect.parameters).count);
       return clearStatus(run, player, selectedDebuff(run, selection));
@@ -176,7 +183,7 @@ export function useCardEffects(
   for (const effectId of effectIds) {
     const effect = content.effects.find((item) => item.id === effectId);
     if (!effect) throw new RangeError(`unknown card effect: ${effectId}`);
-    if (effect.kind === "exhaust_card" || effect.kind === "copy_card") selectedHandCard(run, cardInstanceId, selection);
+    if (effect.kind === "exhaust_card" || effect.kind === "copy_card" || effect.kind === "transform_card") selectedHandCard(run, cardInstanceId, selection);
     if (effect.kind === "retrieve_discard") selectedDiscardCard(run, selection);
     if (effect.kind === "remove_debuff") selectedDebuff(run, selection);
     if (effect.kind === "pay_hp_draw" && run.player.hp <= payment.parse(effect.parameters).hpCost) throw new RangeError("insufficient HP for card payment");
@@ -187,7 +194,7 @@ export function useCardEffects(
     if (current.combat?.phase === "WON" || current.combat?.phase === "LOST") break;
     const effect = content.effects.find((item) => item.id === effectId);
     if (!effect) throw new RangeError(`unknown card effect: ${effectId}`);
-    current = resolveEffect(current, cardInstanceId, effect, selection, clock, config);
+    current = resolveEffect(current, cardInstanceId, effect, selection, clock, config, content);
   }
   const destination = definition.type === "power" || destinationAfterUse(current.combat!, content, cardInstanceId) === "exhaust"
     ? "exhaustPile" : "discardPile";

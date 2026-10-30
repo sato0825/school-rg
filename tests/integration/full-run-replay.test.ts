@@ -73,4 +73,11 @@ describe("seeded full-run replay", () => {
     expect(replay(142, true, 0, "music-demo")).toEqual(original);
     expect(replay(143, false, 0, "music-demo").trace).not.toEqual(original.trace);
   });
+
+  it("reproduces an art run across all three Acts and save/load", () => {
+    const original = replay(142, false, 0, "art-demo");
+    expect(original.session.run.clubId).toBe("art-demo");
+    expect(replay(142, true, 0, "art-demo")).toEqual(original);
+    expect(replay(143, false, 0, "art-demo").trace).not.toEqual(original.trace);
+  });
 });
