@@ -1,4 +1,5 @@
 import { settleHandAtTurnEnd, drawCards, type CardDisposition } from "./card-piles.js";
+import { prepareOpeningHand } from "./card-keywords.js";
 import { createTurnClock, pauseTurnClock, resumeTurnClock, advanceTurnClock, type MonotonicClock } from "./clock.js";
 import { assessCombatOutcome } from "./combat-outcome.js";
 import { requireSetting, type GameConfig } from "./config.js";
@@ -56,11 +57,13 @@ function advanceSelectionTime(run: RunState, clock: MonotonicClock, config: Game
   return tickPlayerTurn(run, fixedClock, dispositionFor);
 }
 
-export function beginPlayerTurn(run: RunState, clock: MonotonicClock, config: GameConfig): RunState {
+export function beginPlayerTurn(run: RunState, clock: MonotonicClock, config: GameConfig, content: ContentRegistry): RunState {
   const combat = requirePhase(run, "PLAYER_START");
   const outcome = assessCombatOutcome(run);
   if (outcome.combat!.phase !== "PLAYER_START") return outcome;
-  const drawn = drawCards(combat, run.rngState, requireSetting(config.cardsDrawnPerTurn));
+  const opening = combat.turn === 1 ? prepareOpeningHand(combat, content) : { combat, innateIds: [] };
+  const count = requireSetting(config.cardsDrawnPerTurn) - (requireSetting(config.innateCountsTowardDraw) ? opening.innateIds.length : 0);
+  const drawn = drawCards(opening.combat, run.rngState, Math.max(0, count));
   return {
     ...run,
     rngState: drawn.rngState,

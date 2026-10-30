@@ -35,6 +35,8 @@ export const GameConfigSchema = z.strictObject({
   energyEquivalentMs: setting(positiveInt),
   counterAfterLethal: setting(z.boolean()),
   deadlineTiePolicy: setting(z.enum(["timeout_wins", "input_wins"])),
+  etherealRetainPriority: setting(z.enum(["ethereal", "retain"])),
+  innateCountsTowardDraw: setting(z.boolean()),
 });
 
 export type GameConfig = z.infer<typeof GameConfigSchema>;
@@ -60,6 +62,8 @@ export const DEFAULT_GAME_CONFIG: GameConfig = GameConfigSchema.parse({
   energyEquivalentMs: { status: "confirmed", value: 2_000, source: epic, ownerIssue: 11 },
   counterAfterLethal: { status: "provisional", value: false, source: "https://github.com/sato0825/school-rg/issues/9", ownerIssue: 9 },
   deadlineTiePolicy: { status: "provisional", value: "timeout_wins", source: "https://github.com/sato0825/school-rg/issues/4", ownerIssue: 4 },
+  etherealRetainPriority: { status: "provisional", value: "ethereal", source: "https://github.com/sato0825/school-rg/issues/8", ownerIssue: 8 },
+  innateCountsTowardDraw: { status: "provisional", value: true, source: "https://github.com/sato0825/school-rg/issues/8", ownerIssue: 8 },
 });
 
 export function parseGameConfig(value: unknown): GameConfig {
