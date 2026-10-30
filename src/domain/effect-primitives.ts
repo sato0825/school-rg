@@ -1,6 +1,7 @@
 import { requireSetting, type GameConfig } from "./config.js";
+import { assessCombatOutcome } from "./combat-outcome.js";
 import { enqueueEvent, takeNextDueEvent, type EventQueue } from "./event-queue.js";
-import type { CombatState, RunState } from "./schema.js";
+import type { RunState } from "./schema.js";
 
 export type ActorRef = { side: "player" } | { side: "enemy"; instanceId: string };
 export type EffectAction =
@@ -43,15 +44,6 @@ function replaceActor(run: RunState, ref: ActorRef, updated: { hp: number; maxHp
       enemies: combat.enemies.map((enemy) => enemy.instanceId === ref.instanceId ? { ...enemy, ...updated } : enemy),
     },
   };
-}
-
-function setOutcome(run: RunState): RunState {
-  const combat = run.combat;
-  if (!combat) throw new Error("combat is required");
-  let phase: CombatState["phase"] = combat.phase;
-  if (run.player.hp === 0) phase = "LOST";
-  else if (combat.enemies.every((enemy) => enemy.hp === 0)) phase = "WON";
-  return phase === combat.phase ? run : { ...run, combat: { ...combat, phase } };
 }
 
 function requireKnownActor(run: RunState, ref: ActorRef): void {
@@ -155,7 +147,7 @@ export function resolveDueEffects(
         current = reaction.run;
         trace.push(reaction.trace);
       }
-      current = setOutcome(current);
+      current = assessCombatOutcome(current);
       continue;
     }
     if (event.kind === "block") {

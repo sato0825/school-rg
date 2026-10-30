@@ -34,6 +34,7 @@ export const GameConfigSchema = z.strictObject({
   clubNames: setting(z.array(z.string().min(1)).length(5)),
   energyEquivalentMs: setting(positiveInt),
   counterAfterLethal: setting(z.boolean()),
+  deadlineTiePolicy: setting(z.enum(["timeout_wins", "input_wins"])),
 });
 
 export type GameConfig = z.infer<typeof GameConfigSchema>;
@@ -57,6 +58,7 @@ export const DEFAULT_GAME_CONFIG: GameConfig = GameConfigSchema.parse({
   clubNames: { status: "unresolved", value: null, source: designDoc, ownerIssue: 12 },
   energyEquivalentMs: { status: "confirmed", value: 2_000, source: epic, ownerIssue: 11 },
   counterAfterLethal: { status: "provisional", value: false, source: "https://github.com/sato0825/school-rg/issues/9", ownerIssue: 9 },
+  deadlineTiePolicy: { status: "provisional", value: "timeout_wins", source: "https://github.com/sato0825/school-rg/issues/4", ownerIssue: 4 },
 });
 
 export function parseGameConfig(value: unknown): GameConfig {
@@ -66,9 +68,9 @@ export function parseGameConfig(value: unknown): GameConfig {
 export function requireSetting<T>(
   setting: { status: "confirmed" | "provisional"; value: T; ownerIssue: number } |
     { status: "unresolved"; value: null; ownerIssue: number },
-): T {
+): NonNullable<T> {
   if (setting.status === "unresolved") {
     throw new Error(`Game setting is unresolved; see issue #${setting.ownerIssue}`);
   }
-  return setting.value;
+  return setting.value as NonNullable<T>;
 }
