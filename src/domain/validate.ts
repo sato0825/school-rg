@@ -76,6 +76,7 @@ export function parseContentRegistry(value: unknown): ContentRegistry {
       }
       choice.effects.forEach((effect, k) => {
         if (effect.kind === "add_card") known(effect.cardId, cards, `events.${i}.choices.${j}.effects.${k}.cardId`, issues);
+        if (effect.kind === "add_relic") known(effect.relicId, relics, `events.${i}.choices.${j}.effects.${k}.relicId`, issues);
         if (effect.kind === "battle") known(effect.enemyId, new Set(content.enemies.map((enemy) => enemy.id)), `events.${i}.choices.${j}.effects.${k}.enemyId`, issues);
       });
     });

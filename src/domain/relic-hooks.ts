@@ -6,6 +6,7 @@ export type RelicEvent = {
   id: string;
   kind: RelicEventKind;
   cardInstanceId?: string;
+  relicId?: string;
   hpLost?: number;
 };
 export type RelicRule = {
@@ -70,7 +71,7 @@ export function resolveRelicHooks(
       if (group) group.count++;
       else groups.set(relicId, { relicId, count: 1, ownerIndex });
     });
-    const jobs = [...groups.values()].flatMap((group) => {
+    const jobs = [...groups.values()].filter((group) => event.kind !== "acquired" || group.relicId === event.relicId).flatMap((group) => {
       const relic = contentById.get(group.relicId)!;
       return relic.triggerIds.map((ruleId, declarationIndex) => ({ group, ruleId, declarationIndex, rule: rules.find((item) => item.id === ruleId) }));
     }).filter((job) => job.rule?.on === event.kind)

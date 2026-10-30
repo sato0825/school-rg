@@ -7,6 +7,8 @@ import type { MapGenerationOptions } from "../domain/map-generation.js";
 import type { RunState } from "../domain/schema.js";
 import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, pausePlayerTurn, resumePlayerTurn, selectTypedCard, selectTypedEnemyTarget, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../domain/turn-state.js";
 import { demoContent, demoEncounterTable, demoEnemyAi } from "../content/demo-battle.js";
+import { demoRelicRules } from "../content/demo-battle.js";
+import { emitRelicEvent, type RelicEventKind, type RelicEvent } from "../domain/relic-hooks.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { demoBattleArt } from "./demo-art.js";
 import { renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop } from "./run-view.js";
@@ -23,6 +25,13 @@ export function mountApp(root: HTMLElement): () => void {
   let enemyPending = false;
   let generation = 0;
   const clock = { nowMs: () => Math.floor(performance.now()) };
+  const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
+    emitRelicEvent(state, kind, demoRelicRules, demoContent, detail).run;
+  const startCombat = () => {
+    run = fireRelic(run, "combat_start");
+    run = beginPlayerTurn(run, clock, config, demoContent);
+    run = fireRelic(run, "turn_start");
+  };
   const render = () => {
     if (session.screen === "map") renderRunMap(root, session, demoBattleArt);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
@@ -35,6 +44,7 @@ export function mountApp(root: HTMLElement): () => void {
 
   function settleIfFinished(): void {
     if (session.screen !== "combat" || (run.combat?.phase !== "WON" && run.combat?.phase !== "LOST")) return;
+    run = fireRelic(run, "combat_end");
     session = settleRunCombat({ ...session, run }, demoContent);
     run = session.run;
   }
@@ -54,7 +64,7 @@ export function mountApp(root: HTMLElement): () => void {
     view.selectedDebuff = null;
     const currentGeneration = generation;
     window.setTimeout(() => { if (generation === currentGeneration) { view.motion = null; render(); } }, 380);
-    return updated;
+    return fireRelic(updated, "card_used", { cardInstanceId: instanceId });
   };
 
   function handleError(error: unknown): void {
@@ -66,6 +76,7 @@ export function mountApp(root: HTMLElement): () => void {
   function enemyPhase(): void {
     if (run.combat?.phase !== "PLAYER_END" || enemyPending) return;
     run = beginEnemyPhase(run, config);
+    run = fireRelic(run, "turn_end");
     if (run.combat?.phase === "WON" || run.combat?.phase === "LOST") { settleIfFinished(); render(); return; }
     enemyPending = true;
     view.motion = "enemy";
@@ -75,12 +86,15 @@ export function mountApp(root: HTMLElement): () => void {
     window.setTimeout(() => {
       if (currentGeneration !== generation) return;
       try {
+        const hpBefore = run.player.hp;
         run = completeEnemyPhase(run, (state) => resolveEnemyIntents(state, demoEnemyAi, demoContent,
           (live, enemyInstanceId, intent) => executeEnemyIntentEffects(live, enemyInstanceId, intent, demoEnemyAi, demoContent, config)), config);
+        if (run.player.hp < hpBefore) run = fireRelic(run, "hit_taken", { hpLost: hpBefore - run.player.hp });
         enemyPending = false;
         view.motion = null;
         if (run.combat?.phase === "PLAYER_START") {
           run = beginPlayerTurn(run, clock, config, demoContent);
+          run = fireRelic(run, "turn_start");
           view.message = "次のターン。カード名をタイプしてください。";
         } else settleIfFinished();
         render();
@@ -122,7 +136,7 @@ export function mountApp(root: HTMLElement): () => void {
       if (session.screen === "map" && action === "enter-node") {
         session = enterRunNode(session, id, demoContent, demoEnemyAi, demoEncounterTable);
         run = session.run;
-        if (session.screen === "combat") run = beginPlayerTurn(run, clock, config, demoContent);
+        if (session.screen === "combat") startCombat();
         view.message = session.screen === "shop" ? "購入するカードを選んでください。" : "カード名をタイプして発動。誤入力は無視されます。";
         render();
         return;
@@ -134,9 +148,11 @@ export function mountApp(root: HTMLElement): () => void {
         return;
       }
       if (session.screen === "event" && action === "event-choice") {
+        const relicCount = run.relicIds.length;
         session = chooseRunEventChoice(session, id, demoContent, demoEnemyAi);
         run = session.run;
-        if (session.screen === "combat") run = beginPlayerTurn(run, clock, config, demoContent);
+        for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
+        if (session.screen === "combat") startCombat();
         view.message = "カード名をタイプして発動。誤入力は無視されます。";
         render();
         return;
