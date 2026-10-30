@@ -260,7 +260,7 @@ test("treasure offers survive reload and a focused choice completes its node", a
 
 test("a route can upgrade at rest and buy once at the shop", async ({ page }) => {
   await startDemoRun(page);
-  await page.locator(".map-node.available").filter({ hasText: "休憩" }).first().click();
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).last().click();
   await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
@@ -322,7 +322,7 @@ test("reload preserves an unfinished potion word and its inventory", async ({ pa
 
 test("reload preserves a shop purchase and an unfinished typed card", async ({ page }) => {
   await startDemoRun(page);
-  await page.locator(".map-node.available").filter({ hasText: "休憩" }).first().click();
+  await page.locator(".map-node.available").filter({ hasText: "休憩" }).last().click();
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
   await page.locator(".reward-card").first().click();
