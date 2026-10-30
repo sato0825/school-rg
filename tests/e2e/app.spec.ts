@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
 async function startDemoRun(page: import("@playwright/test").Page): Promise<void> {
-  await page.goto("/?shortRun=1");
+  await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /文芸部/ }).click();
 }
@@ -40,7 +40,7 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
 }
 
 test("title, compendium, club selection, map and battle controls work by keyboard", async ({ page }) => {
-  await page.goto("/?shortRun=1");
+  await page.goto("/?shortRun=1&seed=42");
   await expect(page.getByRole("heading", { name: "放課後を、打ち抜く。" })).toBeVisible();
   await page.getByRole("button", { name: "図鑑を見る" }).focus();
   await page.keyboard.press("Enter");
@@ -139,7 +139,7 @@ test("literature starter can activate a unique card by typing its word", async (
 });
 
 test("science club starts with a distinct deck and types a preparation card", async ({ page }) => {
-  await page.goto("/?shortRun=1");
+  await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /科学部/ }).click();
   await expect(page.locator(".map-stats")).toContainText("38/38");
@@ -153,7 +153,7 @@ test("science club starts with a distinct deck and types a preparation card", as
 });
 
 test("kendo club starts with counter equipment and types a guard card", async ({ page }) => {
-  await page.goto("/?shortRun=1");
+  await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /剣道部/ }).click();
   await expect(page.locator(".map-stats")).toContainText("44/44");
@@ -168,7 +168,7 @@ test("kendo club starts with counter equipment and types a guard card", async ({
 });
 
 test("music club starts with extra time and types a tempo card", async ({ page }) => {
-  await page.goto("/?shortRun=1");
+  await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /軽音部/ }).click();
   await expect(page.locator(".map-stats")).toContainText("39/39");
@@ -186,7 +186,7 @@ test("music club starts with extra time and types a tempo card", async ({ page }
 test("art club types a distinct card and retains a frame through timeout", async ({ page }) => {
   test.setTimeout(60_000);
   await page.clock.install();
-  await page.goto("/?shortRun=1");
+  await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /美術部/ }).click();
   await enterNextNode(page);
@@ -231,7 +231,7 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
 test("an elite formation accepts a typed single target and an all-enemy attack", async ({ page }) => {
   test.setTimeout(60_000);
   await page.clock.install();
-  await page.goto("/");
+  await page.goto("/?seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /文芸部/ }).click();
   await page.locator(".map-node.available").filter({ hasText: "強敵" }).first().click();
@@ -294,7 +294,7 @@ test("the combatants and controls remain visible on a narrow viewport", async ({
 
 test("candidate pose preview follows enemy damage and typed activation", async ({ page }) => {
   await page.clock.install();
-  await page.goto("/?artPreview=1&shortRun=1");
+  await page.goto("/?artPreview=1&shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /科学部/ }).click();
   await enterNextNode(page);
@@ -345,7 +345,7 @@ test("five club candidates stay separate from the stage and controls at desktop 
   ];
   for (const candidate of candidates) {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/?artPreview=1&shortRun=1");
+    await page.goto("/?artPreview=1&shortRun=1&seed=42");
     await page.getByRole("button", { name: "ランを始める" }).click();
     await page.getByRole("button", { name: new RegExp(candidate.club) }).click();
     await enterNextNode(page);
@@ -368,7 +368,7 @@ test("five club candidates stay separate from the stage and controls at desktop 
 test("one to three ally slots fit a shared stage at desktop and narrow widths", async ({ page }) => {
   await page.addInitScript(() => localStorage.clear());
   for (const count of [1, 2, 3]) {
-    await page.goto(count === 1 ? "/?shortRun=1" : `/?layoutPreview=${count}&shortRun=1`);
+    await page.goto(count === 1 ? "/?shortRun=1&seed=42" : `/?layoutPreview=${count}&shortRun=1&seed=42`);
     await page.getByRole("button", { name: "ランを始める" }).click();
     await page.getByRole("button", { name: /文芸部/ }).click();
     await enterNextNode(page);
@@ -487,12 +487,12 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
 });
 
 test("regular runs use the provisional full map while short E2E runs require an explicit flag", async ({ page, browser }) => {
-  await page.goto("/");
+  await page.goto("/?seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /文芸部/ }).click();
   await expect(page.locator(".map-node")).toHaveCount(50);
   await expect(page.locator(".map-node").last()).toHaveAttribute("aria-label", /13階 ボス/);
-  await page.goto("/?shortRun=1");
+  await page.goto("/?shortRun=1&seed=42");
   await expect(page.locator(".map-node")).toHaveCount(50);
   const shortContext = await browser.newContext();
   const shortPage = await shortContext.newPage();
@@ -504,10 +504,34 @@ test("regular runs use the provisional full map while short E2E runs require an 
   await shortContext.close();
 });
 
+test("ordinary new runs draw independent seeds and reload preserves a run seed", async ({ page, browser }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  const firstSeed = Number((await page.locator(".map-stats").innerText()).match(/シード (\d+)/)?.[1]);
+  expect(firstSeed).toBeGreaterThanOrEqual(0);
+  expect(firstSeed).toBeLessThanOrEqual(0xffffffff);
+  await page.reload();
+  await page.getByRole("button", { name: "再開" }).click();
+  await expect(page.locator(".map-stats")).toContainText(`シード ${firstSeed}`);
+
+  const otherContext = await browser.newContext();
+  try {
+    const otherPage = await otherContext.newPage();
+    await otherPage.goto("/");
+    await otherPage.getByRole("button", { name: "ランを始める" }).click();
+    await otherPage.getByRole("button", { name: /文芸部/ }).click();
+    const secondSeed = Number((await otherPage.locator(".map-stats").innerText()).match(/シード (\d+)/)?.[1]);
+    expect(secondSeed).not.toBe(firstSeed);
+  } finally {
+    await otherContext.close();
+  }
+});
+
 test("opt-in playtest report survives reload, excludes pause and exports after three Acts", async ({ page }) => {
   test.setTimeout(120_000);
   await page.clock.install();
-  await page.goto("/?playtest=1&shortRun=1");
+  await page.goto("/?playtest=1&shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /文芸部/ }).click();
   await page.clock.runFor(5_000);
@@ -553,7 +577,7 @@ test("opt-in playtest report survives reload, excludes pause and exports after t
 test("science deck clears three Acts by typing and unlocks its own Ascension", async ({ page }) => {
   test.setTimeout(120_000);
   await page.clock.install();
-  await page.goto("/?shortRun=1");
+  await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /科学部/ }).click();
   await clearThreeActs(page);
@@ -563,7 +587,7 @@ test("science deck clears three Acts by typing and unlocks its own Ascension", a
 test("kendo deck clears three Acts by typing and unlocks its own Ascension", async ({ page }) => {
   test.setTimeout(120_000);
   await page.clock.install();
-  await page.goto("/?shortRun=1");
+  await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /剣道部/ }).click();
   await clearThreeActs(page);
@@ -573,7 +597,7 @@ test("kendo deck clears three Acts by typing and unlocks its own Ascension", asy
 test("music deck clears three Acts by typing and unlocks its own Ascension", async ({ page }) => {
   test.setTimeout(120_000);
   await page.clock.install();
-  await page.goto("/?shortRun=1");
+  await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /軽音部/ }).click();
   await clearThreeActs(page);
@@ -583,7 +607,7 @@ test("music deck clears three Acts by typing and unlocks its own Ascension", asy
 test("art deck clears three Acts by typing and unlocks its own Ascension", async ({ page }) => {
   test.setTimeout(120_000);
   await page.clock.install();
-  await page.goto("/?shortRun=1");
+  await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /美術部/ }).click();
   await clearThreeActs(page);
