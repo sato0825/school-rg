@@ -60,7 +60,8 @@ function advanceSelectionTime(run: RunState, clock: MonotonicClock, config: Game
 
 export function beginPlayerTurn(run: RunState, clock: MonotonicClock, config: GameConfig, content: ContentRegistry): RunState {
   requirePhase(run, "PLAYER_START");
-  const outcome = assessCombatOutcome(tickStatuses(run, "player_start", config).run);
+  const reset = { ...run, player: { ...run.player, block: 0 } };
+  const outcome = assessCombatOutcome(tickStatuses(reset, "player_start", config).run);
   if (outcome.combat!.phase !== "PLAYER_START") return outcome;
   const combat = outcome.combat!;
   const handLimit = requireSetting(config.handLimit);
@@ -151,7 +152,10 @@ export function beginEnemyPhase(run: RunState, config: GameConfig): RunState {
   requirePhase(run, "PLAYER_END");
   const outcome = assessCombatOutcome(tickStatuses(run, "player_end", config).run);
   if (outcome.combat!.phase !== "PLAYER_END") return outcome;
-  const enemyPhase = { ...outcome, combat: { ...outcome.combat!, phase: "ENEMY_PHASE" as const } };
+  const enemyPhase = { ...outcome, combat: {
+    ...outcome.combat!, phase: "ENEMY_PHASE" as const,
+    enemies: outcome.combat!.enemies.map((enemy) => ({ ...enemy, block: 0 })),
+  } };
   return tickStatuses(enemyPhase, "enemy_start", config).run;
 }
 

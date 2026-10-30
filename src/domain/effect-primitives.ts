@@ -147,7 +147,9 @@ export function resolveDueEffects(
       current = first.run;
       trace.push(first.trace);
       const defender = actor(current, event.target)!;
-      const counter = event.target.side === "player" ? counterDamage.player : (counterDamage.enemies[event.target.instanceId] ?? 0);
+      const counterBase = event.target.side === "player" ? counterDamage.player : (counterDamage.enemies[event.target.instanceId] ?? 0);
+      const counter = counterBase + statusAmount(current, event.target, "thorns");
+      if (!Number.isSafeInteger(counter)) throw new RangeError("counter damage overflow");
       if (counter > 0 && amount > 0 && (defender.hp > 0 || requireSetting(config.counterAfterLethal))) {
         const reaction = damage(current, event.target, event.source, counter, false, "counter");
         current = reaction.run;

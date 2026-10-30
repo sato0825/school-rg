@@ -23,6 +23,7 @@ const conditional = z.strictObject({
   thresholdPercent: z.number().int().min(0).max(100),
 });
 const removeBlock = z.strictObject({ all: z.literal(true) });
+const perTurn = z.strictObject({ amountPerTurn: z.number().int().nonnegative() });
 
 function targetEnemy(run: RunState, instanceId: string | null): ActorRef {
   if (!instanceId) throw new RangeError("enemy target selection is required");
@@ -79,6 +80,9 @@ function resolveEffect(
       removeBlock.parse(effect.parameters);
       return applyAction(run, { kind: "remove_block", target: targetEnemy(run, selection.targetEnemyInstanceId) }, nowMs, config);
     }
+    case "thorns": return applyAction(run, { kind: "status", target: player, status: "thorns", delta: amount.parse(effect.parameters).amount }, nowMs, config);
+    case "persistent_block": return applyAction(run, { kind: "status", target: player, status: "barrier", delta: perTurn.parse(effect.parameters).amountPerTurn }, nowMs, config);
+    case "persistent_strength": return applyAction(run, { kind: "status", target: player, status: "focus", delta: perTurn.parse(effect.parameters).amountPerTurn }, nowMs, config);
     default: throw new RangeError(`unsupported card effect kind: ${effect.kind}`);
   }
 }

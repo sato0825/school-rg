@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import { baseCardDefinitions, baseCardEffects } from "../../src/content/base-cards.js";
 import { useCardEffects } from "../../src/domain/card-effects.js";
 import { DEFAULT_GAME_CONFIG } from "../../src/domain/config.js";
+import { enqueueEffectAction, resolveDueEffects, type EffectEvent } from "../../src/domain/effect-primitives.js";
+import { createEventQueue } from "../../src/domain/event-queue.js";
 import type { ContentRegistry, RunState } from "../../src/domain/schema.js";
-import { submitPlayerKey } from "../../src/domain/turn-state.js";
+import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, submitPlayerKey, tickPlayerTurn } from "../../src/domain/turn-state.js";
 import { parseRunState } from "../../src/domain/validate.js";
 import { validContent, validRun } from "../fixtures/domain.js";
 
@@ -73,5 +75,47 @@ describe("typed basic card effects", () => {
     expect(typedCard("BASE-022", (run) => { run.combat!.enemies[0]!.hp = 10; }).combat!.enemies[0]!.hp).toBe(0);
     const broken = typedCard("BASE-024", (run) => { run.combat!.enemies[0]!.block = 7; });
     expect(broken.combat!.enemies[0]).toMatchObject({ hp: 20, block: 0 });
+  });
+
+  it("counter reacts to an enemy hit once and expires before the next player turn", () => {
+    let run = typedCard("BASE-013");
+    expect(run.combat!.statuses.player.thorns).toBe(3);
+    run = tickPlayerTurn(run, { nowMs: () => 10_000 }, () => "discard");
+    run = beginEnemyPhase(run, DEFAULT_GAME_CONFIG);
+    run = completeEnemyPhase(run, (state) => {
+      const queue = enqueueEffectAction(createEventQueue<EffectEvent>(), state, 10_000, {
+        kind: "attack", source: { side: "enemy", instanceId: "enemy-1" }, target: { side: "player" }, amount: 5, hits: 1, pierceBlock: false,
+      });
+      return resolveDueEffects(state, queue, 10_000, DEFAULT_GAME_CONFIG).run;
+    }, DEFAULT_GAME_CONFIG);
+    expect(run.player.hp).toBe(35);
+    expect(run.combat!.enemies[0]!.hp).toBe(17);
+    run = beginPlayerTurn(run, { nowMs: () => 10_000 }, DEFAULT_GAME_CONFIG, content);
+    expect(run.combat!.statuses.player.thorns).toBeUndefined();
+  });
+
+  it("persistent block refreshes after ordinary block resets and persistent strength stacks", () => {
+    let barrier = typedCard("BASE-019");
+    expect(barrier.combat!.exhaustPile).toContain("combat-1");
+    expect(barrier.combat!.statuses.player.barrier).toBe(3);
+    barrier.player.block = 8;
+    barrier = tickPlayerTurn(barrier, { nowMs: () => 10_000 }, () => "discard");
+    barrier = beginEnemyPhase(barrier, DEFAULT_GAME_CONFIG);
+    barrier = completeEnemyPhase(barrier, (state) => state, DEFAULT_GAME_CONFIG);
+    barrier = beginPlayerTurn(barrier, { nowMs: () => 10_000 }, DEFAULT_GAME_CONFIG, content);
+    expect(barrier.player.block).toBe(3);
+
+    let focus = typedCard("BASE-020");
+    expect(focus.combat!.statuses.player.focus).toBe(1);
+    focus = tickPlayerTurn(focus, { nowMs: () => 10_000 }, () => "discard");
+    focus = beginEnemyPhase(focus, DEFAULT_GAME_CONFIG);
+    focus = completeEnemyPhase(focus, (state) => state, DEFAULT_GAME_CONFIG);
+    focus = beginPlayerTurn(focus, { nowMs: () => 10_000 }, DEFAULT_GAME_CONFIG, content);
+    expect(focus.combat!.statuses.player.strength).toBe(1);
+    focus = tickPlayerTurn(focus, { nowMs: () => 20_000 }, () => "discard");
+    focus = beginEnemyPhase(focus, DEFAULT_GAME_CONFIG);
+    focus = completeEnemyPhase(focus, (state) => state, DEFAULT_GAME_CONFIG);
+    focus = beginPlayerTurn(focus, { nowMs: () => 20_000 }, DEFAULT_GAME_CONFIG, content);
+    expect(focus.combat!.statuses.player.strength).toBe(2);
   });
 });

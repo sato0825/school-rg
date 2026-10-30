@@ -3,11 +3,13 @@ import { requireSetting, type GameConfig } from "./config.js";
 import type { ActorRef } from "./effect-primitives.js";
 import type { RunState } from "./schema.js";
 
-export type StatusKind = "strength" | "dexterity" | "weak" | "vulnerable" | "frail" | "poison";
+export type StatusKind = "strength" | "dexterity" | "weak" | "vulnerable" | "frail" | "poison" | "thorns" | "barrier" | "focus";
 export type StatusBoundary = "player_start" | "player_end" | "enemy_start" | "enemy_end";
 export type StatusTickEvent =
   | { kind: "poison"; target: ActorRef; damage: number }
-  | { kind: "decay"; target: ActorRef; status: "weak" | "vulnerable" | "frail"; before: number; after: number };
+  | { kind: "decay"; target: ActorRef; status: "weak" | "vulnerable" | "frail"; before: number; after: number }
+  | { kind: "power"; target: ActorRef; status: "barrier" | "focus"; amount: number }
+  | { kind: "expire"; target: ActorRef; status: "thorns" };
 
 const debuffs = ["weak", "vulnerable", "frail", "poison"] as const;
 
@@ -96,6 +98,21 @@ function poisonDamage(run: RunState, ref: ActorRef, amount: number): RunState {
     ? { ...enemy, hp: Math.max(0, enemy.hp - amount) } : enemy) } };
 }
 
+function addPowerBlock(run: RunState, ref: ActorRef, amount: number): RunState {
+  if (ref.side === "player") {
+    const block = run.player.block + amount;
+    if (!Number.isSafeInteger(block)) throw new RangeError("power block overflow");
+    return { ...run, player: { ...run.player, block } };
+  }
+  const combat = run.combat!;
+  return { ...run, combat: { ...combat, enemies: combat.enemies.map((enemy) => {
+    if (enemy.instanceId !== ref.instanceId) return enemy;
+    const block = enemy.block + amount;
+    if (!Number.isSafeInteger(block)) throw new RangeError("power block overflow");
+    return { ...enemy, block };
+  }) } };
+}
+
 /** Boundary timing is provisional in config. Poison bypasses block and counter. */
 export function tickStatuses(run: RunState, boundary: StatusBoundary, config: GameConfig): { run: RunState; events: StatusTickEvent[] } {
   if (!run.combat) throw new Error("combat is required");
@@ -118,6 +135,22 @@ export function tickStatuses(run: RunState, boundary: StatusBoundary, config: Ga
       }
     }
     if (actorHp(current, target) === 0) continue;
+    if (edge === "owner_start") {
+      if (statusAmount(current, target, "thorns") > 0) {
+        current = clearStatus(current, target, "thorns");
+        events.push({ kind: "expire", target, status: "thorns" });
+      }
+      const barrier = statusAmount(current, target, "barrier");
+      if (barrier > 0) {
+        current = addPowerBlock(current, target, barrier);
+        events.push({ kind: "power", target, status: "barrier", amount: barrier });
+      }
+      const focus = statusAmount(current, target, "focus");
+      if (focus > 0) {
+        current = applyStatus(current, target, "strength", focus);
+        events.push({ kind: "power", target, status: "focus", amount: focus });
+      }
+    }
     if (edge === requireSetting(config.debuffDecayTiming)) {
       for (const status of ["weak", "vulnerable", "frail"] as const) {
         const before = statusAmount(current, target, status);
