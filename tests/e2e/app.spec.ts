@@ -80,6 +80,7 @@ test("shop and event choices accept focused keyboard activation", async ({ page 
   await page.locator(".map-node.available").filter({ hasText: "購買" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
+  await expect(page.locator(".shop-relic-offer")).toContainText("90G · 所持金不足");
   await page.locator(".reward-card").first().focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".reward-card").first()).toBeDisabled();

@@ -88,17 +88,17 @@ export function renderRunShop(root: HTMLElement, session: RunSession, content: C
   const offers = shop.offers.map((offer) => {
     const card = content.cards.find((item) => item.id === offer.cardId)!;
     const reason = offer.purchased ? "購入済み" : gold < offer.price ? "所持金不足" : "";
-    return `<button type="button" class="reward-card" data-action="buy-offer" data-id="${offer.offerId}" ${reason ? "disabled" : ""}><small>${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span><b>${reason || `${offer.price}G`}</b></button>`;
+    return `<button type="button" class="reward-card" data-action="buy-offer" data-id="${offer.offerId}" ${reason ? "disabled" : ""}><small>${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span><b>${offer.price}G${reason ? ` · ${reason}` : ""}</b></button>`;
   }).join("");
   const relicOffers = shop.relicOffers.map((offer) => {
     const relic = content.relics.find((item) => item.id === offer.contentId)!;
     const reason = offer.purchased ? "購入済み" : gold < offer.price ? "所持金不足" : session.run.relicIds.includes(offer.contentId) ? "所持済み" : "";
-    return `<button type="button" class="reward-card shop-relic-offer" data-action="buy-relic" data-id="${html(offer.offerId)}" ${reason ? "disabled" : ""}><small>RELIC</small><strong>${html(relic.name)}</strong><span>ラン中に効果を発揮</span><b>${reason || `${offer.price}G`}</b></button>`;
+    return `<button type="button" class="reward-card shop-relic-offer" data-action="buy-relic" data-id="${html(offer.offerId)}" ${reason ? "disabled" : ""}><small>RELIC</small><strong>${html(relic.name)}</strong><span>ラン中に効果を発揮</span><b>${offer.price}G${reason ? ` · ${reason}` : ""}</b></button>`;
   }).join("");
   const potionOffers = shop.potionOffers.map((offer) => {
     const potion = content.potions.find((item) => item.id === offer.contentId)!;
     const reason = offer.purchased ? "購入済み" : full ? "所持枠が満杯" : gold < offer.price ? "所持金不足" : "";
-    return `<button type="button" class="reward-card shop-potion-offer" data-action="buy-potion" data-id="${html(offer.offerId)}" ${reason ? "disabled" : ""}><small>POTION</small><strong>${html(potion.name)}</strong><span>入力語 ${html(potion.input.text)}</span><b>${reason || `${offer.price}G`}</b></button>`;
+    return `<button type="button" class="reward-card shop-potion-offer" data-action="buy-potion" data-id="${html(offer.offerId)}" ${reason ? "disabled" : ""}><small>POTION</small><strong>${html(potion.name)}</strong><span>入力語 ${html(potion.input.text)}</span><b>${offer.price}G${reason ? ` · ${reason}` : ""}</b></button>`;
   }).join("");
   const removal = session.run.deck.map((instance) => {
     const card = content.cards.find((item) => item.id === instance.cardId)!;
