@@ -34,6 +34,7 @@ export const validRun: RunState = {
   potionIds: ["potion-sample"],
   gold: 0,
   shop: null,
+  treasure: null,
   event: null,
   map: {
     currentNodeId: "node-start",

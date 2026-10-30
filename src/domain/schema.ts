@@ -152,6 +152,11 @@ export const ShopStateSchema = z.strictObject({
   removalUsed: z.boolean(),
 });
 
+export const TreasureStateSchema = z.strictObject({
+  nodeId: id,
+  offers: z.array(z.strictObject({ offerId: id, kind: z.enum(["relic", "potion"]), contentId: id })).min(1),
+});
+
 export const EventConditionSchema = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("gold_at_least"), amount: nonNegativeInt }),
   z.strictObject({ kind: z.literal("hp_at_most_percent"), percent: z.number().int().min(0).max(100) }),
@@ -196,6 +201,7 @@ export const RunStateSchema = z.strictObject({
   potionIds: z.array(id),
   gold: nonNegativeInt.default(0),
   shop: ShopStateSchema.nullable().default(null),
+  treasure: TreasureStateSchema.nullable().default(null),
   event: EventStateSchema.nullable().default(null),
   map: z.strictObject({ nodes: z.array(MapNodeSchema), currentNodeId: id }),
   combat: CombatStateSchema.nullable(),
@@ -216,6 +222,7 @@ export type TurnClockState = z.infer<typeof TurnClockStateSchema>;
 export type TypingState = z.infer<typeof TypingStateSchema>;
 export type CombatStatuses = z.infer<typeof CombatStatusesSchema>;
 export type ShopState = z.infer<typeof ShopStateSchema>;
+export type TreasureState = z.infer<typeof TreasureStateSchema>;
 export type EventDefinition = z.infer<typeof EventDefinitionSchema>;
 export type EventChoice = EventDefinition["choices"][number];
 export type EventCondition = z.infer<typeof EventConditionSchema>;

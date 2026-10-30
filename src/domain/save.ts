@@ -9,7 +9,7 @@ export const SAVE_FORMAT_VERSION = 1 as const;
 
 const SavedSessionSchema = z.strictObject({
   run: z.unknown(),
-  screen: z.enum(["map", "combat", "reward", "shop", "rest", "event", "won", "lost"]),
+  screen: z.enum(["map", "combat", "reward", "shop", "rest", "event", "treasure", "won", "lost"]),
   completedNodeIds: z.array(z.string().min(1)),
   rewardCardIds: z.array(z.string().min(1)),
 });
@@ -36,6 +36,7 @@ function validateSession(session: RunSession, content: ContentRegistry): void {
   if ((screen === "combat" || screen === "reward") && !run.combat) throw new RangeError("combat state is missing");
   if (screen !== "combat" && screen !== "reward" && screen !== "lost" && run.combat) throw new RangeError("combat state remains on a non-combat screen");
   if ((screen === "shop") !== Boolean(run.shop)) throw new RangeError("shop screen and stock disagree");
+  if ((screen === "treasure") !== Boolean(run.treasure)) throw new RangeError("treasure screen and offers disagree");
   if (screen === "event" && (!run.event || run.event.choiceId)) throw new RangeError("event screen has no pending choice");
   if (run.event && screen !== "event" && !(screen === "combat" && run.event.pendingCombat) && screen !== "lost") {
     throw new RangeError("active event is on an invalid screen");

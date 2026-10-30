@@ -124,6 +124,17 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
       offerIds.add(offer.offerId);
     });
   }
+  if (run.treasure) {
+    known(run.treasure.nodeId, mapIds, "treasure.nodeId", issues);
+    if (run.treasure.nodeId !== run.map.currentNodeId) issues.push({ code: "INVALID_STATE", path: "treasure.nodeId", message: "Treasure is not at the current node" });
+    if (run.map.nodes.find((node) => node.id === run.treasure!.nodeId)?.kind !== "treasure") issues.push({ code: "INVALID_STATE", path: "treasure.nodeId", message: "Treasure state is not on a treasure node" });
+    const offerIds = new Set<string>();
+    run.treasure.offers.forEach((offer, index) => {
+      if (offerIds.has(offer.offerId)) issues.push({ code: "DUPLICATE_ID", path: `treasure.offers.${index}.offerId`, message: `Duplicate treasure offer: ${offer.offerId}` });
+      offerIds.add(offer.offerId);
+      known(offer.contentId, offer.kind === "relic" ? relics : potions, `treasure.offers.${index}.contentId`, issues);
+    });
+  }
   if (run.event) {
     known(run.event.nodeId, mapIds, "event.nodeId", issues);
     if (run.event.nodeId !== run.map.currentNodeId || run.map.nodes.find((node) => node.id === run.event!.nodeId)?.kind !== "event") {
