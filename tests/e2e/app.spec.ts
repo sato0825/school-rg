@@ -295,6 +295,37 @@ test("candidate pose preview follows enemy damage and typed activation", async (
   expect(heroBox!.x).toBeGreaterThanOrEqual(stage!.x);
 });
 
+test("five club candidates stay separate from the stage and controls at desktop and narrow widths", async ({ page }) => {
+  await page.addInitScript(() => localStorage.clear());
+  const candidates = [
+    { club: "文芸部", asset: "literature-idle-candidate-v1", staticOnly: true },
+    { club: "科学部", asset: "serious-student-idle-candidate-v1", staticOnly: false },
+    { club: "剣道部", asset: "kendo-idle-candidate-v1", staticOnly: true },
+    { club: "軽音部", asset: "music-idle-candidate-v1", staticOnly: true },
+    { club: "美術部", asset: "art-idle-candidate-v1", staticOnly: true },
+  ];
+  for (const candidate of candidates) {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/?artPreview=1");
+    await page.getByRole("button", { name: "ランを始める" }).click();
+    await page.getByRole("button", { name: new RegExp(candidate.club) }).click();
+    await enterNextNode(page);
+    const hero = page.locator(".hero-art");
+    await expect(hero).toHaveAttribute("src", new RegExp(candidate.asset));
+    await expect(page.locator(".art-preview-label")).toContainText(candidate.staticOnly ? "静止画のみ" : "3ポーズ比較");
+    await hero.evaluate(async (image) => (image as HTMLImageElement).decode());
+    expect(await hero.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBe(1024);
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+      const [stage, controls, image] = await Promise.all([page.locator(".stage").boundingBox(), page.locator(".control-deck").boundingBox(), hero.boundingBox()]);
+      expect(stage && controls && image).toBeTruthy();
+      expect(image!.x).toBeGreaterThanOrEqual(stage!.x - 1);
+      expect(image!.x + image!.width).toBeLessThanOrEqual(stage!.x + stage!.width + 1);
+      expect(image!.y + image!.height).toBeLessThanOrEqual(controls!.y + 1);
+    }
+  }
+});
+
 test("one to three ally slots fit a shared stage at desktop and narrow widths", async ({ page }) => {
   await page.addInitScript(() => localStorage.clear());
   for (const count of [1, 2, 3]) {

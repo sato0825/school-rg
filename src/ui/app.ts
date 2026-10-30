@@ -60,7 +60,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     } catch { metricsLoadError = true; }
   }
   const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
-  const artPreloads = Object.values(view.art.heroPosesByClubId ?? {}).flatMap((poses) => Object.values(poses)).map((url) => {
+  const artPreloads = [...Object.values(view.art.heroUrlByClubId ?? {}), ...Object.values(view.art.heroPosesByClubId ?? {}).flatMap((poses) => Object.values(poses))].map((url) => {
     const image = new Image();
     image.src = url;
     return image;
