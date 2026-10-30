@@ -70,6 +70,23 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
 });
 
+test("a potion is typed in its own mode and consumed after extending the active turn", async ({ page }) => {
+  await page.clock.install();
+  await page.goto("/");
+  await enterNextNode(page);
+  await expect(page.locator(".potion-slot")).toHaveCount(2);
+  await page.clock.runFor(1_000);
+  const before = Number.parseFloat(await page.locator("[data-role=time]").innerText());
+  await page.keyboard.press("F2");
+  await expect(page.locator(".potion-mode")).toHaveAttribute("aria-pressed", "true");
+  await page.keyboard.type("clock");
+  await expect(page.locator(".potion-mode")).toHaveAttribute("aria-pressed", "false");
+  await expect(page.locator(".potion-slot")).toHaveCount(1);
+  await expect(page.locator(".potion-row")).not.toContainText("clock");
+  const after = Number.parseFloat(await page.locator("[data-role=time]").innerText());
+  expect(after).toBeGreaterThan(before + 2);
+});
+
 test("the combatants and controls remain visible on a narrow viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
