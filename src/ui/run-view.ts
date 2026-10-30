@@ -74,3 +74,7 @@ export function renderRunResult(root: HTMLElement, session: RunSession, art: Bat
   const won = session.screen === "won";
   root.innerHTML = shell(won ? "全Act完走" : "ラン終了", `<section class="reward-panel run-result"><span class="eyebrow">RUN RESULT</span><h2>${won ? "全Actクリア" : "敗北"}</h2><p>${won ? "3つのActのボスを突破しました。" : "次のランで再挑戦できます。"}</p><div class="map-stats">ACT ${session.run.act} · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</div><button type="button" class="skip-reward" data-action="new-run">新しいランを始める</button></section>`, art);
 }
+
+export function renderSaveRecovery(root: HTMLElement, art: BattleArt): void {
+  root.innerHTML = shell("保存データ", `<section class="reward-panel run-result"><span class="eyebrow">SAVE DATA</span><h2>保存データを読み込めません</h2><p>保存データはそのまま保持しています。新しいランを始めると、この端末の保存データを更新します。</p><button type="button" class="skip-reward" data-action="new-run">新しいランを始める</button></section>`, art);
+}
