@@ -30,7 +30,7 @@ function typableHand(run: RunState, content: ContentRegistry): TypableCard[] {
 
 function endExpiredTurn(run: RunState, dispositionFor: TurnEndDisposition): RunState {
   const combat = requirePhase(run, "PLAYER_INPUT");
-  return { ...run, combat: { ...settleHandAtTurnEnd(combat, dispositionFor), phase: "PLAYER_END" } };
+  return { ...run, combat: { ...settleHandAtTurnEnd(combat, dispositionFor), phase: "PLAYER_END", potionControl: undefined } };
 }
 
 function applyCompletedInput(run: RunState, result: SelectionResult, useCard: UseTypedCard, dispositionFor: TurnEndDisposition): RunState {
@@ -46,7 +46,7 @@ function applyCompletedInput(run: RunState, result: SelectionResult, useCard: Us
   return updated.combat?.clock.remainingMs === 0 ? endExpiredTurn(updated, dispositionFor) : updated;
 }
 
-function advanceSelectionTime(run: RunState, clock: MonotonicClock, config: GameConfig, dispositionFor: TurnEndDisposition): RunState {
+export function advanceSelectionTime(run: RunState, clock: MonotonicClock, config: GameConfig, dispositionFor: TurnEndDisposition): RunState {
   const combat = requirePhase(run, "PLAYER_INPUT");
   const eventAtMs = clock.nowMs();
   const fixedClock = { nowMs: () => eventAtMs };

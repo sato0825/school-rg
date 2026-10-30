@@ -138,6 +138,7 @@ export const CombatStateSchema = z.strictObject({
   resolvingPile: z.array(id).default([]),
   enemies: z.array(EnemyInstanceSchema),
   typing: TypingStateSchema,
+  potionControl: z.strictObject({ active: z.boolean(), typing: TypingStateSchema }).optional(),
   clock: TurnClockStateSchema,
   nextTurnBonusMs: nonNegativeInt.default(0),
   statuses: CombatStatusesSchema.default({ player: {}, enemies: {} }),
