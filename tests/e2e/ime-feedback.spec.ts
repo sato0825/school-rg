@@ -9,6 +9,8 @@ test("Japanese IME composition explains the pause and English typing resumes", a
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
 
   const input = page.getByRole("textbox", { name: "カード名をタイプ" });
+  await expect(input).not.toHaveAttribute("placeholder");
+  expect(await page.locator(".typing-buffer").evaluate((element) => getComputedStyle(element).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
   await input.focus();
   const firstWord = (await page.locator(".card-word").first().innerText()).trim();
   const firstLetter = firstWord[0]!;
@@ -26,7 +28,7 @@ test("Japanese IME composition explains the pause and English typing resumes", a
   await expect(input).toBeFocused();
   await input.evaluate((element) => element.dispatchEvent(new InputEvent("beforeinput", { inputType: "insertText", data: "あ", bubbles: true, cancelable: true })));
   await expect(input).toHaveValue("");
-  if (process.env.SCHOOL_RG_CAPTURE_IME === "1") await page.screenshot({ path: "docs/art/previews/issue176-ime-feedback-390.png" });
+  if (process.env.SCHOOL_RG_CAPTURE_IME === "1") await page.screenshot({ path: "docs/art/previews/issue176-ime-feedback-v2-390.png" });
   await input.press(firstLetter);
   await expect(input).toHaveValue(firstLetter.toLowerCase());
   await expect(page.locator("#battle-ime-notice")).toBeEmpty();
