@@ -58,6 +58,8 @@
 }
 
 /* The next action uses shape, label, and value together. Health uses length and a number. */
+.stage .enemy-slot .intent-ticket{top:-12%}
+.stage[data-enemy-count="2"] .enemy-slot .intent-ticket{top:-25%}
 .intent-ticket{width:min(270px,100%);max-width:100%;min-height:55px;gap:8px;padding:6px 9px;white-space:normal}
 .intent-icon{display:grid;flex:none;place-items:center;width:31px;height:31px;border:2px solid currentColor;border-radius:50%;font-size:18px;line-height:1;font-weight:900;color:#9f334c}
 .intent-ticket[data-category="defend"] .intent-icon{border-radius:5px;color:#37698a}
