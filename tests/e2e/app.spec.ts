@@ -62,7 +62,7 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
 test("title, compendium, club selection, map and battle controls work by keyboard", async ({ page }) => {
   await page.goto("/?shortRun=1&seed=42");
   await expect(page.getByRole("heading", { name: "放課後を、打ち抜く。" })).toBeVisible();
-  await page.getByRole("button", { name: "図鑑を見る" }).focus();
+  await page.getByRole("button", { name: "遊び方と図鑑" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "カード名をタイプして行動" })).toBeVisible();
   await expect(page.locator(".compendium-list details")).toHaveCount(5);

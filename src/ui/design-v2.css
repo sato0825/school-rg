@@ -350,7 +350,7 @@
   .club-strategy { font-size: 9px; }
   .club-stats { font-size: 8px; }
   .game { grid-template-rows: 58px minmax(0, 1fr) auto; }
-  .hero-art { height: 82%; max-width: 47vw; }
+  .hero-art { height: 75%; max-width: 43vw; }
   .control-deck { min-height: 264px; }
   .time-label strong { color: #ffd1db; }
   .typing-hint { color: #c0d4df; }
