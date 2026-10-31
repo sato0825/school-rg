@@ -70,16 +70,23 @@ test("opening the map during Japanese composition restores English typing focus 
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
 
   const input = page.getByRole("textbox", { name: "カード名をタイプ" });
-  const firstLetter = (await page.locator(".card-word").first().innerText()).trim()[0]!;
+  const beforeHp = Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"));
   await input.focus();
   await input.dispatchEvent("compositionstart", { data: "にほんご" });
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
+  await input.evaluate((element) => element.dispatchEvent(new KeyboardEvent("keydown", { key: "あ", code: "KeyA", isComposing: true, bubbles: true, cancelable: true })));
   await expect(page.locator("#battle-ime-notice")).toContainText("日本語入力中");
   await page.getByRole("button", { name: "マップ", exact: true }).click();
   await expect(page.getByRole("region", { name: "校内経路" })).toBeVisible();
   await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(input).toBeFocused();
-  await input.press(firstLetter);
-  await expect(input).toHaveValue(firstLetter.toLowerCase());
+  for (const letter of "strike") {
+    await input.evaluate((element, key) => element.dispatchEvent(new KeyboardEvent("keydown", {
+      key, code: `Key${key.toUpperCase()}`, isComposing: true, bubbles: true, cancelable: true,
+    })), letter);
+  }
+  expect(Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"))).toBeLessThan(beforeHp);
+  await expect(input).toBeFocused();
   await expect(page.locator("#battle-ime-notice")).toBeEmpty();
 });
