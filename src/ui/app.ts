@@ -278,12 +278,16 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       view.message = run.combat.phase === "WON" ? "勝利。最後の一撃を確認してください。" : "敗北。最後の被弾を確認してください。";
       return;
     }
-    audio.play(run.combat.phase === "WON" ? "win" : "lose");
+    const combatOutcome = run.combat.phase;
     run = recordCombatResult(run);
     run = fireRelic(run, "combat_end");
     if (metrics) { observeMetrics(); metrics = finishPlaytestBattle(metrics, run, run.combat!.phase === "WON" ? "won" : "lost"); }
     session = settleRunCombat({ ...session, run }, demoContent);
     run = session.run;
+    // The final note enters after the actor's live victory pose begins. Quiet
+    // and reduced-motion results are still, so their confirmation is immediate.
+    const stillVictory = lowStimulus || (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false);
+    audio.play(combatOutcome === "WON" ? "win" : "lose", session.screen === "won" && !stillVictory ? 0.18 : 0);
     recordTerminal();
     if (metrics && (session.screen === "won" || session.screen === "lost")) metrics = finishPlaytest(metrics, session.screen, clock.nowMs());
     if (session.screen === "won" && !progressionLoadError) {
