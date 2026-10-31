@@ -4,10 +4,10 @@ export type EnemyActionArt = { artId: string; version: string; attack: string; g
 export const enemyActionArtById: Readonly<Record<string, EnemyActionArt>> = {
   "paper-heap": {
     artId: "enemy-paper-heap-action",
-    version: "candidate-v1",
-    attack: new URL("../assets/enemies/actions/paper-heap-attack-windup-candidate-v1.png", import.meta.url).href,
-    guard: new URL("../assets/enemies/actions/paper-heap-guard-windup-candidate-v1.png", import.meta.url).href,
-    hit: new URL("../assets/enemies/actions/paper-heap-hit-candidate-v1.png", import.meta.url).href,
+    version: "candidate-v2",
+    attack: new URL("../assets/enemies/actions/paper-heap-attack-windup-candidate-v2.png", import.meta.url).href,
+    guard: new URL("../assets/enemies/actions/paper-heap-guard-windup-candidate-v2.png", import.meta.url).href,
+    hit: new URL("../assets/enemies/actions/paper-heap-hit-candidate-v2.png", import.meta.url).href,
   },
 };
 
