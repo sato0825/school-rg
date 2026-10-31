@@ -115,7 +115,7 @@ test("the final typed hit remains on stage briefly and a reload settles the save
   const combat = session.run.combat!;
   const prepared = { ...session, run: { ...session.run, combat: { ...combat, enemies: combat.enemies.map((enemy) => ({ ...enemy, hp: 1 })), drawPile: [...combat.drawPile.filter((id) => id !== strikeId), strikeId] } } };
   const saved = serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard");
-  await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+  await page.addInitScript((value) => { if (!sessionStorage.getItem("issue177-terminal-seeded")) { localStorage.setItem("school-rg-run-v1", value); sessionStorage.setItem("issue177-terminal-seeded", "1"); } }, saved);
   await page.goto("/");
   await page.keyboard.type("strike");
   await expect(page.locator(".enemy-slot.defeated")).toBeVisible();
