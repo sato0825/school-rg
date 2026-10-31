@@ -25,6 +25,11 @@ for (const width of [1440, 1024, 390]) {
       return { header: box(".topbar"), stage: box(".stage"), controls: box(".control-deck"), player: box(".player-hud"), message: box(".battle-message"), actorSlot: { x: actor.offsetLeft, width: actor.offsetWidth, height: actor.offsetHeight }, scrollWidth: document.documentElement.scrollWidth };
     });
     const before = await geometry();
+    const toggleStimulus = async () => {
+      await page.locator('.topbar [data-action="toggle-battle-help"]').click();
+      await page.locator("[data-action=toggle-stimulus]").click();
+      await page.locator('.topbar [data-action="toggle-battle-help"]').click();
+    };
     await expect(page.locator(".topbar .player-hud")).toHaveAttribute("aria-label", "科学部の状態");
     await expect(page.locator(".hero-nameplate")).toContainText("科学部");
     await expect(page.locator('.topbar [data-action="toggle-battle-help"]')).toHaveCount(1);
@@ -36,10 +41,10 @@ for (const width of [1440, 1024, 390]) {
     await expect(page.locator(".enemy-health-track")).toHaveAttribute("aria-valuenow", /\d+/);
     await expect(page.locator(".player-health-track")).toHaveAttribute("role", "meter");
     await expect(page.locator(".typing-caption")).toContainText("カード名をタイプ");
-    await page.locator("[data-action=toggle-stimulus]").click();
+    await toggleStimulus();
     await expect(page.locator(".game")).toHaveAttribute("data-effects", "quiet");
     expect(await page.locator(".enemy-art").evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
-    await page.locator("[data-action=toggle-stimulus]").click();
+    await toggleStimulus();
     expect(before.player.y + before.player.height).toBeLessThanOrEqual(before.stage.y + 1);
     expect(before.message.y + before.message.height).toBeLessThanOrEqual(before.controls.y + before.controls.height + 1);
     expect(before.scrollWidth).toBe(width);
@@ -74,7 +79,7 @@ for (const width of [1440, 1024, 390]) {
     await page.emulateMedia({ reducedMotion: "reduce" });
     expect(await page.locator(".result-fx-mark").first().evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
     await page.emulateMedia({ reducedMotion: "no-preference" });
-    await page.locator("[data-action=toggle-stimulus]").click();
+    await toggleStimulus();
     const blockWord = await page.locator(".card").filter({ hasText: "防御" }).first().locator(".card-word").innerText();
     await page.keyboard.type(blockWord);
     await expect(page.locator(".result-fx-mark[data-kind=\"block\"]")).toBeVisible();

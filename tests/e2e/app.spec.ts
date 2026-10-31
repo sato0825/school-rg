@@ -1422,6 +1422,7 @@ test("sound toggle stays usable on a narrow screen and survives reload", async (
   await expect(sound).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: /文芸部/ }).click();
   await enterNextNode(page);
+  await page.getByRole("button", { name: "操作" }).click();
   await expect(sound).toBeVisible();
   await expect(sound).toHaveAttribute("aria-pressed", "true");
 });
@@ -1444,7 +1445,9 @@ test("one typed card emits one sound and mute suppresses the next card", async (
   await enterNextNode(page);
   await page.keyboard.type("heavy strike");
   expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
+  await page.getByRole("button", { name: "操作" }).click();
   await page.locator("[data-action=toggle-audio]").click();
+  await page.getByRole("button", { name: "操作" }).click();
   await page.keyboard.type("strike");
   expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
 });
