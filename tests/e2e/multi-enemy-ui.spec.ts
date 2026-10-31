@@ -83,9 +83,9 @@ for (const [count, width, height] of [[3, 390, 844], [4, 390, 844], [5, 390, 800
   });
 }
 
-test("five different enemies show every ordered Intent step at iPad width", async ({ page }) => {
+for (const width of [1024, 1440] as const) test(`five different enemies show every ordered Intent step at ${width}px`, async ({ page }) => {
   await page.clock.install();
-  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
   const base = createRunSession(42, "science-demo", demoContent);
   const start: MapNode = { id: "five-start", act: 1, floor: 0, kind: "start", nextIds: ["five-fight"] };
   const fight: MapNode = { id: "five-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
@@ -115,9 +115,9 @@ test("five different enemies show every ordered Intent step at iPad width", asyn
   await expect(roster.nth(2)).toHaveAttribute("aria-label", /脆弱/);
   await expect(roster.nth(3)).toHaveAttribute("aria-label", /召喚/);
   await page.locator(".enemy-art").evaluateAll(async (images) => Promise.all(images.map((image) => (image as HTMLImageElement).decode())));
-  if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1") await page.screenshot({ path: "docs/art/previews/issue261-five-enemies-1024-candidate-v3.png" });
+  if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1") await page.screenshot({ path: `docs/art/previews/issue261-five-enemies-${width}-candidate-v3.png` });
   await roster.nth(0).click();
   await expect(roster.nth(0)).toHaveAttribute("aria-pressed", "true");
   await expect(roster.nth(0).locator(".enemy-detail")).toBeVisible();
-  if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1") await page.screenshot({ path: "docs/art/previews/issue261-five-enemies-selected-1024-candidate-v3.png" });
+  if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1") await page.screenshot({ path: `docs/art/previews/issue261-five-enemies-selected-${width}-candidate-v3.png` });
 });
