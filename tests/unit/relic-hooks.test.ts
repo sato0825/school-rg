@@ -24,6 +24,12 @@ describe("relic hook dispatch", () => {
     ];
     const result = resolveRelicHooks(run, [{ id: "turn-1", kind: "turn_start" }], rules, content);
     expect(result.trace.map((entry) => `${entry.ruleId}:${entry.stacks}`)).toEqual(["guard:1", "guard:1", "boost:1", "mend:2"]);
+    expect(result.run.combat!.actionLog?.map((entry) => [entry.sequence, entry.kind, entry.actionId, entry.relicRuleId, entry.relicStacks, entry.playerBlockDelta, entry.playerHpDelta])).toEqual([
+      [1, "relic", "bell", "guard", 1, 2, 0],
+      [2, "relic", "bell", "guard", 1, 2, 0],
+      [3, "relic", "badge", "boost", 1, 1, 0],
+      [4, "relic", "bell", "mend", 2, 0, -2],
+    ]);
     expect(result.run.player).toMatchObject({ hp: 38, block: 5 });
     expect(parseRunState(JSON.parse(JSON.stringify(result.run)), content)).toEqual(result.run);
     expect(resolveRelicHooks(result.run, [{ id: "turn-1", kind: "turn_start" }], rules, content).trace).toEqual([]);
