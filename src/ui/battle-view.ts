@@ -9,8 +9,7 @@ import { describeEnemyIntent, type IntentVisualStep } from "./intent-visual.js";
 import { DEFAULT_GAME_CONFIG, type GameConfig } from "../domain/config.js";
 import { identityForClub } from "../content/character-identities.js";
 import { actorMotionClips, actorMotionState } from "./actor-motion.js";
-import { literatureRigMarkup } from "./literature-rig.js";
-import { musicRigMarkup } from "./music-rig.js";
+import { rigForClub } from "./character-rigs.js";
 
 export type BattleArt = StageArt & {
   heroUrl: string;
@@ -152,9 +151,9 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
   const characterName = identityForClub(run.clubId)?.fullName ?? clubName;
   const heroPoses = view.art.heroPosesByClubId?.[run.clubId];
   const actorMotion = actorMotionState(view.motion, view.motionStartedAtMs, view.animationNowMs, view.lowStimulus, run.clubId, heroPoses);
-  const useRig = ["literature-demo", "music-demo"].includes(run.clubId) && Boolean(view.art.heroRigCandidateIds?.includes(run.clubId));
-  const rigId = useRig ? run.clubId === "music-demo" ? "music-v1" : "literature-v1" : null;
-  const rigMarkup = rigId === "music-v1" ? musicRigMarkup() : rigId === "literature-v1" ? literatureRigMarkup() : "";
+  const rig = view.art.heroRigCandidateIds?.includes(run.clubId) ? rigForClub(run.clubId) : null;
+  const rigId = rig?.id ?? null;
+  const rigMarkup = rig?.markup() ?? "";
   const heroUrl = (view.motion === "hero" ? heroPoses?.activate : view.motion === "hit" ? heroPoses?.hit : heroPoses?.idle)
     ?? view.art.heroUrlByClubId?.[run.clubId] ?? view.art.heroUrl;
   const previewLabel = view.art.previewLabelByClubId?.[run.clubId] ?? view.art.previewLabel;
