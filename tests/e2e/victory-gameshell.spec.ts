@@ -4,6 +4,14 @@ import { demoContent } from "../../src/content/demo-battle.js";
 import { createRunSession } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
 
+const victoryFiles: Readonly<Record<string, string>> = {
+  "literature-demo": "literature-victory-candidate-v1",
+  "science-demo": "serious-student-victory-candidate-v1",
+  "kendo-demo": "kendo-victory-candidate-v1",
+  "music-demo": "music-victory-candidate-v1",
+  "art-demo": "art-victory-candidate-v1",
+};
+
 for (const width of [1024, 1440]) {
   for (const club of demoContent.clubs) {
     test(`${club.name} victory stays on the stage at ${width}px`, async ({ page }) => {
@@ -22,6 +30,7 @@ for (const width of [1024, 1440]) {
       await expect(page.getByRole("heading", { name: "全Actクリア" })).toBeVisible();
       await expect(page.getByRole("heading", { name: "全Actクリア" })).toBeFocused();
       await expect(page.locator(".hero-art.victory-pose")).toBeVisible();
+      await expect(page.locator(".hero-art.victory-pose")).toHaveAttribute("src", new RegExp(victoryFiles[club.id]!));
       await expect(page.locator(".hero-nameplate")).toContainText(club.name);
       await expect(page.locator(".victory-act-marks")).toHaveAttribute("aria-label", "Act 1、Act 2、Act 3を完走");
       await expect(page.locator(".typing-input")).toBeDisabled();

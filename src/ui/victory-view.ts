@@ -1,14 +1,12 @@
 import type { ContentRegistry, RunState } from "../domain/schema.js";
 import type { RunSession } from "../domain/run-flow.js";
-import { presentationForClub } from "./club-presentation.js";
-
-/** Existing action poses are temporary victory art. The mapping is display-only. */
+/** Dedicated victory candidates remain display-only and replaceable after art review. */
 export const victoryCandidateByClubId: Readonly<Record<string, string>> = {
-  "literature-demo": presentationForClub("literature-demo").activate,
-  "science-demo": presentationForClub("science-demo").activate,
-  "kendo-demo": presentationForClub("kendo-demo").activate,
-  "music-demo": presentationForClub("music-demo").activate,
-  "art-demo": presentationForClub("art-demo").activate,
+  "literature-demo": new URL("../../docs/art/candidates/literature-victory-candidate-v1.png", import.meta.url).href,
+  "science-demo": new URL("../../docs/art/candidates/serious-student-victory-candidate-v1.png", import.meta.url).href,
+  "kendo-demo": new URL("../../docs/art/candidates/kendo-victory-candidate-v1.png", import.meta.url).href,
+  "music-demo": new URL("../../docs/art/candidates/music-victory-candidate-v1.png", import.meta.url).href,
+  "art-demo": new URL("../../docs/art/candidates/art-victory-candidate-v1.png", import.meta.url).href,
 };
 
 export type VictoryNoteOptions = {
