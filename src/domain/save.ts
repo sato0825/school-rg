@@ -13,6 +13,7 @@ const SavedSessionSchema = z.strictObject({
   screen: z.enum(["map", "combat", "reward", "shop", "rest", "event", "treasure", "won", "lost"]),
   completedNodeIds: z.array(z.string().min(1)),
   rewardCardIds: z.array(z.string().min(1)),
+  encounterHistory: z.record(z.string(), z.array(z.string().min(1))).optional(),
 });
 
 const SaveEnvelopeSchema = z.strictObject({
@@ -30,6 +31,11 @@ export class UnsupportedSaveVersionError extends Error {
 function validateSession(session: RunSession, content: ContentRegistry): void {
   const { run, screen, completedNodeIds, rewardCardIds } = session;
   if (session.runId === "") throw new RangeError("run ID must not be empty");
+  for (const [key, values] of Object.entries(session.encounterHistory ?? {})) {
+    if (!/^[1-3]:(combat|elite|boss)$/.test(key) || new Set(values).size !== values.length || values.length > 100) {
+      throw new RangeError("encounter history is invalid");
+    }
+  }
   const nodeIds = new Set(run.map.nodes.map((node) => node.id));
   if (new Set(completedNodeIds).size !== completedNodeIds.length || completedNodeIds.some((id) => !nodeIds.has(id))) {
     throw new RangeError("completed map nodes are invalid or duplicated");
@@ -77,7 +83,8 @@ export function deserializeRunSession(json: string, content: ContentRegistry, cl
       paused: run.combat.phase === "PLAYER_INPUT" ? true : run.combat.clock.paused } } };
   }
   const session: RunSession = { runId: parsed.session.runId, run, screen: parsed.session.screen as RunScreen,
-    completedNodeIds: parsed.session.completedNodeIds, rewardCardIds: parsed.session.rewardCardIds };
+    completedNodeIds: parsed.session.completedNodeIds, rewardCardIds: parsed.session.rewardCardIds,
+    encounterHistory: parsed.session.encounterHistory ?? {} };
   validateSession(session, content);
   return session;
 }

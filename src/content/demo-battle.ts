@@ -249,6 +249,7 @@ export const demoRelicRules: RelicRule[] = [
 ];
 
 export const demoEncounterTable: EncounterTable = {
+  selectionPolicy: "cycle", // Provisional #144 variety policy; final encounter weights belong to #68.
   byAct: {
     1: { combat: ["paper-heap", "late-pass", "lost-homework"], elite: [{ id: "hall-and-scrap", enemyIds: ["hall-monitor", "paper-scrap"] }, "notice-board", "school-gate"], boss: ["final-exam", "gym-scoreboard"] },
     2: { combat: ["chalk-cloud", "safety-sign", "lab-magnet"], elite: ["library-cart", "stairwell-echo", "library-index"], boss: ["club-auditor", "lab-ventilation"] },
