@@ -34,7 +34,7 @@ for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, he
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
     if (process.env.SCHOOL_RG_CAPTURE_OBJECTS === "1") {
       await page.locator('.enemy-roster-button[data-id="objects-enemy-3"]').focus();
-      await page.screenshot({ path: `docs/art/previews/issue187-battle-objects-${width}x${height}.png` });
+      await page.screenshot({ path: `docs/art/previews/issue187-battle-objects-integrated-${width}x${height}.png` });
     }
   });
 }

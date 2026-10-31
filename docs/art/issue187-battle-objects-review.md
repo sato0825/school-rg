@@ -11,7 +11,9 @@
 
 同じシードの科学部戦闘を、プレイヤーに力・毒、3体目の敵に弱体を付けて表示した。3体目の詳細札を開いた状態で撮影した。
 
-- [PC 1440×900](previews/issue187-battle-objects-1440x900.png)
-- [iPad相当 1024×768](previews/issue187-battle-objects-1024x768.png)
+- [PC 1440×900・#180/#178統合後](previews/issue187-battle-objects-integrated-1440x900.png)
+- [iPad相当 1024×768・#180/#178統合後](previews/issue187-battle-objects-integrated-1024x768.png)
 
-Playwright Chromium 2件、結合テスト8件、lint、型検査が成功した。実機iPadでの入力・表示確認と、Issue #180 のヘッダ整理・Issue #176 のIME変更を取り込んだ後の統合確認は未実施。
+統合前の画像は表示の経過として別名で保持している。
+
+Playwright Chromium 2件、結合テスト8件、lint、型検査が成功した。Issue #180 のヘッダ整理と Issue #178 の科学部向き候補を取り込んだ後の画面を再撮影した。実機iPadでの入力・表示確認と、Issue #176 のIME変更を取り込んだ後の統合確認は未実施。
