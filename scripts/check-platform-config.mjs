@@ -12,5 +12,7 @@ assert.ok(config.app.windows[0].minHeight >= 640);
 assert.ok(config.bundle.icon.every((icon) => icon.startsWith("app-icons/")));
 assert.match(project, /TARGETED_DEVICE_FAMILY:\s*2\b/);
 assert.equal((xcodeProject.match(/TARGETED_DEVICE_FAMILY = 2;/g) ?? []).length, 2);
+assert.match(project, /ASSETCATALOG_COMPILER_APPICON_NAME:\s*SchoolRGIcon\b/);
+assert.equal((xcodeProject.match(/ASSETCATALOG_COMPILER_APPICON_NAME = SchoolRGIcon;/g) ?? []).length, 2);
 
 console.log("Tauri desktop and iPad package configuration is consistent.");

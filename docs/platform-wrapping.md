@@ -5,7 +5,7 @@ Issue #185。Web版と同じ TypeScript/Vite の戦闘・セーブ・画像を T
 ## リポジトリ内の構成
 
 - `src-tauri/tauri.conf.json`: Vite成果物 `dist/`、PCの初期/最小ウィンドウサイズ、同梱アイコン、最小のWebView権限。
-- `src-tauri/gen/apple/`: `tauri ios init` で作成したXcodeプロジェクト。`project.yml` と `.xcodeproj` の `TARGETED_DEVICE_FAMILY = 2` でiPadを対象にする（[Appleの設定値](https://developer.apple.com/documentation/xcode/build-settings-reference)）。
+- `src-tauri/gen/apple/`: `tauri ios init` で作成したXcodeプロジェクト。`project.yml` と `.xcodeproj` の `TARGETED_DEVICE_FAMILY = 2` でiPadを対象にする（[Appleの設定値](https://developer.apple.com/documentation/xcode/build-settings-reference)）。`SchoolRGIcon.appiconset` に独自アイコンを置き、Tauriの既定アイコンは選択しない。
 - `src-tauri/app-icon-source.svg` と `app-icons/`: 再生成できる暫定アプリアイコン。最終アート審査は #29。Tauri初期ロゴは使用しない。
 - 保存は既存 `SaveStore` アダプタの `localStorage` を使う。アプリのWebView内での実際の保存/ロードはMac・iPad実操作で検証する。
 
@@ -17,7 +17,7 @@ Issue #185。Web版と同じ TypeScript/Vite の戦闘・セーブ・画像を T
 4. WindowsではTauri公式の[Microsoft C++ Build Tools と WebView2](https://v2.tauri.app/start/prerequisites/)を準備し、同じ `npm run app:build` を実行する。
 5. iPadはXcodeを備えたMacで既存 `src-tauri/gen/apple/` を使い、必要なRustのiOS targetを入れて `npm run app:ios:build`。署名チーム/証明書は環境変数やXcodeで指定し、リポジトリに書き込まない。
 
-このリポジトリのXcodeプロジェクトはiPad専用に調整済み。`tauri ios init` を再実行した場合は `TARGETED_DEVICE_FAMILY = 2` を `project.yml` に戻して `xcodegen generate --spec project.yml` を実行し、`npm run check:platform` で照合する。Simulator/Emulatorは通常QAで使わず、接続できる実機iPadを使う。
+このリポジトリのXcodeプロジェクトはiPad専用に調整済み。`tauri ios init` を再実行した場合は `TARGETED_DEVICE_FAMILY = 2` と `ASSETCATALOG_COMPILER_APPICON_NAME = SchoolRGIcon` を `project.yml` に戻して `xcodegen generate --spec project.yml` を実行し、`npm run check:platform` で照合する。Simulator/Emulatorは通常QAで使わず、接続できる実機iPadを使う。
 
 ## 受入確認
 
