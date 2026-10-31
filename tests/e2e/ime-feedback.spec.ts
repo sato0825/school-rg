@@ -19,6 +19,8 @@ test("Japanese IME composition explains the pause and English typing resumes", a
   const timeBefore = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
 
   await input.dispatchEvent("compositionstart", { data: "にほんご" });
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
+  await input.evaluate((element) => element.dispatchEvent(new KeyboardEvent("keydown", { key: "あ", code: "KeyA", isComposing: true, bubbles: true, cancelable: true })));
   await expect(page.locator("#battle-ime-notice")).toContainText("日本語入力中");
   await input.evaluate((element) => element.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", isComposing: true, bubbles: true, cancelable: true })));
   await page.clock.runFor(150);
@@ -46,7 +48,7 @@ for (const width of [1024, 1440]) test(`IME guidance stays clear of the card han
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
   const input = page.getByRole("textbox", { name: "カード名をタイプ" });
   await input.focus();
-  await input.evaluate((element) => element.dispatchEvent(new KeyboardEvent("keydown", { key: "Process", code: "KeyA", isComposing: true, bubbles: true, cancelable: true })));
+  await input.evaluate((element) => element.dispatchEvent(new KeyboardEvent("keydown", { key: "あ", code: "KeyA", isComposing: true, bubbles: true, cancelable: true })));
   const notice = page.locator("#battle-ime-notice");
   await expect(notice).toBeVisible();
   const bounds = await page.evaluate(() => {

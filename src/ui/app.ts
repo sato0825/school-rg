@@ -16,6 +16,7 @@ import { candidateBattleArt, demoBattleArt } from "./demo-art.js";
 import { cardFxForUse } from "./card-fx.js";
 import { recordCombatResult } from "../domain/combat-action-log.js";
 import { MOTION_MS } from "./motion-timing.js";
+import { resultFxForTransition } from "./result-fx.js";
 import { renderClubSelect, renderCompendium, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserHistoryStore, browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
@@ -24,6 +25,7 @@ import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, 
 import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
 import { createAudioFeedback } from "./audio.js";
+import { imeLatinKey } from "./ime-key.js";
 import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
 
 const config = DEFAULT_GAME_CONFIG;
@@ -86,8 +88,12 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, resultFx: null, dyingEnemyInstanceIds: [], animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   let imeComposing = false;
+  let imeNeedsRecovery = false;
+  let keyboardLayoutMap: ReadonlyMap<string, string> | null = null;
+  const keyboardWithLayout = (navigator as Navigator & { keyboard?: { getLayoutMap?: () => Promise<ReadonlyMap<string, string>> } }).keyboard;
+  void keyboardWithLayout?.getLayoutMap?.().then((map) => { keyboardLayoutMap = map; }).catch(() => { /* Keep the ordinary key path when unsupported. */ });
   const setImeNotice = (notice: string) => {
     view.imeNotice = notice;
     const element = root.querySelector<HTMLElement>("#battle-ime-notice");
@@ -126,6 +132,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   const startCombat = () => {
     preloadClubArt(run.clubId);
     view.cardFx = null;
+    view.resultFx = null;
+    view.dyingEnemyInstanceIds = [];
     if (metrics) metrics = recordPlaytestBattle(metrics, run);
     run = fireRelic(run, "combat_start");
     run = beginPlayerTurn(run, clock, config, demoContent);
@@ -140,8 +148,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     catch { metricsLoadError = true; }
   };
   const render = () => {
-    if (session.screen !== "combat" || frontScreen !== null) { imeComposing = false; view.imeNotice = ""; }
-    else if (imeComposing) { imeComposing = false; view.imeNotice = "英数入力に切り替えて、カードの英単語を入力してください。"; }
+    if (session.screen !== "combat" || frontScreen !== null) { imeComposing = false; imeNeedsRecovery = false; view.imeNotice = ""; }
+    else if (imeComposing) { imeComposing = false; view.imeNotice = imeNeedsRecovery ? "英数入力に切り替えて、カードの英単語を入力してください。" : ""; }
     if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT") view.helpOpen = false;
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
     const battleMapScrollTop = root.querySelector<HTMLElement>(".battle-map-scroll")?.scrollTop;
@@ -219,6 +227,12 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
 
   function settleIfFinished(): void {
     if (session.screen !== "combat" || (run.combat?.phase !== "WON" && run.combat?.phase !== "LOST")) return;
+    // The combat rules are already terminal and the clock is stopped. Keep the
+    // resolved hit on the stage until its actor-local cue has been shown.
+    if (view.motion === "hero" || view.motion === "hit") {
+      view.message = run.combat.phase === "WON" ? "勝利。最後の一撃を確認してください。" : "敗北。最後の被弾を確認してください。";
+      return;
+    }
     audio.play(run.combat.phase === "WON" ? "win" : "lose");
     run = recordCombatResult(run);
     run = fireRelic(run, "combat_end");
@@ -246,14 +260,17 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     }, config, demoContent);
     audio.play("card");
     view.message = `${card.input.text} を発動`;
+    const resolved = fireRelic(updated, "card_used", { cardInstanceId: instanceId });
     view.cardFx = cardFx;
+    view.resultFx = resultFxForTransition(state, resolved, view.layoutPreviewAllies ?? 1, clock.nowMs());
+    view.dyingEnemyInstanceIds = state.combat!.enemies.filter((enemy) => enemy.hp > 0 && (resolved.combat?.enemies.find((next) => next.instanceId === enemy.instanceId)?.hp ?? enemy.hp) <= 0).map((enemy) => enemy.instanceId);
     setMotion("hero");
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
     const currentGeneration = generation;
     const startedAtMs = view.motionStartedAtMs;
-    window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hero" && view.motionStartedAtMs === startedAtMs) { view.cardFx = null; setMotion(null); render(); } }, MOTION_MS.hero);
-    return fireRelic(updated, "card_used", { cardInstanceId: instanceId });
+    window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hero" && view.motionStartedAtMs === startedAtMs) { view.cardFx = null; view.resultFx = null; view.dyingEnemyInstanceIds = []; setMotion(null); settleIfFinished(); render(); } }, MOTION_MS.hero);
+    return resolved;
   };
 
   function handleError(error: unknown): void {
@@ -272,6 +289,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     enemyPending = true;
     audio.play("enemy");
     setMotion("enemy");
+    view.resultFx = null;
     view.message = "敵が予告した行動を実行します。";
     render();
     const currentGeneration = generation;
@@ -279,12 +297,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (currentGeneration !== generation) return;
       try {
         let receivedHit = false;
+        const beforeEnemyAction = run;
         run = completeEnemyPhase(run, (state) => resolveEnemyIntents(state, demoEnemyAi, demoContent,
           (live, enemyInstanceId, intent) => executeEnemyIntentEffects(live, enemyInstanceId, intent, demoEnemyAi, demoContent, config,
             (hitState, hpLost) => {
               if (hpLost > 0) receivedHit = true;
               return fireRelic(hitState, "hit_taken", { hpLost });
             })), config);
+        view.resultFx = resultFxForTransition(beforeEnemyAction, run, view.layoutPreviewAllies ?? 1, clock.nowMs());
         enemyPending = false;
         if (receivedHit) audio.play("hit");
         setMotion(receivedHit ? "hit" : null);
@@ -294,7 +314,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
           view.message = "次のターン。カード名をタイプしてください。";
         } else settleIfFinished();
         render();
-        if (receivedHit) window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hit") { setMotion(null); render(); } }, MOTION_MS.hit);
+        window.setTimeout(() => { if (generation === currentGeneration && view.motion === (receivedHit ? "hit" : null)) { view.resultFx = null; setMotion(null); settleIfFinished(); render(); } }, MOTION_MS.hit);
       } catch (error) { handleError(error); }
     }, MOTION_MS.enemyPhase);
   }
@@ -304,6 +324,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     enemyPending = false;
     setMotion(null);
     view.cardFx = null;
+    view.resultFx = null;
+    view.dyingEnemyInstanceIds = [];
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
     session = createRunSession(0, "literature-demo", demoContent, mapOptions);
@@ -375,17 +397,27 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       return;
     }
     if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
-    if (imeComposing || event.isComposing || event.keyCode === 229) {
-      setImeNotice("日本語入力中です。英数入力に切り替えるとカード名をタイプできます。");
+    const composing = imeComposing || event.isComposing || event.keyCode === 229;
+    const resolvedKey = composing ? imeLatinKey(event, keyboardLayoutMap) : null;
+    if (composing && !resolvedKey) {
+      if (!["Enter", " ", "Escape", "Backspace", "Delete", "Tab", "Shift", "Control", "Alt", "Meta"].includes(event.key)) {
+        imeNeedsRecovery = true;
+        setImeNotice("日本語入力中です。英数入力に切り替えるとカード名をタイプできます。");
+      }
       return;
     }
-    if (/^[a-z]$/i.test(event.key) && view.imeNotice) setImeNotice("");
+    const key = resolvedKey ?? event.key;
+    if (resolvedKey) {
+      imeComposing = false;
+      imeNeedsRecovery = false;
+    }
+    if (/^[a-z]$/i.test(key) && view.imeNotice) setImeNotice("");
     if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
-    const focusTypingInput = event.target instanceof HTMLButtonElement && event.key.length === 1;
-    if (event.target instanceof HTMLButtonElement && event.key.length === 1) event.target.blur();
-    if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (event.key === "Backspace" || event.key === "Delete"))) event.preventDefault();
-    if (view.helpOpen && event.key.length === 1) view.helpOpen = false;
-    submitInputKey(event.key, event.repeat, event.isComposing);
+    const focusTypingInput = event.target instanceof HTMLButtonElement && key.length === 1;
+    if (focusTypingInput) event.target.blur();
+    if (key.length === 1 || key === "Enter" || key === "Escape" || key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (key === "Backspace" || key === "Delete"))) event.preventDefault();
+    if (view.helpOpen && key.length === 1) view.helpOpen = false;
+    submitInputKey(key, event.repeat, false);
     if (focusTypingInput && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
   }
 
@@ -408,14 +440,15 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   function onCompositionStart(event: CompositionEvent): void {
     if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
     imeComposing = true;
-    setImeNotice("日本語入力中です。英数入力に切り替えるとカード名をタイプできます。");
+    imeNeedsRecovery = false;
+    setImeNotice("");
   }
 
   function onCompositionEnd(event: CompositionEvent): void {
     if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
     imeComposing = false;
     event.target.value = run.combat?.potionControl?.active ? run.combat.potionControl.typing.buffer : run.combat?.typing.buffer ?? "";
-    setImeNotice("英数入力に切り替えて、カードの英単語を入力してください。");
+    setImeNotice(imeNeedsRecovery ? "英数入力に切り替えて、カードの英単語を入力してください。" : "");
   }
 
   function onClick(event: MouseEvent): void {
@@ -646,6 +679,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   if (session.screen === "won" || session.screen === "lost") recordTerminal();
   if (metrics && session.screen === "combat" && run.combat) metrics = recordPlaytestBattle(metrics, run, true);
   if (session.screen === "combat" && run.combat?.phase === "PLAYER_START") startCombat();
+  if (session.screen === "combat" && (run.combat?.phase === "WON" || run.combat?.phase === "LOST")) settleIfFinished();
   if (session.screen === "combat") preloadClubArt(run.clubId);
   render();
   if (session.screen === "combat") enemyPhase();
