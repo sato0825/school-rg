@@ -66,3 +66,17 @@ test("low stimulus route keeps the same information without blur", async ({ page
   await expect(page.locator(".map-node.available")).not.toHaveCount(0);
   expect(await page.locator(".route-scene-overlay").evaluate((element) => getComputedStyle(element).backdropFilter)).toBe("none");
 });
+
+test("an available route can be selected by touch at iPad width", async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 1024, height: 768 }, hasTouch: true });
+  try {
+    const page = await context.newPage();
+    await page.goto("/?shortRun=1&seed=42");
+    await page.getByRole("button", { name: "ランを始める" }).tap();
+    await page.getByRole("button", { name: /文芸部/ }).tap();
+    await page.locator(".route-scene .map-node.available").first().tap();
+    await expect(page.locator(".stage")).toBeVisible();
+  } finally {
+    await context.close();
+  }
+});
