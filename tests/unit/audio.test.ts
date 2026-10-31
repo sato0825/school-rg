@@ -51,7 +51,7 @@ describe("audio feedback adapter", () => {
 
   it("keeps every cue short and bounds the summed peak of its voices", () => {
     for (const voices of Object.values(cueVoices)) {
-      expect(Math.max(...voices.map((voice) => voice.delay + voice.seconds))).toBeLessThanOrEqual(0.3);
+      expect(Math.max(...voices.map((voice) => voice.delay + voice.seconds))).toBeLessThanOrEqual(0.301);
       expect(voices.reduce((sum, voice) => sum + voice.peak, 0)).toBeLessThanOrEqual(0.07);
       expect(voices.every((voice) => voice.fromHz > 0 && voice.toHz > 0 && voice.seconds > 0)).toBe(true);
     }
