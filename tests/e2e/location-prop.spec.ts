@@ -34,6 +34,7 @@ for (const width of [1440, 1024]) for (const [place, artId] of Object.entries(pl
     if (place === "treasure" && width === 1024) {
       await page.locator('[data-action="treasure-offer"]:not(:disabled)').first().click();
       await expect(page.locator('.location-scene[data-claiming="true"]')).toBeVisible();
+      if (capture) await page.screenshot({ path: `${capture}/treasure-claim-${width}.png`, fullPage: true });
       await expect(page.locator(".map-panel")).toBeVisible();
       await page.locator('.map-node.available[data-id="prop-boss"]').click();
       await expect(page.locator(".enemy-slot")).toBeVisible();

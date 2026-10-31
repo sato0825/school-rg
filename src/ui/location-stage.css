@@ -18,10 +18,10 @@
 }
 .game-shell .location-prop {
   position: absolute;
-  top: 7%;
-  left: 48%;
-  width: 40%;
-  height: 48%;
+  top: 26%;
+  left: 45%;
+  width: 47%;
+  height: 53%;
   pointer-events: none;
   filter: drop-shadow(7px 12px 8px #17384977);
 }
@@ -94,6 +94,9 @@
 .game-shell .location-prop-rest,
 .game-shell .location-prop-event { position: absolute; inset: 0; }
 .game-shell .location-prop-art { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 9px 7px #162f3f55); }
+.game-shell[data-screen="shop"] .location-prop { left: 27%; width: 31%; }
+.game-shell[data-screen="shop"] .location-choices { max-height: 52%; }
+.game-shell[data-screen="shop"] .location-choice { min-height: 68px; }
 .game-shell .locker-open { position: absolute; left: 39%; top: 41%; width: 37%; height: 31%; display: flex; align-items: center; justify-content: space-around; }
 .game-shell .locker-open span { width: 35%; height: 55%; border-radius: 50%; opacity: 0; }
 .game-shell .location-scene[data-claiming="true"] .location-choice:not(.is-claiming) { opacity: .55; }
@@ -104,7 +107,7 @@
 @keyframes location-claim-lift { from { transform: translateY(0) scale(1); } 50% { transform: translateY(-18px) scale(1.1); } to { transform: translateY(-9px) scale(1.04); } }
 
 @media (max-width: 1100px) {
-  .game-shell .location-prop { top: 5%; left: 43%; width: 52%; height: 43%; }
+  .game-shell .location-prop { top: 26%; left: 47%; width: 48%; height: 53%; }
   .game-shell .location-choices { right: 3%; bottom: 5%; width: 57%; max-height: 51%; }
   .game-shell .location-heading h2 { font-size: 21px; }
   .game-shell .location-choice { min-height: 69px; padding: 6px; }
@@ -114,8 +117,8 @@
   .game-shell .location-choice-outcome { font-size: 9px; }
   .game-shell .location-shelf, .game-shell .location-choice-list:has(> .location-choice) { gap: 5px; }
   .game-shell .location-event-description { max-height: 50px; }
-  .game-shell[data-screen="shop"] .location-prop { top: 1%; height: 35%; }
-  .game-shell[data-screen="shop"] .location-choices { bottom: 4%; max-height: 61%; }
+  .game-shell[data-screen="shop"] .location-prop { top: 31%; left: 27%; width: 33%; height: 53%; }
+  .game-shell[data-screen="shop"] .location-choices { bottom: 4%; width: 48%; max-height: 61%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .game-shell .location-choice { transform: none !important; transition: none !important; }
