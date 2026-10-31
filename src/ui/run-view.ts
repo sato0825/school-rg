@@ -87,7 +87,7 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
     const card = content.cards.find((item) => item.id === cardId)!;
     return `<button type="button" class="reward-card ${signature.has(card.id) ? "signature" : ""}" data-card-kind="${card.type}" data-action="reward-card" data-id="${card.id}"><small>${signature.has(card.id) ? "部活固有 · " : ""}${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span></button>`;
   }).join("");
-  root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><p>選んだカードはこのランのデッキへ加わります。</p><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
+  root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><p>選んだカードはこのランのデッキへ加わります。</p><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="open-combat-log">戦闘ログを見る</button><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
 }
 
 export function renderRunTreasure(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, config: GameConfig = DEFAULT_GAME_CONFIG): void {
@@ -153,18 +153,30 @@ export function renderRunEvent(root: HTMLElement, session: RunSession, content: 
   root.innerHTML = shell("校内イベント", `<section class="reward-panel event-panel"><span class="eyebrow">AFTER SCHOOL</span><h2>${html(event.title)}</h2><p>${html(event.description)}</p><div class="event-choices">${choices}</div><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
 }
 
-function combatLogEntry(entry: CombatActionLogEntry, run: RunState, content: ContentRegistry): string {
+function combatLogEntry(entry: CombatActionLogEntry, enemies: readonly { instanceId: string; enemyId: string }[], cards: readonly { instanceId: string; cardId: string }[], content: ContentRegistry): string {
   const turnLabels: Record<string, string> = { "player-start": "入力ターン開始", "player-input-end": "入力時間終了", "player-end": "プレイヤーターン終了", "enemy-start": "敵フェーズ開始", "enemy-end": "敵フェーズ終了" };
   const enemyName = (instanceId: string) => {
-    const enemyId = run.combat?.enemies.find((enemy) => enemy.instanceId === instanceId)?.enemyId;
+    const enemyId = enemies.find((enemy) => enemy.instanceId === instanceId)?.enemyId;
     return content.enemies.find((enemy) => enemy.id === enemyId)?.name ?? instanceId;
   };
-  const label = entry.kind === "turn" ? turnLabels[entry.actionId]
+  const label = entry.kind === "result" ? entry.actionId === "won" ? "勝利確定" : "敗北確定"
+    : entry.kind === "relic" ? content.relics.find((relic) => relic.id === entry.actionId)?.name
+    : entry.kind === "turn" ? turnLabels[entry.actionId]
     : entry.kind === "card" ? content.cards.find((card) => card.id === entry.actionId)?.input.text
     : entry.kind === "potion" ? content.potions.find((potion) => potion.id === entry.actionId)?.name
       : `${enemyName(entry.actorEnemyInstanceId!)} · ${content.intents.find((intent) => intent.id === entry.actionId)?.label ?? entry.actionId}`;
   const signed = (value: number) => `${value > 0 ? "+" : ""}${value}`;
   const details: string[] = [];
+  if (entry.kind === "relic") {
+    const triggerNames: Record<string, string> = { acquired: "獲得", combat_start: "戦闘開始", card_used: "カード使用", hit_taken: "被弾", turn_start: "ターン開始", turn_end: "ターン終了", combat_end: "戦闘終了" };
+    details.push(`発火: ${triggerNames[entry.relicTrigger ?? ""] ?? entry.relicTrigger ?? "不明"}`);
+    if (entry.relicStacks && entry.relicStacks > 1) details.push(`${entry.relicStacks}重`);
+    if (entry.sourceCardInstanceId) {
+      const cardId = cards.find((card) => card.instanceId === entry.sourceCardInstanceId)?.cardId;
+      details.push(`元カード: ${content.cards.find((card) => card.id === cardId)?.input.text ?? entry.sourceCardInstanceId}`);
+    }
+    if (entry.triggerHpLost !== undefined) details.push(`被弾 ${entry.triggerHpLost}`);
+  }
   if (entry.playerHpDelta) details.push(`自分 ♥ ${signed(entry.playerHpDelta)}`);
   if (entry.playerBlockDelta) details.push(`自分 ◇ ${signed(entry.playerBlockDelta)}`);
   for (const delta of entry.enemyDeltas) {
@@ -179,19 +191,21 @@ function combatLogEntry(entry: CombatActionLogEntry, run: RunState, content: Con
   if (entry.exhaustedCount) details.push(`除外 +${entry.exhaustedCount}`);
   if (entry.turnClockMs !== undefined) details.push(`入力時間 ${entry.turnClockMs / 1_000}秒`);
   if (entry.timeDeltaMs) details.push(`時間 ${signed(entry.timeDeltaMs / 1_000)}秒`);
+  if (entry.goldDelta) details.push(`所持金 ${signed(entry.goldDelta)}G`);
   const target = entry.targetEnemyInstanceId ? ` → ${enemyName(entry.targetEnemyInstanceId)}` : "";
-  return `<li class="combat-log-entry" data-kind="${entry.kind}"><span class="log-sequence">TURN ${entry.turn} · ${String(entry.sequence).padStart(2, "0")}</span><strong>${html(label ?? entry.actionId)}${html(target)}</strong><span class="log-kind">${entry.kind === "card" ? "カード" : entry.kind === "potion" ? "ポーション" : entry.kind === "turn" ? "進行" : "敵Intent"}</span><div class="log-changes">${(details.length ? details : [entry.kind === "turn" ? "フェーズ移行" : "状態変化なし"]).map((detail) => `<span>${html(detail)}</span>`).join("")}</div></li>`;
+  return `<li class="combat-log-entry" data-kind="${entry.kind}"><span class="log-sequence">TURN ${entry.turn} · ${String(entry.sequence).padStart(2, "0")}</span><strong>${html(label ?? entry.actionId)}${html(target)}</strong><span class="log-kind">${entry.kind === "card" ? "カード" : entry.kind === "potion" ? "ポーション" : entry.kind === "turn" ? "進行" : entry.kind === "relic" ? "レリック" : entry.kind === "result" ? "結果" : "敵Intent"}</span><div class="log-changes">${(details.length ? details : [entry.kind === "turn" ? "フェーズ移行" : "状態変化なし"]).map((detail) => `<span>${html(detail)}</span>`).join("")}</div></li>`;
 }
 
 export function renderRunCombatLog(root: HTMLElement, run: RunState, content: ContentRegistry, art: BattleArt): void {
-  if (!run.combat) throw new Error("combat log requires combat");
-  const entries = run.combat.actionLog ?? [];
-  root.innerHTML = shell("戦闘ログ", `<section class="front-panel combat-log-panel"><span class="eyebrow">BATTLE RECORD</span><h2>この戦闘の記録</h2><p>ターンの進行と、発動したカード・ポーション、敵が実行したIntentを順番に表示します。</p><button type="button" class="front-back" data-action="front-back">戦闘に戻る</button>${entries.length ? `<ol class="combat-log-list">${entries.map((entry) => combatLogEntry(entry, run, content)).join("")}</ol>` : `<p class="combat-log-empty">まだ行動の記録はありません。</p>`}</section>`, art, run.act);
+  const history = run.combat ? { entries: run.combat.actionLog ?? [], enemies: run.combat.enemies, cards: run.combat.cards } : run.lastCombatLog;
+  if (!history) throw new Error("combat log requires combat history");
+  const backLabel = run.combat?.phase === "PLAYER_INPUT" ? "戦闘に戻る" : "前の画面に戻る";
+  root.innerHTML = shell("戦闘ログ", `<section class="front-panel combat-log-panel"><span class="eyebrow">BATTLE RECORD</span><h2>この戦闘の記録</h2><p>ターンの進行と、発動したカード・ポーション、敵Intent、レリック反応を順番に表示します。</p><button type="button" class="front-back" data-action="front-back">${backLabel}</button>${history.entries.length ? `<ol class="combat-log-list">${history.entries.map((entry) => combatLogEntry(entry, history.enemies, history.cards, content)).join("")}</ol>` : `<p class="combat-log-empty">まだ行動の記録はありません。</p>`}</section>`, art, run.act);
 }
 
 export function renderRunResult(root: HTMLElement, session: RunSession, art: BattleArt, playtest: PlaytestRecord | null = null, playtestError = false, historyError = false): void {
   const won = session.screen === "won";
-  root.innerHTML = shell(won ? "全Act完走" : "ラン終了", `<section class="reward-panel run-result"><span class="eyebrow">RUN RESULT</span><h2>${won ? "全Actクリア" : "敗北"}</h2><p>${won ? "3つのActのボスを突破しました。" : "次のランで再挑戦できます。"}</p><div class="map-stats">ACT ${session.run.act} · 難度 ${session.run.ascensionLevel} · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</div>${playtest ? `<div class="playtest-result"><strong>実操作 ${formatPlaytestTime(playtest.activeMs)}</strong><span>訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</span><button type="button" data-action="export-playtest">計測JSONを保存</button></div>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : ""}${historyError ? `<p class="history-error" role="status">ラン履歴を保存または読込できません。既存データを保持しています。</p>` : ""}<div class="result-actions"><button type="button" class="skip-reward" data-action="open-history">ラン履歴を見る</button><button type="button" class="skip-reward" data-action="new-run">新しいランを始める</button></div></section>`, art, session.run.act);
+  root.innerHTML = shell(won ? "全Act完走" : "ラン終了", `<section class="reward-panel run-result"><span class="eyebrow">RUN RESULT</span><h2>${won ? "全Actクリア" : "敗北"}</h2><p>${won ? "3つのActのボスを突破しました。" : "次のランで再挑戦できます。"}</p><div class="map-stats">ACT ${session.run.act} · 難度 ${session.run.ascensionLevel} · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</div>${playtest ? `<div class="playtest-result"><strong>実操作 ${formatPlaytestTime(playtest.activeMs)}</strong><span>訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</span><button type="button" data-action="export-playtest">計測JSONを保存</button></div>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : ""}${historyError ? `<p class="history-error" role="status">ラン履歴を保存または読込できません。既存データを保持しています。</p>` : ""}<div class="result-actions">${session.run.lastCombatLog ? `<button type="button" class="skip-reward" data-action="open-combat-log">最後の戦闘ログ</button>` : ""}<button type="button" class="skip-reward" data-action="open-history">ラン履歴を見る</button><button type="button" class="skip-reward" data-action="new-run">新しいランを始める</button></div></section>`, art, session.run.act);
 }
 
 export function renderSaveRecovery(root: HTMLElement, art: BattleArt): void {

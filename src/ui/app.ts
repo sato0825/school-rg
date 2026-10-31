@@ -14,6 +14,7 @@ import { discardPotion, selectPotionEnemy, selectPotionSlot, setPotionInputActiv
 import { renderBattle, type BattleView } from "./battle-view.js";
 import { candidateBattleArt, demoBattleArt } from "./demo-art.js";
 import { cardFxForUse } from "./card-fx.js";
+import { recordCombatResult } from "../domain/combat-action-log.js";
 import { MOTION_MS } from "./motion-timing.js";
 import { renderClubSelect, renderCompendium, renderRunCombatLog, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
@@ -170,6 +171,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   function settleIfFinished(): void {
     if (session.screen !== "combat" || (run.combat?.phase !== "WON" && run.combat?.phase !== "LOST")) return;
     audio.play(run.combat.phase === "WON" ? "win" : "lose");
+    run = recordCombatResult(run);
     run = fireRelic(run, "combat_end");
     if (metrics) { observeMetrics(); metrics = finishPlaytestBattle(metrics, run, run.combat!.phase === "WON" ? "won" : "lost"); }
     session = settleRunCombat({ ...session, run }, demoContent);
@@ -324,11 +326,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         render();
         return;
       }
-      if (action === "open-combat-log" && frontScreen === null && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT") {
+      const liveLog = session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT";
+      const completedLog = (session.screen === "reward" || session.screen === "won" || session.screen === "lost") && Boolean(run.lastCombatLog);
+      if (action === "open-combat-log" && frontScreen === null && (liveLog || completedLog)) {
         frontReturn = null;
-        resumeAfterOverlay = !run.combat.clock.paused;
+        resumeAfterOverlay = liveLog && !run.combat!.clock.paused;
         if (resumeAfterOverlay) run = pausePlayerTurn(run, clock, disposition);
-        if (run.combat?.phase !== "PLAYER_INPUT") { resumeAfterOverlay = false; render(); enemyPhase(); return; }
+        if (liveLog && run.combat?.phase !== "PLAYER_INPUT") { resumeAfterOverlay = false; render(); enemyPhase(); return; }
         frontScreen = "combat-log";
         render();
         root.querySelector<HTMLButtonElement>("[data-action=front-back]")?.focus();

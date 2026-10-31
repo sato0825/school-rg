@@ -302,6 +302,8 @@
 .combat-log-entry[data-kind="potion"] { border-left-color: #45928d; }
 .combat-log-entry[data-kind="turn"] { border-left-color: #85939c; background: #f2f5f4; }
 .combat-log-entry[data-kind="turn"] strong { font-size: 14px; }
+.combat-log-entry[data-kind="relic"] { border-left-color: #ac819f; background: #fbf8f9; }
+.combat-log-entry[data-kind="result"] { border-left-color: #d5a24b; background: #fff9e8; }
 .log-sequence { grid-column: 1 / -1; color: #688297; font: 800 10px ui-monospace, Menlo, monospace; letter-spacing: .1em; }
 .combat-log-entry strong { min-width: 0; color: #253d54; font-size: 16px; overflow-wrap: anywhere; }
 .log-kind { align-self: center; color: #6c8294; font-size: 10px; font-weight: 800; white-space: nowrap; }
