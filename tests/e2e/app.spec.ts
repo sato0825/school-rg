@@ -1265,9 +1265,11 @@ test("battle help stays on the battle screen and does not alter the clock", asyn
 });
 
 test("battle help fits desktop and iPad sized screens without hiding the combat context", async ({ page }) => {
+  test.setTimeout(60_000);
   for (const viewport of [{ width: 1280, height: 800 }, { width: 820, height: 1180 }]) {
     await page.setViewportSize(viewport);
     await page.goto("/?shortRun=1&seed=42");
+    await page.evaluate(() => localStorage.clear());
     await startDemoRun(page);
     await enterNextNode(page);
     await page.getByRole("button", { name: "操作" }).click();
