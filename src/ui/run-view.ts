@@ -1,5 +1,5 @@
 import { availableRunNodes, type RunSession } from "../domain/run-flow.js";
-import { activeEvent, availableEventChoices } from "../domain/events.js";
+import { activeEvent, availableEventChoices, eventChoiceTargets } from "../domain/events.js";
 import type { ContentRegistry, MapNode } from "../domain/schema.js";
 import { describeCard } from "./battle-view.js";
 import type { BattleArt } from "./battle-view.js";
@@ -140,7 +140,16 @@ export function renderRunRest(root: HTMLElement, session: RunSession, content: C
 
 export function renderRunEvent(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
   const event = activeEvent(session.run, content);
-  const choices = availableEventChoices(session.run, content).map(({ choice, available }) => `<button type="button" class="event-choice" data-action="event-choice" data-id="${choice.id}" ${available ? "" : "disabled"}>${html(choice.label)}${available ? "" : " · 条件未達"}</button>`).join("");
+  const choices = availableEventChoices(session.run, content).map(({ choice, available }) => {
+    const targets = eventChoiceTargets(session.run, choice);
+    if (!targets || !available) return `<button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}" ${available ? "" : "disabled"}>${html(choice.label)}${available ? "" : " · 条件未達"}</button>`;
+    const options = targets.map((instance) => {
+      const card = content.cards.find((item) => item.id === instance.cardId)!;
+      const deckIndex = session.run.deck.findIndex((item) => item.instanceId === instance.instanceId) + 1;
+      return `<option value="${html(instance.instanceId)}">${html(card.input.text)}${instance.upgraded ? " +" : ""} · ${String(deckIndex).padStart(2, "0")}</option>`;
+    }).join("");
+    return `<div class="event-target-choice"><label>${html(choice.label)}<select data-event-target="${html(choice.id)}" aria-label="${html(choice.label)}の対象カード">${options}</select></label><button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}">このカードで決定</button></div>`;
+  }).join("");
   root.innerHTML = shell("校内イベント", `<section class="reward-panel event-panel"><span class="eyebrow">AFTER SCHOOL</span><h2>${html(event.title)}</h2><p>${html(event.description)}</p><div class="event-choices">${choices}</div><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
 }
 

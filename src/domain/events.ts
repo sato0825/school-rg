@@ -6,6 +6,14 @@ import type { ContentRegistry, EventChoice, EventCondition, EventDefinition, Run
 
 export type EventPools = Readonly<Record<1 | 2 | 3, readonly string[]>>;
 
+/** A deck-editing event has exactly one target effect; the UI supplies its instance ID. */
+export function eventChoiceTargets(run: RunState, choice: EventChoice): RunState["deck"] | null {
+  const targetEffect = choice.effects.find((effect) => effect.kind === "upgrade_card" || effect.kind === "remove_card");
+  if (!targetEffect) return null;
+  if (targetEffect.kind === "remove_card") return run.deck.length > 1 ? run.deck : [];
+  return run.deck.filter((card) => !card.upgraded);
+}
+
 function nextDeckInstanceId(run: RunState): string {
   const existing = new Set(run.deck.map((card) => card.instanceId));
   let index = run.deck.length + 1;
@@ -27,7 +35,7 @@ export function availableEventChoices(run: RunState, content: ContentRegistry, c
   if (!run.event) throw new Error("no active event");
   const definition = content.events.find((event) => event.id === run.event!.eventId);
   if (!definition) throw new RangeError(`unknown event: ${run.event.eventId}`);
-  return definition.choices.map((choice) => ({ choice, available: choice.requires.every((condition) => eventConditionMet(run, condition, config)) }));
+  return definition.choices.map((choice) => ({ choice, available: choice.requires.every((condition) => eventConditionMet(run, condition, config)) && (eventChoiceTargets(run, choice)?.length ?? 1) > 0 }));
 }
 
 export function openRandomEvent(run: RunState, content: ContentRegistry, eventIds?: readonly string[]): RunState {
@@ -51,11 +59,14 @@ export function activeEvent(run: RunState, content: ContentRegistry): EventDefin
 }
 
 /** Applies noncombat effects in order; a final battle effect is returned for the run layer. */
-export function resolveEventChoice(run: RunState, choiceId: string, content: ContentRegistry, config: GameConfig = DEFAULT_GAME_CONFIG): { run: RunState; battleEnemyId: string | null } {
+export function resolveEventChoice(run: RunState, choiceId: string, content: ContentRegistry, config: GameConfig = DEFAULT_GAME_CONFIG, targetCardInstanceId?: string): { run: RunState; battleEnemyId: string | null } {
   if (!run.event || run.event.choiceId || run.event.pendingCombat || run.combat) throw new Error("event choice is not pending");
   const choice = activeEvent(run, content).choices.find((item) => item.id === choiceId);
   if (!choice) throw new RangeError(`unknown event choice: ${choiceId}`);
-  if (!choice.requires.every((condition) => eventConditionMet(run, condition, config))) throw new RangeError(`event choice conditions are not met: ${choiceId}`);
+  if (!choice.requires.every((condition) => eventConditionMet(run, condition, config)) || (eventChoiceTargets(run, choice)?.length ?? 1) === 0) throw new RangeError(`event choice conditions are not met: ${choiceId}`);
+  const targets = eventChoiceTargets(run, choice);
+  if (targets && !targets.some((card) => card.instanceId === targetCardInstanceId)) throw new RangeError(`invalid event card target: ${targetCardInstanceId ?? "missing"}`);
+  if (!targets && targetCardInstanceId !== undefined) throw new RangeError(`unexpected event card target: ${targetCardInstanceId}`);
   let current = run;
   let battleEnemyId: string | null = null;
   for (const effect of choice.effects) {
@@ -75,6 +86,14 @@ export function resolveEventChoice(run: RunState, choiceId: string, content: Con
       case "add_card": {
         if (!content.cards.some((card) => card.id === effect.cardId)) throw new RangeError(`unknown event card: ${effect.cardId}`);
         current = { ...current, deck: [...current.deck, { instanceId: nextDeckInstanceId(current), cardId: effect.cardId, upgraded: false }] };
+        break;
+      }
+      case "upgrade_card": {
+        current = { ...current, deck: current.deck.map((card) => card.instanceId === targetCardInstanceId ? { ...card, upgraded: true } : card) };
+        break;
+      }
+      case "remove_card": {
+        current = { ...current, deck: current.deck.filter((card) => card.instanceId !== targetCardInstanceId) };
         break;
       }
       case "add_relic": {

@@ -1091,6 +1091,47 @@ test("new events in each Act render at narrow width and resolve by keyboard", as
   }
 });
 
+test("deck-edit events select a specific card by keyboard across all Acts", async ({ page }) => {
+  const samples = [
+    { act: 1 as const, eventId: "classroom-proofreading", choiceId: "upgrade", cost: 14, removes: false },
+    { act: 2 as const, eventId: "archive-return-slip", choiceId: "remove", cost: 18, removes: true },
+    { act: 3 as const, eventId: "festival-layout-desk", choiceId: "upgrade", cost: 22, removes: false },
+  ];
+  for (const sample of samples) {
+    const eventPage = await page.context().newPage();
+    await eventPage.setViewportSize({ width: 390, height: 844 });
+    const base = createRunSession(42, "literature-demo", demoContent);
+    const start: MapNode = { id: `a${sample.act}-start`, act: sample.act, floor: 0, kind: "start", nextIds: [`a${sample.act}-event`] };
+    const node: MapNode = { id: `a${sample.act}-event`, act: sample.act, floor: 1, kind: "event", nextIds: [] };
+    const mapped = { ...base, run: { ...base.run, act: sample.act, map: { currentNodeId: start.id, nodes: [start, node] } }, completedNodeIds: [start.id] };
+    const entered = enterRunNode(mapped, node.id, demoContent, demoEnemyAi, demoRunContentTables);
+    const scripted = { ...entered, run: { ...entered.run, event: { ...entered.run.event!, eventId: sample.eventId } } };
+    const saved = serializeRunSession(scripted, demoContent, { nowMs: () => 0 }, () => "discard");
+    await eventPage.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await eventPage.goto("/");
+    await expect(eventPage.locator(".event-panel")).toBeVisible();
+    const target = eventPage.locator(`select[data-event-target=${sample.choiceId}]`);
+    await expect(target).toBeVisible();
+    await eventPage.reload();
+    await target.press("d");
+    const selectedId = await target.inputValue();
+    expect(selectedId).toBe(scripted.run.deck[2]!.instanceId);
+    if (process.env.SCHOOL_RG_CAPTURE_DECK_EVENTS === "1") {
+      await eventPage.screenshot({ path: `docs/content/previews/issue157-act${sample.act}-event-narrow-20261031.png`, fullPage: true });
+    }
+    const button = eventPage.locator(`[data-action=event-choice][data-id=${sample.choiceId}]`);
+    await button.focus();
+    await eventPage.keyboard.press("Enter");
+    await expect(eventPage.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
+    const result = await eventPage.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run);
+    expect(result.gold).toBe(scripted.run.gold - sample.cost);
+    expect(result.deck.length).toBe(scripted.run.deck.length - Number(sample.removes));
+    expect(result.deck.find((card: { instanceId: string }) => card.instanceId === selectedId)?.upgraded).toBe(sample.removes ? undefined : true);
+    expect(await eventPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await eventPage.close();
+  }
+});
+
 test("reload preserves an unfinished potion word and its inventory", async ({ page }) => {
   await startDemoRun(page);
   await enterNextNode(page);

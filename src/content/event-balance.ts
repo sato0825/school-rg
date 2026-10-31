@@ -6,4 +6,6 @@ export const provisionalEventBalance = {
   stairCardGold: 12, stairHealGold: 8, stairHealHp: 5,
   examFocusGold: 20, examStrikeHp: 5,
   lastTrainHealGold: 10, lastTrainHealHp: 7, lastTrainClockHp: 4,
+  editAct1UpgradeGold: 14, editAct2RemoveGold: 18,
+  editAct3UpgradeGold: 22, editAct3RemoveGold: 25,
 } as const;

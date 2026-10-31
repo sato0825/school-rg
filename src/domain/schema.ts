@@ -172,6 +172,8 @@ export const EventEffectSchema = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("gold"), amount: z.number().int() }),
   z.strictObject({ kind: z.literal("hp"), amount: z.number().int() }),
   z.strictObject({ kind: z.literal("add_card"), cardId: id }),
+  z.strictObject({ kind: z.literal("upgrade_card") }),
+  z.strictObject({ kind: z.literal("remove_card") }),
   z.strictObject({ kind: z.literal("add_relic"), relicId: id }),
   z.strictObject({ kind: z.literal("add_potion"), potionId: id }),
   z.strictObject({ kind: z.literal("battle"), enemyId: id }),

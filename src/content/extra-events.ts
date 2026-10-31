@@ -4,6 +4,28 @@ import { provisionalEventBalance as b } from "./event-balance.js";
 /** Additional school-specific choices for #116; all amounts remain provisional. */
 export const extraEvents: EventDefinition[] = [
   {
+    id: "classroom-proofreading", title: "放課後の添削机", description: "掲示物の下書きを直している先輩が、カードを一枚見直してくれる。",
+    choices: [
+      { id: "leave", label: "礼を言って進む", requires: [], effects: [] },
+      { id: "upgrade", label: `${b.editAct1UpgradeGold}Gでカードを1枚強化`, requires: [{ kind: "gold_at_least", amount: b.editAct1UpgradeGold }], effects: [{ kind: "gold", amount: -b.editAct1UpgradeGold }, { kind: "upgrade_card" }] },
+    ],
+  },
+  {
+    id: "archive-return-slip", title: "資料室の返却票", description: "古い記録を棚に戻すため、持ち物を一つ整理できる。",
+    choices: [
+      { id: "leave", label: "何も返さない", requires: [], effects: [] },
+      { id: "remove", label: `${b.editAct2RemoveGold}Gでカードを1枚整理`, requires: [{ kind: "gold_at_least", amount: b.editAct2RemoveGold }], effects: [{ kind: "gold", amount: -b.editAct2RemoveGold }, { kind: "remove_card" }] },
+    ],
+  },
+  {
+    id: "festival-layout-desk", title: "文化祭の編集机", description: "展示の順番を決める編集机。残す一枚を磨くか、荷物を減らすかを選べる。",
+    choices: [
+      { id: "leave", label: "今の構成を保つ", requires: [], effects: [] },
+      { id: "upgrade", label: `${b.editAct3UpgradeGold}Gでカードを1枚強化`, requires: [{ kind: "gold_at_least", amount: b.editAct3UpgradeGold }], effects: [{ kind: "gold", amount: -b.editAct3UpgradeGold }, { kind: "upgrade_card" }] },
+      { id: "remove", label: `${b.editAct3RemoveGold}Gでカードを1枚整理`, requires: [{ kind: "gold_at_least", amount: b.editAct3RemoveGold }], effects: [{ kind: "gold", amount: -b.editAct3RemoveGold }, { kind: "remove_card" }] },
+    ],
+  },
+  {
     id: "gym-supply-locker", title: "体育倉庫の予備箱", description: "放課後の体育倉庫で、用具の入った箱が通路をふさいでいる。",
     choices: [
       { id: "leave", label: "通り過ぎる", requires: [], effects: [] },

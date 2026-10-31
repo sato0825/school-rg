@@ -80,6 +80,8 @@ export function parseContentRegistry(value: unknown): ContentRegistry {
         if (condition.kind === "has_card") known(condition.cardId, cards, `events.${i}.choices.${j}.requires.${k}.cardId`, issues);
       });
       const battles = choice.effects.filter((effect) => effect.kind === "battle");
+      const targetEffects = choice.effects.filter((effect) => effect.kind === "upgrade_card" || effect.kind === "remove_card");
+      if (targetEffects.length > 1) issues.push({ code: "INVALID_STATE", path: `events.${i}.choices.${j}.effects`, message: "Event choice may select only one deck card" });
       if (battles.length > 1 || (battles.length === 1 && choice.effects.at(-1)?.kind !== "battle")) {
         issues.push({ code: "INVALID_STATE", path: `events.${i}.choices.${j}.effects`, message: "Battle effect must be the final and only battle effect" });
       }
