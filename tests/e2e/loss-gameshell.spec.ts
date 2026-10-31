@@ -20,6 +20,7 @@ test("last enemy action reaches HP zero without replacing the stage or actor", a
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /文芸部/ }).click();
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
+  await page.getByRole("button", { name: "効果音をオフにする" }).click();
   await page.evaluate(() => {
     const local = window as typeof window & { __lossStage?: Element | null; __lossActor?: Element | null; __lossInput?: Element | null };
     local.__lossStage = document.querySelector(".game-shell .stage");
@@ -28,8 +29,10 @@ test("last enemy action reaches HP zero without replacing the stage or actor", a
   });
   for (let turn = 0; turn < 30 && !(await page.locator('.game-shell[data-screen="lost"]').count()); turn++) await page.clock.runFor(11_000);
   await expect(page.locator('.game-shell[data-screen="lost"] .loss-note h2')).toHaveText("敗北");
+  await expect(page.getByRole("button", { name: "効果音をオンにする" })).toBeVisible();
   await expect(page.locator(".game-shell .hero-art")).toHaveAttribute("src", /literature-defeat-candidate-v1/);
   await expect(page.locator(".game-shell .typing-input")).toBeDisabled();
+  await expect(page.locator(".loss-note-damage")).toContainText(/♥ −\d+/);
   expect(await page.evaluate(() => {
     const local = window as typeof window & { __lossStage?: Element | null; __lossActor?: Element | null; __lossInput?: Element | null };
     return [local.__lossStage === document.querySelector(".game-shell .stage"), local.__lossActor === document.querySelector(".game-shell .ally-slot"), local.__lossInput === document.querySelector(".game-shell .typing-input")];
@@ -39,6 +42,14 @@ test("last enemy action reaches HP zero without replacing the stage or actor", a
   await page.clock.runFor(5_000);
   const after = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.clock.remainingMs as number);
   expect(after).toBe(before);
+  if (process.env.SCHOOL_RG_CAPTURE_LOSS === "1") {
+    await page.locator(".hero-art").evaluate((image: HTMLImageElement) => image.decode());
+    await expect(page.locator(".hero-art")).toHaveCSS("opacity", "1");
+    for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
+      await page.setViewportSize({ width, height });
+      await page.screenshot({ path: `docs/art/previews/issue268-loss-real-${width}-v4.png`, fullPage: true });
+    }
+  }
   await page.getByRole("button", { name: "新しいランを始める" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "放課後を、打ち抜く。" })).toBeVisible();
@@ -58,6 +69,7 @@ for (const [clubId, filename, club] of clubs) {
     await expect(page.getByRole("button", { name: "新しいランを始める" })).toBeVisible();
     if (process.env.SCHOOL_RG_CAPTURE_LOSS === "1") {
       await page.locator(".hero-art").evaluate((image: HTMLImageElement) => image.decode());
+      await expect(page.locator(".hero-art")).toHaveCSS("opacity", "1");
       for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
         await page.setViewportSize({ width, height });
         const hero = await page.locator(".hero-art").boundingBox();
@@ -66,7 +78,7 @@ for (const [clubId, filename, club] of clubs) {
         expect(hero && note && stage).toBeTruthy();
         expect(hero!.x + hero!.width).toBeLessThan(note!.x);
         expect(hero!.y + hero!.height).toBeLessThanOrEqual(stage!.y + stage!.height + 2);
-        await page.screenshot({ path: `docs/art/previews/issue268-loss-${clubId}-${width}.png`, fullPage: true });
+        await page.screenshot({ path: `docs/art/previews/issue268-loss-${clubId}-${width}-v3.png`, fullPage: true });
       }
     }
     await page.reload();

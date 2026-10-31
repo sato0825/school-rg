@@ -132,6 +132,9 @@ export class GameShell {
     const club = content.clubs.find((item) => item.id === run.clubId)?.name ?? "部活動";
     this.hero.alt = `${club}の生徒の敗北姿勢（制作候補）`;
     this.actor.querySelector(".hero-nameplate")!.textContent = club;
+    for (const transient of this.stage.querySelectorAll(".card-fx-layer, .result-fx-layer")) transient.remove();
+    this.main.querySelector("#battle-help")?.remove();
+    this.main.querySelector(".result-backdrop")?.remove();
     this.header.classList.add("run-header");
     this.header.replaceChildren(lossHeader(run, content));
     const note = createLossNote(session, content, options);
