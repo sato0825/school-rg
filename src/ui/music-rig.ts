@@ -1,4 +1,4 @@
-import manifest from "../../docs/art/rigs/music-rig-candidate-v1.json";
+import manifest from "../../docs/art/rigs/music-rig-candidate-v2.json";
 
 const urls: Readonly<Record<string, string>> = {
   case: new URL("../../docs/art/candidates/music-rig-parts-v1/case.png", import.meta.url).href,
@@ -8,11 +8,12 @@ const urls: Readonly<Record<string, string>> = {
   "left-arm": new URL("../../docs/art/candidates/music-rig-parts-v1/left-arm.png", import.meta.url).href,
   "right-arm": new URL("../../docs/art/candidates/music-rig-parts-v1/right-arm.png", import.meta.url).href,
   head: new URL("../../docs/art/candidates/music-rig-parts-v1/head.png", import.meta.url).href,
+  "head-hit": new URL("../../docs/art/candidates/music-rig-parts-v1/head-hit-v1.png", import.meta.url).href,
 };
 
 export function musicRigMarkup(): string {
   const { width, height } = manifest.canvas;
-  const parts = manifest.parts.map((part) => {
+  const parts = [...manifest.parts, ...manifest.expressionLayers].map((part) => {
     const url = urls[part.id];
     if (!url) throw new Error(`missing music rig layer: ${part.id}`);
     const left = (part.x / width * 100).toFixed(5);
