@@ -54,7 +54,11 @@ for (const width of [1024, 1440] as const) for (const [intentId, pose] of [["pap
       else resolved = await page.locator(".enemy-block").count() > 0 && ((await page.locator(".enemy-block").first().textContent())?.includes("4") ?? false);
     }
     expect(resolved).toBe(true);
-    if (pose === "attack") await expect(page.locator('.ally-slot[data-actor-motion="hit"]')).toBeVisible();
+    if (pose === "attack") {
+      const riggedHero = page.locator('.ally-slot[data-actor-rig="literature-v1"]');
+      if (await riggedHero.count()) await expect(riggedHero).toHaveAttribute("data-actor-motion", "hit");
+      else await expect(page.locator(".hero-art.react")).toBeVisible();
+    }
     await capture(page, `paper-${pose}-${width}-resolved`);
     expect(await page.locator(".stage").boundingBox()).toEqual(stageBefore);
   });
