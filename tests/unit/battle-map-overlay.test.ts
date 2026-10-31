@@ -23,4 +23,16 @@ describe("battle map overlay", () => {
     expect(markup).not.toContain('data-action="enter-node"');
     expect(markup).toContain('data-action="close-battle-map"');
   });
+
+  it("keeps the next Act start visible while the current boss fight is underway", () => {
+    const start = createRunSession(42, "literature-demo", demoContent);
+    const boss = start.run.map.nodes.find((node) => node.act === 1 && node.kind === "boss")!;
+    const nextStart = start.run.map.nodes.find((node) => node.id === boss.nextIds[0])!;
+    const session = { ...start, screen: "combat" as const, run: { ...start.run, map: { ...start.run.map, currentNodeId: boss.id } } };
+
+    const markup = battleMapOverlayMarkup(session);
+    expect(markup).toContain(`data-node-id="${nextStart.id}"`);
+    expect(markup).toContain(`data-from="${boss.id}" data-to="${nextStart.id}"`);
+    expect(markup).toContain(`Act ${nextStart.act} ${nextStart.floor}階`);
+  });
 });
