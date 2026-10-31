@@ -300,9 +300,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   function onKeyDown(event: KeyboardEvent): void {
     if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
     if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
+    const focusTypingInput = event.target instanceof HTMLButtonElement && event.key.length === 1;
     if (event.target instanceof HTMLButtonElement && event.key.length === 1) event.target.blur();
     if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (event.key === "Backspace" || event.key === "Delete"))) event.preventDefault();
     submitInputKey(event.key, event.repeat, event.isComposing);
+    if (focusTypingInput && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
   }
 
   function onBeforeInput(event: InputEvent): void {
@@ -497,6 +499,10 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       settleIfFinished();
       render();
+      if (action === "enemy") {
+        const targetButtons = root.querySelectorAll<HTMLButtonElement>(".enemy-roster-button[data-action='enemy'], .enemy-slot[data-action='enemy']");
+        Array.from(targetButtons).find((enemyButton) => enemyButton.dataset.id === id && !enemyButton.hasAttribute("aria-hidden"))?.focus();
+      }
       enemyPhase();
     } catch (error) { handleError(error); }
   }
@@ -516,12 +522,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   function refreshTime(): void {
     const remainingMs = run.combat!.clock.remainingMs;
     const time = root.querySelector<HTMLElement>("[data-role=time]");
+    const timeTrack = root.querySelector<HTMLElement>(".time-track");
     const fill = root.querySelector<HTMLElement>("[data-role=time-fill]");
     if (time) {
       const seconds = (remainingMs / 1_000).toFixed(1);
-      time.innerHTML = `${seconds}<small> sec</small>`;
+      time.innerHTML = `${seconds}<small> 秒</small>`;
       time.setAttribute("aria-label", `残り時間 ${seconds}秒`);
     }
+    timeTrack?.setAttribute("aria-valuenow", String(remainingMs));
     if (fill) fill.style.width = `${Math.max(0, Math.min(100, remainingMs / view.baseTurnMs * 100))}%`;
   }
 
