@@ -1,0 +1,982 @@
+[
+  {
+    "id": "1a-1e-idle-1440",
+    "actors": [
+      {
+        "height": 484,
+        "left": 126,
+        "right": 382,
+        "bottom": 617
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 11
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 626,
+    "typed": "st",
+    "errors": []
+  },
+  {
+    "id": "3a-1e-idle-1440",
+    "actors": [
+      {
+        "height": 398,
+        "left": 63,
+        "right": 273,
+        "bottom": 619
+      },
+      {
+        "height": 394,
+        "left": 369,
+        "right": 514,
+        "bottom": 603
+      },
+      {
+        "height": 397,
+        "left": 638,
+        "right": 814,
+        "bottom": 613
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 11
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 626,
+    "typed": "st",
+    "ratios": [
+      0.822,
+      0.824,
+      0.824
+    ],
+    "errors": []
+  },
+  {
+    "id": "1a-5e-idle-1440",
+    "actors": [
+      {
+        "height": 484,
+        "left": 126,
+        "right": 382,
+        "bottom": 617
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 11
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 11
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 11
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 11
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 11
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 626,
+    "typed": "st",
+    "errors": []
+  },
+  {
+    "id": "3a-5e-idle-1440",
+    "actors": [
+      {
+        "height": 396,
+        "left": 50,
+        "right": 258,
+        "bottom": 619
+      },
+      {
+        "height": 391,
+        "left": 326,
+        "right": 470,
+        "bottom": 603
+      },
+      {
+        "height": 394,
+        "left": 566,
+        "right": 742,
+        "bottom": 613
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 626,
+    "typed": "st",
+    "ratios": [
+      0.818,
+      0.818,
+      0.817
+    ],
+    "errors": []
+  },
+  {
+    "id": "3a-5e-activate-1440",
+    "actors": [
+      {
+        "height": 400,
+        "left": 60,
+        "right": 260,
+        "bottom": 621
+      },
+      {
+        "height": 391,
+        "left": 326,
+        "right": 470,
+        "bottom": 603
+      },
+      {
+        "height": 394,
+        "left": 566,
+        "right": 742,
+        "bottom": 613
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 626,
+    "typed": "",
+    "errors": []
+  },
+  {
+    "id": "3a-5e-activate-quiet-1440",
+    "actors": [
+      {
+        "height": 400,
+        "left": 60,
+        "right": 260,
+        "bottom": 621
+      },
+      {
+        "height": 391,
+        "left": 326,
+        "right": 470,
+        "bottom": 603
+      },
+      {
+        "height": 394,
+        "left": 566,
+        "right": 742,
+        "bottom": 613
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 626,
+    "typed": "",
+    "errors": []
+  },
+  {
+    "id": "3a-5e-hit-1440",
+    "actors": [
+      {
+        "height": 394,
+        "left": 57,
+        "right": 258,
+        "bottom": 615
+      },
+      {
+        "height": 391,
+        "left": 326,
+        "right": 470,
+        "bottom": 603
+      },
+      {
+        "height": 394,
+        "left": 566,
+        "right": 742,
+        "bottom": 613
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 626,
+    "typed": "",
+    "errors": []
+  },
+  {
+    "id": "3a-5e-hit-quiet-1440",
+    "actors": [
+      {
+        "height": 394,
+        "left": 57,
+        "right": 258,
+        "bottom": 615
+      },
+      {
+        "height": 391,
+        "left": 326,
+        "right": 470,
+        "bottom": 603
+      },
+      {
+        "height": 394,
+        "left": 566,
+        "right": 742,
+        "bottom": 613
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 626,
+    "typed": "",
+    "errors": []
+  },
+  {
+    "id": "1a-1e-idle-1024",
+    "actors": [
+      {
+        "height": 368,
+        "left": 60,
+        "right": 254,
+        "bottom": 516
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 11
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 522,
+    "typed": "st",
+    "errors": []
+  },
+  {
+    "id": "3a-1e-idle-1024",
+    "actors": [
+      {
+        "height": 277,
+        "left": 34,
+        "right": 180,
+        "bottom": 517
+      },
+      {
+        "height": 273,
+        "left": 248,
+        "right": 349,
+        "bottom": 504
+      },
+      {
+        "height": 275,
+        "left": 437,
+        "right": 559,
+        "bottom": 512
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 11
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 522,
+    "typed": "st",
+    "ratios": [
+      0.753,
+      0.752,
+      0.751
+    ],
+    "errors": []
+  },
+  {
+    "id": "1a-5e-idle-1024",
+    "actors": [
+      {
+        "height": 368,
+        "left": 60,
+        "right": 254,
+        "bottom": 516
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 522,
+    "typed": "st",
+    "errors": []
+  },
+  {
+    "id": "3a-5e-idle-1024",
+    "actors": [
+      {
+        "height": 279,
+        "left": 25,
+        "right": 172,
+        "bottom": 517
+      },
+      {
+        "height": 276,
+        "left": 222,
+        "right": 324,
+        "bottom": 504
+      },
+      {
+        "height": 278,
+        "left": 394,
+        "right": 517,
+        "bottom": 512
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 522,
+    "typed": "st",
+    "ratios": [
+      0.758,
+      0.76,
+      0.76
+    ],
+    "errors": []
+  },
+  {
+    "id": "3a-5e-activate-1024",
+    "actors": [
+      {
+        "height": 282,
+        "left": 32,
+        "right": 174,
+        "bottom": 519
+      },
+      {
+        "height": 276,
+        "left": 222,
+        "right": 324,
+        "bottom": 504
+      },
+      {
+        "height": 278,
+        "left": 394,
+        "right": 517,
+        "bottom": 512
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 522,
+    "typed": "",
+    "errors": []
+  },
+  {
+    "id": "3a-5e-activate-quiet-1024",
+    "actors": [
+      {
+        "height": 282,
+        "left": 32,
+        "right": 174,
+        "bottom": 519
+      },
+      {
+        "height": 276,
+        "left": 222,
+        "right": 324,
+        "bottom": 504
+      },
+      {
+        "height": 278,
+        "left": 394,
+        "right": 517,
+        "bottom": 512
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 522,
+    "typed": "",
+    "errors": []
+  },
+  {
+    "id": "3a-5e-hit-1024",
+    "actors": [
+      {
+        "height": 279,
+        "left": 30,
+        "right": 172,
+        "bottom": 515
+      },
+      {
+        "height": 276,
+        "left": 222,
+        "right": 324,
+        "bottom": 504
+      },
+      {
+        "height": 278,
+        "left": 394,
+        "right": 517,
+        "bottom": 512
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 522,
+    "typed": "",
+    "errors": []
+  },
+  {
+    "id": "3a-5e-hit-quiet-1024",
+    "actors": [
+      {
+        "height": 279,
+        "left": 30,
+        "right": 172,
+        "bottom": 515
+      },
+      {
+        "height": 276,
+        "left": 222,
+        "right": 324,
+        "bottom": 504
+      },
+      {
+        "height": 278,
+        "left": 394,
+        "right": 517,
+        "bottom": 512
+      }
+    ],
+    "intentOverflow": [
+      {
+        "index": 1,
+        "name": "廊下のモップ",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 2,
+        "name": "実験コイル",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 3,
+        "name": "実験室の霧",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 4,
+        "name": "記録室の時計",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      },
+      {
+        "index": 5,
+        "name": "答案の切れ端",
+        "clipped": false,
+        "nameClipped": false,
+        "intentClipped": false,
+        "fontPx": 10
+      }
+    ],
+    "silhouettesClearRail": true,
+    "loaded": true,
+    "targetPreviewCount": 1,
+    "railTop": 522,
+    "typed": "",
+    "errors": []
+  }
+]
