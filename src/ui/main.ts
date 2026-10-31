@@ -4,6 +4,7 @@ import "./card-fx.css";
 import "./design-v2.css";
 import "./card-design.css";
 import "./map-design.css";
+import "./battle-map-overlay.css";
 import "./battle-hud.css";
 import "./multi-enemy.css";
 

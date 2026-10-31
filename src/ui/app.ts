@@ -24,6 +24,7 @@ import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, 
 import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
 import { createAudioFeedback } from "./audio.js";
+import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
@@ -59,6 +60,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let frontScreen: "title" | "clubs" | "compendium" | "combat-log" | "history" | null = "title";
   let frontReturn: "title" | null = "title";
   let resumeAfterOverlay = false;
+  let battleMapOpen = false;
+  let resumeAfterBattleMap = false;
   let restoreError = false;
   try {
     const saved = store.read();
@@ -133,7 +136,9 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   };
   const render = () => {
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
+    const battleMapScrollTop = root.querySelector<HTMLElement>(".battle-map-scroll")?.scrollTop;
     const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
+    const restoreBattleMapFocus = root.querySelector(".battle-map-close") === document.activeElement;
     const restoreCombatLogFocus = frontScreen === "combat-log" && root.querySelector('[data-action="front-back"]') === document.activeElement;
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
     else if (frontScreen === "title") renderRunTitle(root, demoBattleArt, history);
@@ -156,6 +161,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const header = root.querySelector(".topbar, .run-header");
     if (header) {
       if (session.screen === "combat" && frontScreen === null) {
+        const mapButton = document.createElement("button");
+        mapButton.type = "button";
+        mapButton.className = "battle-map-trigger";
+        mapButton.dataset.action = "open-battle-map";
+        mapButton.setAttribute("aria-controls", "battle-map-panel");
+        mapButton.setAttribute("aria-expanded", String(battleMapOpen));
+        mapButton.textContent = "マップ";
+        header.append(mapButton);
         const displayToggle = document.createElement("button");
         displayToggle.type = "button";
         displayToggle.className = "stimulus-toggle";
@@ -181,6 +194,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         exportButton.textContent = "計測JSONを保存";
         header.append(exportButton);
       }
+    }
+    if (session.screen === "combat" && frontScreen === null && battleMapOpen) {
+      root.querySelector(".game")?.insertAdjacentHTML("beforeend", battleMapOverlayMarkup(session));
+      if (restoreBattleMapFocus) root.querySelector<HTMLButtonElement>(".battle-map-close")?.focus({ preventScroll: true });
+      const current = root.querySelector<HTMLElement>(".battle-map-floor[data-current-floor='true']");
+      const scroll = root.querySelector<HTMLElement>(".battle-map-scroll");
+      if (current && scroll) scroll.scrollTop = battleMapScrollTop ?? Math.max(0, current.offsetTop - scroll.clientHeight / 2 + current.clientHeight / 2);
     }
     persist();
   };
@@ -280,6 +300,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     frontScreen = "title";
     frontReturn = "title";
     resumeAfterOverlay = false;
+    battleMapOpen = false;
+    resumeAfterBattleMap = false;
     restoreError = false;
     restoreError = false;
     view.message = "カード名をタイプして発動。誤入力は無視されます。";
@@ -297,7 +319,41 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     } catch (error) { handleError(error); }
   }
 
+  function openBattleMap(): void {
+    if (frontScreen !== null || session.screen !== "combat" || battleMapOpen) return;
+    resumeAfterBattleMap = run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused;
+    if (resumeAfterBattleMap) {
+      observeMetrics();
+      run = pausePlayerTurn(run, clock, disposition);
+      if (run.combat?.phase !== "PLAYER_INPUT") {
+        resumeAfterBattleMap = false;
+        render();
+        enemyPhase();
+        return;
+      }
+    }
+    battleMapOpen = true;
+    render();
+    root.querySelector<HTMLButtonElement>(".battle-map-close")?.focus({ preventScroll: true });
+  }
+
+  function closeBattleMap(): void {
+    if (!battleMapOpen) return;
+    battleMapOpen = false;
+    const resume = resumeAfterBattleMap && run.combat?.phase === "PLAYER_INPUT" && run.combat.clock.paused;
+    resumeAfterBattleMap = false;
+    if (resume) run = resumePlayerTurn(run, clock);
+    render();
+    if (resume) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
+    else root.querySelector<HTMLButtonElement>(".battle-map-trigger")?.focus({ preventScroll: true });
+  }
+
   function onKeyDown(event: KeyboardEvent): void {
+    if (battleMapOpen) {
+      if (event.key === "Escape") { event.preventDefault(); closeBattleMap(); }
+      else if (event.key.length === 1 || event.key === "Enter") event.preventDefault();
+      return;
+    }
     if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
     if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
     const focusTypingInput = event.target instanceof HTMLButtonElement && event.key.length === 1;
@@ -310,6 +366,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   function onBeforeInput(event: InputEvent): void {
     if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
     event.preventDefault();
+    if (battleMapOpen) return;
     if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused || event.inputType !== "insertText" || !event.data || [...event.data].length !== 1 || event.isComposing) return;
     submitInputKey(event.data, false, false);
   }
@@ -326,6 +383,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const action = button.dataset.action;
     const id = button.dataset.id ?? "";
     try {
+      if (action === "open-battle-map") { openBattleMap(); return; }
+      if (action === "close-battle-map") { closeBattleMap(); return; }
       if (action === "toggle-audio") { audio.toggle(); render(); return; }
       if (action === "new-run" || action === "restart") { restart(); return; }
       if (action === "open-clubs" && frontScreen === "title") { frontScreen = "clubs"; render(); return; }

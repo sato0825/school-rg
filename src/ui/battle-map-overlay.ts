@@ -32,7 +32,7 @@ export function battleMapOverlayMarkup(session: RunSession): string {
 
   return `<div class="battle-map-overlay" data-role="battle-map-overlay">
     <button type="button" class="battle-map-scrim" data-action="close-battle-map" aria-label="経路マップを閉じる"></button>
-    <aside class="battle-map-panel" role="region" aria-labelledby="battle-map-title" aria-describedby="battle-map-context">
+    <aside id="battle-map-panel" class="battle-map-panel" role="region" aria-labelledby="battle-map-title" aria-describedby="battle-map-context">
       <header class="battle-map-heading"><div><span>ACT ${run.act} / ROUTE</span><h2 id="battle-map-title">校内経路</h2></div><button type="button" class="battle-map-close" data-action="close-battle-map">閉じる <kbd>Esc</kbd></button></header>
       <p id="battle-map-context" class="battle-map-context"><strong>${current.floor}階 · ${html(kindLabels[current.kind])}</strong><span>現在地</span><span class="battle-map-next-count">次の候補 ${nextIds.size}</span></p>
       <div class="battle-map-scroll" aria-label="Act ${run.act} の経路、戦闘中は閲覧のみ"><div class="battle-map-track"><svg viewBox="0 0 1000 ${floors.length * MAP_ROW_HEIGHT}" preserveAspectRatio="none" aria-hidden="true">${lines}</svg><ol class="battle-map-floors">${rows}</ol></div></div>

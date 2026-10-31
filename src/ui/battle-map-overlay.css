@@ -1,4 +1,16 @@
 .game { position: relative; }
+.battle-map-trigger {
+  flex: none;
+  padding: 6px 8px;
+  border: 1px solid #8ba5b8;
+  border-radius: 6px;
+  background: #29455d;
+  color: #f8f7f2;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.battle-map-trigger:focus-visible { outline: 3px solid #f4c4cd; outline-offset: 2px; }
 
 .battle-map-overlay {
   position: absolute;
@@ -53,7 +65,9 @@
   border-radius: 9px;
   background: #e9f3f2ed;
   color: #173447;
-  font: 800 12px/1.2 inherit;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
   cursor: pointer;
 }
 .battle-map-close kbd { margin-left: 8px; font: 700 11px/1.2 ui-monospace, monospace; }
