@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>#316 レアリティ表示実験</title>
+  <link rel="stylesheet" href="./prototype.css" />
+</head>
+<body class="screen-combat">
+  <main class="scene" aria-label="未確定レアリティの表示実験">
+    <div class="scene-bg" aria-hidden="true"></div>
+    <div class="study-stamp">#316 視覚実験・仮表示</div>
+    <div class="prototype-toolbar" aria-label="実験の表示切替">
+      <button type="button" data-mode="combat">戦闘手札</button>
+      <button type="button" data-mode="reward">報酬</button>
+      <button type="button" data-filter="normal">通常</button>
+      <button type="button" data-filter="grayscale">白黒</button>
+      <button type="button" data-filter="low-stimulus">低刺激</button>
+      <button type="button" data-mask="none">両方</button>
+      <button type="button" data-mask="art-only">絵のみ</button>
+      <button type="button" data-mask="text-only">文字のみ</button>
+    </div>
+    <section class="combat-deck" aria-label="実寸の戦闘手札">
+      <div class="timer-row"><span>残り時間</span><strong>9.6<span>秒</span></strong><div class="time-track"><i></i></div><span class="pile">▣ 5　▨ 0　⊠ 0</span></div>
+      <div class="typing-row">カード名をタイプ <span class="caret" aria-hidden="true"></span></div>
+      <div class="hand cards" id="hand"></div>
+    </section>
+    <section class="reward-layer" aria-label="実寸の報酬選択">
+      <h1>カードを1枚選ぶ</h1>
+      <div class="rewards cards" id="rewards"></div>
+      <span class="skip">報酬を受け取らず進む</span>
+    </section>
+  </main>
+  <script type="module" src="./prototype.js"></script>
+</body>
+</html>

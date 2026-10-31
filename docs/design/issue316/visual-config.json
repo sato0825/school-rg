@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "status": "visual-experiment-only",
+  "rarityDecisionIssue": 247,
+  "meaningHypothesis": "acquisition-frequency-not-power",
+  "profiles": {
+    "frequent": { "label": "よく出る", "shape": "ring", "frame": "single", "tone": "#386b77" },
+    "occasional": { "label": "ときどき", "shape": "diamond", "frame": "notched", "tone": "#5a6a92" },
+    "scarce": { "label": "まれ", "shape": "spark", "frame": "double", "tone": "#835a82" }
+  },
+  "fixtureOnly": {
+    "hand": [
+      { "slot": "demo-a", "sourceCardId": "SCI-004", "word": "formula", "kind": "技能", "club": "科学", "effect": "防御7。1枚引く。", "art": "../../art/production/issue277/assets/card-sci-formula-v2.png", "visualProfile": "frequent" },
+      { "slot": "demo-b", "sourceCardId": "KEN-002", "word": "stance", "kind": "技能", "club": "剣道", "effect": "防御8。1枚引く。", "art": "../../art/production/issue277/assets/card-ken-stance-v1.png", "visualProfile": "occasional" },
+      { "slot": "demo-c", "sourceCardId": "ART-003", "word": "paint", "kind": "技能", "club": "美術", "effect": "手札を1枚複製。防御2。", "art": "../../art/production/issue277/assets/card-art-paint-v2.png", "visualProfile": "scarce" },
+      { "slot": "demo-d", "sourceCardId": "BASE-003", "word": "heavy strike", "kind": "攻撃", "club": "共通", "effect": "敵1体に14ダメージ。", "art": "../../art/production/issue275/assets/card-base-heavy-strike-v2.png", "visualProfile": "frequent" },
+      { "slot": "demo-e", "sourceCardId": "LIT-004", "word": "outline", "kind": "技能", "club": "文芸", "effect": "2枚引く。時間+1秒。", "art": "../../art/production/issue296/assets/card-lit-outline-v3.png", "visualProfile": "occasional" }
+    ],
+    "rewardSlots": ["demo-a", "demo-b", "demo-c"]
+  }
+}

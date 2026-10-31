@@ -1,0 +1,49 @@
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color:#193646}
+body{background:#183a4c}
+.scene{position:relative;width:100vw;height:100dvh;min-height:720px;overflow:hidden}
+.scene-bg{position:absolute;inset:0;background-position:center;background-size:100% 100%;background-repeat:no-repeat}
+.screen-combat .scene-bg{background-image:url('./reference/issue261-combat-1440-candidate-v3.png')}
+.screen-reward .scene-bg{background-image:url('./reference/issue261-reward-1440-candidate-v3.png')}
+.study-stamp{position:absolute;z-index:5;left:12px;top:75px;padding:5px 8px;border:1px solid #9db7bd;background:#e8f2efeb;color:#25495a;font-size:10px;font-weight:800;letter-spacing:.04em}
+.prototype-toolbar{position:absolute;z-index:10;right:10px;top:75px;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:550px}
+.prototype-toolbar button{padding:5px 7px;border:1px solid #a1b9c0;border-radius:3px;background:#ebf3f0ec;color:#204454;font:700 10px system-ui;cursor:pointer}
+.prototype-toolbar button[aria-pressed="true"]{background:#244c5b;color:#f2f7f5}
+.combat-deck{position:absolute;z-index:2;left:0;right:0;bottom:0;height:300px;background:#193a4d;color:#eaf2f5;border-top:4px solid #8cb3bb}
+.timer-row{height:47px;display:flex;align-items:center;gap:12px;padding:0 12px;font-size:11px;font-weight:800}
+.timer-row strong{font-size:24px}.timer-row strong span{font-size:12px;margin-left:3px}
+.time-track{height:10px;flex:1;max-width:600px;border:1px solid #a6c9cd;border-radius:10px;background:#0a2e3c;overflow:hidden}.time-track i{display:block;width:76%;height:100%;background:linear-gradient(90deg,#7fc5ca,#db8da5)}
+.pile{margin-left:auto;color:#cde0e3}.typing-row{height:39px;padding:4px 12px;font-size:11px;font-weight:800;border-bottom:2px solid #a9cbd0}.caret{display:inline-block;height:15px;border-left:2px solid #d65f7b;margin-left:7px;vertical-align:middle}
+.cards{display:flex;align-items:flex-start;justify-content:center;gap:7px}
+.hand{position:absolute;bottom:47px;left:0;right:0;height:160px}
+.card{position:relative;flex:none;background:#eef4f1;color:#193646;overflow:hidden;border-radius:8px;box-shadow:0 4px 0 #90aeb5,0 9px 16px #0d273c55;isolation:isolate}
+.hand .card{width:170px;height:160px}
+.card[data-profile="frequent"]{--tone:#386b77;border:2px solid #386b77}
+.card[data-profile="occasional"]{--tone:#5a6a92;border:3px solid #5a6a92;outline:1px solid #bcc8d7;outline-offset:-6px}
+.card[data-profile="scarce"]{--tone:#835a82;border:4px double #835a82;box-shadow:inset 0 0 0 2px #e8dfe9,0 4px 0 #90aeb5,0 9px 16px #0d273c55}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;z-index:1;background:var(--tone)}
+.card[data-profile="occasional"]::before{background:repeating-linear-gradient(90deg,var(--tone) 0 8px,#e4ebef 8px 13px)}
+.card[data-profile="scarce"]::before{height:6px;background:linear-gradient(180deg,var(--tone) 0 2px,#e7ddea 2px 4px,var(--tone) 4px 6px)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:2px;height:25px;padding:7px 6px 0}
+.kind{padding:1px 5px;border-radius:3px;background:#328d91;color:#fff;font-size:10px;font-weight:800;white-space:nowrap}
+.kind.attack{background:#af4561}
+.tier{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;color:#253d50;font-size:10px;font-weight:800;letter-spacing:-.02em}
+.tier svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;flex:none}
+.tier[data-shape="spark"] svg{fill:currentColor;stroke-width:.5}
+.card-art{display:block;margin:3px 7px 0;height:57px;overflow:hidden;border:1px solid #9bb5c2;border-radius:2px;background:#f1f4f4}
+.card-art img{display:block;width:100%;height:100%;object-fit:cover}
+.word{display:block;padding:3px 9px 0;font-size:17px;line-height:1.03;letter-spacing:.01em;overflow-wrap:anywhere}
+.effect{display:block;position:absolute;left:9px;right:9px;bottom:8px;border-top:1px solid #acc1c8;padding-top:4px;color:#385366;font-size:11.5px;line-height:1.12}
+.reward-layer{display:none;position:absolute;z-index:2;inset:0;align-items:flex-end;justify-content:center;flex-direction:column;padding:0 8% 13% 0;background:linear-gradient(90deg,#d9e7e742 0%,#dce9e9ad 55%,#dce9e9c4 100%);backdrop-filter:blur(18px)}
+.reward-layer h1{margin:0 240px 20px 0;padding:8px 16px;border:1px solid #b6c9c8;background:#eaf1e7ee;font-size:17px}
+.rewards{gap:14px}.rewards .card{width:185px;height:247px;border-radius:4px 12px 4px 4px}
+.rewards .card:nth-child(1){transform:rotate(-2deg)}.rewards .card:nth-child(3){transform:rotate(2deg)}
+.rewards .card-head{height:32px;padding:8px 10px 0}.rewards .kind{font-size:11px}.rewards .tier{font-size:11px}.rewards .tier svg{width:16px;height:16px}
+.rewards .card-art{height:91px;margin:5px 10px 0}.rewards .word{padding:12px 12px 0;font-size:20px}.rewards .effect{left:12px;right:12px;bottom:36px;font-size:12px;line-height:1.2}.rewards .club{position:absolute;bottom:11px;left:12px;font-size:10px;color:#506a77}
+.skip{margin:12px 216px 0 0;padding:5px 8px;background:#eaf1e7dc;font-size:10px;font-weight:700}
+.screen-reward .combat-deck{display:none}.screen-reward .reward-layer{display:flex}
+.filter-grayscale .card{filter:grayscale(1)}.filter-grayscale .scene-bg{filter:grayscale(1)}
+.filter-low-stimulus .scene-bg{filter:saturate(.55) contrast(.94)}.filter-low-stimulus .card{filter:saturate(.55)}.filter-low-stimulus .card{box-shadow:none}
+.mask-art-only .word,.mask-art-only .effect,.mask-art-only .kind,.mask-art-only .club,.mask-art-only .tier-label{visibility:hidden}
+.mask-text-only .card-art img{visibility:hidden}
+@media(max-width:1100px){.screen-combat .scene-bg{background-image:url('./reference/issue261-combat-1024-candidate-v3.png')}.screen-reward .scene-bg{background-image:url('./reference/issue261-reward-1024-candidate-v3.png')}.hand .card{width:140px}.card-art{margin-left:6px;margin-right:6px}.word{font-size:16px;padding-left:8px}.effect{left:8px;right:8px;font-size:11px}.reward-layer{padding:0 5% 16% 0}.reward-layer h1{margin-right:190px}.rewards{gap:12px}.skip{margin-right:155px}}
