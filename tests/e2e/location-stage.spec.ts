@@ -6,13 +6,13 @@ import type { MapNode } from "../../src/domain/schema.js";
 
 type Place = "treasure" | "shop" | "rest" | "event";
 
-async function openLocation(page: Page, place: Place, width: number): Promise<void> {
+async function openLocation(page: Page, place: Place, width: number, act: 1 | 3 = 1): Promise<void> {
   await page.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
   const base = createRunSession(42, "literature-demo", demoContent);
-  const start: MapNode = { id: "location-start", act: 1, floor: 0, kind: "start", nextIds: ["location-destination"] };
-  const destination: MapNode = { id: "location-destination", act: 1, floor: 1, kind: place, nextIds: ["location-boss"] };
-  const boss: MapNode = { id: "location-boss", act: 1, floor: 2, kind: "boss", nextIds: [] };
-  const mapped = { ...base, run: { ...base.run, player: { ...base.run.player, hp: 20 }, map: { nodes: [start, destination, boss], currentNodeId: start.id } }, completedNodeIds: [start.id] };
+  const start: MapNode = { id: "location-start", act, floor: 0, kind: "start", nextIds: ["location-destination"] };
+  const destination: MapNode = { id: "location-destination", act, floor: 1, kind: place, nextIds: ["location-boss"] };
+  const boss: MapNode = { id: "location-boss", act, floor: 2, kind: "boss", nextIds: [] };
+  const mapped = { ...base, run: { ...base.run, act, player: { ...base.run.player, hp: 20 }, map: { nodes: [start, destination, boss], currentNodeId: start.id } }, completedNodeIds: [start.id] };
   const saved = serializeRunSession(mapped, demoContent, { nowMs: () => 0 }, () => "discard");
   await page.addInitScript((json) => {
     if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", json);
@@ -43,7 +43,7 @@ async function openLocation(page: Page, place: Place, width: number): Promise<vo
   const firstAction = page.locator(".location-scene button[data-action]:not(:disabled)").first();
   await expect(firstAction).toBeVisible();
   expect(await firstAction.evaluate((button) => button.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
-  if (process.env.SCHOOL_RG_CAPTURE_LOCATIONS === "1") await page.screenshot({ path: `docs/design/previews/issue286-live-${place}-${width}.png`, fullPage: true });
+  if (process.env.SCHOOL_RG_CAPTURE_LOCATIONS === "1") await page.screenshot({ path: `docs/design/previews/issue286-live-${place}-${width}${act === 3 ? "-act3" : ""}.png`, fullPage: true });
 }
 
 for (const width of [1440, 1024]) {
@@ -81,4 +81,13 @@ test("shop purchase keeps focus in the choices and leaves combat clock absent", 
   expect(await page.evaluate(() => document.activeElement?.closest(".location-scene") !== null)).toBe(true);
   await expect(page.locator(".time-track")).toHaveCount(0);
   await expect(page.locator(".typing-input")).toBeDisabled();
+});
+
+test("Act 3 rest uses its selected stage inside GameShell", async ({ page }) => {
+  await openLocation(page, "rest", 1024, 3);
+  await expect(page.locator('.game-shell[data-screen="rest"] .location-scene')).toBeVisible();
+  await expect(page.locator(".stage")).toHaveAttribute("data-act", "3");
+  await expect(page.locator(".stage")).toHaveAttribute("data-stage-art", /act3/);
+  await page.locator('[data-action="rest-heal"]').click();
+  await expect(page.locator(".map-panel")).toBeVisible();
 });

@@ -35,8 +35,8 @@ function eventEffect(effect: EventEffect, content: ContentRegistry): string {
   }
 }
 
-function eventUnavailableReason(run: RunState, choice: EventChoice): string {
-  const failed = choice.requires.find((condition) => !eventConditionMet(run, condition));
+function eventUnavailableReason(run: RunState, choice: EventChoice, config: GameConfig): string {
+  const failed = choice.requires.find((condition) => !eventConditionMet(run, condition, config));
   if (failed) {
     switch (failed.kind) {
       case "gold_at_least": return `${failed.amount}G必要`;
@@ -104,12 +104,12 @@ function restChoices(session: RunSession, content: ContentRegistry): string {
   return `${choiceButton("rest-heal", "", "♥", "回復", "ひと休み", `HP ${hp} → ${hp + healed} / ${maxHp}`, `+${healed} HP`)}<details class="location-drawer"><summary>ノートを手直し <b>↑ カードを1枚強化</b></summary><div class="location-deck-choices">${cards || `<p>強化可能なカードなし</p>`}</div></details>`;
 }
 
-function eventChoices(session: RunSession, content: ContentRegistry): string {
-  return availableEventChoices(session.run, content).map(({ choice, available }) => {
+function eventChoices(session: RunSession, content: ContentRegistry, config: GameConfig): string {
+  return availableEventChoices(session.run, content, config).map(({ choice, available }) => {
     const effects = choice.effects.map((effect) => eventEffect(effect, content)).join(" · ");
     const title = choice.label.split(" · ")[0]!.replace(/^\d+Gで/, "");
     const targets = eventChoiceTargets(session.run, choice);
-    const reason = available ? "" : eventUnavailableReason(session.run, choice);
+    const reason = available ? "" : eventUnavailableReason(session.run, choice, config);
     if (!targets || !available) return choiceButton("event-choice", choice.id, "✦", "選択", title, effects, "決める", reason);
     const radios = targets.map((instance, index) => {
       const card = content.cards.find((item) => item.id === instance.cardId);
@@ -120,12 +120,12 @@ function eventChoices(session: RunSession, content: ContentRegistry): string {
   }).join("");
 }
 
-function sceneProp(screen: LocationScreen): string {
+function sceneProp(screen: LocationScreen, eventTitle = "校内イベント"): string {
   switch (screen) {
     case "treasure": return `<div class="location-prop-locker" aria-hidden="true"><div class="locker-label">資料保管庫</div><div class="locker-open"><span>✦</span><span>✚</span></div><div class="locker-lid"></div></div>`;
     case "shop": return `<div class="location-prop-shop" aria-hidden="true"><div class="shop-awning">校内購買</div><div class="shop-display"><span>▣</span><span>▣</span><span>✦</span><span>✚</span></div><div class="shop-counter"></div></div>`;
     case "rest": return `<div class="location-prop-rest" aria-hidden="true"><div class="rest-bench"></div><div class="rest-seat"></div><div class="rest-notebook">▤</div></div>`;
-    case "event": return `<div class="location-prop-event" aria-hidden="true"><div class="event-board"><span>放課後の掲示板</span><i>✦</i><b>?</b></div></div>`;
+    case "event": return `<div class="location-prop-event" aria-hidden="true"><div class="event-board"><span>${escapeHtml(eventTitle)}</span><i>✦</i><b>?</b></div></div>`;
   }
 }
 
@@ -137,8 +137,8 @@ export function renderRunLocation(root: HTMLElement, session: RunSession, conten
   const instructions = { treasure: "品を一つ選ぶ", shop: "棚から品を選ぶ", rest: "この地点で一つ選ぶ", event: "選択は一つ" };
   const choices = screen === "treasure" ? treasureChoices(session, content, config)
     : screen === "shop" ? shopChoices(session, content, config)
-      : screen === "rest" ? restChoices(session, content) : eventChoices(session, content);
+      : screen === "rest" ? restChoices(session, content) : eventChoices(session, content, config);
   const exit = screen === "treasure" ? `<button type="button" class="location-exit" data-action="skip-treasure">何も取らず進む →</button>`
     : screen === "shop" ? `<button type="button" class="location-exit" data-action="leave-shop">購買を出る →</button>` : "";
-  root.innerHTML = `<section class="location-scene" data-location="${screen}" aria-label="${escapeHtml(names[screen])}"><div class="location-prop">${sceneProp(screen)}</div><div class="location-choices"><div class="location-heading"><small>校内 · 地点</small><h2>${escapeHtml(names[screen])}</h2><p>${escapeHtml(instructions[screen])}</p></div>${event ? `<p class="location-event-description">${escapeHtml(event.description)}</p>` : ""}<div class="location-choice-list">${choices}</div>${exit}<p class="location-message" role="status">${escapeHtml(message)}</p></div></section>`;
+  root.innerHTML = `<section class="location-scene" data-location="${screen}" aria-label="${escapeHtml(names[screen])}"><div class="location-prop">${sceneProp(screen, event?.title)}</div><div class="location-choices"><div class="location-heading"><small>校内 · 地点</small><h2>${escapeHtml(names[screen])}</h2><p>${escapeHtml(instructions[screen])}</p></div>${event ? `<p class="location-event-description">${escapeHtml(event.description)}</p>` : ""}<div class="location-choice-list">${choices}</div>${exit}<p class="location-message" role="status">${escapeHtml(message)}</p></div></section>`;
 }

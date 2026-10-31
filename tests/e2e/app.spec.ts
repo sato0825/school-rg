@@ -1340,7 +1340,10 @@ test("deck-edit events select a specific card by keyboard across all Acts", asyn
     const target = eventPage.locator(`.location-event-target:has([data-action=event-choice][data-id=${sample.choiceId}]) input[type=radio]`).nth(2);
     await expect(target).toBeVisible();
     await eventPage.reload();
-    await target.check();
+    await eventPage.locator(`.location-event-target:has([data-action=event-choice][data-id=${sample.choiceId}]) input[type=radio]`).first().focus();
+    await eventPage.keyboard.press("ArrowRight");
+    await eventPage.keyboard.press("ArrowRight");
+    await expect(target).toBeChecked();
     const selectedId = await target.inputValue();
     expect(selectedId).toBe(scripted.run.deck[2]!.instanceId);
     if (process.env.SCHOOL_RG_CAPTURE_DECK_EVENTS === "1") {
