@@ -37,7 +37,8 @@ function stagedCombat(club: string, cardIds: readonly string[]) {
 
 function stagedReward(club: string, ids: readonly string[]) {
   const start = createRunSession(42, club, demoContent, mapOptions);
-  return serializeRunSession({ ...start, screen: "reward", rewardCardIds: [...ids] }, demoContent,
+  const entered = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, pool);
+  return serializeRunSession({ ...entered, run: { ...entered.run, combat: { ...entered.run.combat!, phase: "WON" } }, screen: "reward", rewardCardIds: [...ids] }, demoContent,
     { nowMs: () => 0 }, () => "discard");
 }
 
@@ -47,7 +48,11 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
       await page.clock.install();
       await page.setViewportSize(viewport);
       const handIds = [...ids, "BASE-023"];
-      await page.addInitScript((saved) => localStorage.setItem("school-rg-run-v1", saved), stagedCombat(club, handIds));
+      await page.addInitScript((saved) => {
+        if (sessionStorage.getItem("card-art-seeded")) return;
+        localStorage.setItem("school-rg-run-v1", saved);
+        sessionStorage.setItem("card-art-seeded", "1");
+      }, stagedCombat(club, handIds));
       await page.goto("/?seed=42");
       for (const cardId of handIds) {
         const card = page.locator(`.hand .card[data-art-id="card.${cardId}"]`);
@@ -66,12 +71,16 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
         expect(kendo).not.toContain("base-sweep");
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-      await page.screenshot({ path: `docs/art/previews/issue329/${name}-${viewport.width}-hand.png` });
+      await page.screenshot({ path: `docs/art/previews/issue329/${name}-${viewport.width}-hand-v4.png` });
 
-      await page.evaluate((saved) => localStorage.setItem("school-rg-run-v1", saved), stagedReward(club, [...ids.slice(0, 2), "BASE-023"]));
-      await page.reload();
+      const context = page.context();
+      await page.close();
+      const rewardPage = await context.newPage();
+      await rewardPage.setViewportSize(viewport);
+      await rewardPage.addInitScript((saved) => localStorage.setItem("school-rg-run-v1", saved), stagedReward(club, [...ids.slice(0, 2), "BASE-023"]));
+      await rewardPage.goto("/?seed=42");
       for (const cardId of [...ids.slice(0, 2), "BASE-023"]) {
-        const card = page.locator(`.reward-card[data-art-id="card.${cardId}"]`);
+        const card = rewardPage.locator(`.reward-card[data-art-id="card.${cardId}"]`);
         await expect(card.locator('.card-art[data-art-state="candidate"] img')).toBeVisible();
         expect(await card.locator(".card-art img").evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
         expect(await card.evaluate((element) => {
@@ -81,8 +90,8 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
           return word.bottom <= effect.top && effect.bottom <= frame.bottom;
         })).toBe(true);
       }
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-      await page.screenshot({ path: `docs/art/previews/issue329/${name}-${viewport.width}-reward.png` });
+      expect(await rewardPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      await rewardPage.screenshot({ path: `docs/art/previews/issue329/${name}-${viewport.width}-reward-v4.png` });
     });
   }
 }
