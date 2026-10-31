@@ -30,6 +30,7 @@ for (const width of [1440, 390]) {
     await expect(page.locator(".intent-copy small")).toContainText("次の行動");
     await expect(page.locator(".enemy-health-track")).toHaveAttribute("role", "meter");
     await expect(page.locator(".enemy-health-track")).toHaveAttribute("aria-valuenow", /\d+/);
+    await expect(page.locator(".player-health-track")).toHaveAttribute("role", "meter");
     await expect(page.locator(".typing-caption")).toContainText("カード名をタイプ");
     await page.locator("[data-action=toggle-stimulus]").click();
     await expect(page.locator(".game")).toHaveAttribute("data-effects", "quiet");

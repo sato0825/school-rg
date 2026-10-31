@@ -76,6 +76,9 @@
 .enemy-health-track{display:block;position:relative;width:100%;height:11px;overflow:hidden;border:1px solid #e5d6d3;border-radius:2px;background:repeating-linear-gradient(90deg,#293a47 0,#293a47 calc(25% - 1px),#d1dad8 calc(25% - 1px),#d1dad8 25%)}
 .enemy-health-fill{display:block;height:100%;background:#e87583;border-right:2px solid #fff;transition:width .18s ease-out}
 .enemy-block{justify-self:start;padding:1px 4px;border:1px solid #9bbbd0;border-radius:3px;color:#d2e6f1;font-size:10px;font-weight:800}
+.player-health{display:grid;flex:none;gap:2px;min-width:72px}
+.player-health-track{display:block;width:100%;height:7px;overflow:hidden;border:1px solid #aec1c8;border-radius:2px;background:repeating-linear-gradient(90deg,#263c4d 0,#263c4d calc(25% - 1px),#a9bdc3 calc(25% - 1px),#a9bdc3 25%)}
+.player-health-fill{display:block;height:100%;background:#e98497;border-right:2px solid #fff;transition:width .18s ease-out}
 .typing-row{gap:10px}
 .typing-caption{display:block;flex:none;color:#eff5f1;font-size:12px;letter-spacing:0;line-height:1.15}
 .typing-buffer{min-width:0}
@@ -84,7 +87,7 @@
 .stimulus-toggle[aria-pressed="true"]{border-color:#60808c;background:#dce8e7}
 .game[data-effects="quiet"] .hero-art,.game[data-effects="quiet"] .enemy-art,.game[data-effects="quiet"] .caret{animation:none!important;filter:none!important}
 .game[data-effects="quiet"] .card-fx-layer{display:none!important}
-.game[data-effects="quiet"] .card,.game[data-effects="quiet"] .time-fill,.game[data-effects="quiet"] .enemy-health-fill{transition:none!important}
+.game[data-effects="quiet"] .card,.game[data-effects="quiet"] .time-fill,.game[data-effects="quiet"] .enemy-health-fill,.game[data-effects="quiet"] .player-health-fill{transition:none!important}
 .game[data-effects="quiet"] .card:hover,.game[data-effects="quiet"] .card:focus-visible{transform:none}
 .game[data-effects="quiet"] .enemy-slot.targeted:after{box-shadow:0 0 0 3px #fff8}
 @media(prefers-reduced-motion:reduce){.card-fx-layer{display:none!important}.hero-art,.enemy-art,.caret{animation:none!important}.card:hover,.card:focus-visible{transform:none}}
@@ -111,6 +114,8 @@
   .enemy-hp-number small{font-size:8px}
   .enemy-health-track{height:8px}
   .enemy-block{font-size:8px}
+  .player-health{min-width:64px}
+  .player-health-track{height:6px}
   .typing-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px;margin:5px auto}
   .typing-caption{font-size:10px}
   .typing-hint{grid-column:1/-1}

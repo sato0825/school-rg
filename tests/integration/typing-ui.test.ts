@@ -64,6 +64,7 @@ describe("typing selection in the battle view", () => {
     expect(meter.getAttribute("role")).toBe("meter");
     expect(meter.getAttribute("aria-valuenow")).toBe(String(enemy.hp));
     expect(root.querySelector<HTMLElement>(".enemy-health-fill")!.style.width).toBe("50%");
+    expect(root.querySelector(".player-health-track")?.getAttribute("aria-valuenow")).toBe(String(run.player.hp));
     expect(root.querySelector(".intent-copy small")?.textContent).toContain("次の行動");
     expect(root.querySelector(".typing-caption")?.textContent).toBe("カード名をタイプ");
   });
