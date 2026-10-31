@@ -57,6 +57,36 @@ test("opt-in content report tracks shown shop and treasure choices across reload
   expect(record.contentEvents).toEqual(expect.arrayContaining([expect.objectContaining({ source: "treasure", action: "selected" })]));
 });
 
+test("opt-in event report tracks shown and selected choices", async ({ page }) => {
+  await startScriptedRoute(page, ["event"], true);
+  await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
+  await expect(page.locator(".event-panel")).toBeVisible();
+  const before = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-playtest-v1")!));
+  expect(before.contentEvents.filter((item: { source: string; action: string }) => item.source === "event" && item.action === "offered").length)
+    .toBe(await page.locator(".event-choice").count());
+  const choice = page.locator(".event-choice:not(:disabled)").first();
+  const choiceId = await choice.getAttribute("data-id");
+  await choice.click();
+  const after = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-playtest-v1")!));
+  expect(after.contentEvents).toEqual(expect.arrayContaining([
+    expect.objectContaining({ source: "event", kind: "event_choice", action: "selected", offerId: choiceId }),
+  ]));
+});
+
+test("opt-in combat report records typed potion consumption", async ({ page }) => {
+  await page.clock.install();
+  await page.goto("/?playtest=1&shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await enterNextNode(page);
+  await page.keyboard.press("F2");
+  await page.keyboard.type("clock");
+  const record = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-playtest-v1")!));
+  expect(record.contentEvents).toEqual(expect.arrayContaining([
+    expect.objectContaining({ source: "combat", kind: "potion", action: "consumed", contentId: "potion-time" }),
+  ]));
+});
+
 test("map routes match the saved seed and remain keyboard operable on narrow screens", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await startDemoRun(page);
@@ -1051,6 +1081,9 @@ test("opt-in playtest report survives reload, excludes pause and exports after t
   expect(report.battles.length).toBeGreaterThanOrEqual(3);
   expect(report.battles.every((battle: { result: string | null }) => battle.result === "won")).toBe(true);
   expect(report.battles.every((battle: { endedAtActiveMs: number | null }) => battle.endedAtActiveMs !== null)).toBe(true);
+  expect(report.contentPartial).toBe(false);
+  expect(report.contentEvents.some((item: { source: string; action: string }) => item.source === "reward" && item.action === "offered")).toBe(true);
+  expect(report.contentEvents.some((item: { source: string; action: string }) => item.source === "reward" && item.action === "skipped")).toBe(true);
   expect(report.activeMs).toBeGreaterThanOrEqual(resumedAt);
   await page.getByRole("button", { name: "新しいランを始める" }).click();
   await page.getByRole("button", { name: "ランを始める" }).click();
