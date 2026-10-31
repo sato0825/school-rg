@@ -2,8 +2,9 @@ import type { RunState } from "../domain/schema.js";
 import type { ContentRegistry } from "../domain/schema.js";
 import type { BattleView } from "./battle-view.js";
 import { stageUrlForRun } from "./stage-presentation.js";
-import { identityForClub } from "../content/character-identities.js";
+import { createLossNote, defeatCandidateByClubId, lossHeader, type LossNoteOptions } from "./loss-view.js";
 import type { RunSession } from "../domain/run-flow.js";
+import { identityForClub } from "../content/character-identities.js";
 import { createVictoryNote, victoryCandidateByClubId, victoryHeader, type VictoryNoteOptions } from "./victory-view.js";
 
 /** The stage and actor belong to the run, rather than to an individual screen. */
@@ -159,5 +160,33 @@ export class GameShell {
     const note = createVictoryNote(session, options);
     this.overlay.replaceChildren(note);
     if (firstArrival) note.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
+  }
+
+  showLoss(session: RunSession, lowStimulus: boolean, options: LossNoteOptions): void {
+    const wasLoss = this.main.dataset.screen === "lost";
+    const { run } = session;
+    this.main.dataset.screen = "lost";
+    this.main.dataset.club = run.clubId;
+    this.main.dataset.effects = lowStimulus ? "quiet" : "standard";
+    this.stage.dataset.act = String(run.act);
+    this.input.disabled = true;
+    this.input.value = "";
+    this.control.inert = true;
+    this.control.setAttribute("aria-hidden", "true");
+    this.hero.className = "hero-art loss-pose";
+    this.hero.style.removeProperty("animation-delay");
+    this.hero.src = defeatCandidateByClubId[run.clubId] ?? this.hero.src;
+    const club = this.content.clubs.find((item) => item.id === run.clubId)?.name ?? "部活動";
+    const name = identityForClub(run.clubId)?.fullName;
+    this.hero.alt = `${name ? `${name}、` : ""}${club}の生徒の敗北姿勢（制作候補）`;
+    this.actor.querySelector(".hero-nameplate")!.textContent = `${name ? `${name} · ` : ""}${club}${name ? " · 仮名" : ""}`;
+    for (const transient of this.stage.querySelectorAll(".card-fx-layer, .result-fx-layer")) transient.remove();
+    this.main.querySelector("#battle-help")?.remove();
+    this.main.querySelector(".result-backdrop")?.remove();
+    this.header.classList.add("run-header");
+    this.header.replaceChildren(lossHeader(run, this.content));
+    const note = createLossNote(session, this.content, options);
+    this.overlay.replaceChildren(note);
+    if (!wasLoss) note.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
   }
 }
