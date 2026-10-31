@@ -12,7 +12,7 @@ describe("GameShell display mode", () => {
     vi.stubGlobal("document", dom.window.document);
     const root = dom.window.document.getElementById("game")!;
     const view: BattleView = {
-      art: { stageUrl: "stage.png", heroUrl: "idle.png" },
+      art: { stageUrl: "stage.png", heroUrl: "idle.png", enemyUrlById: {} },
       baseTurnMs: 10_000, message: "", selectedDiscardId: null, selectedDebuff: null,
       motion: null, motionStartedAtMs: null, animationNowMs: 0,
       potionModeKey: "F2", potionSlotLimit: 3, lowStimulus: true,
