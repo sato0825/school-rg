@@ -47,6 +47,6 @@ export const sciencePosePilotArt: BattleArt = {
   },
   previewLabelByClubId: {
     ...candidateBattleArt.previewLabelByClubId,
-    "science-demo": "科学部 · 同一人物3ポーズ制作パイロット · 未採用",
+    "science-demo": "科学部 v3 · 未採用",
   },
 };
