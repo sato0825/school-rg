@@ -15,6 +15,7 @@ const view: BattleView = {
   animationNowMs: 0,
   potionModeKey: "F2",
   potionSlotLimit: 3,
+  lowStimulus: false,
 };
 
 function battle(run: RunState): HTMLElement {
@@ -52,5 +53,18 @@ describe("typing selection in the battle view", () => {
     run.combat!.typing.targetEnemyInstanceId = null;
     run.combat!.typing.buffer = "strike";
     expect(battle(run).querySelector(".typing-hint")?.textContent).toBe("攻撃対象の敵を選択");
+  });
+
+  it("pairs enemy health length with an accessible value and identifies the next action", () => {
+    const run = structuredClone(validRun);
+    const enemy = run.combat!.enemies[0]!;
+    enemy.hp = Math.floor(enemy.maxHp / 2);
+    const root = battle(run);
+    const meter = root.querySelector<HTMLElement>(".enemy-health-track")!;
+    expect(meter.getAttribute("role")).toBe("meter");
+    expect(meter.getAttribute("aria-valuenow")).toBe(String(enemy.hp));
+    expect(root.querySelector<HTMLElement>(".enemy-health-fill")!.style.width).toBe("50%");
+    expect(root.querySelector(".intent-copy small")?.textContent).toContain("次の行動");
+    expect(root.querySelector(".typing-caption")?.textContent).toBe("カード名をタイプ");
   });
 });

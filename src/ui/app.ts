@@ -50,6 +50,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (savedHistory) history = parseRunHistory(JSON.parse(savedHistory));
   } catch { historyLoadError = true; }
   const selectedAscensionLevels: Record<string, number> = {};
+  let lowStimulus = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+  try {
+    const savedDisplay = localStorage.getItem("school-rg-low-stimulus-v1");
+    if (savedDisplay !== null) lowStimulus = savedDisplay === "1";
+  } catch { /* Keep the device preference when storage is unavailable. */ }
   let session = createRunSession(0, "literature-demo", demoContent, mapOptions);
   let frontScreen: "title" | "clubs" | "compendium" | "combat-log" | "history" | null = "title";
   let frontReturn: "title" | null = "title";
@@ -79,7 +84,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   const artPreloads: HTMLImageElement[] = [];
   let preloadedClubId: string | null = null;
   const preloadClubArt = (clubId: string) => {
@@ -148,6 +153,16 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (restoreCombatLogFocus) root.querySelector<HTMLButtonElement>('[data-action="front-back"]')?.focus();
     const header = root.querySelector(".topbar, .run-header");
     if (header) {
+      if (session.screen === "combat" && frontScreen === null) {
+        const displayToggle = document.createElement("button");
+        displayToggle.type = "button";
+        displayToggle.className = "stimulus-toggle";
+        displayToggle.dataset.action = "toggle-stimulus";
+        displayToggle.setAttribute("aria-pressed", String(lowStimulus));
+        displayToggle.setAttribute("aria-label", lowStimulus ? "低刺激表示を解除する" : "低刺激表示にする");
+        displayToggle.textContent = lowStimulus ? "演出 控えめ" : "演出 標準";
+        header.append(displayToggle);
+      }
       const toggle = document.createElement("button");
       toggle.type = "button";
       toggle.className = "audio-toggle";
@@ -348,6 +363,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (frontScreen !== null || restoreError) return;
       if (restoreError) return;
+      if (action === "toggle-stimulus" && session.screen === "combat") {
+        lowStimulus = !lowStimulus;
+        view.lowStimulus = lowStimulus;
+        try { localStorage.setItem("school-rg-low-stimulus-v1", lowStimulus ? "1" : "0"); } catch { /* Setting still applies in this session. */ }
+        render();
+        return;
+      }
       if (action === "export-playtest" && metrics) {
         persist();
         const blob = new Blob([JSON.stringify(metrics.record, null, 2)], { type: "application/json" });
