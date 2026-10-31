@@ -6,7 +6,7 @@ import { DEFAULT_GAME_CONFIG } from "../../src/domain/config.js";
 import { availableRunNodes, createRunSession, enterRunNode } from "../../src/domain/run-flow.js";
 import { deserializeRunSession, serializeRunSession } from "../../src/domain/save.js";
 import type { RunState } from "../../src/domain/schema.js";
-import { selectTypedCard, submitPlayerKey } from "../../src/domain/turn-state.js";
+import { resumePlayerTurn, selectTypedCard, submitPlayerKey } from "../../src/domain/turn-state.js";
 import { exactDuplicateChoices } from "../../src/domain/typing.js";
 
 const disposition = () => "discard" as const;
@@ -25,7 +25,8 @@ function sweepHand(): { run: RunState; baseId: string; kendoId: string } {
     phase: "PLAYER_INPUT" as const,
     hand: [baseId, kendoId],
     drawPile: added.combat.drawPile.filter((id) => id !== baseId && id !== kendoId),
-    discardPile: added.combat.discardPile.filter((id) => id !== baseId && id !== kendoId),
+    discardPile: [...added.combat.discardPile.filter((id) => id !== baseId && id !== kendoId),
+      ...added.combat.hand.filter((id) => id !== baseId && id !== kendoId)],
     exhaustPile: added.combat.exhaustPile.filter((id) => id !== baseId && id !== kendoId),
     typing: { buffer: "", candidateCardInstanceIds: [baseId, kendoId], selectedCardInstanceId: null, progress: 0, targetEnemyInstanceId: null, targetHandInstanceId: null },
     clock: { remainingMs: 10_000, lastEventAtMs: 0, paused: false },
@@ -77,7 +78,9 @@ describe("BASE-011 and KEN-007 share the provisional sweep input", () => {
     const restored = deserializeRunSession(saved, demoContent, { nowMs: () => 500 });
     expect(restored.run.combat!.typing.buffer).toBe("sweep");
     expect(restored.run.combat!.hand).toEqual([baseId, kendoId]);
-    const expired = selectTypedCard(restored.run, kendoId, { nowMs: () => 10_000 }, DEFAULT_GAME_CONFIG, demoContent, useCard, disposition);
+    const resumed = resumePlayerTurn(restored.run, { nowMs: () => 500 });
+    const deadline = resumed.combat!.clock.lastEventAtMs + resumed.combat!.clock.remainingMs;
+    const expired = selectTypedCard(resumed, kendoId, { nowMs: () => deadline }, DEFAULT_GAME_CONFIG, demoContent, useCard, disposition);
     expect(expired.combat!.phase).toBe("PLAYER_END");
     expect(expired.player.block).toBe(0);
     expect(expired.combat!.hand).toEqual([]);
