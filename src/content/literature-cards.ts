@@ -29,7 +29,7 @@ export const literatureCardSpecs: readonly ClubCardSpec[] = [
   { id: "LIT-009", word: "edit", type: "skill", target: "hand",
     effects: [{ kind: "exhaust_card", parameters: { count: 1 } }, { kind: "draw", parameters: { count: 2 } }],
     upgrades: [{ kind: "exhaust_card", parameters: { count: 1 } }, { kind: "draw", parameters: { count: 3 } }] },
-  { id: "LIT-010", word: "bookmark", type: "skill", target: "self",
+  { id: "LIT-010", word: "bookmark", type: "skill", target: "self", keywordIds: ["retain"],
     effects: [{ kind: "retrieve_discard", parameters: { count: 1 } }, { kind: "add_time", parameters: { amountMs: 500 } }],
     upgrades: [{ kind: "retrieve_discard", parameters: { count: 1 } }, { kind: "add_time", parameters: { amountMs: 1_000 } }] },
   { id: "LIT-011", word: "draft", type: "attack", target: "enemy",

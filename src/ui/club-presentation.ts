@@ -8,9 +8,9 @@ export const clubPresentation = {
   },
   "science-demo": {
     number: "02", label: "科学部", strategy: "状態を観察し、仕込んだ反応を起こす。", style: "状態異常 · 条件攻撃", accent: "#58aab7",
-    idle: new URL("../../docs/art/candidates/serious-student-idle-candidate-v1.png", import.meta.url).href,
-    activate: new URL("../../docs/art/candidates/serious-student-activate-candidate-v1.png", import.meta.url).href,
-    hit: new URL("../../docs/art/candidates/serious-student-hit-candidate-v1.png", import.meta.url).href,
+    idle: new URL("../../docs/art/candidates/serious-student-idle-candidate-v2.png", import.meta.url).href,
+    activate: new URL("../../docs/art/candidates/serious-student-activate-candidate-v2.png", import.meta.url).href,
+    hit: new URL("../../docs/art/candidates/serious-student-hit-candidate-v2.png", import.meta.url).href,
   },
   "kendo-demo": {
     number: "03", label: "剣道部", strategy: "Intentを読み、防いでから踏み込む。", style: "防御 · 反撃", accent: "#688fca",
