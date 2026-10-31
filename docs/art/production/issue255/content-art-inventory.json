@@ -1098,10 +1098,18 @@
       "rarity": null,
       "meaning": "攻撃 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 314,
+            "version": "v1",
+            "source": "docs/art/production/issue314/assets/card-lit-aside-v1.png",
+            "state": "preferred-draft",
+            "sha256": "d16c07e64117088931e844d94b17a311b1c71f17b0971e6eeb481303b9d1678f"
+          }
+        ]
       }
     },
     {
@@ -1251,10 +1259,18 @@
       "rarity": null,
       "meaning": "全体攻撃 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 314,
+            "version": "v1",
+            "source": "docs/art/production/issue314/assets/card-lit-anthology-v1.png",
+            "state": "preferred-draft",
+            "sha256": "53ee04e6f183a89a02501d9d95f2979f644a112b0b2c191ae8accbd74bd1589e"
+          }
+        ]
       }
     },
     {
@@ -1552,10 +1568,18 @@
       "rarity": null,
       "meaning": "状態条件攻撃 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 314,
+            "version": "v1",
+            "source": "docs/art/production/issue314/assets/card-sci-assay-v1.png",
+            "state": "preferred-draft",
+            "sha256": "6acb4efc9bc1fad487cf4138e5740f162332f7814564ced15b2e7cbe6c881afa"
+          }
+        ]
       }
     },
     {
@@ -1632,10 +1656,18 @@
       "rarity": null,
       "meaning": "毒付与 + 毎ターン防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 314,
+            "version": "v1",
+            "source": "docs/art/production/issue314/assets/card-sci-culture-v1.png",
+            "state": "preferred-draft",
+            "sha256": "edf1908ccbdca6315fc3362578b861d90a0ae3eb1633f4ae81c127089935a1cd"
+          }
+        ]
       }
     },
     {
@@ -1937,10 +1969,18 @@
       "rarity": null,
       "meaning": "全体攻撃 + 防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 314,
+            "version": "v1",
+            "source": "docs/art/production/issue314/assets/card-ken-sweep-v1.png",
+            "state": "preferred-draft",
+            "sha256": "c3cb69f72bb83db20b633f5e74c806bad62fe489c9af8f5907fb24954b762e19"
+          }
+        ]
       }
     },
     {
@@ -1970,10 +2010,18 @@
       "rarity": null,
       "meaning": "防御 + 反撃 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 314,
+            "version": "v1",
+            "source": "docs/art/production/issue314/assets/card-ken-breath-v1.png",
+            "state": "preferred-draft",
+            "sha256": "8c4c32890daa1f4dcf08e4ebbb6bf0db4ced1403f5659cd7532d35754a3a422e"
+          }
+        ]
       }
     },
     {
@@ -2369,10 +2417,18 @@
       "rarity": null,
       "meaning": "残り時間増加 + ドロー + 防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 314,
+            "version": "v1",
+            "source": "docs/art/production/issue314/assets/card-mus-bridge-v1.png",
+            "state": "preferred-draft",
+            "sha256": "62f552dc2dbcce4f8c3fcf04bfccfd9409a71663cacca7f2ea025a94ef57d9fe"
+          }
+        ]
       }
     },
     {
@@ -2398,10 +2454,18 @@
       "rarity": null,
       "meaning": "全体攻撃 + 残り時間増加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 314,
+            "version": "v1",
+            "source": "docs/art/production/issue314/assets/card-mus-refrain-v1.png",
+            "state": "preferred-draft",
+            "sha256": "20cae3de266521a96b31abfd239744be5c43ff14958fc132fe1c26101d66ef90"
+          }
+        ]
       }
     },
     {
@@ -2799,10 +2863,18 @@
       "rarity": null,
       "meaning": "全体攻撃 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 314,
+            "version": "v1",
+            "source": "docs/art/production/issue314/assets/card-art-wash-v1.png",
+            "state": "preferred-draft",
+            "sha256": "ce998c9b5e88bcc9d2c89a1044b3ddc743710ed3e39cd2af51a3ba5c1065cd59"
+          }
+        ]
       }
     },
     {
@@ -2865,10 +2937,18 @@
       "rarity": null,
       "meaning": "毎ターン防御 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 314,
+            "version": "v1",
+            "source": "docs/art/production/issue314/assets/card-art-primer-v1.png",
+            "state": "preferred-draft",
+            "sha256": "7bee7e3db47f2c6ce6d2c42eba3c0cbec55683e5422916573ca326131493b69e"
+          }
+        ]
       }
     },
     {

@@ -29,7 +29,10 @@ const relicWave2Dir = path.join(root, "docs/art/production/issue301");
 const relicWave2 = JSON.parse(fs.readFileSync(path.join(relicWave2Dir, "assets-v1.json"), "utf8"));
 const potionDir = path.join(root, "docs/art/production/issue309");
 const potionWave1 = JSON.parse(fs.readFileSync(path.join(potionDir, "assets-v1.json"), "utf8"));
-const allProducedAssets = [...wave1.map((asset) => ({ ...asset, issue: 255 })), ...wave2.map((asset) => ({ ...asset, issue: 269 })), ...heavyStrike.map((asset) => ({ ...asset, issue: 275 })), ...wave3.map((asset) => ({ ...asset, issue: 277 })), ...wave4.map((asset) => ({ ...asset, issue: 284 })), ...relicWave1.map((asset) => ({ ...asset, issue: 291 })), ...outlineRevisions.map((asset) => ({ ...asset, issue: 296 })), ...relicWave2.map((asset) => ({ ...asset, issue: 301 })), ...potionWave1.map((asset) => ({ ...asset, issue: 309 }))];
+const clubWaveDir = path.join(root, "docs/art/production/issue314");
+const clubWave = ["assets-a.json", "assets-b.json"]
+  .flatMap((file) => JSON.parse(fs.readFileSync(path.join(clubWaveDir, file), "utf8")));
+const allProducedAssets = [...wave1.map((asset) => ({ ...asset, issue: 255 })), ...wave2.map((asset) => ({ ...asset, issue: 269 })), ...heavyStrike.map((asset) => ({ ...asset, issue: 275 })), ...wave3.map((asset) => ({ ...asset, issue: 277 })), ...wave4.map((asset) => ({ ...asset, issue: 284 })), ...relicWave1.map((asset) => ({ ...asset, issue: 291 })), ...outlineRevisions.map((asset) => ({ ...asset, issue: 296 })), ...relicWave2.map((asset) => ({ ...asset, issue: 301 })), ...potionWave1.map((asset) => ({ ...asset, issue: 309 })), ...clubWave.map((asset) => ({ ...asset, issue: 314 }))];
 if (new Set(allProducedAssets.map((asset) => `${asset.id}:${asset.version}`)).size !== allProducedAssets.length) throw new Error("duplicate produced asset ID/version");
 for (const asset of allProducedAssets) {
   const actual = createHash("sha256").update(fs.readFileSync(path.join(root, asset.path))).digest("hex");
