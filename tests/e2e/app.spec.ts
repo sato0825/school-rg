@@ -1264,12 +1264,9 @@ test("battle help stays on the battle screen and does not alter the clock", asyn
   await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
 });
 
-test("battle help fits desktop and iPad sized screens without hiding the combat context", async ({ page }) => {
-  test.setTimeout(60_000);
-  for (const viewport of [{ width: 1280, height: 800 }, { width: 820, height: 1180 }]) {
+for (const viewport of [{ width: 1280, height: 800 }, { width: 820, height: 1180 }]) {
+  test(`battle help fits ${viewport.width}px without hiding the combat context`, async ({ page }) => {
     await page.setViewportSize(viewport);
-    await page.goto("/?shortRun=1&seed=42");
-    await page.evaluate(() => localStorage.clear());
     await startDemoRun(page);
     await enterNextNode(page);
     await page.getByRole("button", { name: "操作" }).click();
@@ -1282,8 +1279,8 @@ test("battle help fits desktop and iPad sized screens without hiding the combat 
     await expect(page.locator(".hand .card").first()).toBeVisible();
     await expect(page.locator(".topbar .brand")).toHaveCount(0);
     await page.getByRole("button", { name: "閉じる" }).click();
-  }
-});
+  });
+}
 
 test("default club selection shows five distinct characters and chosen battle art", async ({ page }) => {
   const requested: string[] = [];
