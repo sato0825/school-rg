@@ -42,7 +42,11 @@ for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
       routeLeft: element.querySelector(".map-scroll")!.getBoundingClientRect().left,
     }));
     expect(positions.heroRight).toBeLessThan(positions.routeLeft);
+    await expect(route.locator(".map-stats")).not.toContainText(/難度|シード/);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
     if (process.env.SCHOOL_RG_CAPTURE_ROUTE === "1") await page.screenshot({ path: `docs/art/previews/issue230-route-${width}.png` });
+    await route.locator(".route-run-record summary").click();
+    await expect(route.locator(".route-run-record")).toContainText(`シード ${reward.run.seed}`);
 
     await page.reload();
     await expect(page.locator(".route-scene .map-node.available")).toHaveCount(availableCount);

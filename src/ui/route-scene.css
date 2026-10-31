@@ -53,7 +53,8 @@
 .route-scene-overlay .map-route-lines .route-available { stroke: #f0afc1; }
 .route-run-record { margin: 5px 3px 0; color: #e8f0ee; font-size: 11px; }
 .route-run-record summary { width: max-content; margin-left: auto; cursor: pointer; }
-.route-run-record .playtest-stats { display: block; margin-left: auto; width: max-content; }
+.route-run-record-details { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+.route-run-record .playtest-stats { margin: 0; }
 .route-scene[data-effects="quiet"] .map-intro,
 .route-scene[data-effects="quiet"] .map-scroll,
 .reward-scene[data-effects="quiet"] .reward-scene-overlay {
