@@ -1,6 +1,6 @@
 import { availableRunNodes, type RunSession } from "../domain/run-flow.js";
 import { activeEvent, availableEventChoices, eventChoiceTargets } from "../domain/events.js";
-import type { ContentRegistry, MapNode } from "../domain/schema.js";
+import type { ContentRegistry, MapNode, RunState } from "../domain/schema.js";
 import { describeCard } from "./battle-view.js";
 import type { BattleArt } from "./battle-view.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
