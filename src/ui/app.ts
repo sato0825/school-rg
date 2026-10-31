@@ -24,7 +24,7 @@ import { appendRunHistory, emptyRunHistory, legacyTerminalRunId, parseRunHistory
 import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, MAX_ASCENSION_LEVEL } from "../domain/ascension.js";
 import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
-import { createAudioFeedback } from "./audio.js";
+import { createAudioFeedback, resultSoundCue } from "./audio.js";
 import { imeLatinKey } from "./ime-key.js";
 import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
 import { GameShell } from "./game-shell.js";
@@ -60,6 +60,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const savedDisplay = localStorage.getItem("school-rg-low-stimulus-v1");
     if (savedDisplay !== null) lowStimulus = savedDisplay === "1";
   } catch { /* Keep the device preference when storage is unavailable. */ }
+  audio.setQuiet(lowStimulus);
   let session = createRunSession(0, "literature-demo", demoContent, mapOptions);
   let frontScreen: "title" | "clubs" | "compendium" | "history" | null = "title";
   let frontReturn: "title" | null = "title";
@@ -296,6 +297,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const resolved = fireRelic(updated, "card_used", { cardInstanceId: instanceId });
     view.cardFx = cardFx;
     view.resultFx = resultFxForTransition(state, resolved, view.layoutPreviewAllies ?? 1, clock.nowMs());
+    const resultCue = resultSoundCue(view.resultFx?.marks ?? []);
+    if (resultCue && resolved.combat?.phase !== "WON") audio.play(resultCue, 0.11);
     view.dyingEnemyInstanceIds = state.combat!.enemies.filter((enemy) => enemy.hp > 0 && (resolved.combat?.enemies.find((next) => next.instanceId === enemy.instanceId)?.hp ?? enemy.hp) <= 0).map((enemy) => enemy.instanceId);
     setMotion("hero");
     view.selectedDiscardId = null;
@@ -340,7 +343,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         view.resultFx = resultFxForTransition(beforeEnemyAction, run, view.layoutPreviewAllies ?? 1, clock.nowMs());
         enemyPending = false;
         // Quiet defeat settles immediately; avoid stacking hit and loss cues.
-        if (receivedHit && !(lowStimulus && run.combat?.phase === "LOST")) audio.play("hit");
+        const resultCue = resultSoundCue(view.resultFx?.marks ?? []);
+        if (resultCue && !(lowStimulus && run.combat?.phase === "LOST")) audio.play(resultCue);
         setMotion(receivedHit && !(lowStimulus && run.combat?.phase === "LOST") ? "hit" : null);
         if (run.combat?.phase === "PLAYER_START") {
           run = beginPlayerTurn(run, clock, config, demoContent);
@@ -417,6 +421,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   }
 
   function onKeyDown(event: KeyboardEvent): void {
+    audio.activate();
     if (battleMapOpen) {
       if (event.key === "Escape") { event.preventDefault(); closeBattleMap(); }
       else if (event.key === "Tab") { event.preventDefault(); root.querySelector<HTMLButtonElement>(".battle-map-close")?.focus({ preventScroll: true }); }
@@ -457,6 +462,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
 
   function onBeforeInput(event: InputEvent): void {
     if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
+    audio.activate();
     if (imeComposing || event.isComposing || event.inputType === "insertCompositionText") return;
     event.preventDefault();
     if (battleMapOpen) return;
@@ -492,9 +498,10 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const action = button.dataset.action;
     const id = button.dataset.id ?? "";
     try {
+      audio.activate();
       if (action === "open-battle-map") { openBattleMap(); return; }
       if (action === "close-battle-map") { closeBattleMap(); return; }
-      if (action === "toggle-audio") { audio.toggle(); render(); return; }
+      if (action === "toggle-audio") { audio.toggle(); audio.activate(); render(); return; }
       if (action === "new-run" || action === "restart") { restart(); return; }
       if (action === "open-clubs" && frontScreen === "title") { frontScreen = "clubs"; render(); return; }
       if (action === "open-history" && (frontScreen === "title" || (frontScreen === null && (session.screen === "won" || session.screen === "lost")))) {
@@ -545,6 +552,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (action === "toggle-stimulus" && session.screen === "combat") {
         lowStimulus = !lowStimulus;
         view.lowStimulus = lowStimulus;
+        audio.setQuiet(lowStimulus);
         try { localStorage.setItem("school-rg-low-stimulus-v1", lowStimulus ? "1" : "0"); } catch { /* Setting still applies in this session. */ }
         render();
         root.querySelector<HTMLButtonElement>("[data-action=toggle-stimulus]")?.focus();
@@ -571,12 +579,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         if (metrics) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === id)!);
         if (session.screen === "combat") startCombat();
         view.message = session.screen === "shop" ? "購入するカードを選んでください。" : "";
+        audio.play("route");
         render();
         return;
       }
       if (session.screen === "reward" && (action === "reward-card" || action === "skip-reward")) {
         session = chooseRunReward(session, action === "skip-reward" ? null : id);
         run = session.run;
+        if (action === "reward-card") audio.play("reward");
         render();
         return;
       }
@@ -585,6 +595,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         session = chooseRunTreasure(session, action === "skip-treasure" ? null : id, demoContent, config);
         run = session.run;
         for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
+        if (action === "treasure-offer") audio.play("reward");
         render();
         return;
       }
