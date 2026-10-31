@@ -12,7 +12,7 @@ import { demoRelicRules } from "../content/demo-battle.js";
 import { emitRelicEvent, type RelicEventKind, type RelicEvent } from "../domain/relic-hooks.js";
 import { discardPotion, selectPotionEnemy, selectPotionSlot, setPotionInputActive, submitPotionKey } from "../domain/potions.js";
 import { renderBattle, type BattleView } from "./battle-view.js";
-import { candidateBattleArt, demoBattleArt } from "./demo-art.js";
+import { candidateBattleArt, demoBattleArt, sciencePosePilotArt } from "./demo-art.js";
 import { cardFxForUse } from "./card-fx.js";
 import { recordCombatResult } from "../domain/combat-action-log.js";
 import { MOTION_MS } from "./motion-timing.js";
@@ -73,6 +73,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   } catch { restoreError = true; }
   let run: RunState = session.run;
   const previewArt = params.get("artPreview") === "1";
+  const sciencePosePilot = import.meta.env.DEV && params.get("artPreview") === "sciencePilot";
   const layoutPreview = Number(params.get("layoutPreview"));
   const playtestEnabled = params.get("playtest") === "1";
   let metrics: PlaytestTracker | null = null;
@@ -87,7 +88,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
+  const view: BattleView = { art: sciencePosePilot ? sciencePosePilotArt : previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   let imeComposing = false;
   let imeNeedsRecovery = false;
   let keyboardLayoutMap: ReadonlyMap<string, string> | null = null;

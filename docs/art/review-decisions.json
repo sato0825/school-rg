@@ -2,7 +2,7 @@
   "version": 1,
   "reviews": [
     { "characterId": "literature-student", "status": "pending", "reviewFile": "docs/art/review-four-club-motion-2026-10-31.md", "note": "待機・発動・被弾は個別生成の比較候補。部位別原本と反復制作の同一性が未確認。" },
-    { "characterId": "serious-student", "status": "pending", "reviewFile": "docs/art/review-2026-10-31.md", "note": "年齢感と画風の方向のみ採用。3ポーズの人物同一性、原本と遷移品質は未確認。" },
+    { "characterId": "serious-student", "status": "pending", "reviewFile": "docs/art/issue233-science-pose-pilot-review.md", "note": "年齢感と画風の方向のみ採用。待機v2と発動・被弾v3を別制作回で比較中。部位別原本と実機での遷移品質は未確認。" },
     { "characterId": "kendo-student", "status": "pending", "reviewFile": "docs/art/review-four-club-motion-2026-10-31.md", "note": "複数版を並べて比べる段階。発動・被弾の同一性と原本は未確認。" },
     { "characterId": "music-student", "status": "pending", "reviewFile": "docs/art/review-four-club-motion-2026-10-31.md", "note": "待機・発動・被弾は個別生成の比較候補。部位別原本と反復制作の同一性が未確認。" },
     { "characterId": "art-student", "status": "pending", "reviewFile": "docs/art/review-four-club-motion-2026-10-31.md", "note": "複数版を並べて比べる段階。被弾の同一性と原本は未確認。" }

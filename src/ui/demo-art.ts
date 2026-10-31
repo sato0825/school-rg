@@ -33,3 +33,20 @@ export const candidateBattleArt: BattleArt = {
     "art-demo": "美術部候補 · 3ポーズ比較 · 未採用",
   },
 };
+
+/** #233 development-only comparison of one repeat production round against the science idle master. */
+export const sciencePosePilotArt: BattleArt = {
+  ...candidateBattleArt,
+  heroPosesByClubId: {
+    ...candidateBattleArt.heroPosesByClubId,
+    "science-demo": {
+      idle: clubPresentation["science-demo"].idle,
+      activate: new URL("../../docs/art/candidates/serious-student-activate-candidate-v3.png", import.meta.url).href,
+      hit: new URL("../../docs/art/candidates/serious-student-hit-candidate-v3.png", import.meta.url).href,
+    },
+  },
+  previewLabelByClubId: {
+    ...candidateBattleArt.previewLabelByClubId,
+    "science-demo": "科学部 · 同一人物3ポーズ制作パイロット · 未採用",
+  },
+};
