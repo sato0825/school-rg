@@ -5,6 +5,41 @@ import { serializeRunSession } from "../../src/domain/save.js";
 import type { MapNode } from "../../src/domain/schema.js";
 
 for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
+  test(`pile tray keeps the battle visible and returns to typing at ${width}×${height}`, async ({ page }) => {
+    await page.clock.install();
+    await page.setViewportSize({ width, height });
+    const base = createRunSession(42, "science-demo", demoContent);
+    const start: MapNode = { id: "tray-start", act: 1, floor: 0, kind: "start", nextIds: ["tray-fight"] };
+    const fight: MapNode = { id: "tray-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+    const session = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
+      demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
+    const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
+    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await page.goto("/");
+
+    const draw = page.locator('.pile-token[data-pile="draw"]');
+    await draw.click();
+    await expect(draw).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator("#battle-pile-tray")).toBeVisible();
+    await expect(page.locator(".stage")).toBeVisible();
+    await expect(page.locator('#battle-pile-tray [data-action="close-pile"]')).toBeFocused();
+    await expect(page.locator(".pile-order-note")).toBeVisible();
+    await expect(page.locator(".pile-card")).toHaveCount(session.run.combat!.drawPile.length);
+    const remaining = Number((await page.locator("[data-role=time]").innerText()).replace(/[^0-9.]/g, ""));
+    await page.clock.runFor(400);
+    const after = Number((await page.locator("[data-role=time]").innerText()).replace(/[^0-9.]/g, ""));
+    expect(after).toBeLessThan(remaining);
+    if (process.env.SCHOOL_RG_CAPTURE_TRAY === "1") await page.screenshot({ path: `docs/art/previews/issue200-pile-tray-${width}x${height}.png` });
+
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#battle-pile-tray")).toBeHidden();
+    await expect(page.locator(".typing-input")).toBeFocused();
+    await page.locator('.pile-token[data-pile="exhaust"]').click();
+    await expect(page.locator(".pile-empty")).toHaveText("カードはありません");
+    await page.locator('#battle-pile-tray [data-action="close-pile"]').click();
+    await expect(page.locator(".typing-input")).toBeFocused();
+  });
+
   test(`card piles and both sides' statuses stay readable at ${width}×${height}`, async ({ page }) => {
     await page.clock.install();
     await page.setViewportSize({ width, height });

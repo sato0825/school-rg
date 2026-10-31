@@ -18,6 +18,35 @@ const view: BattleView = {
 };
 
 describe("combat objects", () => {
+  it("shows pile contents without exposing draw order or mutating combat state", () => {
+    const run = structuredClone(validRun);
+    const content = structuredClone(validContent);
+    content.effects.push({ id: "effect-upgraded", kind: "damage", parameters: { amount: 12 } });
+    content.cards[0]!.upgradeEffectIds = ["effect-upgraded"];
+    run.combat!.cards.push(
+      { instanceId: "draw-strike", cardId: "card-strike", upgraded: true },
+      { instanceId: "draw-draft", cardId: "card-draft", upgraded: false },
+      { instanceId: "discard-strike", cardId: "card-strike", upgraded: false },
+    );
+    run.combat!.drawPile = ["draw-strike", "draw-draft"];
+    run.combat!.discardPile = ["discard-strike"];
+    const before = structuredClone(run.combat);
+    const root = new JSDOM("<div id='game'></div>").window.document.getElementById("game")!;
+
+    renderBattle(root, run, content, { ...view, pileOpen: "draw" });
+    expect(root.querySelector('.pile-token[data-pile="draw"]')?.getAttribute("aria-expanded")).toBe("true");
+    expect([...root.querySelectorAll(".pile-card strong")].map((node) => node.textContent)).toEqual(["draft", "strike"]);
+    expect(root.querySelector(".pile-order-note")?.textContent).toContain("引く順序は表示しません");
+    expect(root.querySelector('.pile-card[aria-label*="強化"] .pile-card-effect')?.textContent).toBe("攻撃 12");
+
+    renderBattle(root, run, content, { ...view, pileOpen: "discard" });
+    expect(root.querySelectorAll(".pile-card")).toHaveLength(1);
+    expect(root.querySelector(".pile-order-note")).toBeNull();
+    renderBattle(root, run, content, { ...view, pileOpen: "exhaust" });
+    expect(root.querySelector(".pile-empty")?.textContent).toBe("カードはありません");
+    expect(run.combat).toEqual(before);
+  });
+
   it("shows piles as distinct objects and statuses beside both sides without changing counts", () => {
     const run = structuredClone(validRun);
     run.combat!.cards.push(
