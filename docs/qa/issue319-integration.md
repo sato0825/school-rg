@@ -9,7 +9,8 @@ Status: Draft integration tree. This is not final visual, art or device acceptan
 | 2 | #273 live battle/reward/route | `7ff04cd` | Merged without conflict; owning CI passed |
 | 3 | #294 stage runtime | `739598e` | Merged without conflict; owning CI passed |
 | 4 | #271 loss | `9f5ae27` | `game-shell.ts` import conflict resolved: retain `stageSelectionForRun` and add loss view imports; owning CI passed |
+| 5 | #321 combined loss and victory | `f1676c6` | Merged without conflict; owner's focused E2E 27/27 passed, owning CI pending |
 
-Pending sources: #312 four locations (full-run E2E failures under owner investigation), #298 victory (owner integrating #271), #306 audio, #307 visual Intent, #311 item visuals. Each remains on its owning branch. Do not count a source's earlier passing CI as a pass for this combined tree.
+Pending sources: #312 four locations (full-run E2E correction and final check under owner investigation), #306 audio (26 focused E2E passed; new owning CI pending), #307 visual Intent, #311 item visuals. Each remains on its owning branch. Do not count a source's earlier passing CI as a pass for this combined tree.
 
 The integrated tree has not yet run its final batched tests or viewport checks. Candidate art is not approved. iPad hardware and first-time understanding are unverified.
