@@ -23,6 +23,12 @@ function provisionalCatalog(): CardProfileCatalog {
 }
 
 export const provisionalCardProfileCatalog = provisionalCatalog();
+export const emptyCardProfileCatalog: CardProfileCatalog = Object.freeze({});
+
+/** Candidate allocation never ships by default; release can inject an approved catalog later. */
+export function cardProfilesForBuild(isDevelopment: boolean): CardProfileCatalog {
+  return isDevelopment ? provisionalCardProfileCatalog : emptyCardProfileCatalog;
+}
 
 export function cardProfileForId(cardId: string, catalog: CardProfileCatalog): CardProfile | null {
   const profile = catalog[cardId];

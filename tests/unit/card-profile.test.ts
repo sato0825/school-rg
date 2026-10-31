@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { demoContent } from "../../src/content/demo-battle.js";
-import { cardProfileForId, cardProfileMarkup, provisionalCardProfileCatalog } from "../../src/ui/card-profile.js";
+import { cardProfileForId, cardProfileMarkup, cardProfilesForBuild, emptyCardProfileCatalog, provisionalCardProfileCatalog } from "../../src/ui/card-profile.js";
 
 describe("provisional display-only card profiles", () => {
   it("covers the current 84 IDs with the documented calibration counts", () => {
@@ -16,5 +16,7 @@ describe("provisional display-only card profiles", () => {
     expect(cardProfileForId("BASE-001", {})).toBeNull();
     expect(cardProfileForId("BASE-001", { "BASE-001": "unknown" as "frequent" })).toBeNull();
     expect(cardProfileMarkup(null)).toBe("");
+    expect(cardProfilesForBuild(false)).toBe(emptyCardProfileCatalog);
+    expect(cardProfilesForBuild(true)).toBe(provisionalCardProfileCatalog);
   });
 });

@@ -10,7 +10,7 @@ import { MAP_ROW_HEIGHT, mapRouteSegments } from "./map-layout.js";
 import { mapKindIcons as kindIcons, mapKindNames as kindNames } from "./map-symbols.js";
 import { stageUrlForAct, stageUrlForRun } from "./stage-presentation.js";
 import { cardArtForId } from "./card-art.js";
-import { cardProfileForId, cardProfileLabel, cardProfileMarkup, provisionalCardProfileCatalog, type CardProfileCatalog } from "./card-profile.js";
+import { cardProfileForId, cardProfileLabel, cardProfileMarkup, emptyCardProfileCatalog, type CardProfileCatalog } from "./card-profile.js";
 import { formatPlaytestTime, type PlaytestRecord } from "./playtest-metrics.js";
 import { historyCounts, type RunHistory } from "../domain/run-history.js";
 import { DEFAULT_ECONOMY_OPTIONS } from "../domain/economy.js";
@@ -123,7 +123,7 @@ export function renderRunMap(root: HTMLElement, session: RunSession, art: Battle
   root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><div class="map-copy"><span>ROUTE SELECT / ACT ${run.act}</span><h2>次の行き先を選ぶ</h2><p class="map-progress">現在地 <strong>${html(kindNames[current.kind])} · ${current.floor}F</strong><span aria-hidden="true">→</span> <strong>進める場所 ${available.size}</strong></p><div class="map-stats" aria-label="ランの状態"><span class="map-health"><span class="map-health-value">♥ ${run.player.hp}/${run.player.maxHp}</span><span class="map-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span style="width:${hpRatio}%"></span></span></span><span class="map-stat"><b aria-hidden="true">◉</b>${run.gold}G<small>所持金</small></span><span class="map-stat"><b aria-hidden="true">▤</b>デッキ ${run.deck.length}枚</span><span class="map-secondary">難度 ${run.ascensionLevel} · シード ${run.seed}</span></div>${playtest ? `<p class="playtest-stats">実操作 ${formatPlaytestTime(playtest.activeMs)} · 訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</p>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : ""}<button type="button" class="map-compendium" data-action="open-compendium">図鑑</button></div><img class="map-hero" src="${html(hero)}" alt="" decoding="async" /></div><div class="map-scroll" aria-label="Act ${run.act} マップ"><div class="map-route-track">${routeLines}${rows}</div></div></section>`, art, run.act, run);
 }
 
-export function renderRunReward(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, profiles: CardProfileCatalog = provisionalCardProfileCatalog): void {
+export function renderRunReward(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, profiles: CardProfileCatalog = emptyCardProfileCatalog): void {
   const signature = new Set(content.clubs.find((club) => club.id === session.run.clubId)?.signatureCardIds ?? []);
   const cards = session.rewardCardIds.map((cardId) => {
     const card = content.cards.find((item) => item.id === cardId)!;
