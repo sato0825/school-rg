@@ -1,0 +1,1084 @@
+{
+  "schemaVersion": 1,
+  "setId": "issue255-wave1-candidates",
+  "toolVersion": "Version: ImageMagick 7.1.2-25 Q16-HDRI aarch64 037e46295:20260604 https://imagemagick.org",
+  "codec": "WebP quality 82; ImageMagick method 5; Lanczos",
+  "profiles": {
+    "hand-1x": [
+      160,
+      72
+    ],
+    "hand-2x": [
+      320,
+      144
+    ],
+    "reward-1x": [
+      256,
+      96
+    ],
+    "reward-2x": [
+      512,
+      192
+    ],
+    "detail-1x": [
+      768,
+      512
+    ],
+    "detail-2x": [
+      1536,
+      1024
+    ]
+  },
+  "records": [
+    {
+      "id": "LIT-002",
+      "version": "v1",
+      "profile": "hand-1x",
+      "path": "src/assets/cards/derivatives/issue255/LIT-002-v1-hand-1x.webp",
+      "width": 160,
+      "height": 72,
+      "bytes": 2196,
+      "sha256": "79313b614d7a92333cba0305cf95452041aa74b8c965379cff296c882aeb6322",
+      "sourcePath": "docs/art/production/issue255/assets/card-lit-leaf-v1.png",
+      "sourceSha256": "0eff5aafe9744f416157a313496364dc17d6aff0d735e6b8ec25651feaee64fa",
+      "sourceBytes": 1748027,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.53
+      ],
+      "crop": {
+        "resizedWidth": 160,
+        "resizedHeight": 107,
+        "x": 0,
+        "y": 21,
+        "width": 160,
+        "height": 72,
+        "sourceCrop": {
+          "x": 0,
+          "y": 202,
+          "width": 1536,
+          "height": 691
+        }
+      }
+    },
+    {
+      "id": "LIT-002",
+      "version": "v1",
+      "profile": "hand-2x",
+      "path": "src/assets/cards/derivatives/issue255/LIT-002-v1-hand-2x.webp",
+      "width": 320,
+      "height": 144,
+      "bytes": 5926,
+      "sha256": "2bda34e7eb2603b76bdba50bfa3493450de2989be6871a4275c9179288425e2a",
+      "sourcePath": "docs/art/production/issue255/assets/card-lit-leaf-v1.png",
+      "sourceSha256": "0eff5aafe9744f416157a313496364dc17d6aff0d735e6b8ec25651feaee64fa",
+      "sourceBytes": 1748027,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.53
+      ],
+      "crop": {
+        "resizedWidth": 320,
+        "resizedHeight": 214,
+        "x": 0,
+        "y": 41,
+        "width": 320,
+        "height": 144,
+        "sourceCrop": {
+          "x": 0,
+          "y": 197,
+          "width": 1536,
+          "height": 691
+        }
+      }
+    },
+    {
+      "id": "LIT-002",
+      "version": "v1",
+      "profile": "reward-1x",
+      "path": "src/assets/cards/derivatives/issue255/LIT-002-v1-reward-1x.webp",
+      "width": 256,
+      "height": 96,
+      "bytes": 4098,
+      "sha256": "dd028a8cc18c78033d4a0cb2e58026e79da0d7c204c02cc9384479ad6aeb451e",
+      "sourcePath": "docs/art/production/issue255/assets/card-lit-leaf-v1.png",
+      "sourceSha256": "0eff5aafe9744f416157a313496364dc17d6aff0d735e6b8ec25651feaee64fa",
+      "sourceBytes": 1748027,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.53
+      ],
+      "crop": {
+        "resizedWidth": 256,
+        "resizedHeight": 171,
+        "x": 0,
+        "y": 43,
+        "width": 256,
+        "height": 96,
+        "sourceCrop": {
+          "x": 0,
+          "y": 258,
+          "width": 1536,
+          "height": 576
+        }
+      }
+    },
+    {
+      "id": "LIT-002",
+      "version": "v1",
+      "profile": "reward-2x",
+      "path": "src/assets/cards/derivatives/issue255/LIT-002-v1-reward-2x.webp",
+      "width": 512,
+      "height": 192,
+      "bytes": 10950,
+      "sha256": "809c1f01258d52f1bae7e57cbacd0a9735c822f1726f7876ecd7a9185e2993b2",
+      "sourcePath": "docs/art/production/issue255/assets/card-lit-leaf-v1.png",
+      "sourceSha256": "0eff5aafe9744f416157a313496364dc17d6aff0d735e6b8ec25651feaee64fa",
+      "sourceBytes": 1748027,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.53
+      ],
+      "crop": {
+        "resizedWidth": 512,
+        "resizedHeight": 342,
+        "x": 0,
+        "y": 85,
+        "width": 512,
+        "height": 192,
+        "sourceCrop": {
+          "x": 0,
+          "y": 255,
+          "width": 1536,
+          "height": 576
+        }
+      }
+    },
+    {
+      "id": "LIT-002",
+      "version": "v1",
+      "profile": "detail-1x",
+      "path": "src/assets/cards/derivatives/issue255/LIT-002-v1-detail-1x.webp",
+      "width": 768,
+      "height": 512,
+      "bytes": 20450,
+      "sha256": "eec8272bdf709269f35eedaf9c778c541543595163cbb265914ee2f9fd7a6552",
+      "sourcePath": "docs/art/production/issue255/assets/card-lit-leaf-v1.png",
+      "sourceSha256": "0eff5aafe9744f416157a313496364dc17d6aff0d735e6b8ec25651feaee64fa",
+      "sourceBytes": 1748027,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.53
+      ],
+      "crop": {
+        "resizedWidth": 768,
+        "resizedHeight": 512,
+        "x": 0,
+        "y": 0,
+        "width": 768,
+        "height": 512,
+        "sourceCrop": {
+          "x": 0,
+          "y": 0,
+          "width": 1536,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "id": "LIT-002",
+      "version": "v1",
+      "profile": "detail-2x",
+      "path": "src/assets/cards/derivatives/issue255/LIT-002-v1-detail-2x.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 51436,
+      "sha256": "c4b99c1644450bef9a3a5e6168bb5e4b47ccd413d43e5ddb87275ef123d44605",
+      "sourcePath": "docs/art/production/issue255/assets/card-lit-leaf-v1.png",
+      "sourceSha256": "0eff5aafe9744f416157a313496364dc17d6aff0d735e6b8ec25651feaee64fa",
+      "sourceBytes": 1748027,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.53
+      ],
+      "crop": {
+        "resizedWidth": 1536,
+        "resizedHeight": 1024,
+        "x": 0,
+        "y": 0,
+        "width": 1536,
+        "height": 1024,
+        "sourceCrop": {
+          "x": 0,
+          "y": 0,
+          "width": 1536,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "id": "SCI-001",
+      "version": "v1",
+      "profile": "hand-1x",
+      "path": "src/assets/cards/derivatives/issue255/SCI-001-v1-hand-1x.webp",
+      "width": 160,
+      "height": 72,
+      "bytes": 1492,
+      "sha256": "7ee81be2e5e855238660b231f992f44cc56357a84ee77f8fb4e8e352a303fa29",
+      "sourcePath": "docs/art/production/issue255/assets/card-sci-sample-v1.png",
+      "sourceSha256": "bab11abcf1682029e7f040f5dc226fa42ed4e3b98145dd939f28237821122d8b",
+      "sourceBytes": 2020147,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.45,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 160,
+        "resizedHeight": 107,
+        "x": 0,
+        "y": 18,
+        "width": 160,
+        "height": 72,
+        "sourceCrop": {
+          "x": 0,
+          "y": 173,
+          "width": 1536,
+          "height": 691
+        }
+      }
+    },
+    {
+      "id": "SCI-001",
+      "version": "v1",
+      "profile": "hand-2x",
+      "path": "src/assets/cards/derivatives/issue255/SCI-001-v1-hand-2x.webp",
+      "width": 320,
+      "height": 144,
+      "bytes": 4064,
+      "sha256": "49787db0680494f54c23a266ff2bb0b651b5245824e219cc3ebc293c36e2ccd4",
+      "sourcePath": "docs/art/production/issue255/assets/card-sci-sample-v1.png",
+      "sourceSha256": "bab11abcf1682029e7f040f5dc226fa42ed4e3b98145dd939f28237821122d8b",
+      "sourceBytes": 2020147,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.45,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 320,
+        "resizedHeight": 214,
+        "x": 0,
+        "y": 35,
+        "width": 320,
+        "height": 144,
+        "sourceCrop": {
+          "x": 0,
+          "y": 168,
+          "width": 1536,
+          "height": 691
+        }
+      }
+    },
+    {
+      "id": "SCI-001",
+      "version": "v1",
+      "profile": "reward-1x",
+      "path": "src/assets/cards/derivatives/issue255/SCI-001-v1-reward-1x.webp",
+      "width": 256,
+      "height": 96,
+      "bytes": 2468,
+      "sha256": "600e57db3c3462c7239a21e80f223e573786bd6b70bebcd44ba7b9511d85eb05",
+      "sourcePath": "docs/art/production/issue255/assets/card-sci-sample-v1.png",
+      "sourceSha256": "bab11abcf1682029e7f040f5dc226fa42ed4e3b98145dd939f28237821122d8b",
+      "sourceBytes": 2020147,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.45,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 256,
+        "resizedHeight": 171,
+        "x": 0,
+        "y": 38,
+        "width": 256,
+        "height": 96,
+        "sourceCrop": {
+          "x": 0,
+          "y": 228,
+          "width": 1536,
+          "height": 576
+        }
+      }
+    },
+    {
+      "id": "SCI-001",
+      "version": "v1",
+      "profile": "reward-2x",
+      "path": "src/assets/cards/derivatives/issue255/SCI-001-v1-reward-2x.webp",
+      "width": 512,
+      "height": 192,
+      "bytes": 6984,
+      "sha256": "e765be0f35a33f0a335cc26b364afb2c50be77b7a74c42952d9b2a834a2abe84",
+      "sourcePath": "docs/art/production/issue255/assets/card-sci-sample-v1.png",
+      "sourceSha256": "bab11abcf1682029e7f040f5dc226fa42ed4e3b98145dd939f28237821122d8b",
+      "sourceBytes": 2020147,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.45,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 512,
+        "resizedHeight": 342,
+        "x": 0,
+        "y": 75,
+        "width": 512,
+        "height": 192,
+        "sourceCrop": {
+          "x": 0,
+          "y": 225,
+          "width": 1536,
+          "height": 576
+        }
+      }
+    },
+    {
+      "id": "SCI-001",
+      "version": "v1",
+      "profile": "detail-1x",
+      "path": "src/assets/cards/derivatives/issue255/SCI-001-v1-detail-1x.webp",
+      "width": 768,
+      "height": 512,
+      "bytes": 17338,
+      "sha256": "7e21a6ee11f50587802abe1ddf4f1e74ce9ec57baf2c89c3c43d360c536a7603",
+      "sourcePath": "docs/art/production/issue255/assets/card-sci-sample-v1.png",
+      "sourceSha256": "bab11abcf1682029e7f040f5dc226fa42ed4e3b98145dd939f28237821122d8b",
+      "sourceBytes": 2020147,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.45,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 768,
+        "resizedHeight": 512,
+        "x": 0,
+        "y": 0,
+        "width": 768,
+        "height": 512,
+        "sourceCrop": {
+          "x": 0,
+          "y": 0,
+          "width": 1536,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "id": "SCI-001",
+      "version": "v1",
+      "profile": "detail-2x",
+      "path": "src/assets/cards/derivatives/issue255/SCI-001-v1-detail-2x.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 52786,
+      "sha256": "59c4e898896a0f581e6b2675f9d638063cf81638a9711e60f7ce1d2948b72c63",
+      "sourcePath": "docs/art/production/issue255/assets/card-sci-sample-v1.png",
+      "sourceSha256": "bab11abcf1682029e7f040f5dc226fa42ed4e3b98145dd939f28237821122d8b",
+      "sourceBytes": 2020147,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.45,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 1536,
+        "resizedHeight": 1024,
+        "x": 0,
+        "y": 0,
+        "width": 1536,
+        "height": 1024,
+        "sourceCrop": {
+          "x": 0,
+          "y": 0,
+          "width": 1536,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "id": "KEN-001",
+      "version": "v2",
+      "profile": "hand-1x",
+      "path": "src/assets/cards/derivatives/issue255/KEN-001-v2-hand-1x.webp",
+      "width": 160,
+      "height": 72,
+      "bytes": 1568,
+      "sha256": "86257c9588dabdbbfda9b93815dd15fb6818488f224f0f381ca6487dfbf1520b",
+      "sourcePath": "docs/art/production/issue255/assets/card-ken-parry-v2.png",
+      "sourceSha256": "1ae1a5421852652f8f05fef3dd574debd28e3cafa8aa636adcc9fbd4478ff9bf",
+      "sourceBytes": 1676372,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 160,
+        "resizedHeight": 107,
+        "x": 0,
+        "y": 18,
+        "width": 160,
+        "height": 72,
+        "sourceCrop": {
+          "x": 0,
+          "y": 173,
+          "width": 1536,
+          "height": 691
+        }
+      }
+    },
+    {
+      "id": "KEN-001",
+      "version": "v2",
+      "profile": "hand-2x",
+      "path": "src/assets/cards/derivatives/issue255/KEN-001-v2-hand-2x.webp",
+      "width": 320,
+      "height": 144,
+      "bytes": 4556,
+      "sha256": "5e9f0836e779a282ee446e5c15f602275a2e670981f7fea5d3fe800f33a451d4",
+      "sourcePath": "docs/art/production/issue255/assets/card-ken-parry-v2.png",
+      "sourceSha256": "1ae1a5421852652f8f05fef3dd574debd28e3cafa8aa636adcc9fbd4478ff9bf",
+      "sourceBytes": 1676372,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 320,
+        "resizedHeight": 214,
+        "x": 0,
+        "y": 35,
+        "width": 320,
+        "height": 144,
+        "sourceCrop": {
+          "x": 0,
+          "y": 168,
+          "width": 1536,
+          "height": 691
+        }
+      }
+    },
+    {
+      "id": "KEN-001",
+      "version": "v2",
+      "profile": "reward-1x",
+      "path": "src/assets/cards/derivatives/issue255/KEN-001-v2-reward-1x.webp",
+      "width": 256,
+      "height": 96,
+      "bytes": 3046,
+      "sha256": "671bff4bac7d9c6cc1e3e39e267bbe35bfb1b87f646e6b14f6d9e485479ffc4a",
+      "sourcePath": "docs/art/production/issue255/assets/card-ken-parry-v2.png",
+      "sourceSha256": "1ae1a5421852652f8f05fef3dd574debd28e3cafa8aa636adcc9fbd4478ff9bf",
+      "sourceBytes": 1676372,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 256,
+        "resizedHeight": 171,
+        "x": 0,
+        "y": 38,
+        "width": 256,
+        "height": 96,
+        "sourceCrop": {
+          "x": 0,
+          "y": 228,
+          "width": 1536,
+          "height": 576
+        }
+      }
+    },
+    {
+      "id": "KEN-001",
+      "version": "v2",
+      "profile": "reward-2x",
+      "path": "src/assets/cards/derivatives/issue255/KEN-001-v2-reward-2x.webp",
+      "width": 512,
+      "height": 192,
+      "bytes": 8454,
+      "sha256": "246a7d8573fa17dbaca4de86ba93960c39778bca224bee4faaa452141dfb1498",
+      "sourcePath": "docs/art/production/issue255/assets/card-ken-parry-v2.png",
+      "sourceSha256": "1ae1a5421852652f8f05fef3dd574debd28e3cafa8aa636adcc9fbd4478ff9bf",
+      "sourceBytes": 1676372,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 512,
+        "resizedHeight": 342,
+        "x": 0,
+        "y": 75,
+        "width": 512,
+        "height": 192,
+        "sourceCrop": {
+          "x": 0,
+          "y": 225,
+          "width": 1536,
+          "height": 576
+        }
+      }
+    },
+    {
+      "id": "KEN-001",
+      "version": "v2",
+      "profile": "detail-1x",
+      "path": "src/assets/cards/derivatives/issue255/KEN-001-v2-detail-1x.webp",
+      "width": 768,
+      "height": 512,
+      "bytes": 17030,
+      "sha256": "c14c93cfea3e507476450c218e48b404ce4930388e87aeca58db89e67b85f23d",
+      "sourcePath": "docs/art/production/issue255/assets/card-ken-parry-v2.png",
+      "sourceSha256": "1ae1a5421852652f8f05fef3dd574debd28e3cafa8aa636adcc9fbd4478ff9bf",
+      "sourceBytes": 1676372,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 768,
+        "resizedHeight": 512,
+        "x": 0,
+        "y": 0,
+        "width": 768,
+        "height": 512,
+        "sourceCrop": {
+          "x": 0,
+          "y": 0,
+          "width": 1536,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "id": "KEN-001",
+      "version": "v2",
+      "profile": "detail-2x",
+      "path": "src/assets/cards/derivatives/issue255/KEN-001-v2-detail-2x.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 47810,
+      "sha256": "90c1054e9ad8a6db7f6f75e14e3e51b94eb2a44d7e6201514d71b3bda1ee041c",
+      "sourcePath": "docs/art/production/issue255/assets/card-ken-parry-v2.png",
+      "sourceSha256": "1ae1a5421852652f8f05fef3dd574debd28e3cafa8aa636adcc9fbd4478ff9bf",
+      "sourceBytes": 1676372,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.51,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 1536,
+        "resizedHeight": 1024,
+        "x": 0,
+        "y": 0,
+        "width": 1536,
+        "height": 1024,
+        "sourceCrop": {
+          "x": 0,
+          "y": 0,
+          "width": 1536,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "id": "MUS-001",
+      "version": "v1",
+      "profile": "hand-1x",
+      "path": "src/assets/cards/derivatives/issue255/MUS-001-v1-hand-1x.webp",
+      "width": 160,
+      "height": 72,
+      "bytes": 1934,
+      "sha256": "d9b045038f95c176b72855bb09d40c0896be12aa876496f589342d1d3be942e1",
+      "sourcePath": "docs/art/production/issue255/assets/card-mus-tempo-v1.png",
+      "sourceSha256": "eaa2da40fdd6ae2b6e47fcfd7e95bd20bd0023e02d8ce9206d3fbed4cfdef555",
+      "sourceBytes": 1885630,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.49,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 160,
+        "resizedHeight": 107,
+        "x": 0,
+        "y": 18,
+        "width": 160,
+        "height": 72,
+        "sourceCrop": {
+          "x": 0,
+          "y": 173,
+          "width": 1536,
+          "height": 691
+        }
+      }
+    },
+    {
+      "id": "MUS-001",
+      "version": "v1",
+      "profile": "hand-2x",
+      "path": "src/assets/cards/derivatives/issue255/MUS-001-v1-hand-2x.webp",
+      "width": 320,
+      "height": 144,
+      "bytes": 5278,
+      "sha256": "d2fb67a1cafb92ce15e9940affe618e2889aca72bcc188f08b3f4dddfe29cffe",
+      "sourcePath": "docs/art/production/issue255/assets/card-mus-tempo-v1.png",
+      "sourceSha256": "eaa2da40fdd6ae2b6e47fcfd7e95bd20bd0023e02d8ce9206d3fbed4cfdef555",
+      "sourceBytes": 1885630,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.49,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 320,
+        "resizedHeight": 214,
+        "x": 0,
+        "y": 35,
+        "width": 320,
+        "height": 144,
+        "sourceCrop": {
+          "x": 0,
+          "y": 168,
+          "width": 1536,
+          "height": 691
+        }
+      }
+    },
+    {
+      "id": "MUS-001",
+      "version": "v1",
+      "profile": "reward-1x",
+      "path": "src/assets/cards/derivatives/issue255/MUS-001-v1-reward-1x.webp",
+      "width": 256,
+      "height": 96,
+      "bytes": 3480,
+      "sha256": "f28041a326c7782d6d23634515cd3f624925184385f48b86299baafd8e09b02c",
+      "sourcePath": "docs/art/production/issue255/assets/card-mus-tempo-v1.png",
+      "sourceSha256": "eaa2da40fdd6ae2b6e47fcfd7e95bd20bd0023e02d8ce9206d3fbed4cfdef555",
+      "sourceBytes": 1885630,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.49,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 256,
+        "resizedHeight": 171,
+        "x": 0,
+        "y": 38,
+        "width": 256,
+        "height": 96,
+        "sourceCrop": {
+          "x": 0,
+          "y": 228,
+          "width": 1536,
+          "height": 576
+        }
+      }
+    },
+    {
+      "id": "MUS-001",
+      "version": "v1",
+      "profile": "reward-2x",
+      "path": "src/assets/cards/derivatives/issue255/MUS-001-v1-reward-2x.webp",
+      "width": 512,
+      "height": 192,
+      "bytes": 9784,
+      "sha256": "6e7fdd721aff4ddf38d86ff8e6f4d73fdc6cbd556e3aa8c6e13738f2e0eee48d",
+      "sourcePath": "docs/art/production/issue255/assets/card-mus-tempo-v1.png",
+      "sourceSha256": "eaa2da40fdd6ae2b6e47fcfd7e95bd20bd0023e02d8ce9206d3fbed4cfdef555",
+      "sourceBytes": 1885630,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.49,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 512,
+        "resizedHeight": 342,
+        "x": 0,
+        "y": 75,
+        "width": 512,
+        "height": 192,
+        "sourceCrop": {
+          "x": 0,
+          "y": 225,
+          "width": 1536,
+          "height": 576
+        }
+      }
+    },
+    {
+      "id": "MUS-001",
+      "version": "v1",
+      "profile": "detail-1x",
+      "path": "src/assets/cards/derivatives/issue255/MUS-001-v1-detail-1x.webp",
+      "width": 768,
+      "height": 512,
+      "bytes": 21994,
+      "sha256": "b66b81bcd564265c625aa24df28d9331ed3b14c500dc84e3b171c3c104df1bb1",
+      "sourcePath": "docs/art/production/issue255/assets/card-mus-tempo-v1.png",
+      "sourceSha256": "eaa2da40fdd6ae2b6e47fcfd7e95bd20bd0023e02d8ce9206d3fbed4cfdef555",
+      "sourceBytes": 1885630,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.49,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 768,
+        "resizedHeight": 512,
+        "x": 0,
+        "y": 0,
+        "width": 768,
+        "height": 512,
+        "sourceCrop": {
+          "x": 0,
+          "y": 0,
+          "width": 1536,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "id": "MUS-001",
+      "version": "v1",
+      "profile": "detail-2x",
+      "path": "src/assets/cards/derivatives/issue255/MUS-001-v1-detail-2x.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 58450,
+      "sha256": "b1a334798f7a7290c93a5ae9cabf015d958958854f5f98c95d1e60761b744cc0",
+      "sourcePath": "docs/art/production/issue255/assets/card-mus-tempo-v1.png",
+      "sourceSha256": "eaa2da40fdd6ae2b6e47fcfd7e95bd20bd0023e02d8ce9206d3fbed4cfdef555",
+      "sourceBytes": 1885630,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.49,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 1536,
+        "resizedHeight": 1024,
+        "x": 0,
+        "y": 0,
+        "width": 1536,
+        "height": 1024,
+        "sourceCrop": {
+          "x": 0,
+          "y": 0,
+          "width": 1536,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "id": "ART-002",
+      "version": "v1",
+      "profile": "hand-1x",
+      "path": "src/assets/cards/derivatives/issue255/ART-002-v1-hand-1x.webp",
+      "width": 160,
+      "height": 72,
+      "bytes": 1714,
+      "sha256": "15ea054f658acb8169b50e1f5b20d016947df3dcf0d578e74747c3442aba9f06",
+      "sourcePath": "docs/art/production/issue255/assets/card-art-frame-v1.png",
+      "sourceSha256": "346067c76847ee07a4fd2634dad0976baf61c603cf3ecbb46f7153d5c65c8d68",
+      "sourceBytes": 1954888,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.52,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 160,
+        "resizedHeight": 107,
+        "x": 0,
+        "y": 18,
+        "width": 160,
+        "height": 72,
+        "sourceCrop": {
+          "x": 0,
+          "y": 173,
+          "width": 1536,
+          "height": 691
+        }
+      }
+    },
+    {
+      "id": "ART-002",
+      "version": "v1",
+      "profile": "hand-2x",
+      "path": "src/assets/cards/derivatives/issue255/ART-002-v1-hand-2x.webp",
+      "width": 320,
+      "height": 144,
+      "bytes": 4812,
+      "sha256": "1bca04d1c708ad101121b822ef1c0b33dbf5a96a52184b0ac164fa04639da6aa",
+      "sourcePath": "docs/art/production/issue255/assets/card-art-frame-v1.png",
+      "sourceSha256": "346067c76847ee07a4fd2634dad0976baf61c603cf3ecbb46f7153d5c65c8d68",
+      "sourceBytes": 1954888,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.52,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 320,
+        "resizedHeight": 214,
+        "x": 0,
+        "y": 35,
+        "width": 320,
+        "height": 144,
+        "sourceCrop": {
+          "x": 0,
+          "y": 168,
+          "width": 1536,
+          "height": 691
+        }
+      }
+    },
+    {
+      "id": "ART-002",
+      "version": "v1",
+      "profile": "reward-1x",
+      "path": "src/assets/cards/derivatives/issue255/ART-002-v1-reward-1x.webp",
+      "width": 256,
+      "height": 96,
+      "bytes": 2858,
+      "sha256": "51635662e21090858893b6ff8b0c8919fb200bea7ddff09beae5548b1159c6bf",
+      "sourcePath": "docs/art/production/issue255/assets/card-art-frame-v1.png",
+      "sourceSha256": "346067c76847ee07a4fd2634dad0976baf61c603cf3ecbb46f7153d5c65c8d68",
+      "sourceBytes": 1954888,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.52,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 256,
+        "resizedHeight": 171,
+        "x": 0,
+        "y": 38,
+        "width": 256,
+        "height": 96,
+        "sourceCrop": {
+          "x": 0,
+          "y": 228,
+          "width": 1536,
+          "height": 576
+        }
+      }
+    },
+    {
+      "id": "ART-002",
+      "version": "v1",
+      "profile": "reward-2x",
+      "path": "src/assets/cards/derivatives/issue255/ART-002-v1-reward-2x.webp",
+      "width": 512,
+      "height": 192,
+      "bytes": 8266,
+      "sha256": "fdca594be5189219e52cbc052446d80a7f7650a8a96b5657f41424783331157f",
+      "sourcePath": "docs/art/production/issue255/assets/card-art-frame-v1.png",
+      "sourceSha256": "346067c76847ee07a4fd2634dad0976baf61c603cf3ecbb46f7153d5c65c8d68",
+      "sourceBytes": 1954888,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.52,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 512,
+        "resizedHeight": 342,
+        "x": 0,
+        "y": 75,
+        "width": 512,
+        "height": 192,
+        "sourceCrop": {
+          "x": 0,
+          "y": 225,
+          "width": 1536,
+          "height": 576
+        }
+      }
+    },
+    {
+      "id": "ART-002",
+      "version": "v1",
+      "profile": "detail-1x",
+      "path": "src/assets/cards/derivatives/issue255/ART-002-v1-detail-1x.webp",
+      "width": 768,
+      "height": 512,
+      "bytes": 20370,
+      "sha256": "601b9a8b6abce75d2e5114cb3bcc5a7088e85c8179778408b3cae51a2208b816",
+      "sourcePath": "docs/art/production/issue255/assets/card-art-frame-v1.png",
+      "sourceSha256": "346067c76847ee07a4fd2634dad0976baf61c603cf3ecbb46f7153d5c65c8d68",
+      "sourceBytes": 1954888,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.52,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 768,
+        "resizedHeight": 512,
+        "x": 0,
+        "y": 0,
+        "width": 768,
+        "height": 512,
+        "sourceCrop": {
+          "x": 0,
+          "y": 0,
+          "width": 1536,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "id": "ART-002",
+      "version": "v1",
+      "profile": "detail-2x",
+      "path": "src/assets/cards/derivatives/issue255/ART-002-v1-detail-2x.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 57254,
+      "sha256": "220ba9fdef922e196a9335229d4a47aeac427e494e204fa21339908ba17afbea",
+      "sourcePath": "docs/art/production/issue255/assets/card-art-frame-v1.png",
+      "sourceSha256": "346067c76847ee07a4fd2634dad0976baf61c603cf3ecbb46f7153d5c65c8d68",
+      "sourceBytes": 1954888,
+      "sourceState": "draft-candidate",
+      "editableSource": null,
+      "rightsReview": "pending",
+      "visualReview": "pending",
+      "focus": [
+        0.52,
+        0.5
+      ],
+      "crop": {
+        "resizedWidth": 1536,
+        "resizedHeight": 1024,
+        "x": 0,
+        "y": 0,
+        "width": 1536,
+        "height": 1024,
+        "sourceCrop": {
+          "x": 0,
+          "y": 0,
+          "width": 1536,
+          "height": 1024
+        }
+      }
+    }
+  ]
+}
