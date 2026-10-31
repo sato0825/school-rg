@@ -11,6 +11,7 @@
   cursor: pointer;
 }
 .battle-map-trigger:focus-visible { outline: 3px solid #f4c4cd; outline-offset: 2px; }
+.battle-map-trigger:disabled { opacity: .55; cursor: default; }
 
 .battle-map-overlay {
   position: absolute;

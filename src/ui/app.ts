@@ -174,6 +174,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         mapButton.setAttribute("aria-controls", "battle-map-panel");
         mapButton.setAttribute("aria-expanded", String(battleMapOpen));
         mapButton.textContent = "マップ";
+        mapButton.disabled = run.combat?.phase !== "PLAYER_INPUT";
         header.append(mapButton);
         const displayToggle = document.createElement("button");
         displayToggle.type = "button";
@@ -326,7 +327,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   }
 
   function openBattleMap(): void {
-    if (frontScreen !== null || session.screen !== "combat" || battleMapOpen) return;
+    if (frontScreen !== null || session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT" || battleMapOpen) return;
     resumeAfterBattleMap = run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused;
     if (resumeAfterBattleMap) {
       observeMetrics();
