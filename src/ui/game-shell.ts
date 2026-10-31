@@ -13,6 +13,7 @@ export class GameShell {
   private readonly control: HTMLElement;
   private readonly header: HTMLElement;
   private readonly overlay: HTMLElement;
+  private readonly content: ContentRegistry;
   private stageNodeId: string | null = null;
 
   constructor(root: HTMLElement, run: RunState, view: BattleView, content: ContentRegistry) {
@@ -34,6 +35,7 @@ export class GameShell {
     this.control = control;
     this.header = header;
     this.overlay = document.createElement("div");
+    this.content = content;
     this.overlay.className = "game-shell-overlay";
     this.stage.append(this.overlay);
     this.stage.style.backgroundImage = `url("${stageUrlForRun(view.art, run)}")`;
@@ -95,6 +97,8 @@ export class GameShell {
       if (extra) this.main.append(extra);
     }
     this.main.dataset.screen = "combat";
+    this.control.inert = false;
+    this.control.removeAttribute("aria-hidden");
     this.overlay.replaceChildren();
   }
 
@@ -104,6 +108,8 @@ export class GameShell {
     this.overlay.replaceChildren(panel);
     this.main.dataset.screen = screen;
     this.input.disabled = true;
+    this.control.inert = true;
+    this.control.setAttribute("aria-hidden", "true");
     for (const child of [...this.stage.children]) {
       if (child !== this.overlay && !child.classList.contains("stage-vignette") && !child.classList.contains("ally-group")) child.remove();
     }
@@ -112,7 +118,13 @@ export class GameShell {
     const meta = document.createElement("div");
     meta.className = "run-meta";
     const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
-    meta.textContent = `ACT ${run.act} · ${node?.floor ?? 0}F · ${screen === "reward" ? "戦闘報酬" : "経路選択"}`;
+    meta.textContent = `ACT ${run.act} · ${node?.floor ?? 0}F · ${screen === "reward" ? "報酬" : "経路"}`;
     this.header.append(meta);
+    const hp = document.createElement("div");
+    hp.className = "player-hud run-player-hud";
+    hp.setAttribute("aria-label", `${this.content.clubs.find((club) => club.id === run.clubId)?.name ?? "主人公"}の状態`);
+    const ratio = Math.max(0, Math.min(100, run.player.hp / run.player.maxHp * 100));
+    hp.innerHTML = `<span class="player-health"><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><span class="player-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span class="player-health-fill" style="width:${ratio}%"></span></span></span><span class="run-gold" aria-label="所持金 ${run.gold}">◉ ${run.gold}</span><span class="run-deck" aria-label="デッキ ${run.deck.length}枚">▣ ${run.deck.length}</span>`;
+    this.header.append(hp);
   }
 }
