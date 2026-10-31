@@ -23,6 +23,10 @@
 .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="guard"] [data-part="right-arm-shinai"]{animation-name:kendo-raise-guard}
 .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="guard"] [data-part="left-arm"]{animation-name:kendo-close-guard}
 .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="guard"] [data-part="torso"]{animation-name:kendo-brace}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="counter"] [data-part="right-arm-shinai"]{animation-name:kendo-counter}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="counter"] [data-part="left-arm"]{animation-name:kendo-close-guard}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="finisher"] [data-part="right-arm-shinai"]{animation-name:kendo-finisher}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="finisher"] [data-part="torso"]{animation-name:kendo-finisher-step}
 @keyframes kendo-strike{0%,22%{transform:rotate(-29deg)}100%{transform:rotate(0)}}
 @keyframes kendo-guard{0%,22%{transform:rotate(-13deg)}100%{transform:rotate(0)}}
 @keyframes kendo-lunge{0%,22%{transform:translateX(7px) rotate(2deg)}100%{transform:none}}
@@ -31,6 +35,9 @@
 @keyframes kendo-raise-guard{0%,22%{transform:rotate(-16deg)}100%{transform:none}}
 @keyframes kendo-close-guard{0%,22%{transform:rotate(18deg)}100%{transform:none}}
 @keyframes kendo-brace{0%,22%{transform:rotate(-2deg)}100%{transform:none}}
+@keyframes kendo-counter{0%,15%{transform:rotate(-18deg)}40%{transform:rotate(8deg)}100%{transform:none}}
+@keyframes kendo-finisher{0%,24%{transform:rotate(-39deg)}60%{transform:rotate(12deg)}100%{transform:none}}
+@keyframes kendo-finisher-step{0%,24%{transform:translateX(10px) rotate(3deg)}100%{transform:none}}
 
 .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] [data-part="head"],
 .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] [data-part="head-hit"]{animation-name:kendo-hit-head}
@@ -45,10 +52,14 @@
 .game[data-effects="quiet"] .ally-slot[data-actor-rig="kendo-v1"] .rig-part{animation:none!important}
 .game[data-effects="quiet"] .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="card-use"] [data-part="right-arm-shinai"]{transform:rotate(-19deg)}
 .game[data-effects="quiet"] .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="guard"] [data-part="right-arm-shinai"]{transform:rotate(-12deg)}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="counter"] [data-part="right-arm-shinai"]{transform:rotate(8deg)}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="finisher"] [data-part="right-arm-shinai"]{transform:rotate(-27deg)}
 .game[data-effects="quiet"] .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] [data-part="right-arm-shinai"]{transform:rotate(-15deg)}
 @media(prefers-reduced-motion:reduce){
   .game-shell .ally-slot[data-actor-rig="kendo-v1"] .rig-part{animation:none!important}
   .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="card-use"] [data-part="right-arm-shinai"]{transform:rotate(-19deg)}
   .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="guard"] [data-part="right-arm-shinai"]{transform:rotate(-12deg)}
+  .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="counter"] [data-part="right-arm-shinai"]{transform:rotate(8deg)}
+  .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-kendo-action="finisher"] [data-part="right-arm-shinai"]{transform:rotate(-27deg)}
   .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] [data-part="right-arm-shinai"]{transform:rotate(-15deg)}
 }

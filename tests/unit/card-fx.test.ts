@@ -9,7 +9,7 @@ it("captures the selected enemy or all enemy positions before a card resolves", 
   const strike = demoContent.cards.find((card) => card.id === "BASE-001")!;
   const sweep = demoContent.cards.find((card) => card.id === "BASE-011")!;
   const block = demoContent.cards.find((card) => card.id === "BASE-002")!;
-  expect(cardFxForUse(strike, run, "paper-2", 1, 123)).toEqual({ kind: "attack", sourceXPercent: 22, targetXPercents: [88], startedAtMs: 123 });
+  expect(cardFxForUse(strike, run, "paper-2", 1, 123)).toEqual({ kind: "attack", cardId: "BASE-001", sourceXPercent: 22, targetXPercents: [88], startedAtMs: 123 });
   expect(cardFxForUse(sweep, run, null, 1, 123).targetXPercents).toEqual([62, 88]);
-  expect(cardFxForUse(block, run, null, 3, 123)).toEqual({ kind: "support", sourceXPercent: 10, targetXPercents: [10], startedAtMs: 123 });
+  expect(cardFxForUse(block, run, null, 3, 123)).toEqual({ kind: "support", cardId: "BASE-002", sourceXPercent: 10, targetXPercents: [10], startedAtMs: 123 });
 });

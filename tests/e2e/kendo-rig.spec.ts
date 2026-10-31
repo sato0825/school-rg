@@ -23,8 +23,8 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     await expect(actor.locator(".hero-rig .rig-part")).toHaveCount(8);
     await expect(actor).toHaveAttribute("data-actor-motion", "idle");
     await page.keyboard.type("counter");
-    await expect(actor).toHaveAttribute("data-kendo-action", "guard");
-    expect(await actor.locator('[data-part="right-arm-shinai"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("kendo-raise-guard");
+    await expect(actor).toHaveAttribute("data-kendo-action", "counter");
+    expect(await actor.locator('[data-part="right-arm-shinai"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("kendo-counter");
     expect(await actor.boundingBox()).toEqual(actorBefore);
     expect(await stage.boundingBox()).toEqual(stageBefore);
     expect(await actor.locator(".hero-rig").evaluate((node, previous) => node === previous, rigNode)).toBe(true);

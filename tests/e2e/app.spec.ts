@@ -994,7 +994,7 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
         bosses++;
       }
       battles++;
-      await typeThroughBattle(page);
+      await typeThroughBattle(page, ".reward-panel, .run-result");
     } else throw new Error(`unexpected run screen at step ${step}`);
   }
   const result = await page.locator(".run-result").innerText().catch(() => "ラン結果画面なし");

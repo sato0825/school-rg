@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { renderBattle, type BattleView } from "../../src/ui/battle-view.js";
 import { validContent, validRun } from "../fixtures/domain.js";
 
-function render(motion: BattleView["motion"], action: "attack" | "support" = "attack", quiet = false): HTMLElement {
+function render(motion: BattleView["motion"], action: "attack" | "support" = "attack", quiet = false, cardId = "KEN-003"): HTMLElement {
   const run = structuredClone(validRun);
   run.clubId = "kendo-demo";
   const view: BattleView = {
@@ -14,7 +14,7 @@ function render(motion: BattleView["motion"], action: "attack" | "support" = "at
     },
     baseTurnMs: 10_000, message: "", selectedDiscardId: null, selectedDebuff: null,
     motion, motionStartedAtMs: 1_000, animationNowMs: 1_190,
-    cardFx: motion === "hero" ? { kind: action, sourceXPercent: 22, targetXPercents: [72], startedAtMs: 1_000 } : null,
+    cardFx: motion === "hero" ? { kind: action, cardId, sourceXPercent: 22, targetXPercents: [72], startedAtMs: 1_000 } : null,
     potionModeKey: "F2", potionSlotLimit: 3, lowStimulus: quiet,
   };
   const root = new JSDOM("<div id='game'></div>").window.document.getElementById("game")!;
@@ -39,5 +39,11 @@ describe("Kendo deck and visual actor in combat render", () => {
     const root = render("hit", "attack", true);
     expect(root.querySelector(".game")?.getAttribute("data-effects")).toBe("quiet");
     expect(root.querySelector(".hero-rig [data-part='head-hit']")).toBeTruthy();
+  });
+
+  it("selects separate counter and finisher poses from the resolved Kendo card", () => {
+    expect(render("hero", "support", false, "BASE-013").querySelector(".ally-slot")?.getAttribute("data-kendo-action")).toBe("counter");
+    expect(render("hero", "attack", false, "KEN-004").querySelector(".ally-slot")?.getAttribute("data-kendo-action")).toBe("counter");
+    expect(render("hero", "attack", false, "KEN-006").querySelector(".ally-slot")?.getAttribute("data-kendo-action")).toBe("finisher");
   });
 });
