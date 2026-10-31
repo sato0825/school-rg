@@ -1,0 +1,61 @@
+/* Art club: the board stays in hand while the brush paints, then shields a hit. */
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-rig-ready="true"]>.hero-art{opacity:0!important;animation:none!important}
+.game-shell .ally-slot[data-actor-rig="art-v1"]:not([data-rig-ready="true"])>.hero-rig{visibility:hidden}
+.game-shell .ally-slot[data-actor-rig="art-v1"]>.hero-motion-frame{display:none}
+.game-shell .ally-slot[data-actor-rig="art-v1"] .rig-paint-trace{position:absolute;z-index:3;left:38%;top:50%;width:11%;height:1%;border-radius:100%;background:linear-gradient(90deg,#2c968d00,#2c968dc9 28%,#f0c36c99 70%,#f0c36c00);transform:rotate(-17deg) scaleX(0);transform-origin:0 50%;opacity:0;pointer-events:none}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] .rig-paint-trace{animation:art-paint-trace var(--actor-duration) ease-out var(--actor-delay) both}
+@keyframes art-paint-trace{0%,18%{transform:rotate(-17deg) scaleX(0);opacity:0}42%,70%{transform:rotate(-17deg) scaleX(1);opacity:.9}100%{transform:rotate(-17deg) scaleX(1);opacity:0}}
+.game-shell .ally-slot[data-actor-rig="art-v1"] .rig-art-token{position:absolute;z-index:4;left:33%;top:51%;width:13%;height:9%;pointer-events:none;opacity:0;transform:translateY(4%)}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"][data-art-action] .rig-art-token{animation:art-token-in var(--actor-duration) ease-out var(--actor-delay) both}
+@keyframes art-token-in{0%,25%{opacity:0;transform:translateY(8%) scale(.82)}45%,82%{opacity:.9;transform:translateY(0) scale(1)}100%{opacity:.85;transform:translateY(-4%) scale(1)}}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-art-action="retain"] .rig-art-token{border:3px solid #f5d587;border-radius:8%;box-shadow:0 0 0 2px #254c58a0 inset,0 0 12px #f5d587b0}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-art-action="copy"] .rig-art-token{border:3px solid #d9fbef;border-radius:8%;box-shadow:6px -7px 0 -2px #4cae9b,6px -7px 0 1px #d9fbef,0 0 12px #4cae9baa}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-art-action="transform"] .rig-art-token{border-radius:35% 12% 45% 20%;background:linear-gradient(125deg,#41aaa0 0 40%,#ebbe80 50%,#d17d9f 85%);filter:drop-shadow(0 0 6px #fff9)}
+.game-shell .ally-slot[data-actor-rig="art-v1"] .rig-part{animation-delay:var(--actor-delay,0ms)}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="idle"] .rig-part{animation-delay:var(--rig-idle-delay,0ms)}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="idle"] [data-part="head"]{animation:art-look-board 3300ms ease-in-out infinite}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="idle"] [data-part="torso"]{animation:art-breathe 3300ms ease-in-out infinite}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="idle"] [data-part="left-arm-board"]{animation:art-board-idle 3300ms ease-in-out infinite}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="idle"] [data-part="right-arm-brush"]{animation:art-brush-idle 3300ms ease-in-out infinite}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="idle"] [data-part="left-leg"]{animation:art-weight-idle 3300ms ease-in-out infinite}
+@keyframes art-look-board{0%,100%{transform:rotate(-1deg)}50%{transform:translateY(2px) rotate(2deg)}}
+@keyframes art-breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}
+@keyframes art-board-idle{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(2deg)}}
+@keyframes art-brush-idle{0%,100%{transform:rotate(0)}35%{transform:rotate(-7deg)}70%{transform:rotate(4deg)}}
+@keyframes art-weight-idle{0%,100%{transform:rotate(0)}50%{transform:rotate(.7deg)}}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] .rig-part,
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="hit"] .rig-part{animation-duration:var(--actor-duration);animation-timing-function:ease-out;animation-fill-mode:both;animation-delay:var(--actor-delay)}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="head"]{animation-name:art-use-head}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="torso"]{animation-name:art-use-torso}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="left-arm-board"]{animation-name:art-use-board}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="right-arm-brush"]{animation-name:art-use-brush}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="left-leg"]{animation-name:art-use-weight}
+@keyframes art-use-head{0%,18%{transform:rotate(5deg)}55%{transform:rotate(-2deg)}100%{transform:rotate(0)}}
+@keyframes art-use-torso{0%,20%{transform:rotate(2deg)}100%{transform:rotate(0)}}
+@keyframes art-use-board{0%,18%{transform:rotate(-12deg)}65%{transform:rotate(-6deg)}100%{transform:rotate(0)}}
+@keyframes art-use-brush{0%,12%{transform:rotate(18deg)}32%{transform:rotate(-25deg)}55%{transform:rotate(-13deg)}72%{transform:rotate(-28deg)}100%{transform:rotate(0)}}
+@keyframes art-use-weight{0%,24%{transform:rotate(-1.5deg)}100%{transform:rotate(0)}}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="hit"] [data-part="head-hit"]{visibility:visible;animation-name:art-hit-head}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="hit"] [data-part="torso"]{animation-name:art-hit-torso}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="hit"] [data-part="left-arm-board"]{animation-name:art-hit-board}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="hit"] [data-part="right-arm-brush"]{animation-name:art-hit-brush}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="hit"] [data-part="left-leg"]{animation-name:art-hit-weight}
+@keyframes art-hit-head{0%,18%{transform:rotate(-7deg)}100%{transform:rotate(0)}}
+@keyframes art-hit-torso{0%,18%{transform:rotate(-3deg)}100%{transform:rotate(0)}}
+@keyframes art-hit-board{0%,18%{transform:rotate(20deg)}100%{transform:rotate(0)}}
+@keyframes art-hit-brush{0%,18%{transform:rotate(29deg)}100%{transform:rotate(0)}}
+@keyframes art-hit-weight{0%,18%{transform:rotate(2deg)}100%{transform:rotate(0)}}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="right-arm-brush"],
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="right-arm-brush"]{--art-static-use:rotate(-25deg)}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="right-arm-brush"]{transform:var(--art-static-use)}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="left-arm-board"]{transform:rotate(-12deg)}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="art-v1"][data-actor-motion="hit"] [data-part="left-arm-board"]{transform:rotate(20deg)}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="art-v1"] .rig-paint-trace{animation:none!important;opacity:0}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"][data-art-action] .rig-art-token{animation:none!important;opacity:.85}
+@media(prefers-reduced-motion:reduce){
+  .game-shell .ally-slot[data-actor-rig="art-v1"] .rig-paint-trace{animation:none!important;opacity:0}
+  .game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"][data-art-action] .rig-art-token{animation:none!important;opacity:.85}
+  .game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="right-arm-brush"]{transform:rotate(-25deg)}
+  .game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="left-arm-board"]{transform:rotate(-12deg)}
+  .game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="hit"] [data-part="left-arm-board"]{transform:rotate(20deg)}
+}

@@ -16,6 +16,7 @@ import "./visual-system.css";
 import "./actor-motion.css";
 import "./literature-rig.css";
 import "./music-rig.css";
+import "./art-rig.css";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("Missing #app root");

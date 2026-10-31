@@ -1,0 +1,101 @@
+{
+  "id": "art-rig-candidate-v3",
+  "characterId": "art-student",
+  "status": "candidate",
+  "canvas": {
+    "width": 1024,
+    "height": 1536
+  },
+  "runtimeScale": 1.09,
+  "groundY": 1534,
+  "sourceSheet": {
+    "file": "docs/art/candidates/art-rig-parts-sheet-candidate-v2.png",
+    "sha256": "415980bfc7878998588b202b93351a09de3c992d91046b2bc9dbddde10ad8a8a"
+  },
+  "editableSource": "docs/art/sources/art-rig-candidate-v2.ora",
+  "expressionLayers": [
+    {
+      "id": "head-hit",
+      "file": "docs/art/candidates/art-rig-parts-v2/head-hit.png",
+      "sha256": "9ce51713eb9e0b224f8d000899b475214deae7072f7beea3c441fc969789b94c",
+      "x": 305,
+      "y": 110,
+      "width": 355,
+      "height": 330,
+      "pivotX": 175,
+      "pivotY": 295,
+      "visible": false,
+      "renderScale": 1.1
+    }
+  ],
+  "parts": [
+    {
+      "id": "left-leg",
+      "file": "docs/art/candidates/art-rig-parts-v2/left-leg.png",
+      "sha256": "16301d36e4db1d23a2dafc69a2de3e376deefa0e4fe4333201ecda85cf4953c1",
+      "x": 320,
+      "y": 890,
+      "width": 258,
+      "height": 644,
+      "pivotX": 145,
+      "pivotY": 25
+    },
+    {
+      "id": "right-leg",
+      "file": "docs/art/candidates/art-rig-parts-v2/right-leg.png",
+      "sha256": "5aeef55da1265da0121391e620eb9ea9b4abf464820debed10e69d1a94fddd74",
+      "x": 570,
+      "y": 882,
+      "width": 184,
+      "height": 653,
+      "pivotX": 70,
+      "pivotY": 25
+    },
+    {
+      "id": "torso",
+      "file": "docs/art/candidates/art-rig-parts-v2/torso.png",
+      "sha256": "901fd8805e4166ad3944c3f04905f1c5b9b0e55afb2b17b879e16f7c3708560e",
+      "x": 250,
+      "y": 330,
+      "width": 510,
+      "height": 652,
+      "pivotX": 255,
+      "pivotY": 550
+    },
+    {
+      "id": "left-arm-board",
+      "file": "docs/art/candidates/art-rig-parts-v2/left-arm-board.png",
+      "sha256": "42d4b0836b8b8fe53f5742d3c3d58c03a4d8d6968d622fbc2de36003f1321237",
+      "x": 295,
+      "y": 440,
+      "width": 215,
+      "height": 602,
+      "pivotX": 52,
+      "pivotY": 42
+    },
+    {
+      "id": "right-arm-brush",
+      "file": "docs/art/candidates/art-rig-parts-v2/right-arm-brush.png",
+      "sha256": "42bc5540190dbf56a06135daadb9ed5fa5c8a19a63b288e57c80fc90179ac84d",
+      "x": 520,
+      "y": 430,
+      "width": 248,
+      "height": 407,
+      "pivotX": 58,
+      "pivotY": 48
+    },
+    {
+      "id": "head",
+      "file": "docs/art/candidates/art-rig-parts-v2/head.png",
+      "sha256": "6ef58345fb43567ee51957503c12cd8f113e0f460a32f0d60900bfb2b8f213c4",
+      "x": 305,
+      "y": 110,
+      "width": 353,
+      "height": 325,
+      "pivotX": 175,
+      "pivotY": 290,
+      "renderScale": 1.1
+    }
+  ],
+  "runtimeProportionNote": "v2 editable layers retained; head and hit expression render at 1.10 around the neck pivot for series scale review"
+}

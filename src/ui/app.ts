@@ -266,7 +266,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   const useCard = (state: RunState, instanceId: string, targetEnemyInstanceId: string | null, targetHandInstanceId: string | null): RunState => {
     const cardId = state.combat!.cards.find((item) => item.instanceId === instanceId)!.cardId;
     const card = demoContent.cards.find((item) => item.id === cardId)!;
-    const cardFx = cardFxForUse(card, state, targetEnemyInstanceId, view.layoutPreviewAllies ?? 1, clock.nowMs());
+    const cardFx = cardFxForUse(card, state, targetEnemyInstanceId, view.layoutPreviewAllies ?? 1, clock.nowMs(), demoContent.effects);
     const updated = useCardEffects(state, instanceId, {
       targetEnemyInstanceId,
       targetHandInstanceId,
