@@ -89,9 +89,11 @@ describe("science club setup and reaction", () => {
     const withoutWeak = { ...alone, combat: { ...alone.combat!, hand: [alone.combat!.hand[1]!],
       drawPile: [alone.combat!.hand[0]!, ...alone.combat!.drawPile] } };
     const poisonedOnly = applyStatus(withoutWeak, { side: "enemy", instanceId: "enemy-1" }, "poison", 2);
-    expect(type(poisonedOnly, "assay", 450).combat!.enemies[0]!.maxHp - alone.combat!.enemies[0]!.hp).toBe(5);
+    const poisonAssay = type(poisonedOnly, "assay", 450);
+    expect(poisonAssay.combat!.enemies[0]!.maxHp - poisonAssay.combat!.enemies[0]!.hp).toBe(5);
     const upgraded = rewardCardsInHand(true).run;
-    expect(type(type(upgraded, "catalyst", 450), "assay", 450).combat!.enemies[0]!.maxHp - upgraded.combat!.enemies[0]!.hp).toBe(13);
+    const upgradedAssay = type(type(upgraded, "catalyst", 450), "assay", 450);
+    expect(upgradedAssay.combat!.enemies[0]!.maxHp - upgradedAssay.combat!.enemies[0]!.hp).toBe(13);
   });
 
   it("restores the weak setup and resumes the conditional input with the same remaining time", () => {
