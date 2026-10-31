@@ -393,7 +393,7 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await expect(page.locator(".run-meta")).toContainText("TURN 2");
   await expect(page.locator(".player-hud")).toContainText("40/40");
   await expect(page.locator(".relic-row")).toContainText("図書室のしおり");
-  await expect(page.locator('.pile-token[data-pile="discard"]')).toHaveAttribute("aria-label", "捨て札 5枚");
+  await expect(page.locator('.pile-token[data-pile="discard"]')).toHaveAttribute("aria-label", "捨て札 5枚、内容を見る");
   await expect(page.locator(".intent-ticket")).toContainText("遅刻札を投げる");
   await typeThroughBattle(page);
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();

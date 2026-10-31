@@ -24,8 +24,8 @@ describe("run and typing combat HUD", () => {
     root.querySelector<HTMLButtonElement>(".map-node.available[aria-label*='戦闘']")?.click();
     expect(root.querySelectorAll(".card")).toHaveLength(5);
     expect(root.textContent).toContain("飛び散る答案");
-    expect(root.querySelector('.pile-token[data-pile="draw"]')?.getAttribute("aria-label")).toBe("山札 5枚");
-    expect(root.querySelector('.pile-token[data-pile="discard"]')?.getAttribute("aria-label")).toBe("捨て札 0枚");
+    expect(root.querySelector('.pile-token[data-pile="draw"]')?.getAttribute("aria-label")).toBe("山札 5枚、内容を見る");
+    expect(root.querySelector('.pile-token[data-pile="discard"]')?.getAttribute("aria-label")).toBe("捨て札 0枚、内容を見る");
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "z", bubbles: true }));
     expect(root.querySelector(".typing-buffer")?.textContent).toContain("下の手札から英単語を入力");
     unmount();

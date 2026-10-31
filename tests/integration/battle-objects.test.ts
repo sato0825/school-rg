@@ -35,7 +35,7 @@ describe("combat objects", () => {
     renderBattle(root, run, validContent, view);
 
     expect([...root.querySelectorAll(".pile-token")].map((node) => [node.getAttribute("data-pile"), node.getAttribute("aria-label")])).toEqual([
-      ["draw", "山札 2枚"], ["discard", "捨て札 1枚"], ["exhaust", "除外 1枚"],
+      ["draw", "山札 2枚、内容を見る"], ["discard", "捨て札 1枚、内容を見る"], ["exhaust", "除外 1枚、内容を見る"],
     ]);
     expect(root.querySelectorAll(".topbar .status-chip")).toHaveLength(2);
     expect(root.querySelector('.topbar .status-chip[data-status="strength"]')?.getAttribute("aria-label")).toContain("力 2。攻撃の基礎値に加算");

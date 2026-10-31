@@ -83,7 +83,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, pileOpen: null, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   const artPreloads: HTMLImageElement[] = [];
   let preloadedClubId: string | null = null;
   const preloadClubArt = (clubId: string) => {
@@ -131,9 +131,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     catch { metricsLoadError = true; }
   };
   const render = () => {
-    if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT") view.helpOpen = false;
+    if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT") { view.helpOpen = false; view.pileOpen = null; }
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
+    const pileScrollTop = root.querySelector<HTMLElement>(".pile-card-list")?.scrollTop ?? 0;
     const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
+    const restorePileCloseFocus = root.querySelector('#battle-pile-tray [data-action="close-pile"]') === document.activeElement;
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
     else if (frontScreen === "title") renderRunTitle(root, demoBattleArt, history);
     else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError);
@@ -149,6 +151,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
+    const pileList = root.querySelector<HTMLElement>(".pile-card-list");
+    if (pileList) pileList.scrollTop = pileScrollTop;
     const mapScroll = root.querySelector<HTMLElement>(".map-scroll");
     const currentFloor = root.querySelector<HTMLElement>(".map-node.current")?.closest<HTMLElement>(".map-floor");
     if (mapScroll && currentFloor) {
@@ -156,6 +160,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       mapScroll.scrollTop = Math.max(0, mapScroll.scrollTop + delta);
     }
     if (restoreTypingFocus && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
+    if (restorePileCloseFocus && view.pileOpen) root.querySelector<HTMLButtonElement>('#battle-pile-tray [data-action="close-pile"]')?.focus({ preventScroll: true });
     const header = root.querySelector(".topbar, .run-header");
     if (header) {
       if (session.screen === "combat" && frontScreen === null) {
@@ -283,6 +288,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     frontScreen = "title";
     frontReturn = "title";
     view.helpOpen = false;
+    view.pileOpen = null;
     restoreError = false;
     view.message = "カード名をタイプして発動。誤入力は無視されます。";
     render();
@@ -300,6 +306,15 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   }
 
   function onKeyDown(event: KeyboardEvent): void {
+    if (session.screen === "combat" && view.pileOpen && event.key === "Escape") {
+      event.preventDefault();
+      const pile = view.pileOpen;
+      view.pileOpen = null;
+      render();
+      if (run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus();
+      else root.querySelector<HTMLButtonElement>(`[data-action="toggle-pile"][data-id="${pile}"]`)?.focus();
+      return;
+    }
     if (session.screen === "combat" && view.helpOpen && event.key === "Escape") {
       event.preventDefault();
       view.helpOpen = false;
@@ -313,6 +328,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (event.target instanceof HTMLButtonElement && event.key.length === 1) event.target.blur();
     if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (event.key === "Backspace" || event.key === "Delete"))) event.preventDefault();
     if (view.helpOpen && event.key.length === 1) view.helpOpen = false;
+    if (view.pileOpen && event.key.length === 1) view.pileOpen = null;
     submitInputKey(event.key, event.repeat, event.isComposing);
     if (focusTypingInput && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
   }
@@ -322,6 +338,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     event.preventDefault();
     if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused || event.inputType !== "insertText" || !event.data || [...event.data].length !== 1 || event.isComposing) return;
     if (view.helpOpen) view.helpOpen = false;
+    if (view.pileOpen) view.pileOpen = null;
     submitInputKey(event.data, false, false);
   }
 
@@ -373,8 +390,20 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (action === "toggle-battle-help" && frontScreen === null && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT") {
         view.helpOpen = !view.helpOpen;
+        if (view.helpOpen) view.pileOpen = null;
         render();
         root.querySelector<HTMLButtonElement>(view.helpOpen ? '#battle-help button' : '[data-action="toggle-battle-help"]')?.focus();
+        return;
+      }
+      if ((action === "toggle-pile" || action === "close-pile") && frontScreen === null && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT") {
+        const pile = id === "draw" || id === "discard" || id === "exhaust" ? id : null;
+        const previous = view.pileOpen;
+        view.pileOpen = action === "close-pile" || !pile || previous === pile ? null : pile;
+        if (view.pileOpen) view.helpOpen = false;
+        render();
+        if (view.pileOpen) root.querySelector<HTMLButtonElement>('#battle-pile-tray [data-action="close-pile"]')?.focus();
+        else if (!run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus();
+        else if (previous) root.querySelector<HTMLButtonElement>(`[data-action="toggle-pile"][data-id="${previous}"]`)?.focus();
         return;
       }
       if (action === "front-back" && frontScreen) {
