@@ -155,6 +155,8 @@
 .battle-map-footer span:last-child { margin-left: auto; color: #b8cdd1; }
 .battle-map-footer i { width: 12px; height: 12px; border-radius: 3px; background: #deeff1; }
 .battle-map-footer .battle-map-key-next { background: #efb4c2; }
+.game[data-effects="quiet"] .battle-map-panel { background: #203b4e; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.game[data-effects="quiet"] .battle-map-scrim { background: #10263888; }
 @media (max-width: 900px) {
   .battle-map-panel { width: calc(100% - 42px); max-height: calc(100dvh - 50px); }
   .battle-map-heading { padding: 15px 18px 10px; }

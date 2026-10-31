@@ -40,3 +40,21 @@ test("battle map remains on the combat scene and freezes only while explicitly o
   await page.clock.runFor(500);
   expect(Number(await time.getAttribute("aria-valuenow"))).toBeLessThan(pausedTime);
 });
+
+test("closing the map preserves a manual pause and reload does not reopen the overlay", async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
+  await page.getByRole("button", { name: "一時停止" }).click();
+  await page.getByRole("button", { name: "マップ", exact: true }).click();
+  await page.getByRole("button", { name: /閉じる Esc/ }).click();
+  await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "カード名をタイプ" })).toBeDisabled();
+
+  await page.reload();
+  await expect(page.locator(".battle-map-overlay")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
+});
