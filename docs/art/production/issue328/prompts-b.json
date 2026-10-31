@@ -1,0 +1,32 @@
+[
+  {
+    "id": "BASE-010",
+    "slug": "card-base-poison-v1",
+    "meaning": "apply poison to one enemy",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for POISON, a shared school action card. One simple GLASS DROPPER releases a single bold dark-teal drop onto ONE small navy padded practice target; a restrained lavender ring marks the spreading status on the target. The dropper-to-target transfer is the central action, distinct from SCI Culture's covered petri dish and Distill's glass condenser. Keep dropper, drop and target within central 52% width and 55% height for 112x57 hand crop, recognizable at 48px. Youthful 2D school storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender and tiny coral accent. No people, injury, text, letters, chemical symbols, rarity, card frame, room perspective, photorealism, 3D or copying another game."
+  },
+  {
+    "id": "BASE-012",
+    "slug": "card-base-pierce-v1",
+    "meaning": "attack through block",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for PIERCE, a shared school action card. ONE sharp NAVY SCHOOL PENCIL passes cleanly through exactly TWO offset layers of thin teal cardboard guard, with a tiny coral contact glint at the exit point. The penetration of layered paper is immediately visible at 48px, distinct from Heavy Strike's blunt impact and the potion's intact pentagon shield. Keep pencil and two pierced layers within central 52% width and 55% height for 112x57 hand crop. Youthful 2D school storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender and tiny coral accent. No people, injury, words, writing, rarity, card frame, room perspective, photorealism, 3D or copying another game."
+  },
+  {
+    "id": "BASE-014",
+    "slug": "card-base-recover-v1",
+    "meaning": "retrieve one card from discard pile",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for RECOVER, a shared school action card. A large bent NAVY PAPERCLIP HOOK lifts ONE blank pale-teal index card out of a small open wire discard basket, with the card clearly moving upward. The retrieval action is central and readable at 48px, distinct from Literature Bookmark's ribbon and Art Erase's rubbing away. Keep hook, one card and basket inside central 52% width and 55% height for 112x57 hand crop. Youthful 2D school storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender and tiny coral accent. No people, hands, writing, text, rarity, card frame, room perspective, photorealism, 3D or copying another game."
+  },
+  {
+    "id": "BASE-015",
+    "slug": "card-base-exhaust-v1",
+    "meaning": "remove one hand card from combat",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for EXHAUST, a shared school action card. ONE blank pale school index card slides into a CLOSED-ON-THREE-SIDES navy archive slot and fades into a small trail of lavender paper motes beyond the slot. Read as sending a card away, not rubbing it clean; distinct from Art Erase's eraser and Recover's upward paperclip retrieval. Keep slot, departing card and motes inside central 52% width and 55% height for 112x57 hand crop, legible at 48px. Youthful 2D school storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender and tiny coral accent. No shredder violence, people, text, writing, rarity, card frame, room perspective, photorealism, 3D or copying another game."
+  },
+  {
+    "id": "BASE-018",
+    "slug": "card-base-cleanse-v1",
+    "meaning": "remove a debuff from self",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for CLEANSE, a shared school action card. A small clear school WATER PITCHER pours one broad pale-teal stream over a white practice cloth, lifting a single lavender ink blot away from the cloth. The blot visibly separates and dissolves, making removal the main action at 48px. Distinct from the Heal card's open nurse tin, the Poison card's dark dropper-to-target, and Art Erase's eraser on paper. Keep pitcher, cloth and departing blot inside central 52% width and 55% height for 112x57 hand crop. Youthful 2D school storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender and tiny coral accent. No people, text, writing, rarity, card frame, room perspective, photorealism, 3D or copying another game."
+  }
+]

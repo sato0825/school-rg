@@ -1,0 +1,107 @@
+[
+  {
+    "id": "BASE-004",
+    "version": "v1",
+    "path": "docs/art/production/issue328/assets/card-base-quick-attack-v1.png",
+    "sha256": "0ac611650fdc522999e9c18c7e66e8532b69112ce34bdc8fc09c300c86e825c4",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-2e853760-d86e-4632-965f-bac7b47c24ca.png",
+    "promptRef": "prompts-a.json#BASE-004",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "1024-1440-hand-reward-48-grayscale-art-text-pair-reviewed",
+    "selectionDecision": "school object/action distinct at small size; exact status/amount and order require text/runtime feedback; adoption pending"
+  },
+  {
+    "id": "BASE-005",
+    "version": "v1",
+    "path": "docs/art/production/issue328/assets/card-base-guard-v1.png",
+    "sha256": "5acaa7335c7a777e7004d7d17fac5725dcd75da0c0bc9a56260f7768658aa1af",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-dda7a5fe-f4c8-4768-afb8-480bbb526478.png",
+    "promptRef": "prompts-a.json#BASE-005",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "1024-1440-hand-reward-48-grayscale-art-text-pair-reviewed",
+    "selectionDecision": "school object/action distinct at small size; exact status/amount and order require text/runtime feedback; adoption pending"
+  },
+  {
+    "id": "BASE-006",
+    "version": "v1",
+    "path": "docs/art/production/issue328/assets/card-base-heal-v1.png",
+    "sha256": "3b1e46109a4c0aed7ec44a7a9a2bf5ce03a0a7db8f55107a044c6433c9f35fcb",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-09cbaec3-bdda-4df0-afb0-10b3bfab20a8.png",
+    "promptRef": "prompts-a.json#BASE-006",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "1024-1440-hand-reward-48-grayscale-art-text-pair-reviewed",
+    "selectionDecision": "school object/action distinct at small size; exact status/amount and order require text/runtime feedback; adoption pending"
+  },
+  {
+    "id": "BASE-008",
+    "version": "v1",
+    "path": "docs/art/production/issue328/assets/card-base-strengthen-v1.png",
+    "sha256": "30ab0d5840ac5d469606808ab711aefaa20b90b2c61d16db48ce36642cca0de6",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-f9784959-d00b-4371-9779-f6c35040e822.png",
+    "promptRef": "prompts-a.json#BASE-008",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "1024-1440-hand-reward-48-grayscale-art-text-pair-reviewed",
+    "selectionDecision": "school object/action distinct at small size; exact status/amount and order require text/runtime feedback; adoption pending"
+  },
+  {
+    "id": "BASE-009",
+    "version": "v1",
+    "path": "docs/art/production/issue328/assets/card-base-weaken-v1.png",
+    "sha256": "a1c3bbdb21c1a5f808d76ee50fe0849ceb6b391cb2ac0e31442a5a9e2c23e289",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-9fa88bdf-5fd4-4fda-9363-5968ddc2bc13.png",
+    "promptRef": "prompts-a.json#BASE-009",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "1024-1440-hand-reward-48-grayscale-art-text-pair-reviewed",
+    "selectionDecision": "school object/action distinct at small size; exact status/amount and order require text/runtime feedback; adoption pending"
+  }
+]

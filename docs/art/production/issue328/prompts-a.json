@@ -1,0 +1,32 @@
+[
+  {
+    "id": "BASE-004",
+    "slug": "card-base-quick-attack-v1",
+    "meaning": "two fast hits to one enemy",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for QUICK ATTACK, a shared action in a Japanese middle-school typing roguelike. Exactly TWO short pieces of WHITE CLASSROOM CHALK fly one after the other toward ONE plain navy padded practice target, each with a separate tiny coral impact spark. Strong twin-dash movement and single target at 48px; clearly unlike Kendo Riposte's bamboo shinai and Music Beat's drum. Keep both chalk sticks and target within central 52% width and 55% height for 112x57 hand art crop. Youthful 2D school storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender with tiny coral accents. No people, letters, numbers, text, rarity, card frame, room perspective, photorealism, 3D or copying another game."
+  },
+  {
+    "id": "BASE-005",
+    "slug": "card-base-guard-v1",
+    "meaning": "gain block",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for GUARD, a shared school action card. ONE thick NAVY SCHOOL BINDER is opened into a rigid V-shaped protective screen, its pale-teal inner covers facing outward and two metal rings visible at the hinge. Read as using the binder for defense, not a generic shield pictogram; distinct from Defend's umbrella and potion-guard's cardboard pentagon. Centered bold binder silhouette inside central 52% width and 55% height for 112x57 hand crop, legible at 48px. Youthful 2D school storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender and tiny coral accent. No people, writing, numbers, text, rarity, card frame, room perspective, photorealism, 3D or copying another game."
+  },
+  {
+    "id": "BASE-006",
+    "slug": "card-base-heal-v1",
+    "meaning": "restore health",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for HEAL, a shared action in a Japanese middle-school typing roguelike. A SMALL OPEN SCHOOL NURSE TIN with a hinged navy lid holds one clean folded white compress and a soft warm-teal glow rising gently from it. The open tin is the main silhouette, distinct from the potion-heal's rolled gauze sleeve and the relic's crossed adhesive bandages. Keep the tin, compress and glow in central 52% width and 55% height for 112x57 hand crop, identifiable at 48px. Youthful 2D school storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender and a tiny coral warmth mark. No medical cross, person, skin, injury, writing, text, rarity, card frame, room perspective, photorealism, 3D or copying another game."
+  },
+  {
+    "id": "BASE-008",
+    "slug": "card-base-strengthen-v1",
+    "meaning": "increase strength",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for STRENGTHEN, a shared school action card. One thick CORAL SCHOOL GYM RESISTANCE BAND is pulled taut between two navy practice pegs; its central knot visibly tightens and a restrained teal tension arc rises above it. The band-under-tension is the main 48px silhouette, distinct from a weight icon, Kendo shinai, and Lab Glasses relic. Keep band and two pegs within central 52% width and 55% height for 112x57 hand crop. Youthful 2D school storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender with a controlled coral band. No people, hands, text, rarity, card frame, room perspective, photorealism, 3D or copying another game."
+  },
+  {
+    "id": "BASE-009",
+    "slug": "card-base-weaken-v1",
+    "meaning": "apply weak to one enemy",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for WEAKEN, a shared school action card. ONE FRAYED LAVENDER PRACTICE RIBBON hangs loosely across a single plain navy padded target, with its knot visibly slipping and the target leaning slightly to one side. Clear loosened, weakened state without a person or injury. Distinct from Strengthen's taut coral resistance band and Kendo target strike cards. Ribbon and target contained in central 52% width and 55% height for 112x57 hand crop, identifiable at 48px. Youthful 2D school storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender and tiny coral accent. No people, text, rarity, card frame, room perspective, photorealism, 3D or copying another game."
+  }
+]
