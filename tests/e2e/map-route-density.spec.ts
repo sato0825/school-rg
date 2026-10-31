@@ -17,7 +17,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
     const screenshot = await page.screenshot();
     await testInfo.attach(`map-${viewport.width}`, { body: screenshot, contentType: "image/png" });
     if (process.env.CAPTURE_MAP_SCREENSHOT === "1") {
-      await page.screenshot({ path: `docs/art/previews/issue181-map-${viewport.width}-final.png` });
+      await page.screenshot({ path: `docs/art/previews/issue181-map-${viewport.width}-balanced.png` });
     }
 
     await page.locator(".map-node.available").first().focus();

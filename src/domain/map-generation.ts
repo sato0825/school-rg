@@ -66,6 +66,7 @@ export function generateRunMap(seed: number, options: MapGenerationOptions = DEF
     const start: MapNode = { id: id(act, 0, 0), act, floor: 0, kind: "start", nextIds: [] };
     nodes.push(start);
     let previous: MapNode[] = [start];
+    let branchOffset: number | null = null;
     for (let floor = 1; floor <= options.floorsPerAct; floor++) {
       const current: MapNode[] = [];
       for (let lane = 0; lane < options.lanes; lane++) {
@@ -82,6 +83,7 @@ export function generateRunMap(seed: number, options: MapGenerationOptions = DEF
         // enemy rotation and post-map RNG state when only its routes change.
         const routeOrder = shuffle(state, current.map((_, lane) => lane));
         state = routeOrder.state;
+        branchOffset ??= routeOrder.items[0]!;
         let direction = 0;
         for (let lane = 0; lane < previous.length; lane++) {
           const routeDraw = randomInt(state, current.length - 1);
@@ -90,9 +92,10 @@ export function generateRunMap(seed: number, options: MapGenerationOptions = DEF
           previous[lane]!.nextIds = [current[lane]!.id];
         }
         for (let branch = 0; branch < BRANCHES_PER_FLOOR; branch++) {
-          const gap = routeOrder.items[branch]! % (current.length - 1);
-          const source = gap + direction;
-          const target = gap + (1 - direction);
+          // Cycle the source lane so every default lane offers several real
+          // forks per Act, even when the player stays in one column.
+          const source = (branchOffset + floor - 2 + branch) % current.length;
+          const target = source + (source === 0 ? 1 : source === current.length - 1 ? -1 : direction === 0 ? -1 : 1);
           previous[source]!.nextIds.push(current[target]!.id);
         }
       }

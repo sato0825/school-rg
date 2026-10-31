@@ -49,6 +49,7 @@ describe("seeded three-Act map DAG", () => {
     for (let seed = 0; seed < 100; seed++) {
       const map = generateRunMap(seed);
       for (let act = 1; act <= 3; act++) {
+        const forksByLane = [0, 0, 0, 0];
         for (let floor = 1; floor < 12; floor++) {
           const from = map.nodes.filter((node) => node.act === act && node.floor === floor);
           const to = map.nodes.filter((node) => node.act === act && node.floor === floor + 1);
@@ -56,12 +57,14 @@ describe("seeded three-Act map DAG", () => {
           expect(edges).toHaveLength(5);
           expect(edges.every(({ lane, nextLane }) => nextLane >= 0 && Math.abs(lane - nextLane) <= 1)).toBe(true);
           expect(from.filter((node) => node.nextIds.length === 2)).toHaveLength(1);
+          from.forEach((node, lane) => { if (node.nextIds.length === 2) forksByLane[lane]!++; });
           expect(edges.filter(({ lane, nextLane }) => lane === nextLane)).toHaveLength(4);
           expect(from.every((node, lane) => node.nextIds[0] === to[lane]!.id)).toBe(true);
           for (let left = 0; left < edges.length; left++) for (let right = left + 1; right < edges.length; right++) {
             expect(edges[left]!.lane < edges[right]!.lane && edges[left]!.nextLane > edges[right]!.nextLane).toBe(false);
           }
         }
+        expect(forksByLane.every((count) => count >= 2)).toBe(true);
       }
     }
   }, 20_000);
