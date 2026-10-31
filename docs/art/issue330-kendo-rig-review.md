@@ -17,6 +17,8 @@
 
 1024×768: [待機](previews/issue330/kendo-idle-1024.png) · [防御](previews/issue330/kendo-guard-1024.png) · [攻撃](previews/issue330/kendo-strike-1024.png) · [被弾](previews/issue330/kendo-hit-1024.png) · [動画](previews/issue330/kendo-combat-1024.webm)
 
+敵2体: [1024×768](previews/issue330/kendo-two-enemies-1024.png) · [1440×900](previews/issue330/kendo-two-enemies-1440.png)。敵2枠と俳優の矩形重なりがないことをE2Eで確認。
+
 短縮ラン seed=42 の剣道部で `counter`（防御）、`strike`（攻撃）を実入力し、敵の行動まで録画。防御は閉じた構え、攻撃は竹刀の振りと踏み込み、被弾は別表情と竹刀を戻す構えです。動きは手札入力完了を起点とし、入力途中では発火しません。敵の行動は既存ターン進行に従います。俳優DOMと舞台矩形はカード使用・被弾中も保持。全レイヤーのデコード完了まで既存の一枚絵を表示し、ロード途中の欠けを防ぎます。静音/動きを減らす設定では静止した構えと被弾表情に切り替えます。
 
 ## 目視の未解決点
@@ -30,5 +32,7 @@
 
 - `npm run check:art`: 成功。
 - `npx vitest run tests/integration/kendo-rig-ui.test.ts tests/unit/actor-motion.test.ts`: 5件成功。
-- `SCHOOL_RG_E2E_PORT=4330 npx playwright test tests/e2e/kendo-rig.spec.ts`: PC/iPad相当の3件成功。ステージ/actor矩形、DOM保持、ガード・攻撃・被弾、原子ロード、再読込、静音を確認。
+- `SCHOOL_RG_E2E_PORT=45333 npx playwright test tests/e2e/kendo-rig.spec.ts`: PC/iPad相当の4件成功。ステージ/actor矩形、DOM保持、ガード・攻撃・被弾、敵2体、原子ロード、再読込、静音を確認。
+- `SCHOOL_RG_E2E_PORT=45332 npx playwright test tests/e2e/kendo-rig.spec.ts tests/e2e/app.spec.ts --grep 'Kendo rig|kendo deck clears three Acts'`: 剣道部の短縮3 ActとAscension解放を含む4件成功。
+- 全E2E 148件の実行は69件成功後に停止。軽音部の通常尺ランで180秒のテスト制限に達した時点では画面は全Actクリア済みで、テスト補助関数が戦闘入力欄を待機していた。タイムアウトの原因切り分けと全件再実行は未完了。対象の剣道部通常尺3 Actテストは通過済み。
 - `npm run typecheck`: 成功。

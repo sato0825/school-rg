@@ -65,3 +65,26 @@ test("Kendo rig loads atomically, then restores quietly after reload", async ({ 
   await expect(page.locator(".game")).toHaveAttribute("data-effects", "quiet");
   expect(await actor.locator('[data-part="head"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
 });
+
+test("Kendo rig leaves both elite enemies readable at PC and iPad widths", async ({ page }) => {
+  await page.goto("/?seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /剣道部/ }).click();
+  await page.locator(".map-node.available").filter({ hasText: "強敵" }).first().click();
+  const stage = page.locator(".game-shell .stage");
+  const rig = stage.locator('.ally-slot[data-actor-rig="kendo-v1"] .hero-rig');
+  await expect(rig.locator(".rig-part")).toHaveCount(8);
+  await expect(stage.locator(".enemy-slot")).toHaveCount(2);
+  for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    const actorBox = await rig.boundingBox();
+    const enemyBoxes = await stage.locator(".enemy-slot").evaluateAll((nodes) => nodes.map((node) => {
+      const box = node.getBoundingClientRect();
+      return { left: box.left, right: box.right };
+    }));
+    expect(actorBox).not.toBeNull();
+    expect(actorBox!.x + actorBox!.width).toBeLessThan(enemyBoxes[0]!.left);
+    expect(enemyBoxes[0]!.right).toBeLessThanOrEqual(enemyBoxes[1]!.left);
+    expect(enemyBoxes[1]!.right).toBeLessThanOrEqual(viewport.width + 1);
+  }
+});
