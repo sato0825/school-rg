@@ -212,10 +212,25 @@
       "rarity": null,
       "meaning": "攻撃",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 275,
+            "version": "v1",
+            "source": "docs/art/production/issue275/assets/card-base-heavy-strike-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "0dc11fbb84d484edbbc249ed8e91918ca7b954e7fcdb6d7c8e5bf17d5f456467"
+          },
+          {
+            "issue": 275,
+            "version": "v2",
+            "source": "docs/art/production/issue275/assets/card-base-heavy-strike-v2.png",
+            "state": "preferred-draft",
+            "sha256": "c463b393d82c0d482d7a89560fd80c0158fad5bb8a58ca51359ae1618d755393"
+          }
+        ]
       }
     },
     {

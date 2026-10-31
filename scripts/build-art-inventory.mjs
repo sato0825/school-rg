@@ -11,7 +11,10 @@ const wave1 = JSON.parse(fs.readFileSync(path.join(output, "wave1-assets.json"),
 const wave2Dir = path.join(root, "docs/art/production/issue269");
 const wave2 = ["wave2-assets.json", "wave2-assets-supplement.json", "wave2-revision-assets.json", "wave2-harmonization-assets.json"]
   .flatMap((file) => JSON.parse(fs.readFileSync(path.join(wave2Dir, file), "utf8")));
-const allProducedAssets = [...wave1.map((asset) => ({ ...asset, issue: 255 })), ...wave2.map((asset) => ({ ...asset, issue: 269 }))];
+const heavyStrikeDir = path.join(root, "docs/art/production/issue275");
+const heavyStrike = ["assets-v1.json", "assets-v2.json"]
+  .flatMap((file) => JSON.parse(fs.readFileSync(path.join(heavyStrikeDir, file), "utf8")));
+const allProducedAssets = [...wave1.map((asset) => ({ ...asset, issue: 255 })), ...wave2.map((asset) => ({ ...asset, issue: 269 })), ...heavyStrike.map((asset) => ({ ...asset, issue: 275 }))];
 if (new Set(allProducedAssets.map((asset) => `${asset.id}:${asset.version}`)).size !== allProducedAssets.length) throw new Error("duplicate produced asset ID/version");
 for (const asset of allProducedAssets) {
   const actual = createHash("sha256").update(fs.readFileSync(path.join(root, asset.path))).digest("hex");
