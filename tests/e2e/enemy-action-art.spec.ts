@@ -5,6 +5,7 @@ import { serializeRunSession } from "../../src/domain/save.js";
 import type { MapNode } from "../../src/domain/schema.js";
 
 const captureDir = process.env.ISSUE317_CAPTURE_DIR;
+const causalityCaptureDir = process.env.ISSUE360_CAPTURE_DIR;
 
 async function openPaperFight(page: import("@playwright/test").Page, intentId: string): Promise<void> {
   await page.clock.install();
@@ -78,6 +79,31 @@ test("card damage shows the enemy's hit reaction and quiet mode keeps the action
   await expect(page.locator('.result-fx-mark[data-kind="damage"]')).toBeVisible();
   if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-hit-quiet-1440.png` });
 });
+
+for (const width of [1024, 1440] as const) for (const quiet of [false, true] as const) {
+  test(`card hit replaces the enemy windup with its result at ${width}px, quiet=${quiet}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
+    await openPaperFight(page, "paper-intent-hit");
+    if (quiet) {
+      await page.getByRole("button", { name: "操作", exact: true }).click();
+      await page.locator("[data-action=toggle-stimulus]").click();
+      await page.keyboard.press("Escape");
+    }
+    const stageBefore = await page.locator(".stage").boundingBox();
+    await expect(page.locator('.enemy-slot .intent-body-cue[data-kind="attack"]')).toHaveCount(1);
+    if (causalityCaptureDir && !quiet) await page.screenshot({ path: `${causalityCaptureDir}/paper-before-card-hit-${width}.png` });
+    await page.keyboard.type("strike");
+    await expect(page.locator('.enemy-action-art[data-pose="hit"]')).toBeVisible();
+    await expect(page.locator('.result-fx-mark[data-kind="damage"]')).toBeVisible();
+    await expect(page.locator('.enemy-slot .intent-body-cue[data-kind="attack"]')).toHaveCount(0);
+    await expect(page.locator(".intent-trajectory")).toHaveCount(0);
+    expect(await page.locator(".stage").boundingBox()).toEqual(stageBefore);
+    if (quiet) expect(await page.locator(".enemy-action-art").evaluate((node) => [node, ...node.querySelectorAll("img")].every((item) => item.getAnimations().length === 0))).toBe(true);
+    if (causalityCaptureDir) await page.screenshot({ path: `${causalityCaptureDir}/paper-card-hit-${width}-${quiet ? "quiet" : "standard"}.png` });
+    await page.clock.runFor(500);
+    await expect(page.locator('.enemy-slot .intent-body-cue[data-kind="attack"]')).toHaveCount(1);
+  });
+}
 
 for (const width of [1024, 1440] as const) for (const [pose, intentId, quiet] of [["attack", "paper-intent-hit", false], ["guard", "paper-intent-guard", false], ["guard", "paper-intent-guard", true]] as const) test(`${pose} silhouette fits five enemies at ${width}px${quiet ? " in quiet mode" : ""}`, async ({ page }) => {
   await page.clock.install();
