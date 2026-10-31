@@ -10,9 +10,7 @@ const examples = [
   [3, "combat", "window-shadow"], [3, "elite", "night-locker"], [3, "boss", "graduation-curtain"],
 ] as const;
 
-test("ten enemy candidates decode and keep battle controls readable across three Acts", async ({ page }) => {
-  await page.clock.install();
-  await page.goto("/");
+test("ten enemy candidates decode and keep battle controls readable across three Acts", async ({ context }) => {
   for (const [act, kind, enemyId] of examples) {
     const base = createRunSession(42, "literature-demo", demoContent);
     const from: MapNode = { id: "art-start", act, floor: 0, kind: "start", nextIds: ["art-fight"] };
@@ -21,20 +19,23 @@ test("ten enemy candidates decode and keep battle controls readable across three
     const pool: EncounterPool = { combat: [enemyId], elite: [enemyId], boss: [enemyId] };
     const entered = enterRunNode(mapped, fight.id, demoContent, demoEnemyAi, pool);
     const saved = serializeRunSession(entered, demoContent, { nowMs: () => 0 }, () => "discard");
-    await page.evaluate((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    const scene = await context.newPage();
+    await scene.clock.install();
+    await scene.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
     const width = act === 2 ? 1280 : 390;
-    await page.setViewportSize({ width, height: 844 });
-    await page.reload();
-    const enemy = page.locator(".enemy-art");
+    await scene.setViewportSize({ width, height: 844 });
+    await scene.goto("/");
+    const enemy = scene.locator(".enemy-art");
     await expect(enemy).toHaveAttribute("src", new RegExp(`${enemyId}-candidate-v1`));
     await enemy.evaluate(async (image) => (image as HTMLImageElement).decode());
     expect(await enemy.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(1_000);
-    await expect(page.locator(".intent-ticket")).toBeInViewport();
-    await expect(page.locator(".enemy-hud")).toBeInViewport();
-    await expect(page.locator(".typing-buffer")).toBeInViewport();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+    await expect(scene.locator(".intent-ticket")).toBeInViewport();
+    await expect(scene.locator(".enemy-hud")).toBeInViewport();
+    await expect(scene.locator(".typing-buffer")).toBeInViewport();
+    expect(await scene.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
     if (process.env.SCHOOL_RG_CAPTURE_ENEMY_ART === "1" && ["final-exam", "club-auditor", "night-locker"].includes(enemyId)) {
-      await page.screenshot({ path: `docs/art/previews/issue136-${enemyId}-${width}-20261031.png`, fullPage: true });
+      await scene.screenshot({ path: `docs/art/previews/issue136-${enemyId}-${width}-20261031.png`, fullPage: true });
     }
+    await scene.close();
   }
 });
