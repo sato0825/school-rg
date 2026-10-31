@@ -37,6 +37,7 @@ export class GameShell {
     this.header = header;
     this.overlay = document.createElement("div");
     this.content = content;
+    this.main.dataset.effects = view.lowStimulus ? "quiet" : "standard";
     this.overlay.className = "game-shell-overlay";
     this.stage.append(this.overlay);
     this.stage.style.backgroundImage = `url("${stageUrlForRun(view.art, run)}")`;
