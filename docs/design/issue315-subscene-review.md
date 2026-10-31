@@ -1,6 +1,6 @@
 # #315 現地物体と接続小区画の実画面比較
 
-[#310の通常42地点監査](../qa/issue310-stage-repetition-audit.md)で見えた4組を、[#286本編GameShell](https://github.com/sato0825/school-rg/pull/312)に重ねてA/B比較した。 [PC1440・iPad相当1024の比較ボード](issue315-subscene-comparison.html)に同じseed/Act/階/種類/HP/所持金・商品を並べた。画像は#286から分岐した実ゲーム画面を保存状態から開いたもので、自然な42地点の通し操作ではない。
+[#310の通常42地点監査](https://github.com/sato0825/school-rg/pull/318)で見えた4組を、[#286本編GameShell](https://github.com/sato0825/school-rg/pull/312)に重ねてA/B比較した。 [PC1440・iPad相当1024の比較ボード](issue315-subscene-comparison.html)に同じseed/Act/階/種類/HP/所持金・商品を並べた。画像は#286から分岐した実ゲーム画面を保存状態から開いたもので、自然な42地点の通し操作ではない。
 
 A `local` は既存 `placeId` の背景に#286のCSS仮物体を置く。B `annex` は同じ地点IDを保ちつつ、購買/休憩の接続小区画を**既存背景で代用**する。Bの4つの `subsceneId` と画像対応は `src/ui/stage-subscene-experiment.ts` に置き、`?experimentalSubscene=annex` でのみ有効。通常起動はAのまま。Bは新規原画でも正式な場所でもなく、#29の採用候補数へ足さない。#304の小物原画制作とも分離している。
 
