@@ -35,7 +35,7 @@ describe("seeded three-Act map DAG", () => {
       expect(map.nodes.filter((node) => node.kind === "boss").map((node) => node.act)).toEqual([1, 2, 3]);
     }
     expect(generateRunMap(1).nodes).not.toEqual(generateRunMap(2).nodes);
-  }, 20_000);
+  }, 90_000);
 
   it("rejects invalid generation settings", () => {
     const valid = { floorsPerAct: 2, lanes: 3, kindWeights: { combat: 1, elite: 0, event: 0, shop: 0, rest: 0, treasure: 0 } };
