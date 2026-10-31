@@ -357,6 +357,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         metricsLoadError = false;
         if (playtestEnabled) metrics = visitPlaytestNode(startPlaytest(run, session.runId!, clock.nowMs()), run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
         render();
+        window.scrollTo(0, 0);
         return;
       }
       if (action === "open-compendium" && (frontScreen === "title" || (frontScreen === null && (session.screen === "map" || (session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT"))))) {
