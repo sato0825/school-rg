@@ -95,3 +95,15 @@ export function relicInventoryMarkup(ids: readonly string[], content: ContentReg
     return `<button type="button" class="relic-item" data-action="relic-detail" data-id="${html(id)}" aria-expanded="${selectedId === id}" aria-label="${html(`${name}${copies > 1 ? `、${copies}個` : ""}。${detail}`)}" title="${html(name)}" data-relic-index="${index}">${relicObjectMarkup(id)}<span class="relic-item-count" aria-hidden="true">${copies > 1 ? copies : ""}</span></button>`;
   }).join("")}</div>`;
 }
+
+export function relicDetailMarkup(id: string, content: ContentRegistry): string {
+  const name = content.relics.find((item) => item.id === id)?.name ?? id;
+  return `<aside class="relic-inspect" role="region" aria-label="${html(name)}の効果">${relicObjectMarkup(id, "relic-inspect-art")}<div><strong>${html(name)}</strong><p>${html(relicRuleText[id] ?? "効果詳細は未登録")}</p></div></aside>`;
+}
+
+export function potionInventoryMarkup(ids: readonly string[], content: ContentRegistry): string {
+  return `<div class="potion-inventory" role="group" aria-label="所持ポーション">${ids.map((id, index) => {
+    const potion = content.potions.find((item) => item.id === id);
+    return `<span class="potion-inventory-item" role="img" aria-label="${html(`${potion?.name ?? id}。${potionEffectText(id, content)}`)}" data-potion-index="${index}">${potionObjectMarkup(id)}</span>`;
+  }).join("")}</div>`;
+}

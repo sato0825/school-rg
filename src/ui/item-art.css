@@ -6,6 +6,12 @@
 .game-shell .relic-object { display: grid; place-items: center; width: 33px; height: 33px; color: #607888; font-size: 18px; }
 .game-shell .relic-object img, .game-shell .relic-inspect-art img, .game-shell .relic-activation-art img { width: 100%; height: 100%; object-fit: contain; }
 .game-shell .relic-item-count { position: absolute; right: 0; bottom: 0; min-width: 12px; border-radius: 3px; background: #244c5b; color: white; font-size: 10px; line-height: 12px; text-align: center; }
+.game-shell .run-player-hud { min-width: 0; max-width: 72%; gap: 8px; overflow: hidden; }
+.game-shell .run-player-hud .relic-row { max-width: 192px; }
+.game-shell .run-potions { flex: none; border: 0; background: transparent; }
+.game-shell .potion-inventory { display: flex; align-items: center; gap: 3px; max-width: 116px; overflow-x: auto; scrollbar-width: thin; }
+.game-shell .potion-inventory-item { display: grid; flex: none; place-items: center; width: 32px; height: 32px; border: 1px solid #91b1b6; border-radius: 5px; background: #eef4ee; }
+.game-shell .potion-inventory-item .potion-object { width: 29px; height: 29px; }
 .game-shell .relic-inspect { position: absolute; z-index: 45; top: 12px; right: 16px; display: flex; align-items: center; gap: 10px; width: min(330px, 40%); min-height: 98px; padding: 10px 13px; border: 1px solid #a4bdbe; border-radius: 6px; background: #ecf4edee; box-shadow: 0 9px 25px #122e426b; color: #1d4552; }
 .game-shell .relic-inspect-art { display: grid; flex: none; place-items: center; width: 74px; height: 74px; }
 .game-shell .relic-inspect strong { font-size: 14px; }
@@ -20,12 +26,25 @@
 .game-shell .potion-copy > span { font-size: 10px; line-height: 1; }
 .game-shell .potion-activation { position: absolute; z-index: 29; top: 51%; left: 23%; display: grid; place-items: center; width: 66px; height: 66px; border: 2px solid #a9c9d1; border-radius: 50%; background: #e6f1f4e0; box-shadow: 0 0 0 8px #a9d2df44; pointer-events: none; animation: relic-appear .62s ease-out both; }
 .game-shell .potion-activation-art { display: grid; place-items: center; width: 58px; height: 58px; }
+.game-shell .location-choice:has(.relic-object), .game-shell .location-choice:has(.potion-object) { min-height: 88px; }
+.game-shell .location-choice-icon .relic-object, .game-shell .location-choice-icon .potion-object { width: 100%; height: 100%; }
+.game-shell .location-choice-icon .relic-object img, .game-shell .location-choice-icon .potion-object img,
+.game-shell .locker-open .relic-object img, .game-shell .locker-open .potion-object img,
+.game-shell .shop-display .relic-object img, .game-shell .shop-display .potion-object img { width: 100%; height: 100%; object-fit: contain; }
+.game-shell .location-choice:has(.relic-object) .location-choice-copy span,
+.game-shell .location-choice:has(.potion-object) .location-choice-copy span { font-size: 11px; -webkit-line-clamp: 3; }
+.game-shell .locker-open .relic-object, .game-shell .locker-open .potion-object { width: 55px; height: 54px; }
+.game-shell .shop-display .relic-object, .game-shell .shop-display .potion-object { width: 100%; height: 100%; }
 @keyframes relic-appear { from { opacity: 0; transform: translateY(12px) scale(.8); } 25% { opacity: 1; } to { opacity: 0; transform: translateY(-20px) scale(1); } }
 @media (max-width: 1100px) {
   .game-shell .topbar .relic-row { max-width: 170px; }
   .game-shell .relic-item { width: 34px; height: 34px; }
   .game-shell .relic-object { width: 30px; height: 30px; }
   .game-shell .relic-inspect { width: min(315px, 42%); }
+  .game-shell .run-player-hud { max-width: 75%; gap: 5px; }
+  .game-shell .run-player-hud .relic-row { max-width: 128px; }
+  .game-shell .location-choice:has(.relic-object) .location-choice-copy span,
+  .game-shell .location-choice:has(.potion-object) .location-choice-copy span { font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { .game-shell .relic-activation { animation: none; opacity: 1; } }
 .game-shell[data-effects="quiet"] .relic-activation { animation: none; opacity: 1; box-shadow: none; }
