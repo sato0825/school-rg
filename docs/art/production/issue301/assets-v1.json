@@ -1,0 +1,86 @@
+[
+  {
+    "id": "hallway-clock",
+    "version": "v1",
+    "path": "docs/art/production/issue301/assets/relic-hallway-clock-v1.png",
+    "sha256": "17c5d9bae2eb447a5f31b7f8490995c046577b306d2d0a4ecf413a3840669371",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-fb9f10c9-5b16-44f4-9222-71a73308770c.png",
+    "promptRef": "prompts.json#hallway-clock",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "48-64-128-grayscale-art-text-pair-board-reviewed",
+    "selectionDecision": "object silhouette distinct at 48px; effect trigger requires adjacent text; formal runtime adoption pending"
+  },
+  {
+    "id": "lunch-coupon",
+    "version": "v1",
+    "path": "docs/art/production/issue301/assets/relic-lunch-coupon-v1.png",
+    "sha256": "76ddda777e2d19a6eb7bf6e14ce4a6f249b0c77f158176ffa2844d8de83b5d52",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-025cb95d-a4f7-4900-9109-6afcc15261f9.png",
+    "promptRef": "prompts.json#lunch-coupon",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "48-64-128-grayscale-art-text-pair-board-reviewed",
+    "selectionDecision": "object silhouette distinct at 48px; effect trigger requires adjacent text; formal runtime adoption pending"
+  },
+  {
+    "id": "pocket-bandage",
+    "version": "v1",
+    "path": "docs/art/production/issue301/assets/relic-pocket-bandage-v1.png",
+    "sha256": "b2d74ef49d83084e070caaefdd8b6da1b5108d188ecac08d1cd874617629cd32",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-52d4505e-8b41-4fc9-9f89-19323aacf928.png",
+    "promptRef": "prompts.json#pocket-bandage",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "48-64-128-grayscale-art-text-pair-board-reviewed",
+    "selectionDecision": "object silhouette distinct at 48px; effect trigger requires adjacent text; formal runtime adoption pending"
+  },
+  {
+    "id": "practice-timer",
+    "version": "v1",
+    "path": "docs/art/production/issue301/assets/relic-practice-timer-v1.png",
+    "sha256": "abe640afd7d1b99f7c4f424805c136ce295343630db8d1ae0cea4f7caa5f5898",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-42ff249c-2189-4cd2-a4d1-b49269b52119.png",
+    "promptRef": "prompts.json#practice-timer",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "48-64-128-grayscale-art-text-pair-board-reviewed",
+    "selectionDecision": "object silhouette distinct at 48px; effect trigger requires adjacent text; formal runtime adoption pending"
+  }
+]

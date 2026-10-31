@@ -3140,10 +3140,18 @@
       "rarity": null,
       "meaning": "ターン開始時に入力時間を追加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 301,
+            "version": "v1",
+            "source": "docs/art/production/issue301/assets/relic-hallway-clock-v1.png",
+            "state": "preferred-draft",
+            "sha256": "17c5d9bae2eb447a5f31b7f8490995c046577b306d2d0a4ecf413a3840669371"
+          }
+        ]
       }
     },
     {
@@ -3187,10 +3195,18 @@
       "rarity": null,
       "meaning": "戦闘終了時に回復",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 301,
+            "version": "v1",
+            "source": "docs/art/production/issue301/assets/relic-lunch-coupon-v1.png",
+            "state": "preferred-draft",
+            "sha256": "76ddda777e2d19a6eb7bf6e14ce4a6f249b0c77f158176ffa2844d8de83b5d52"
+          }
+        ]
       }
     },
     {
@@ -3206,10 +3222,18 @@
       "rarity": null,
       "meaning": "HPダメージを受けた時に回復",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 301,
+            "version": "v1",
+            "source": "docs/art/production/issue301/assets/relic-pocket-bandage-v1.png",
+            "state": "preferred-draft",
+            "sha256": "b2d74ef49d83084e070caaefdd8b6da1b5108d188ecac08d1cd874617629cd32"
+          }
+        ]
       }
     },
     {
@@ -3225,10 +3249,18 @@
       "rarity": null,
       "meaning": "カード使用時に入力時間を追加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 301,
+            "version": "v1",
+            "source": "docs/art/production/issue301/assets/relic-practice-timer-v1.png",
+            "state": "preferred-draft",
+            "sha256": "abe640afd7d1b99f7c4f424805c136ce295343630db8d1ae0cea4f7caa5f5898"
+          }
+        ]
       }
     },
     {
