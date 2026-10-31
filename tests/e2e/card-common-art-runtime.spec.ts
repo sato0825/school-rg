@@ -13,8 +13,8 @@ const batches = [
   { name: "advanced", ids: ["BASE-010", "BASE-012", "BASE-014", "BASE-015", "BASE-018"] },
 ] as const;
 
-function combatSave(ids: readonly string[]) {
-  const start = createRunSession(43, "literature-demo", demoContent, mapOptions);
+function combatSave(ids: readonly string[], club = "literature-demo") {
+  const start = createRunSession(43, club, demoContent, mapOptions);
   const entered = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, pool);
   const active = beginPlayerTurn(entered.run, { nowMs: () => 0 }, DEFAULT_GAME_CONFIG, demoContent);
   let combat = active.combat!;
@@ -32,11 +32,37 @@ function combatSave(ids: readonly string[]) {
   return serializeRunSession({ ...entered, run: { ...active, combat } }, demoContent, { nowMs: () => 0 }, () => "discard");
 }
 
-function rewardSave(ids: readonly string[]) {
-  const start = createRunSession(43, "literature-demo", demoContent, mapOptions);
+function rewardSave(ids: readonly string[], club = "literature-demo") {
+  const start = createRunSession(43, club, demoContent, mapOptions);
   const entered = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, pool);
   return serializeRunSession({ ...entered, run: { ...entered.run, combat: { ...entered.run.combat!, phase: "WON" } },
     screen: "reward", rewardCardIds: [...ids] }, demoContent, { nowMs: () => 0 }, () => "discard");
+}
+
+for (const { club, name, cardId } of [
+  { club: "literature-demo", name: "literature", cardId: "BASE-005" },
+  { club: "science-demo", name: "science", cardId: "BASE-006" },
+  { club: "kendo-demo", name: "kendo", cardId: "BASE-008" },
+  { club: "music-demo", name: "music", cardId: "BASE-009" },
+  { club: "art-demo", name: "art", cardId: "BASE-010" },
+]) {
+  test(`${name} uses its own stage with a shared candidate card in hand and reward`, async ({ page }) => {
+    await page.clock.install();
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.addInitScript((saved) => localStorage.setItem("school-rg-run-v1", saved), combatSave([cardId], club));
+    await page.goto("/?seed=43");
+    await expect(page.locator(".game")).toHaveAttribute("data-club", club);
+    await assertLoadedCard(page.locator(`.hand .card[data-art-id="card.${cardId}"]`), cardId, false);
+    await page.screenshot({ path: `docs/art/previews/issue341/club-${name}-1024-hand-v1.png` });
+    const context = page.context();
+    await page.close();
+    const rewardPage = await context.newPage();
+    await rewardPage.setViewportSize({ width: 1024, height: 768 });
+    await rewardPage.addInitScript((saved) => localStorage.setItem("school-rg-run-v1", saved), rewardSave([cardId, "BASE-004", "BASE-018"], club));
+    await rewardPage.goto("/?seed=43");
+    for (const id of [cardId, "BASE-004", "BASE-018"]) await assertLoadedCard(rewardPage.locator(`.reward-card[data-art-id="card.${id}"]`), id, true);
+    await rewardPage.screenshot({ path: `docs/art/previews/issue341/club-${name}-1024-reward-v1.png` });
+  });
 }
 
 async function assertLoadedCard(card: import("@playwright/test").Locator, cardId: string, reward: boolean) {
