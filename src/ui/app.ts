@@ -131,6 +131,24 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     }
     return result.run;
   };
+  const markPotionUse = (before: RunState, after: RunState): void => {
+    if (!before.combat || !after.combat || before.potionIds.length <= after.potionIds.length) return;
+    const id = before.potionIds.find((candidate) =>
+      before.potionIds.filter((item) => item === candidate).length > after.potionIds.filter((item) => item === candidate).length);
+    if (!id) return;
+    const cue = { potionId: id, startedAtMs: clock.nowMs() };
+    view.potionCue = cue;
+    view.resultFx = resultFxForTransition(before, after, view.layoutPreviewAllies ?? 1, clock.nowMs());
+    view.message = `${demoContent.potions.find((item) => item.id === id)?.name ?? id}を使用`;
+    const currentGeneration = generation;
+    window.setTimeout(() => {
+      if (generation === currentGeneration && view.potionCue === cue) {
+        view.potionCue = null;
+        view.resultFx = null;
+        if (session.screen === "combat") render();
+      }
+    }, 700);
+  };
   const metricsActive = () => frontScreen === null && !restoreError && session.screen !== "won" && session.screen !== "lost"
     && document.visibilityState === "visible" && !(run.combat?.clock.paused ?? false);
   const observeMetrics = () => { if (metrics) metrics = observePlaytest(metrics, clock.nowMs(), metricsActive()); };
@@ -148,6 +166,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     preloadClubArt(run.clubId);
     view.cardFx = null;
     view.resultFx = null;
+    view.potionCue = null;
     view.selectedRelicId = null;
     view.dyingEnemyInstanceIds = [];
     if (metrics) metrics = recordPlaytestBattle(metrics, run);
@@ -319,6 +338,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     audio.play("enemy");
     setMotion("enemy");
     view.resultFx = null;
+    view.potionCue = null;
     view.message = "敵が予告した行動を実行します。";
     render();
     const currentGeneration = generation;
@@ -354,6 +374,9 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     setMotion(null);
     view.cardFx = null;
     view.resultFx = null;
+    view.relicCue = null;
+    view.potionCue = null;
+    view.selectedRelicId = null;
     view.dyingEnemyInstanceIds = [];
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
@@ -372,9 +395,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
 
   function submitInputKey(key: string, repeat: boolean, isComposing: boolean): void {
     try {
+      const before = run;
       if (key === requireSetting(config.potionModeKey)) run = setPotionInputActive(run, !run.combat!.potionControl?.active, clock, demoContent, disposition);
       else if (run.combat!.potionControl?.active) run = submitPotionKey(run, { key, repeat, isComposing }, clock, config, demoContent, disposition);
       else run = submitPlayerKey(run, { key, repeat, isComposing }, clock, config, demoContent, useCard, disposition);
+      markPotionUse(before, run);
       settleIfFinished();
       render();
       enemyPhase();
@@ -622,6 +647,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         return;
       }
       if (session.screen !== "combat") return;
+      const beforeCombatAction = run;
       if (action === "potion-mode" && run.combat?.phase === "PLAYER_INPUT") {
         run = setPotionInputActive(run, !run.combat.potionControl?.active, clock, demoContent, disposition);
       } else if (action === "discard-potion" && run.combat?.phase === "PLAYER_INPUT") {
@@ -657,6 +683,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         view.selectedDebuff = id;
         view.message = "解除する状態を選びました。";
       }
+      if (action === "potion" || action === "enemy") markPotionUse(beforeCombatAction, run);
       settleIfFinished();
       render();
       if (action === "pause") root.querySelector<HTMLButtonElement>('[data-action="pause"]')?.focus();

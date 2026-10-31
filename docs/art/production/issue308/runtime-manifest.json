@@ -1,7 +1,7 @@
 {
   "issue": 308,
   "adoption": "candidate",
-  "items": [
+  "relics": [
     {
       "id": "library-bookmark",
       "artId": "relic-library-bookmark",
@@ -132,6 +132,80 @@
       "sourceSha256": "abe640afd7d1b99f7c4f424805c136ce295343630db8d1ae0cea4f7caa5f5898",
       "runtime": "src/assets/relics/issue308/practice-timer-v1-256.webp",
       "runtimeSha256": "a43782e2f138f6c0817420bc2aefc43e285f4c87b42e1afdb1752499f4252c06",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    }
+  ],
+  "potions": [
+    {
+      "id": "potion-time",
+      "artId": "potion.potion-time",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#309 v1",
+      "source": "docs/art/production/issue308/sources/potion-time-v1.png",
+      "sourceSha256": "d67d9ff528d896284c2e5b9a8103b129b2d6cd95c63d57a0d3e79be11538c479",
+      "runtime": "src/assets/potions/issue308/potion-time-v1-256.webp",
+      "runtimeSha256": "812abc65645638eb0775dabf3302e8c2ee401d7ff95cf5ef4d27e6c81dae8bba",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "potion-heal",
+      "artId": "potion.potion-heal",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#309 v1",
+      "source": "docs/art/production/issue308/sources/potion-heal-v1.png",
+      "sourceSha256": "c992a0dfaebae04a6a2c7f44de4a0c789d525e856afc89a2885dc09276e9664e",
+      "runtime": "src/assets/potions/issue308/potion-heal-v1-256.webp",
+      "runtimeSha256": "e291cde5f0238b00a441e4cc2be45dcaf364174268e6e4d335482c367433e960",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "potion-ink",
+      "artId": "potion.potion-ink",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#246 v1; style review required",
+      "source": "docs/art/production/issue308/sources/potion-ink-v1.png",
+      "sourceSha256": "3e6b2e9261c19ce982855cadcf145645d55c4a7235264ad43303fd65ec8a1f2a",
+      "runtime": "src/assets/potions/issue308/potion-ink-v1-256.webp",
+      "runtimeSha256": "0dfb81fbe1d1af26cf26aa5b1a54d9d4cb488173db427dadffb5233cf3bd3ecb",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "potion-guard",
+      "artId": "potion.potion-guard",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#309 v1",
+      "source": "docs/art/production/issue308/sources/potion-guard-v1.png",
+      "sourceSha256": "054228610746a360180f8eb2f0b7aedba3418b1c63156acf2789b0ca8bcc754c",
+      "runtime": "src/assets/potions/issue308/potion-guard-v1-256.webp",
+      "runtimeSha256": "fde817b4923f0b3649b5143f10c936601b5e21e507dd3ef0d1eb55532ad789d7",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "potion-splash",
+      "artId": "potion.potion-splash",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#309 v1",
+      "source": "docs/art/production/issue308/sources/potion-splash-v1.png",
+      "sourceSha256": "8dcecf9cbda399ada034024cd958ecdb1429f4fe065fc060448723de06810937",
+      "runtime": "src/assets/potions/issue308/potion-splash-v1-256.webp",
+      "runtimeSha256": "0cab68515f8d7d0565de315d214b00f08493b915c0029eda4e1227babde3dde3",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "potion-tea",
+      "artId": "potion.potion-tea",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#309 v1",
+      "source": "docs/art/production/issue308/sources/potion-tea-v1.png",
+      "sourceSha256": "26de3fba61c141069e018f94de42d54d5b9bba891f8691b1f841920536659971",
+      "runtime": "src/assets/potions/issue308/potion-tea-v1-256.webp",
+      "runtimeSha256": "0c2165e611e2f7db6538e2ee866cb00ab4f0c251eb79d907d1e1ccda8084c5d2",
       "runtimeProfile": "256x256 WebP q86 alpha100"
     }
   ]
