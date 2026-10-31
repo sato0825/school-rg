@@ -6,10 +6,10 @@
 
 | 状態 | PC 1440 | iPad 相当 1024 |
 | --- | --- | --- |
-| 最終被弾 | [PNG](previews/issue268-transition-hit-1440-v5.png) | [PNG](previews/issue268-transition-hit-1024-v5.png) |
-| 実戦敗北結果 | [PNG](previews/issue268-loss-real-1440-v10.png) | [PNG](previews/issue268-loss-real-1024-v10.png) |
-| 被弾→結果の連続録画 | [WebM](previews/issue268-transition-1440-v5.webm) | [WebM](previews/issue268-transition-1024-v5.webm) |
-| 低刺激 | — | [結果 PNG](previews/issue268-transition-result-quiet-1024-v5.png) · [連続 WebM](previews/issue268-transition-quiet-1024-v5.webm) |
+| 最終被弾 | [PNG](previews/issue268-transition-hit-1440-v6.png) | [PNG](previews/issue268-transition-hit-1024-v6.png) |
+| 実戦敗北結果 | [PNG](previews/issue268-loss-real-1440-v11.png) | [PNG](previews/issue268-loss-real-1024-v11.png) |
+| 被弾→結果の連続録画 | [WebM](previews/issue268-transition-1440-v6.webm) | [WebM](previews/issue268-transition-1024-v6.webm) |
+| 低刺激 | — | [結果 PNG](previews/issue268-transition-result-quiet-1024-v6.png) · [連続 WebM](previews/issue268-transition-quiet-1024-v6.webm) |
 
 録画はテスト用の実ゲーム状態で敵の最後の攻撃を進めて採取しました。舞台と人物アンカーの矩形座標差は 2 px 未満、入力帯のみ局所的に退きます。低刺激設定では被弾待ち時間を置かずに結果を表示します。PC/iPad 相当はブラウザの画面幅であり、実機 iPad の確認ではありません。
 
@@ -17,11 +17,11 @@
 
 | 部活 | PC 1440 | iPad 相当 1024 | 候補 PNG SHA-256 |
 | --- | --- | --- | --- |
-| 文芸 | [PNG](previews/issue268-loss-literature-demo-1440-v10.png) | [PNG](previews/issue268-loss-literature-demo-1024-v10.png) | `7d9b6656891c030c31a31f410f728f0ec1b6f1c1e490ab783afaf260d21b5c5b` |
-| 科学 | [PNG](previews/issue268-loss-science-demo-1440-v10.png) | [PNG](previews/issue268-loss-science-demo-1024-v10.png) | `1cf476aae06825c68cf84427e6136a58883e17ae52f3aeb9f634652dbdf5f018` |
-| 剣道 | [PNG](previews/issue268-loss-kendo-demo-1440-v10.png) | [PNG](previews/issue268-loss-kendo-demo-1024-v10.png) | `79cad789c5240a0b7aa8c0ea919528001efb3181c25e12ca7b98e90f03560aad` |
-| 軽音 | [PNG](previews/issue268-loss-music-demo-1440-v10.png) | [PNG](previews/issue268-loss-music-demo-1024-v10.png) | `e53498281c4e029e77efbb8be439999200b5fcbde27d674937f17d9dc5a2872f` |
-| 美術 | [PNG](previews/issue268-loss-art-demo-1440-v10.png) | [PNG](previews/issue268-loss-art-demo-1024-v10.png) | `72ae07f4ff528c4f5c2fcd8c0aeb74b3275494e6ded6fde1ed4673632a58d640` |
+| 文芸 | [PNG](previews/issue268-loss-literature-demo-1440-v11.png) | [PNG](previews/issue268-loss-literature-demo-1024-v11.png) | `7d9b6656891c030c31a31f410f728f0ec1b6f1c1e490ab783afaf260d21b5c5b` |
+| 科学 | [PNG](previews/issue268-loss-science-demo-1440-v11.png) | [PNG](previews/issue268-loss-science-demo-1024-v11.png) | `1cf476aae06825c68cf84427e6136a58883e17ae52f3aeb9f634652dbdf5f018` |
+| 剣道 | [PNG](previews/issue268-loss-kendo-demo-1440-v11.png) | [PNG](previews/issue268-loss-kendo-demo-1024-v11.png) | `79cad789c5240a0b7aa8c0ea919528001efb3181c25e12ca7b98e90f03560aad` |
+| 軽音 | [PNG](previews/issue268-loss-music-demo-1440-v11.png) | [PNG](previews/issue268-loss-music-demo-1024-v11.png) | `e53498281c4e029e77efbb8be439999200b5fcbde27d674937f17d9dc5a2872f` |
+| 美術 | [PNG](previews/issue268-loss-art-demo-1440-v11.png) | [PNG](previews/issue268-loss-art-demo-1024-v11.png) | `72ae07f4ff528c4f5c2fcd8c0aeb74b3275494e6ded6fde1ed4673632a58d640` |
 
 画像は #252 と #259 の制作候補をそのまま使用し、表示マッピングから交換できます。文芸は他候補と元キャンバス寸法が違い、縮尺と接地の採用判断が残ります。剣道は右端余白と影を調整する必要があります。5 部活の最終画風・編集可能原本・演技の統一も未承認です。
 
