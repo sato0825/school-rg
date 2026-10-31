@@ -25,6 +25,8 @@ import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, 
 import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
 import { createAudioFeedback } from "./audio.js";
+import { imeLatinKey } from "./ime-key.js";
+import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
@@ -59,6 +61,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let session = createRunSession(0, "literature-demo", demoContent, mapOptions);
   let frontScreen: "title" | "clubs" | "compendium" | "history" | null = "title";
   let frontReturn: "title" | null = "title";
+  let battleMapOpen = false;
+  let resumeAfterBattleMap = false;
   let restoreError = false;
   try {
     const saved = store.read();
@@ -86,6 +90,10 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   }
   const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, resultFx: null, dyingEnemyInstanceIds: [], animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   let imeComposing = false;
+  let imeNeedsRecovery = false;
+  let keyboardLayoutMap: ReadonlyMap<string, string> | null = null;
+  const keyboardWithLayout = (navigator as Navigator & { keyboard?: { getLayoutMap?: () => Promise<ReadonlyMap<string, string>> } }).keyboard;
+  void keyboardWithLayout?.getLayoutMap?.().then((map) => { keyboardLayoutMap = map; }).catch(() => { /* Keep the ordinary key path when unsupported. */ });
   const setImeNotice = (notice: string) => {
     view.imeNotice = notice;
     const element = root.querySelector<HTMLElement>("#battle-ime-notice");
@@ -140,11 +148,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     catch { metricsLoadError = true; }
   };
   const render = () => {
-    if (session.screen !== "combat" || frontScreen !== null) { imeComposing = false; view.imeNotice = ""; }
-    else if (imeComposing) { imeComposing = false; view.imeNotice = "英数入力に切り替えて、カードの英単語を入力してください。"; }
+    if (session.screen !== "combat" || frontScreen !== null) { imeComposing = false; imeNeedsRecovery = false; view.imeNotice = ""; }
+    else if (imeComposing) { imeComposing = false; view.imeNotice = imeNeedsRecovery ? "英数入力に切り替えて、カードの英単語を入力してください。" : ""; }
     if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT") view.helpOpen = false;
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
+    const battleMapScrollTop = root.querySelector<HTMLElement>(".battle-map-scroll")?.scrollTop;
     const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
+    const restoreBattleMapFocus = root.querySelector(".battle-map-close") === document.activeElement;
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
     else if (frontScreen === "title") renderRunTitle(root, demoBattleArt, history);
     else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError);
@@ -170,6 +180,15 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const header = root.querySelector(".topbar, .run-header");
     if (header) {
       if (session.screen === "combat" && frontScreen === null) {
+        const mapButton = document.createElement("button");
+        mapButton.type = "button";
+        mapButton.className = "battle-map-trigger";
+        mapButton.dataset.action = "open-battle-map";
+        mapButton.setAttribute("aria-controls", "battle-map-panel");
+        mapButton.setAttribute("aria-expanded", String(battleMapOpen));
+        mapButton.textContent = "マップ";
+        mapButton.disabled = run.combat?.phase !== "PLAYER_INPUT";
+        header.append(mapButton);
         const displayToggle = document.createElement("button");
         displayToggle.type = "button";
         displayToggle.className = "stimulus-toggle";
@@ -195,6 +214,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         exportButton.textContent = "計測JSONを保存";
         header.append(exportButton);
       }
+    }
+    if (session.screen === "combat" && frontScreen === null && battleMapOpen) {
+      root.querySelector(".game")?.insertAdjacentHTML("beforeend", battleMapOverlayMarkup({ ...session, run }));
+      if (restoreBattleMapFocus) root.querySelector<HTMLButtonElement>(".battle-map-close")?.focus({ preventScroll: true });
+      const current = root.querySelector<HTMLElement>(".battle-map-floor[data-current-floor='true']");
+      const scroll = root.querySelector<HTMLElement>(".battle-map-scroll");
+      if (current && scroll) scroll.scrollTop = battleMapScrollTop ?? Math.max(0, current.offsetTop - scroll.clientHeight / 2 + current.clientHeight / 2);
     }
     persist();
   };
@@ -307,6 +333,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     metrics = null;
     frontScreen = "title";
     frontReturn = "title";
+    battleMapOpen = false;
+    resumeAfterBattleMap = false;
     view.helpOpen = false;
     restoreError = false;
     view.message = "カード名をタイプして発動。誤入力は無視されます。";
@@ -324,7 +352,43 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     } catch (error) { handleError(error); }
   }
 
+  function openBattleMap(): void {
+    if (frontScreen !== null || session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT" || battleMapOpen) return;
+    view.helpOpen = false;
+    resumeAfterBattleMap = run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused;
+    if (resumeAfterBattleMap) {
+      observeMetrics();
+      run = pausePlayerTurn(run, clock, disposition);
+      if (run.combat?.phase !== "PLAYER_INPUT") {
+        resumeAfterBattleMap = false;
+        render();
+        enemyPhase();
+        return;
+      }
+    }
+    battleMapOpen = true;
+    render();
+    root.querySelector<HTMLButtonElement>(".battle-map-close")?.focus({ preventScroll: true });
+  }
+
+  function closeBattleMap(): void {
+    if (!battleMapOpen) return;
+    battleMapOpen = false;
+    const resume = resumeAfterBattleMap && run.combat?.phase === "PLAYER_INPUT" && run.combat.clock.paused;
+    resumeAfterBattleMap = false;
+    if (resume) run = resumePlayerTurn(run, clock);
+    render();
+    if (resume) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
+    else root.querySelector<HTMLButtonElement>(".battle-map-trigger")?.focus({ preventScroll: true });
+  }
+
   function onKeyDown(event: KeyboardEvent): void {
+    if (battleMapOpen) {
+      if (event.key === "Escape") { event.preventDefault(); closeBattleMap(); }
+      else if (event.key === "Tab") { event.preventDefault(); root.querySelector<HTMLButtonElement>(".battle-map-close")?.focus({ preventScroll: true }); }
+      else if (event.key.length === 1 && !(event.target instanceof HTMLButtonElement && event.target.dataset.action === "close-battle-map" && event.key === " ")) event.preventDefault();
+      return;
+    }
     if (session.screen === "combat" && view.helpOpen && event.key === "Escape") {
       event.preventDefault();
       view.helpOpen = false;
@@ -333,17 +397,27 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       return;
     }
     if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
-    if (imeComposing || event.isComposing || event.keyCode === 229) {
-      setImeNotice("日本語入力中です。英数入力に切り替えるとカード名をタイプできます。");
+    const composing = imeComposing || event.isComposing || event.keyCode === 229;
+    const resolvedKey = composing ? imeLatinKey(event, keyboardLayoutMap) : null;
+    if (composing && !resolvedKey) {
+      if (!["Enter", " ", "Escape", "Backspace", "Delete", "Tab", "Shift", "Control", "Alt", "Meta"].includes(event.key)) {
+        imeNeedsRecovery = true;
+        setImeNotice("日本語入力中です。英数入力に切り替えるとカード名をタイプできます。");
+      }
       return;
     }
-    if (/^[a-z]$/i.test(event.key) && view.imeNotice) setImeNotice("");
+    const key = resolvedKey ?? event.key;
+    if (resolvedKey) {
+      imeComposing = false;
+      imeNeedsRecovery = false;
+    }
+    if (/^[a-z]$/i.test(key) && view.imeNotice) setImeNotice("");
     if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
-    const focusTypingInput = event.target instanceof HTMLButtonElement && event.key.length === 1;
-    if (event.target instanceof HTMLButtonElement && event.key.length === 1) event.target.blur();
-    if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (event.key === "Backspace" || event.key === "Delete"))) event.preventDefault();
-    if (view.helpOpen && event.key.length === 1) view.helpOpen = false;
-    submitInputKey(event.key, event.repeat, event.isComposing);
+    const focusTypingInput = event.target instanceof HTMLButtonElement && key.length === 1;
+    if (focusTypingInput) event.target.blur();
+    if (key.length === 1 || key === "Enter" || key === "Escape" || key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (key === "Backspace" || key === "Delete"))) event.preventDefault();
+    if (view.helpOpen && key.length === 1) view.helpOpen = false;
+    submitInputKey(key, event.repeat, false);
     if (focusTypingInput && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
   }
 
@@ -351,6 +425,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
     if (imeComposing || event.isComposing || event.inputType === "insertCompositionText") return;
     event.preventDefault();
+    if (battleMapOpen) return;
     if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused || event.inputType !== "insertText" || !event.data || [...event.data].length !== 1 || event.isComposing) return;
     if (view.helpOpen) view.helpOpen = false;
     submitInputKey(event.data, false, false);
@@ -365,14 +440,15 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   function onCompositionStart(event: CompositionEvent): void {
     if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
     imeComposing = true;
-    setImeNotice("日本語入力中です。英数入力に切り替えるとカード名をタイプできます。");
+    imeNeedsRecovery = false;
+    setImeNotice("");
   }
 
   function onCompositionEnd(event: CompositionEvent): void {
     if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
     imeComposing = false;
     event.target.value = run.combat?.potionControl?.active ? run.combat.potionControl.typing.buffer : run.combat?.typing.buffer ?? "";
-    setImeNotice("英数入力に切り替えて、カードの英単語を入力してください。");
+    setImeNotice(imeNeedsRecovery ? "英数入力に切り替えて、カードの英単語を入力してください。" : "");
   }
 
   function onClick(event: MouseEvent): void {
@@ -382,6 +458,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const action = button.dataset.action;
     const id = button.dataset.id ?? "";
     try {
+      if (action === "open-battle-map") { openBattleMap(); return; }
+      if (action === "close-battle-map") { closeBattleMap(); return; }
       if (action === "toggle-audio") { audio.toggle(); render(); return; }
       if (action === "new-run" || action === "restart") { restart(); return; }
       if (action === "open-clubs" && frontScreen === "title") { frontScreen = "clubs"; render(); return; }

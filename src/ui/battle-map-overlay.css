@@ -1,0 +1,192 @@
+.game { position: relative; }
+.battle-map-trigger {
+  flex: none;
+  margin-left: auto;
+  padding: 6px 8px;
+  border: 1px solid #8ba5b8;
+  border-radius: 6px;
+  background: #29455d;
+  color: #f8f7f2;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.battle-map-trigger:focus-visible { outline: 3px solid #f4c4cd; outline-offset: 2px; }
+.battle-map-trigger:disabled { opacity: .55; cursor: default; }
+
+.battle-map-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+.battle-map-scrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  background: #12283b55;
+  cursor: default;
+}
+.battle-map-panel {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  width: min(840px, calc(100% - 88px));
+  max-height: min(740px, calc(100dvh - 92px));
+  border: 1px solid #d3e4e7a8;
+  border-radius: 18px;
+  background:
+    linear-gradient(#eaf3f20b 1px, transparent 1px) 0 0 / 100% 28px,
+    linear-gradient(95deg, #1e394bc6, #193247d1 72%);
+  box-shadow: 0 18px 55px #071c2d8c, inset 0 0 0 1px #d8e5e438;
+  color: #f1f6f2;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.battle-map-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 26px 12px;
+}
+.battle-map-heading span {
+  color: #b8d1d7;
+  font: 800 10px/1.2 ui-monospace, monospace;
+  letter-spacing: .18em;
+}
+.battle-map-heading h2 { margin: 5px 0 0; font-size: 25px; letter-spacing: .08em; }
+.battle-map-close {
+  flex: none;
+  padding: 9px 13px;
+  border: 1px solid #a9c5cb;
+  border-radius: 9px;
+  background: #e9f3f2ed;
+  color: #173447;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.battle-map-close kbd { margin-left: 8px; font: 700 11px/1.2 ui-monospace, monospace; }
+.battle-map-close:focus-visible { outline: 3px solid #f4c4cd; outline-offset: 3px; }
+.battle-map-context {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 0 26px 12px;
+  color: #c9dde1;
+  font-size: 12px;
+}
+.battle-map-context strong { color: white; font-size: 15px; }
+.battle-map-time-state { color: #d8e9e5; font-size: 11px; font-weight: 800; }
+.battle-map-next-count {
+  margin-left: auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #e59bad30;
+  color: #f5ced8;
+  font-weight: 800;
+}
+.battle-map-scroll {
+  min-height: 250px;
+  max-height: min(550px, calc(100dvh - 270px));
+  overflow-y: auto;
+  margin: 0 12px 0 21px;
+  padding: 0 16px 14px 0;
+  scrollbar-color: #92b3c0 #173248;
+}
+.battle-map-track { position: relative; isolation: isolate; }
+.battle-map-track svg {
+  position: absolute;
+  inset: 0 0 0 52px;
+  z-index: -1;
+  width: calc(100% - 52px);
+  height: 100%;
+  pointer-events: none;
+}
+.battle-map-track path { fill: none; stroke: #9ebac06e; stroke-width: 3; }
+.battle-map-track path.route-visited { stroke: #9ec6c7; stroke-width: 4; }
+.battle-map-track path.route-available { stroke: #f0b2c0; stroke-width: 5; }
+.battle-map-floors { margin: 0; padding: 0; list-style: none; }
+.battle-map-floor {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  height: 96px;
+}
+.battle-map-floor[data-current-floor="true"] { background: linear-gradient(90deg, transparent, #d9eff021, transparent); }
+.battle-map-floor-label { color: #bfd2d7; font: 800 11px/1 ui-monospace, monospace; letter-spacing: .05em; }
+.battle-map-floor-nodes { display: flex; justify-content: space-around; gap: 8px; }
+.battle-map-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: min(76px, 21%);
+  height: 56px;
+  border: 1px solid #bad1d885;
+  border-radius: 11px;
+  background: #264457e8;
+  color: #cee0e3;
+  box-shadow: 0 5px 12px #0b1e2a6b;
+  text-align: center;
+}
+.battle-map-node span { font-size: 21px; line-height: 1; }
+.battle-map-node small { font-size: 10px; font-weight: 800; }
+.battle-map-node.current { border: 2px solid #fff4df; background: #deeff1; color: #1a4253; box-shadow: 0 0 0 4px #f7f1e533; }
+.battle-map-node.next { border: 2px solid #efb4c2; background: #573c57ed; color: #fff3f6; box-shadow: 0 0 0 4px #e6a7b124; }
+.battle-map-node.visited { color: #f0f4f1; background: #365c66; }
+.battle-map-node.future { opacity: .66; }
+.battle-map-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 26px 18px;
+  border-top: 1px solid #b2cad02e;
+  color: #d4e2e1;
+  font-size: 11px;
+}
+.battle-map-footer span { display: inline-flex; align-items: center; gap: 6px; }
+.battle-map-footer span:last-child { margin-left: auto; color: #b8cdd1; }
+.battle-map-footer i { width: 12px; height: 12px; border-radius: 3px; background: #deeff1; }
+.battle-map-footer .battle-map-key-next { background: #efb4c2; }
+.game[data-effects="quiet"] .battle-map-panel { background: #203b4e; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.game[data-effects="quiet"] .battle-map-scrim { background: #10263888; }
+@media (min-width: 761px) and (max-width: 1100px) {
+  .game { grid-template-rows: 96px minmax(0, 1fr) 326px; }
+  .topbar { display: grid; grid-template-columns: minmax(0, 1fr) repeat(5, auto); grid-template-rows: 32px 44px; gap: 4px; padding: 6px 10px; }
+  .topbar .run-meta { grid-column: 1; grid-row: 1; }
+  .topbar .pause-button { grid-column: 2; grid-row: 1; }
+  .topbar .battle-guide { grid-column: 3; grid-row: 1; }
+  .topbar .battle-map-trigger { grid-column: 4; grid-row: 1; }
+  .topbar .stimulus-toggle { grid-column: 5; grid-row: 1; }
+  .topbar .audio-toggle { grid-column: 6; grid-row: 1; }
+  .topbar .player-hud { grid-column: 1 / -1; grid-row: 2; width: 100%; max-width: none; height: 44px; }
+  .game:has(.playtest-export) { grid-template-rows: 120px minmax(0, 1fr) 326px; }
+  .topbar:has(.playtest-export) { grid-template-rows: 32px 44px 18px; }
+  .topbar .playtest-export { grid-column: 1 / -1; grid-row: 3; justify-self: end; }
+}
+@media (max-width: 900px) {
+  .battle-map-panel { width: calc(100% - 42px); max-height: calc(100dvh - 50px); }
+  .battle-map-heading { padding: 15px 18px 10px; }
+  .battle-map-context { margin: 0 18px 10px; }
+  .battle-map-footer { padding: 10px 18px 14px; }
+  .battle-map-scroll { max-height: calc(100dvh - 210px); }
+}
+@media (max-width: 760px) {
+  .topbar .battle-map-trigger { grid-column: 2; grid-row: 3; padding: 2px 6px; font-size: 9px; }
+  .battle-map-panel { width: calc(100% - 20px); }
+  .battle-map-floor-nodes { gap: 3px; }
+  .battle-map-node { width: min(64px, 22%); height: 52px; }
+  .battle-map-footer span:last-child { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-map-panel, .battle-map-node { animation: none !important; transition: none !important; }
+}

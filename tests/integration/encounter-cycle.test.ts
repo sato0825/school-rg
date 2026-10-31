@@ -5,9 +5,10 @@ import { deserializeRunSession, serializeRunSession } from "../../src/domain/sav
 import type { MapNode } from "../../src/domain/schema.js";
 
 function corridor(act: 1 | 2 | 3, seed = 42): RunSession {
-  const nodes: MapNode[] = Array.from({ length: 5 }, (_, index) => ({
+  const combatCount = ("byAct" in demoEncounterTable ? demoEncounterTable.byAct[act].combat : demoEncounterTable.combat).length + 1;
+  const nodes: MapNode[] = Array.from({ length: combatCount + 1 }, (_, index) => ({
     id: `cycle-${act}-${index}`, act, floor: index, kind: index === 0 ? "start" : "combat",
-    nextIds: index < 4 ? [`cycle-${act}-${index + 1}`] : [],
+    nextIds: index < combatCount ? [`cycle-${act}-${index + 1}`] : [],
   }));
   const start = createRunSession(seed, "literature-demo", demoContent);
   return { ...start, run: { ...start.run, act, map: { nodes, currentNodeId: nodes[0]!.id } }, completedNodeIds: [nodes[0]!.id] };
@@ -22,8 +23,9 @@ describe("Act encounter cycle", () => {
   for (const act of [1, 2, 3] as const) {
     it(`draws each Act ${act} combat candidate before repeating and survives a save`, () => {
       let session = corridor(act);
+      const candidateCount = ("byAct" in demoEncounterTable ? demoEncounterTable.byAct[act].combat : demoEncounterTable.combat).length;
       const firstCycle: string[] = [];
-      for (let index = 1; index <= 4; index++) {
+      for (let index = 1; index <= candidateCount + 1; index++) {
         const entered = enterRunNode(session, `cycle-${act}-${index}`, demoContent, demoEnemyAi, demoEncounterTable);
         expect(enterRunNode(session, `cycle-${act}-${index}`, demoContent, demoEnemyAi, demoEncounterTable)).toEqual(entered);
         firstCycle.push(entered.run.combat!.enemies.map((enemy) => enemy.enemyId).join("+"));
@@ -34,8 +36,8 @@ describe("Act encounter cycle", () => {
         } else session = entered;
         session = skipWonCombat(session);
       }
-      expect(new Set(firstCycle.slice(0, 3)).size).toBe(3);
-      expect(firstCycle.slice(0, 3).includes(firstCycle[3]!)).toBe(true);
+      expect(new Set(firstCycle.slice(0, candidateCount)).size).toBe(candidateCount);
+      expect(firstCycle.slice(0, candidateCount).includes(firstCycle[candidateCount]!)).toBe(true);
       expect(session.encounterHistory?.[`${act}:combat`]).toHaveLength(1);
     });
   }
