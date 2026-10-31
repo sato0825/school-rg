@@ -115,6 +115,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   };
   let enemyPending = false;
   let gameShell: GameShell | null = null;
+  let locationTransitioning = false;
+  let locationFeedback: string | null = null;
   let generation = 0;
   const setMotion = (motion: BattleView["motion"]) => { view.motion = motion; view.motionStartedAtMs = motion ? clock.nowMs() : null; };
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
@@ -179,7 +181,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         renderBattle(rendered, run, demoContent, view, config);
         gameShell.showBattle(run, rendered);
       } else {
-        renderRunLocation(rendered, session, demoContent, view.message, config);
+        renderRunLocation(rendered, session, demoContent, view.message, config, lowStimulus);
         gameShell.showOverlay(session.screen, run, rendered);
       }
     }
@@ -244,6 +246,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       const same = buttons.find((button) => !button.disabled && button.dataset.action === locationFocused?.action && button.dataset.id === locationFocused?.id);
       if (same) same.focus({ preventScroll: true });
       else if (previousScreen !== session.screen || locationFocused?.action) buttons.find((button) => !button.disabled && button.closest(".location-scene"))?.focus({ preventScroll: true });
+    }
+    if (frontScreen === null && session.screen === "map" && locationFeedback) {
+      const toast = document.createElement("div");
+      toast.className = "location-result-toast";
+      toast.setAttribute("role", "status");
+      toast.textContent = locationFeedback;
+      root.querySelector(".stage")?.append(toast);
     }
     persist();
   };
@@ -475,6 +484,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   }
 
   function onClick(event: MouseEvent): void {
+    if (locationTransitioning) return;
     if (!(event.target instanceof Element)) return;
     const button = event.target.closest<HTMLButtonElement>("button[data-action]");
     if (!button) return;
@@ -554,6 +564,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         return;
       }
       if (session.screen === "map" && action === "enter-node") {
+        locationFeedback = null;
         observeMetrics();
         session = enterRunNode(session, id, demoContent, demoEnemyAi, demoRunContentTables);
         run = session.run;
@@ -570,10 +581,26 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         return;
       }
       if (session.screen === "treasure" && (action === "treasure-offer" || action === "skip-treasure")) {
+        const chosenName = action === "treasure-offer" ? button.querySelector("strong")?.textContent ?? "品" : null;
         const relicCount = run.relicIds.length;
         session = chooseRunTreasure(session, action === "skip-treasure" ? null : id, demoContent, config);
         run = session.run;
         for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
+        if (chosenName) {
+          locationFeedback = `${chosenName}を受け取った`;
+          persist();
+          locationTransitioning = true;
+          const scene = button.closest<HTMLElement>(".location-scene");
+          const propToken = [...(scene?.querySelectorAll<HTMLElement>(".locker-open [data-offer-index]") ?? [])].find((item) => item.dataset.offerIndex === button.dataset.offerIndex);
+          scene?.setAttribute("data-claiming", "true");
+          button.classList.add("is-claiming");
+          button.disabled = true;
+          propToken?.classList.add("is-claiming");
+          const status = scene?.querySelector<HTMLElement>(".location-message");
+          if (status) status.textContent = locationFeedback;
+          window.setTimeout(() => { locationTransitioning = false; render(); }, 340);
+          return;
+        }
         render();
         return;
       }

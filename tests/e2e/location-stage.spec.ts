@@ -91,3 +91,28 @@ test("Act 3 rest uses its selected stage inside GameShell", async ({ page }) => 
   await page.locator('[data-action="rest-heal"]').click();
   await expect(page.locator(".map-panel")).toBeVisible();
 });
+
+test("treasure object marks the chosen item before the map shows its result", async ({ page }) => {
+  await openLocation(page, "treasure", 1440);
+  await page.clock.install();
+  await page.locator('[data-action="treasure-offer"]:not(:disabled)').first().click();
+  await expect(page.locator('.location-scene[data-claiming="true"]')).toBeVisible();
+  await expect(page.locator('.locker-open span[data-offer-index="0"]')).toHaveClass(/is-claiming/);
+  await expect(page.locator('.location-choice[data-offer-index="0"]')).toHaveClass(/is-claiming/);
+  await expect(page.locator(".location-message")).toContainText("受け取った");
+  if (process.env.SCHOOL_RG_CAPTURE_LOCATIONS === "1") await page.screenshot({ path: "docs/design/previews/issue286-live-treasure-claim-1440.png", fullPage: true });
+  await page.clock.runFor(350);
+  await expect(page.locator(".map-panel")).toBeVisible();
+  await expect(page.locator(".location-result-toast")).toContainText("受け取った");
+});
+
+test("reduced motion keeps treasure choice clear without a lift animation", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await openLocation(page, "treasure", 1024);
+  await page.clock.install();
+  await page.locator('[data-action="treasure-offer"]:not(:disabled)').first().click();
+  await expect(page.locator('.locker-open span[data-offer-index="0"]')).toHaveClass(/is-claiming/);
+  expect(await page.locator('.locker-open span[data-offer-index="0"]').evaluate((item) => getComputedStyle(item).animationName)).toBe("none");
+  await page.clock.runFor(350);
+  await expect(page.locator(".location-result-toast")).toContainText("受け取った");
+});
