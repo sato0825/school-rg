@@ -33,6 +33,9 @@ for (const width of [1440, 1024]) {
     expect(await page.locator(".hero-shadow").evaluate((node) => getComputedStyle(node).animationName)).toBe("shadow-cast-attack");
     expect(await frames()).toEqual(before);
     if (process.env.SCHOOL_RG_CAPTURE_CHARACTER_MOTION === "1") {
+      await page.locator(".hero-art").evaluate((node) => node.getAnimations().forEach((animation) => { animation.currentTime = 55; }));
+      await page.locator(".hero-idle-underlay").evaluate((node) => node.getAnimations().forEach((animation) => { animation.currentTime = 55; }));
+      await page.screenshot({ path: `docs/art/previews/issue234-attack-enter-${width}.png` });
       await page.locator(".hero-art").evaluate((node) => node.getAnimations().forEach((animation) => { animation.currentTime = 180; }));
       await page.locator(".hero-idle-underlay").evaluate((node) => node.getAnimations().forEach((animation) => { animation.currentTime = 180; }));
       await page.locator(".hero-shadow").evaluate((node) => node.getAnimations().forEach((animation) => { animation.currentTime = 180; }));
