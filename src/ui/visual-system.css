@@ -127,8 +127,9 @@
 .game-shell .enemy-roster:has(>.enemy-roster-button:nth-child(5)) .enemy-roster-button:nth-child(5) .enemy-detail{left:auto;right:0}
 .game-shell .hand{height:171px;min-height:171px}
 .game-shell .hand>.card[data-card-kind]{height:160px;min-height:160px}
-.game-shell .hand>.card .card-effect{font-size:12px;line-height:1.17}
+.game-shell .hand>.card .card-effect{font-size:12px;line-height:1.17;margin-top:6px}
 .game-shell .card-art{flex-basis:57px;margin:3px 0}
+.game-shell .hand>.card .card-art{flex-shrink:1;min-height:48px}
 .game-shell .hand>.card[data-long-word="true"] .card-art{flex-basis:50px}
 .game-shell .hand>.card[data-long-word="true"] .card-word{font-size:16px}
 .game-shell .typing-row{margin:3px auto 2px}
