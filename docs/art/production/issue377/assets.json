@@ -22,14 +22,14 @@
     "path": "docs/art/production/issue377/assets/card-lit-011-draft-v1.png",
     "sha256": "e43078bf4af64c0eaa44de2ebe032ad449e3e6677e2879de3373a65701d5e5f2",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-aced2a98-055a-456a-8498-1701297c6875.png",
-    "state": "candidate",
+    "state": "superseded-candidate",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending hand/reward/48px/grayscale",
-    "selectionDecision": "not reviewed"
+    "visualReview": "48px silhouette too busy or action unclear",
+    "selectionDecision": "v2 made for simpler focal action"
   },
   {
     "id": "SCI-012",
@@ -86,14 +86,14 @@
     "path": "docs/art/production/issue377/assets/card-mus-011-backbeat-v1.png",
     "sha256": "e699e0f07188b7166761118d8c8d7ef3be5bdf4d91cf5068b6bc4f30d8ac1b0c",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-774b52ab-0c61-4561-8175-8627c80e9e76.png",
-    "state": "candidate",
+    "state": "superseded-candidate",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending hand/reward/48px/grayscale",
-    "selectionDecision": "not reviewed"
+    "visualReview": "48px silhouette too busy or action unclear",
+    "selectionDecision": "v2 made for simpler focal action"
   },
   {
     "id": "MUS-012",
@@ -125,6 +125,38 @@
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
     "visualReview": "pending hand/reward/48px/grayscale",
+    "selectionDecision": "not reviewed"
+  },
+  {
+    "id": "LIT-011",
+    "word": "draft",
+    "version": "v2",
+    "path": "docs/art/production/issue377/assets/card-lit-011-draft-v2.png",
+    "sha256": "c7b8a357533f2b334f8ec82f2367d68faadc15e8e2e5769a75f3425372a808f1",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-378367cc-e0b1-4c26-acef-762678b7de0d.png",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "rightsReview": "pending",
+    "visualReview": "pending actual-size comparison",
+    "selectionDecision": "not reviewed"
+  },
+  {
+    "id": "MUS-011",
+    "word": "backbeat",
+    "version": "v2",
+    "path": "docs/art/production/issue377/assets/card-mus-011-backbeat-v2.png",
+    "sha256": "0dc4b7a923884f6a6f82607bc90d0c1e33032f597264c103f54bd7fb9a2d7d8c",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-059c4c7d-0520-4ffb-b40f-8b18e2dadb11.png",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "rightsReview": "pending",
+    "visualReview": "pending actual-size comparison",
     "selectionDecision": "not reviewed"
   }
 ]
