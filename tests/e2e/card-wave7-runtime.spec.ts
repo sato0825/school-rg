@@ -8,7 +8,7 @@ import { beginPlayerTurn } from "../../src/domain/turn-state.js";
 
 const versions: Record<string, string> = {
   "BASE-019": "issue338-v1", "BASE-020": "issue338-v1", "BASE-021": "issue338-v1",
-  "BASE-022": "issue338-v2", "BASE-024": "issue338-v1", "LIT-010": "issue338-v1",
+  "BASE-022": "issue338-v3", "BASE-024": "issue338-v1", "LIT-010": "issue338-v1",
   "SCI-011": "issue338-v1", "KEN-005": "issue338-v2", "MUS-009": "issue338-v1", "ART-010": "issue338-v1",
   "BASE-017": "issue343-v4", "BASE-023": "issue343-v2",
 };
@@ -58,9 +58,11 @@ async function assertCard(card: import("@playwright/test").Locator, id: string, 
     const word = element.querySelector(isReward ? "strong" : ".card-word")!.getBoundingClientRect();
     const effect = element.querySelector(isReward ? ".offer-description" : ".card-effect")!.getBoundingClientRect();
     const frame = element.getBoundingClientRect();
-    return { wordBottom: word.bottom, effectTop: effect.top, effectBottom: effect.bottom, frameBottom: frame.bottom };
+    return { wordBottom: word.bottom, effectTop: effect.top, effectBottom: effect.bottom, frameBottom: frame.bottom,
+      frameLeft: frame.left, frameRight: frame.right, viewportWidth: window.innerWidth };
   }, reward);
   expect(geometry.wordBottom <= geometry.effectTop && geometry.effectBottom <= geometry.frameBottom, `${id}: ${JSON.stringify(geometry)}`).toBe(true);
+  expect(geometry.frameLeft >= 0 && geometry.frameRight <= geometry.viewportWidth, `${id}: outside visible rail ${JSON.stringify(geometry)}`).toBe(true);
 }
 
 for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900 }]) {
@@ -73,7 +75,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
       await expect(page.locator(".game")).toHaveAttribute("data-club", club.id);
       for (const id of [...common, club.own]) await assertCard(page.locator(`.hand .card[data-art-id="card.${id}"]`), id, false);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-      await page.screenshot({ path: `docs/art/previews/issue367/${club.name}-${viewport.width}-hand-v2.png` });
+      await page.screenshot({ path: `docs/art/previews/issue367/${club.name}-${viewport.width}-hand-v3.png` });
       const context = page.context();
       await page.close();
 
@@ -84,7 +86,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
         await rewardPage.goto("/?seed=46");
         for (const id of ids) await assertCard(rewardPage.locator(`.reward-card[data-art-id="card.${id}"]`), id, true);
         expect(await rewardPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-        await rewardPage.screenshot({ path: `docs/art/previews/issue367/${club.name}-${viewport.width}-reward-${index + 1}-v2.png` });
+        await rewardPage.screenshot({ path: `docs/art/previews/issue367/${club.name}-${viewport.width}-reward-${index + 1}-v3.png` });
         await rewardPage.close();
       }
     });

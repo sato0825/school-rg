@@ -50,15 +50,17 @@
     },
     {
       "cardId": "BASE-022",
-      "version": "issue338-v2",
-      "runtimePath": "src/assets/cards/issue367/card-base-finish-v2.png",
-      "originalPath": "docs/art/production/issue338/assets/card-base-finish-v2.png",
+      "version": "issue338-v3",
+      "runtimePath": "src/assets/cards/issue367/card-base-finish-v3.png",
+      "originalPath": "docs/art/production/issue338/assets/card-base-finish-v3.png",
       "sourceIssue": 338,
-      "sourceCommit": "48a3d839da3eac69db4f5d28593ee28c1cfdd44d",
-      "sha256": "97ee0d49270c3b77032bed1513898f4c836a1ddd6a83b75b88700b448337d411",
+      "sourceCommit": "6fa4f9622ec2371de238c348180ac0c3c5bf8a71",
+      "sha256": "126f357cea0e9cbccbf0ffccb749a749fe6d609f243b9f8048b4278789c57cee",
       "state": "candidate",
       "formalAdoption": false,
-      "rightsReview": "pending"
+      "rightsReview": "pending",
+      "priorRuntimePath": "src/assets/cards/issue367/card-base-finish-v2.png",
+      "priorSha256": "97ee0d49270c3b77032bed1513898f4c836a1ddd6a83b75b88700b448337d411"
     },
     {
       "cardId": "BASE-024",
@@ -133,6 +135,13 @@
       "version": "issue338-v1",
       "originalPath": "docs/art/production/issue338/assets/card-ken-kata-v1.png",
       "sha256": "9ffe98646ecebb1e40a0f445916f09f976d24011fd4937bcd1cf97c00f434086"
+    },
+    {
+      "cardId": "BASE-022",
+      "version": "issue338-v2",
+      "originalPath": "docs/art/production/issue338/assets/card-base-finish-v2.png",
+      "runtimePath": "src/assets/cards/issue367/card-base-finish-v2.png",
+      "sha256": "97ee0d49270c3b77032bed1513898f4c836a1ddd6a83b75b88700b448337d411"
     }
   ]
 }
