@@ -1015,16 +1015,19 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
       const css = getComputedStyle(document.querySelector(selector)!);
       return { name: css.animationName, delay: css.animationDelay };
     };
-    return { enemy: animation(".enemy-group"), hero: animation(".victory-pose"), note: animation(".victory-note"), stage: animation(".stage") };
+    return { enemy: animation(".enemy-group"), enemyArt: animation(".victory-departing .enemy-art"), prior: animation(".victory-prior-pose"), hero: animation(".victory-pose"), note: animation(".victory-note"), stage: animation(".stage") };
   });
   if (await page.locator('.game-shell[data-effects="quiet"]').count() || await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches)) {
     expect(phases.enemy.name).toBe("none");
+    expect(phases.enemyArt.name).toBe("none");
     expect(phases.hero.name).toBe("none");
     expect(phases.note.name).toBe("none");
   } else {
-    expect(phases.enemy.name).toBe("victory-enemy-depart");
-    expect(phases.hero).toEqual({ name: "victory-pose-settle", delay: "0.18s" });
-    expect(phases.note).toEqual({ name: "victory-note-arrive", delay: "0.5s" });
+    expect(phases.enemy.name).toBe("victory-enemy-group");
+    expect(phases.enemyArt.name).toBe("victory-enemy-react");
+    expect(phases.prior.name).toBe("victory-prior-finish");
+    expect(phases.hero).toEqual({ name: "victory-pose-settle", delay: "0.69s" });
+    expect(phases.note).toEqual({ name: "victory-note-arrive", delay: "1.08s" });
   }
   expect(phases.stage.name).toBe("none");
   expect(await page.evaluate(() => {

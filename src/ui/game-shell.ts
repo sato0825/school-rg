@@ -136,6 +136,18 @@ export class GameShell {
   showVictory(session: RunSession, lowStimulus: boolean, options: VictoryNoteOptions, arrivedFromBattle: boolean): void {
     const firstArrival = this.main.dataset.screen !== "won";
     const { run } = session;
+    if (firstArrival && arrivedFromBattle) {
+      const previousPose = this.hero.cloneNode() as HTMLImageElement;
+      previousPose.className = "hero-art victory-prior-pose";
+      previousPose.removeAttribute("style");
+      previousPose.alt = "";
+      previousPose.setAttribute("aria-hidden", "true");
+      this.hero.before(previousPose);
+      for (const slot of this.stage.querySelectorAll<HTMLElement>(".enemy-slot")) {
+        slot.classList.add("victory-departing");
+        slot.querySelector<HTMLElement>(".enemy-art")?.style.removeProperty("animation-delay");
+      }
+    }
     this.main.dataset.screen = "won";
     this.main.dataset.terminalTransition = firstArrival && arrivedFromBattle ? "live" : "still";
     this.main.dataset.club = run.clubId;
