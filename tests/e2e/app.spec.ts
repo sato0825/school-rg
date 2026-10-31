@@ -1150,3 +1150,23 @@ test("the combat guide pauses input time and restores the previous pause state",
   await page.locator("[data-action=toggle-audio]").click();
   await expect(page.locator("[data-action=toggle-audio]")).toHaveAttribute("aria-pressed", "false");
 });
+
+test("default club selection shows five distinct characters and chosen battle art", async ({ page }) => {
+  const requested: string[] = [];
+  page.on("request", (request) => { if (request.url().includes("candidate-")) requested.push(request.url()); });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  const portraits = page.locator(".club-choice img");
+  await expect(portraits).toHaveCount(5);
+  await portraits.evaluateAll((images) => Promise.all(images.map((image) => (image as HTMLImageElement).decode())));
+  const urls = await portraits.evaluateAll((images) => images.map((image) => (image as HTMLImageElement).src));
+  expect(new Set(urls).size).toBe(5);
+  expect(await portraits.evaluateAll((images) => images.every((image) => (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  expect(requested.filter((url) => /activate-candidate|hit-candidate/.test(url))).toHaveLength(0);
+  await page.getByRole("button", { name: /科学部/ }).click();
+  await enterNextNode(page);
+  await expect(page.locator(".game")).toHaveAttribute("data-club", "science-demo");
+  await expect(page.locator(".hero-art")).toHaveAttribute("src", /serious-student-idle-candidate/);
+  await page.locator(".hero-art").evaluate((image) => (image as HTMLImageElement).decode());
+  expect(await page.locator(".hero-art").evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+});
