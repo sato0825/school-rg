@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { demoContent } from "../../src/content/demo-battle.js";
-import { appendRunHistory, emptyRunHistory, historyCounts, parseRunHistory, terminalRunEntry } from "../../src/domain/run-history.js";
+import { appendRunHistory, emptyRunHistory, historyCounts, legacyTerminalRunId, parseRunHistory, terminalRunEntry } from "../../src/domain/run-history.js";
 import { createRunSession } from "../../src/domain/run-flow.js";
 
 describe("run history", () => {
@@ -32,5 +32,10 @@ describe("run history", () => {
     expect(() => parseRunHistory({ formatVersion: 1, entries: [entry, entry] })).toThrow(/duplicate/);
     expect(() => parseRunHistory({ formatVersion: 2, entries: [] })).toThrow();
     expect(() => parseRunHistory({ formatVersion: 1, entries: [{ ...entry, hp: -1 }] })).toThrow();
+  });
+
+  it("uses a stable legacy terminal identity across reloads", () => {
+    expect(legacyTerminalRunId("older save")).toBe(legacyTerminalRunId("older save"));
+    expect(legacyTerminalRunId("older save")).not.toBe(legacyTerminalRunId("another save"));
   });
 });

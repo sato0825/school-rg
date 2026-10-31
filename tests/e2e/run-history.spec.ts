@@ -40,5 +40,6 @@ test("corrupt history is reported and preserved beside a completed legacy save",
   await page.getByRole("button", { name: "ラン履歴を見る" }).click();
   await expect(page.locator(".history-error")).toContainText("既存データを保持");
   expect(await page.evaluate(() => localStorage.getItem("school-rg-history-v1"))).toBe(corrupt);
-  expect(await page.evaluate(() => localStorage.getItem("school-rg-run-v1"))).toBe(saved);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.screen)).toBe("won");
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.seed)).toBe(42);
 });

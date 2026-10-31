@@ -65,4 +65,22 @@ describe("run and typing combat HUD", () => {
     expect(root.textContent).toContain("完走 1");
     unmount();
   });
+
+  it("does not duplicate a terminal legacy save when the active save cannot be rewritten", () => {
+    const root = document.querySelector<HTMLElement>("#app")!;
+    const start = createRunSession(42, "literature-demo", demoContent);
+    const boss = start.run.map.nodes.find((node) => node.act === 3 && node.kind === "boss")!;
+    const saved = serializeRunSession({ ...start, screen: "won", run: { ...start.run, act: 3,
+      map: { ...start.run.map, currentNodeId: boss.id } }, completedNodeIds: [...start.completedNodeIds, boss.id] },
+      demoContent, { nowMs: () => 0 }, () => "discard");
+    let history: string | null = null;
+    const saveStore = { read: () => saved, write: () => undefined };
+    const historyStore = { read: () => history, write: (value: string) => { history = value; } };
+    const emptyStore = { read: () => null, write: () => undefined };
+    mountApp(root, saveStore, emptyStore, emptyStore, historyStore)();
+    const first = history;
+    expect(JSON.parse(first!).entries).toHaveLength(1);
+    mountApp(root, saveStore, emptyStore, emptyStore, historyStore)();
+    expect(history).toBe(first);
+  });
 });

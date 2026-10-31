@@ -18,7 +18,7 @@ import { MOTION_MS } from "./motion-timing.js";
 import { renderClubSelect, renderCompendium, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserHistoryStore, browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
-import { appendRunHistory, emptyRunHistory, parseRunHistory, terminalRunEntry } from "../domain/run-history.js";
+import { appendRunHistory, emptyRunHistory, legacyTerminalRunId, parseRunHistory, terminalRunEntry } from "../domain/run-history.js";
 import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, MAX_ASCENSION_LEVEL } from "../domain/ascension.js";
 import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
@@ -56,7 +56,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let restoreError = false;
   try {
     const saved = store.read();
-    if (saved) { session = deserializeRunSession(saved, demoContent, clock); session = { ...session, runId: session.runId ?? crypto.randomUUID() }; frontScreen = null; }
+    if (saved) {
+      session = deserializeRunSession(saved, demoContent, clock);
+      session = { ...session, runId: session.runId ?? (session.screen === "won" || session.screen === "lost" ? legacyTerminalRunId(saved) : crypto.randomUUID()) };
+      frontScreen = null;
+    }
   } catch { restoreError = true; }
   let run: RunState = session.run;
   const previewArt = params.get("artPreview") === "1";

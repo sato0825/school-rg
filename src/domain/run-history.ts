@@ -18,6 +18,18 @@ export type RunHistoryEntry = z.infer<typeof EntrySchema>;
 export function emptyRunHistory(): RunHistory { return { formatVersion: 1, entries: [] }; }
 export function parseRunHistory(value: unknown): RunHistory { return RunHistorySchema.parse(value); }
 
+/** Pre-ID terminal saves need a stable identity even when the active save cannot be rewritten. */
+export function legacyTerminalRunId(saved: string): string {
+  let first = 0x811c9dc5;
+  let second = 0x9e3779b9;
+  for (let index = 0; index < saved.length; index++) {
+    const code = saved.charCodeAt(index);
+    first = Math.imul(first ^ code, 0x01000193);
+    second = Math.imul(second ^ code, 0x85ebca6b);
+  }
+  return `legacy-${(first >>> 0).toString(16).padStart(8, "0")}${(second >>> 0).toString(16).padStart(8, "0")}`;
+}
+
 /** The run ID is persisted with the active save; repeated terminal renders are idempotent. */
 export function terminalRunEntry(session: RunSession): RunHistoryEntry {
   if (!session.runId || (session.screen !== "won" && session.screen !== "lost")) throw new RangeError("terminal run with ID required");
