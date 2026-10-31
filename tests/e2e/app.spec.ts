@@ -11,6 +11,23 @@ async function startDemoRun(page: import("@playwright/test").Page): Promise<void
   await page.getByRole("button", { name: /文芸部/ }).click();
 }
 
+/** Isolate a feature flow from the provisional seeded route topology. */
+async function startScriptedRoute(page: import("@playwright/test").Page, kinds: MapNode["kind"][]): Promise<void> {
+  const start = createRunSession(42, "literature-demo", demoContent);
+  const nodes: MapNode[] = [
+    { id: "script-start", act: 1, floor: 0, kind: "start", nextIds: ["script-1"] },
+    ...kinds.map((kind, index): MapNode => ({ id: `script-${index + 1}`, act: 1, floor: index + 1, kind, nextIds: [index === kinds.length - 1 ? "script-boss" : `script-${index + 2}`] })),
+    { id: "script-boss", act: 1, floor: kinds.length + 1, kind: "boss", nextIds: ["script-next-act"] },
+    { id: "script-next-act", act: 2, floor: 0, kind: "start", nextIds: [] },
+  ];
+  const session = { ...start, run: { ...start.run, map: { nodes, currentNodeId: nodes[0]!.id } }, completedNodeIds: [nodes[0]!.id] };
+  const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
+  await page.addInitScript((value) => {
+    if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", value);
+  }, saved);
+  await page.goto("/");
+}
+
 test("map routes match the saved seed and remain keyboard operable on narrow screens", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await startDemoRun(page);
@@ -252,7 +269,8 @@ test("renders the combat HUD and accepts direct keyboard input", async ({ page }
   expect(seconds).toBeGreaterThan(0);
   expect(seconds).toBeLessThanOrEqual(10);
   await page.keyboard.press("z");
-  await expect(page.locator(".typing-buffer .placeholder")).toBeVisible();
+  await expect(page.locator(".typing-visual")).toHaveText("");
+  await expect(page.locator(".typing-input")).not.toHaveAttribute("placeholder");
   await page.keyboard.type("heavy strike");
   await expect(page.locator(".enemy-hud")).toContainText("10/24");
   await expect(page.locator(".card")).toHaveCount(4);
@@ -289,7 +307,7 @@ test("kendo club starts with counter equipment and types a guard card", async ({
   await expect(page.locator(".map-stats")).toContainText("44/44");
   await enterNextNode(page);
   await expect(page.locator(".relic-row")).toContainText("竹刀の握り");
-  await expect(page.locator(".status-row")).toContainText("反撃 1");
+  await expect(page.locator('.status-row .status-chip[data-status="thorns"]')).toHaveAttribute("aria-label", /反撃 1/);
   const words = await page.locator(".card-word").allTextContents();
   const unique = ["parry", "stance", "thrust", "riposte"].find((word) => words.includes(word));
   expect(unique).toBeDefined();
@@ -311,6 +329,56 @@ test("music club starts with extra time and types a tempo card", async ({ page }
   expect(unique).toBeDefined();
   await page.keyboard.type(unique!);
   await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
+});
+
+test("music chains timed cards by direct input at iPad width after a save reload", async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 820, height: 1180 });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /軽音部/ }).click();
+  await enterNextNode(page);
+  await page.evaluate(() => {
+    const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
+    const combat = saved.session.run.combat;
+    const cardId = (id: string) => combat.cards.find((card: { cardId: string }) => card.cardId === id).instanceId;
+    const tempo = cardId("MUS-001");
+    const sync = cardId("MUS-004");
+    const beat = cardId("MUS-002");
+    combat.hand = [tempo];
+    combat.drawPile = [...combat.cards.map((card: { instanceId: string }) => card.instanceId)
+      .filter((id: string) => id !== tempo && id !== sync && id !== beat), beat, sync];
+    combat.discardPile = [];
+    combat.exhaustPile = [];
+    combat.resolvingPile = [];
+    combat.typing = { buffer: "", candidateCardInstanceIds: [tempo], selectedCardInstanceId: null,
+      progress: 0, targetEnemyInstanceId: null, targetHandInstanceId: null };
+    combat.clock.remainingMs = 10_000;
+    localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
+  });
+  await page.reload();
+  await page.getByRole("button", { name: "再開" }).click();
+  const typeWithTime = async (word: string) => {
+    for (const key of word) {
+      await page.clock.runFor(450);
+      await page.keyboard.press(key);
+    }
+  };
+  await typeWithTime("tempo");
+  await expect(page.locator(".card-word").filter({ hasText: /^sync$/ })).toBeVisible();
+  await page.reload();
+  await page.getByRole("button", { name: "再開" }).click();
+  await typeWithTime("sync");
+  await expect(page.locator(".card-word").filter({ hasText: /^beat$/ })).toBeVisible();
+  const enemyBefore = Number(await page.locator(".enemy-health-track").first().getAttribute("aria-valuenow"));
+  await typeWithTime("beat");
+  await expect(page.locator(".battle-message")).toContainText("beat を発動");
+  expect(Number(await page.locator(".enemy-health-track").first().getAttribute("aria-valuenow"))).toBe(enemyBefore - 6);
+  expect(Number.parseFloat(await page.locator("[data-role=time]").innerText())).toBeGreaterThan(4);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  if (process.env.SCHOOL_RG_CAPTURE_MUSIC === "1") {
+    await page.screenshot({ path: "docs/content/previews/issue76-music-chain-ipad-20261031.png", fullPage: true });
+  }
 });
 
 test("a new club pool card remains readable and activates on a narrow battle screen", async ({ page }) => {
@@ -376,7 +444,7 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await expect(page.locator(".run-meta")).toContainText("TURN 2");
   await expect(page.locator(".player-hud")).toContainText("40/40");
   await expect(page.locator(".relic-row")).toContainText("図書室のしおり");
-  await expect(page.locator(".pile-counts")).toContainText("捨て札 5");
+  await expect(page.locator('.pile-token[data-pile="discard"]')).toHaveAttribute("aria-label", "捨て札 5枚");
   await expect(page.locator(".intent-ticket")).toContainText("遅刻札を投げる");
   await typeThroughBattle(page);
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
@@ -452,7 +520,7 @@ test("a typed support card keeps its flash by the player", async ({ page }) => {
   await page.clock.install();
   await startDemoRun(page);
   await enterNextNode(page);
-  const supportCard = page.locator(".card").filter({ has: page.locator(".card-kind").filter({ hasText: "SKILL" }) }).first();
+  const supportCard = page.locator('.card[data-card-kind="skill"]').first();
   await page.keyboard.type(await supportCard.locator(".card-word").innerText());
   const fx = page.locator(".card-fx-layer");
   await expect(fx).toHaveAttribute("data-kind", "support");
@@ -723,7 +791,7 @@ for (const [clubId, label, name] of [
     const hero = page.locator(".hero-art");
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
     await expect(page.locator(".intent-ticket")).toContainText("紙片が飛ぶ");
-    const attack = page.locator(".card").filter({ has: page.locator(".card-kind").filter({ hasText: "ATTACK" }) }).first();
+    const attack = page.locator('.card[data-card-kind="attack"]').first();
     await page.keyboard.type(await (await attack.count() ? attack.locator(".card-word") : page.locator(".card-word").first()).innerText());
     const activateVersion = name === "kendo" ? "v3" : "v2";
     const hitVersion = name === "art" ? "v3" : "v2";
@@ -786,7 +854,7 @@ test("one to three ally slots fit a shared stage at desktop and narrow widths", 
 test("a full Act can be finished through typed combat, rewards and a boss", async ({ page }) => {
   test.setTimeout(60_000);
   await page.clock.install();
-  await startDemoRun(page);
+  await startScriptedRoute(page, ["combat", "combat"]);
   for (let encounter = 0; encounter < 3; encounter++) {
     await enterNextNode(page);
     if (encounter === 2) await expect(page.locator(".enemy-hud")).toContainText(/追試の番人|体育館の得点板/);
@@ -1075,7 +1143,7 @@ test("art deck clears three Acts by typing and unlocks its own Ascension", async
 test("treasure offers survive reload and a focused choice completes its node", async ({ page }) => {
   test.setTimeout(60_000);
   await page.clock.install();
-  await startDemoRun(page);
+  await startScriptedRoute(page, ["combat", "treasure"]);
   await enterNextNode(page);
   await typeThroughBattle(page);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -1098,7 +1166,7 @@ test("treasure offers survive reload and a focused choice completes its node", a
 });
 
 test("a route can upgrade at rest and buy once at the shop", async ({ page }) => {
-  await startDemoRun(page);
+  await startScriptedRoute(page, ["rest", "shop"]);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).last().click();
   await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
   await page.locator("[data-action=rest-upgrade]").first().click();
@@ -1234,7 +1302,7 @@ test("reload preserves an unfinished potion word and its inventory", async ({ pa
 });
 
 test("reload preserves a shop purchase and an unfinished typed card", async ({ page }) => {
-  await startDemoRun(page);
+  await startScriptedRoute(page, ["rest", "shop", "combat"]);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).last().click();
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();

@@ -41,4 +41,36 @@ describe("local playtest summary", () => {
     expect(report.clubs["music-demo"].won).toBe(1);
     expect(report.targetRunMs).toBe(TARGET_RUN_MS);
   });
+
+  it("counts repeated encounters within a run and Act while excluding incomplete samples", () => {
+    const battle = (act, enemyIds, partial = false) => ({ nodeId: `a${act}-fight`, act, enemyIds,
+      startedAtActiveMs: 100, endedAtActiveMs: 500, hpBefore: 40, hpAfter: 38, turns: 1, result: "won", partial });
+    const complete = { ...makeRecord("variety", "literature-demo", "won", 3_600_000, [
+      battle(1, ["paper-heap", "paper-scrap"]), battle(1, ["paper-scrap", "paper-heap"]),
+      battle(2, ["paper-heap"]), battle(2, ["paper-heap"]), battle(3, ["closing-bell"]),
+    ]), battleNodeIds: ["a1", "a1b", "a2", "a2b", "a3"], visits: [
+      { nodeId: "a1-start", act: 1, kind: "start", atActiveMs: 0 },
+      { nodeId: "a1-combat", act: 1, kind: "combat", atActiveMs: 1_000 },
+      { nodeId: "a2-shop", act: 2, kind: "shop", atActiveMs: 2_000 },
+    ] };
+    const report = summarizePlaytests([
+      complete,
+      { ...makeRecord("unfinished", "literature-demo", null, 1_000, [battle(1, ["paper-heap"])]) },
+      { ...makeRecord("partial", "literature-demo", "lost", 2_000, [battle(1, ["paper-heap"])]), partial: true },
+      makeRecord("partial-battle", "literature-demo", "lost", 2_000, [battle(1, ["paper-heap"], true)]),
+      { ...makeRecord("missing-battle", "literature-demo", "lost", 2_000, [battle(1, ["paper-heap"])]), battleNodeIds: ["fight", "fight-2"] },
+      { ...makeRecord("legacy", "literature-demo", "won", 2_000), battles: undefined },
+    ]);
+    expect(report.clubs["literature-demo"].encounterVariety).toEqual({
+      runsWithUsableEncounterRecords: 1, medianRepeatedBattlesPerRun: 2,
+      byAct: [
+        { act: 1, battles: 2, repeatedBattles: 1, distinctEnemyIds: 2 },
+        { act: 2, battles: 2, repeatedBattles: 1, distinctEnemyIds: 1 },
+        { act: 3, battles: 1, repeatedBattles: 0, distinctEnemyIds: 1 },
+      ],
+    });
+    expect(report.clubs["literature-demo"].observedVisits).toEqual({
+      fullRunsWithVisits: 4, visitKinds: { start: 10, combat: 1, shop: 1 },
+    });
+  });
 });
