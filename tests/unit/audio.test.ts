@@ -4,18 +4,22 @@ import { createAudioFeedback, cueVoices, resultSoundCue } from "../../src/ui/aud
 
 function fakeContext() {
   const starts: number[] = [];
+  const textureStarts: number[] = [];
   const gains: number[] = [];
   const oscillator = () => ({
     type: "sine", frequency: { setValueAtTime: vi.fn(), exponentialRampToValueAtTime: vi.fn() },
     connect: vi.fn(), start: () => starts.push(1), stop: vi.fn(),
   });
   const context = {
-    state: "running", currentTime: 0, destination: {},
+    state: "running", currentTime: 0, sampleRate: 44100, destination: {},
     createOscillator: oscillator,
     createGain: () => ({ gain: { setValueAtTime: vi.fn(), exponentialRampToValueAtTime: (value: number) => gains.push(value) }, connect: vi.fn() }),
+    createBuffer: (_channels: number, frames: number) => ({ getChannelData: () => new Float32Array(frames) }),
+    createBufferSource: () => ({ buffer: null, connect: vi.fn(), start: () => textureStarts.push(1), stop: vi.fn() }),
+    createBiquadFilter: () => ({ type: "lowpass", frequency: { value: 0 }, connect: vi.fn() }),
     resume: vi.fn(async () => undefined), close: vi.fn(async () => undefined),
   };
-  return { context, starts, gains };
+  return { context, starts, textureStarts, gains };
 }
 
 describe("audio feedback adapter", () => {
@@ -33,10 +37,12 @@ describe("audio feedback adapter", () => {
     feedback.play("win");
     feedback.play("lose");
     expect(fake.starts).toHaveLength(15);
+    expect(fake.textureStarts).toHaveLength(3);
     expect(create).toHaveBeenCalledTimes(1);
     feedback.toggle();
     feedback.play("card");
     expect(fake.starts).toHaveLength(15);
+    expect(fake.textureStarts).toHaveLength(3);
     expect(stored).toBe("off");
     expect(createAudioFeedback(store, create).enabled).toBe(false);
     feedback.dispose();
@@ -62,7 +68,7 @@ describe("audio feedback adapter", () => {
     feedback.setQuiet(true);
     feedback.play("card");
     const peaks = fake.gains.filter((value) => value > 0.001);
-    expect(peaks.slice(2)).toEqual(peaks.slice(0, 2).map((value) => value * 0.4));
+    expect(peaks.slice(3)).toEqual(peaks.slice(0, 3).map((value) => value * 0.4));
   });
 
   it("keeps the game usable when audio or storage is unavailable", () => {

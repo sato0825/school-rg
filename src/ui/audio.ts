@@ -19,6 +19,7 @@ type Voice = {
   readonly peak: number;
   readonly wave: OscillatorType;
 };
+type Texture = { readonly seconds: number; readonly peak: number; readonly filter: BiquadFilterType; readonly cutoffHz: number };
 
 /** Original, deterministic UI cues with brief, moderate-gain voices. */
 export const cueVoices: Readonly<Record<SoundCue, readonly Voice[]>> = {
@@ -53,6 +54,13 @@ export const cueVoices: Readonly<Record<SoundCue, readonly Voice[]>> = {
   ],
 };
 
+/** A little filtered noise suggests paper movement, impact, or a guarded strike. */
+const cueTextures: Partial<Record<SoundCue, Texture>> = {
+  card: { seconds: 0.085, peak: 0.009, filter: "highpass", cutoffHz: 2300 },
+  hit: { seconds: 0.065, peak: 0.014, filter: "lowpass", cutoffHz: 650 },
+  block: { seconds: 0.05, peak: 0.008, filter: "highpass", cutoffHz: 1700 },
+};
+
 /** One salient result sound per action keeps multi-target attacks intelligible. */
 export function resultSoundCue(marks: readonly { kind: string }[]): SoundCue | null {
   if (marks.some((mark) => mark.kind === "damage")) return "hit";
@@ -71,6 +79,7 @@ export function createAudioFeedback(
   let enabled = true;
   try { enabled = store.read() !== "off"; } catch { /* Storage may be disabled. */ }
   let context: AudioContext | null = null;
+  const textureBuffers = new Map<SoundCue, AudioBuffer>();
   let quiet = false;
   return {
     get enabled() { return enabled; },
@@ -103,6 +112,35 @@ export function createAudioFeedback(
           oscillator.start(start);
           oscillator.stop(end);
         }
+        const texture = cueTextures[cue];
+        if (texture) try {
+          let buffer = textureBuffers.get(cue);
+          if (!buffer) {
+            const frameCount = Math.ceil(context.sampleRate * texture.seconds);
+            buffer = context.createBuffer(1, frameCount, context.sampleRate);
+            const samples = buffer.getChannelData(0);
+            let seed = [...cue].reduce((value, char) => (value * 33 + char.charCodeAt(0)) >>> 0, 5381);
+            for (let frame = 0; frame < frameCount; frame++) {
+              seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+              samples[frame] = seed / 0xffffffff * 2 - 1;
+            }
+            textureBuffers.set(cue, buffer);
+          }
+          const source = context.createBufferSource();
+          const filter = context.createBiquadFilter();
+          const gain = context.createGain();
+          source.buffer = buffer;
+          filter.type = texture.filter;
+          filter.frequency.value = texture.cutoffHz;
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.exponentialRampToValueAtTime(texture.peak * (quiet ? 0.4 : 1), now + 0.006);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + texture.seconds);
+          source.connect(filter);
+          filter.connect(gain);
+          gain.connect(context.destination);
+          source.start(now);
+          source.stop(now + texture.seconds);
+        } catch { /* The pitched cue still works when buffer audio is unavailable. */ }
       } catch { /* Audio failure must not interrupt input or the game clock. */ }
     },
     dispose() { if (context) void context.close().catch(() => undefined); },
