@@ -38,8 +38,8 @@ describe("combat objects", () => {
       ["draw", "山札 2枚"], ["discard", "捨て札 1枚"], ["exhaust", "除外 1枚"],
     ]);
     expect(root.querySelectorAll(".topbar .status-chip")).toHaveLength(2);
-    expect(root.querySelector('.topbar .status-chip[data-status="strength"]')?.getAttribute("aria-label")).toBe("力 2");
-    expect(root.querySelector('.enemy-status .status-chip[data-status="weak"]')?.getAttribute("aria-label")).toBe("弱体 2");
+    expect(root.querySelector('.topbar .status-chip[data-status="strength"]')?.getAttribute("aria-label")).toContain("力 2。攻撃の基礎値に加算");
+    expect(root.querySelector('.enemy-status .status-chip[data-status="weak"]')?.getAttribute("aria-label")).toContain("弱体 2。攻撃の威力が低下");
     expect(root.querySelector(".hero-nameplate")?.textContent).toBe("Synthetic Club A");
     expect(root.querySelector(".card-kind")?.textContent).toBe("攻撃");
     expect(run.combat!.drawPile).toEqual(["draw-1", "draw-2"]);
@@ -56,6 +56,6 @@ describe("combat objects", () => {
     const target = root.querySelector<HTMLElement>('.enemy-roster-button[data-id="enemy-3"]')!;
     expect(target.getAttribute("aria-label")).toContain("毒 3");
     expect(target.querySelectorAll(".enemy-detail-status .status-chip")).toHaveLength(2);
-    expect(target.querySelector('[data-status="vulnerable"]')?.getAttribute("aria-label")).toBe("脆弱 1");
+    expect(target.querySelector('[data-status="vulnerable"]')?.getAttribute("aria-label")).toContain("脆弱 1。受ける攻撃の威力が増加");
   });
 });

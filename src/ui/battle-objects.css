@@ -13,7 +13,7 @@
 .status-row,.enemy-status{gap:5px}
 .status-chip{display:inline-flex;align-items:center;gap:3px;min-height:23px;padding:2px 5px;border:1px solid #aabec9;border-radius:5px;background:#eef4f0;color:#254357;white-space:nowrap;font-size:10px;line-height:1}
 .status-symbol{display:grid;place-items:center;width:17px;height:17px;border:1px solid currentColor;border-radius:50%;font-size:13px;font-weight:900;line-height:1}
-.status-chip[data-status="strength"],.status-chip[data-status="thorns"],.status-chip[data-status="focus"],.status-chip[data-status="barrier"]{border-color:#8fae9c;background:#e1f0e7;color:#215f50}
+.status-chip[data-status="strength"],.status-chip[data-status="dexterity"],.status-chip[data-status="thorns"],.status-chip[data-status="focus"],.status-chip[data-status="barrier"]{border-color:#8fae9c;background:#e1f0e7;color:#215f50}
 .status-chip[data-status="weak"],.status-chip[data-status="vulnerable"],.status-chip[data-status="frail"],.status-chip[data-status="poison"]{border-color:#c7a6b7;background:#f7e7ef;color:#7a335a}
 .status-chip[data-status="barrier"] .status-symbol{border-radius:3px}
 .status-chip[data-status="frail"] .status-symbol{border-style:dashed}

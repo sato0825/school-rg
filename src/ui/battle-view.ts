@@ -70,12 +70,19 @@ function statusMarkup(bag: Record<string, number>): string {
     .map(([kind, amount]) => {
       const name = statusNames[kind] ?? kind;
       const icon = statusIcons[kind] ?? "◆";
-      return `<span class="status-chip" data-status="${html(kind)}" role="img" aria-label="${html(name)} ${amount}" title="${html(name)} ${amount}"><span class="status-symbol" aria-hidden="true">${icon}</span><span class="status-name" aria-hidden="true">${html(name)}</span><strong aria-hidden="true">${amount}</strong></span>`;
+      const description = statusDescriptions[kind];
+      const label = `${name} ${amount}${description ? `。${description}` : ""}`;
+      return `<span class="status-chip" data-status="${html(kind)}" role="img" aria-label="${html(label)}" title="${html(label)}"><span class="status-symbol" aria-hidden="true">${icon}</span><span class="status-name" aria-hidden="true">${html(name)}</span><strong aria-hidden="true">${amount}</strong></span>`;
     }).join("");
 }
 
-const statusNames: Record<string, string> = { strength: "力", weak: "弱体", poison: "毒", thorns: "反撃", barrier: "結界", focus: "集中", vulnerable: "脆弱", frail: "虚弱" };
-const statusIcons: Record<string, string> = { strength: "↑", weak: "↓", poison: "◉", thorns: "✹", barrier: "◇", focus: "✦", vulnerable: "⊗", frail: "▱" };
+const statusNames: Record<string, string> = { strength: "力", dexterity: "技", weak: "弱体", poison: "毒", thorns: "反撃", barrier: "結界", focus: "集中", vulnerable: "脆弱", frail: "虚弱" };
+const statusIcons: Record<string, string> = { strength: "↑", dexterity: "↗", weak: "↓", poison: "◉", thorns: "✹", barrier: "◇", focus: "✦", vulnerable: "⊗", frail: "▱" };
+const statusDescriptions: Record<string, string> = {
+  strength: "攻撃の基礎値に加算", dexterity: "防御の基礎値に加算", weak: "攻撃の威力が低下", vulnerable: "受ける攻撃の威力が増加",
+  frail: "得るブロックが低下", poison: "ターン境界でブロックを無視してHP減少", thorns: "攻撃された時に反撃",
+  barrier: "ターン開始時にブロック獲得", focus: "ターン開始時に力を追加",
+};
 const cardTypeNames: Record<string, string> = { attack: "攻撃", skill: "技能", power: "持続", status: "状態", curse: "呪い" };
 
 function pileMarkup(name: string, kind: string, count: number): string {
