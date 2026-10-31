@@ -6,19 +6,25 @@ import { serializeRunSession } from "../../src/domain/save.js";
 test.use({ video: "on" });
 const mapOptions = { floorsPerAct: 1, lanes: 2, kindWeights: { combat: 1, elite: 0, event: 0, shop: 0, rest: 0, treasure: 0 } };
 
-function artOpening(options: { enemyCount?: number; enemyHp?: number; playerHp?: number } = {}) {
+function artOpening(options: { enemyCount?: number; enemyHp?: number; playerHp?: number; handCardIds?: readonly string[] } = {}) {
   const start = createRunSession(42, "art-demo", demoContent, mapOptions);
   const entered = enterRunNode(start, availableRunNodes(start)[0]!.id, demoContent, demoEnemyAi, demoEncounterTable);
   const combat = entered.run.combat!;
-  const sketch = combat.cards.find((card) => card.cardId === "ART-001")!.instanceId;
-  const frame = combat.cards.find((card) => card.cardId === "ART-002")!.instanceId;
-  const hand = [sketch, frame];
+  const cards = [...combat.cards];
+  const hand = (options.handCardIds ?? ["ART-001", "ART-002"]).map((cardId) => {
+    const existing = cards.find((card) => card.cardId === cardId);
+    if (existing) return existing.instanceId;
+    const replaceIndex = cards.findIndex((card) => card.cardId === "BASE-001");
+    if (replaceIndex < 0) throw new Error(`no available card slot for ${cardId}`);
+    cards[replaceIndex] = { ...cards[replaceIndex]!, cardId };
+    return cards[replaceIndex]!.instanceId;
+  });
   const enemies = options.enemyCount === 2
     ? [...combat.enemies, { ...combat.enemies[0]!, instanceId: "enemy-2" }]
     : [...combat.enemies];
   if (options.enemyHp !== undefined) enemies[0] = { ...enemies[0]!, hp: options.enemyHp };
-  const staged = { ...combat, phase: "PLAYER_INPUT" as const, hand, enemies,
-    drawPile: combat.cards.map((card) => card.instanceId).filter((id) => !hand.includes(id)),
+  const staged = { ...combat, phase: "PLAYER_INPUT" as const, hand, enemies, cards,
+    drawPile: cards.map((card) => card.instanceId).filter((id) => !hand.includes(id)),
     discardPile: [], exhaustPile: [], resolvingPile: [],
     typing: { buffer: "", candidateCardInstanceIds: hand, selectedCardInstanceId: null, progress: 0,
       targetEnemyInstanceId: null, targetHandInstanceId: null },
@@ -61,6 +67,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     await expect(actor.locator('[data-part="right-arm-brush"]')).toHaveCSS("animation-name", "art-use-brush");
     await expect(actor.locator('[data-part="left-arm-board"]')).toHaveCSS("animation-name", "art-use-board");
     await expect(actor.locator(".rig-paint-trace")).toHaveCSS("animation-name", "art-paint-trace");
+    await expect(actor).toHaveAttribute("data-art-action", "retain");
     await page.screenshot({ path: test.info().outputPath("card-use.png") });
     expect(await actor.boundingBox()).toEqual(before);
     expect(await stage.boundingBox()).toEqual(stageBefore);
@@ -127,7 +134,7 @@ test("art student stays on stage for the last typed hit before victory", async (
   await expect(actor).toHaveAttribute("data-actor-motion", "card-use");
   await expect(actor.locator('[data-part="right-arm-brush"]')).toHaveCSS("animation-name", "art-use-brush");
   await page.clock.runFor(380);
-  await expect(page.locator(".battle-message, .result-fx, .reward-panel").first()).toBeVisible();
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.screen)).toBe("reward");
 });
 
 test("art student reacts to a terminal enemy hit before defeat", async ({ page }) => {
@@ -140,5 +147,17 @@ test("art student reacts to a terminal enemy hit before defeat", async ({ page }
   await expect(actor.locator('[data-part="head-hit"]')).toBeVisible();
   await page.screenshot({ path: test.info().outputPath("last-hit.png") });
   await page.clock.runFor(420);
-  await expect(page.locator(".run-result, .result-screen, .front-panel").first()).toBeVisible();
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.screen)).toBe("lost");
 });
+
+for (const [cardId, word, cue] of [["ART-003", "paint", "copy"], ["ART-005", "redraw", "transform"]] as const) {
+  test(`art ${word} shows its own ${cue} mark after choosing a hand target`, async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    const actor = await openArtBattle(page, artOpening({ handCardIds: [cardId, "ART-002"] }));
+    await page.keyboard.type(word);
+    await page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: /^frame$/ }) }).click();
+    await expect(actor).toHaveAttribute("data-actor-motion", "card-use");
+    await expect(actor).toHaveAttribute("data-art-action", cue);
+    await expect(actor.locator(".rig-art-token")).toHaveCSS("animation-name", "art-token-in");
+  });
+}
