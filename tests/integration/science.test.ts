@@ -58,6 +58,7 @@ describe("science club setup and reaction", () => {
     expect(scienceCardDefinitions).toHaveLength(12);
     expect(scienceCardDefinitions.every((card) => club.cardPoolIds.includes(card.id))).toBe(true);
     expect(describeCard(scienceCardDefinitions.find((card) => card.id === "SCI-003")!, demoContent)).toBe("攻撃 6 · 毒時 12");
+    expect(describeCard(scienceCardDefinitions.find((card) => card.id === "SCI-008")!, demoContent)).toBe("攻撃 5 · 弱体時 10 · 1枚ドロー");
     const entered = scienceCombat();
     const started = emitRelicEvent(entered, "combat_start", demoRelicRules, demoContent).run;
     expect(started.combat!.statuses.player.strength).toBe(1);
