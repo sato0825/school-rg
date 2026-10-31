@@ -6,7 +6,7 @@
     "sha256": "53ee04e6f183a89a02501d9d95f2979f644a112b0b2c191ae8accbd74bd1589e",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-1f7a034d-b9ab-4f8b-aab1-692e65806115.png",
     "promptRef": "prompts-b.json#LIT-012",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -17,8 +17,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending action-semantic small-size QA"
+    "visualReview": "1024-1440-hand-reward-48-art-text-pair-board-reviewed",
+    "selectionDecision": "club action object visible at 112x57 and 48px; exact effect requires adjacent text and runtime feedback; adoption pending"
   },
   {
     "id": "SCI-010",
@@ -27,7 +27,7 @@
     "sha256": "edf1908ccbdca6315fc3362578b861d90a0ae3eb1633f4ae81c127089935a1cd",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-ea9940ba-4bbc-4d42-a738-89c09fec4680.png",
     "promptRef": "prompts-b.json#SCI-010",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -38,8 +38,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending action-semantic small-size QA"
+    "visualReview": "1024-1440-hand-reward-48-art-text-pair-board-reviewed",
+    "selectionDecision": "club action object visible at 112x57 and 48px; exact effect requires adjacent text and runtime feedback; adoption pending"
   },
   {
     "id": "KEN-008",
@@ -48,7 +48,7 @@
     "sha256": "8c4c32890daa1f4dcf08e4ebbb6bf0db4ced1403f5659cd7532d35754a3a422e",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-0bc9a431-cddc-4e9f-9d3a-867a225b3388.png",
     "promptRef": "prompts-b.json#KEN-008",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -59,8 +59,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending action-semantic small-size QA"
+    "visualReview": "1024-1440-hand-reward-48-art-text-pair-board-reviewed",
+    "selectionDecision": "club action object visible at 112x57 and 48px; exact effect requires adjacent text and runtime feedback; adoption pending"
   },
   {
     "id": "MUS-008",
@@ -69,7 +69,7 @@
     "sha256": "20cae3de266521a96b31abfd239744be5c43ff14958fc132fe1c26101d66ef90",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-478b1cc0-979e-41c7-9c5a-29d520ab1c3c.png",
     "promptRef": "prompts-b.json#MUS-008",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -80,8 +80,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending action-semantic small-size QA"
+    "visualReview": "1024-1440-hand-reward-48-art-text-pair-board-reviewed",
+    "selectionDecision": "club action object visible at 112x57 and 48px; exact effect requires adjacent text and runtime feedback; adoption pending"
   },
   {
     "id": "ART-009",
@@ -90,7 +90,7 @@
     "sha256": "7bee7e3db47f2c6ce6d2c42eba3c0cbec55683e5422916573ca326131493b69e",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-be0a0db9-0056-4db2-a510-debabd2d5040.png",
     "promptRef": "prompts-b.json#ART-009",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -101,7 +101,7 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending action-semantic small-size QA"
+    "visualReview": "1024-1440-hand-reward-48-art-text-pair-board-reviewed",
+    "selectionDecision": "club action object visible at 112x57 and 48px; exact effect requires adjacent text and runtime feedback; adoption pending"
   }
 ]
