@@ -14,7 +14,7 @@ it("selects distinct Act plates and preserves a replaceable fallback", () => {
 it("uses two distinct places per Act without changing seeded map or save data", () => {
   const session = createRunSession(42, "literature-demo", demoContent);
   const before = JSON.stringify(session.run);
-  for (const act of [1, 2, 3]) {
+  for (const act of [1, 2, 3] as const) {
     const nodes = session.run.map.nodes.filter((node) => node.act === act);
     const first = nodes.find((node) => node.floor === 1)!;
     const late = nodes.find((node) => node.floor === 7)!;

@@ -8,8 +8,11 @@ const latePlates = ["act1-library-entrance-candidate-v1", "act2-biology-room-can
 test("later floors show distinct school places in combat on PC and iPad sized screens", async ({ context }) => {
   for (const act of [1, 2, 3] as const) {
     const base = createRunSession(42, "literature-demo", demoContent);
-    const current = base.run.map.nodes.find((node) => node.act === act && node.floor === 7 && node.nextIds.length > 0)!;
-    const target = base.run.map.nodes.find((node) => node.id === current.nextIds[0])!;
+    const current = base.run.map.nodes.find((node) => node.act === act && node.floor >= 7 && node.floor < 12 && node.nextIds.some((id) => {
+      const next = base.run.map.nodes.find((candidate) => candidate.id === id);
+      return next?.kind === "combat" || next?.kind === "elite";
+    }))!;
+    const target = base.run.map.nodes.find((node) => current.nextIds.includes(node.id) && (node.kind === "combat" || node.kind === "elite"))!;
     const session = { ...base, run: { ...base.run, act, map: { ...base.run.map, currentNodeId: current.id } }, completedNodeIds: [current.id] };
     const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
     for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
