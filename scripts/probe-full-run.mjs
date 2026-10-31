@@ -1,4 +1,5 @@
 import { chromium } from "@playwright/test";
+import console from "node:console";
 import { mkdir, writeFile } from "node:fs/promises";
 import { performance } from "node:perf_hooks";
 import process from "node:process";
@@ -22,7 +23,7 @@ let actionCount = 0;
 page.on("pageerror", (error) => errors.push(error.message));
 
 async function saved() {
-  return page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1") || "null"));
+  return page.evaluate(() => JSON.parse(globalThis.localStorage.getItem("school-rg-run-v1") || "null"));
 }
 async function recordScreen(screen, extra = {}) {
   const session = (await saved())?.session;
@@ -30,7 +31,7 @@ async function recordScreen(screen, extra = {}) {
   if (!run) throw new Error(`no saved run on ${screen}`);
   const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
   if (!node) throw new Error(`node missing on ${screen}`);
-  const background = await page.locator(".stage, .run-screen").first().evaluate((element) => getComputedStyle(element).backgroundImage).catch(() => null);
+  const background = await page.locator(".stage, .run-screen").first().evaluate((element) => globalThis.getComputedStyle(element).backgroundImage).catch(() => null);
   observations.push({ screen, nodeId: node.id, act: node.act, floor: node.floor, kind: node.kind,
     hp: run.player.hp, maxHp: run.player.maxHp, background, ...extra });
   actionCount++;
@@ -50,7 +51,7 @@ async function typeBattle() {
       const word = order.find((item) => words.includes(item));
       if (!word) break;
       await page.evaluate((value) => {
-        for (const key of value) window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+        for (const key of value) globalThis.window.dispatchEvent(new globalThis.KeyboardEvent("keydown", { key, bubbles: true }));
       }, word);
       if (await page.locator(".reward-panel, .run-result").count()) return;
       if (await page.locator(".typing-hint").filter({ hasText: "攻撃対象の敵を選択" }).count()) {
@@ -133,7 +134,7 @@ try {
   errors.push(error instanceof Error ? error.stack ?? error.message : String(error));
 } finally {
   const savedRun = await saved().catch(() => null);
-  const metrics = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-playtest-v1") || "null")).catch(() => null);
+  const metrics = await page.evaluate(() => JSON.parse(globalThis.localStorage.getItem("school-rg-playtest-v1") || "null")).catch(() => null);
   const outcome = {
     format: "school-rg-normal-run-ui-survey-v1", clubId, seed, routePolicy,
     mapMode: "default; shortRun omitted", virtualClock: true,
