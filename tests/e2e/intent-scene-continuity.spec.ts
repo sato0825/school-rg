@@ -62,6 +62,8 @@ for (const width of [1024, 1440] as const) for (const quiet of [false, true] as 
     await page.clock.runFor(remainingMs + 80);
     expect(await geometry()).toEqual(before);
     await page.clock.runFor(650);
+    // Freeze the short result frame while several assertions and capture run.
+    await page.clock.pauseAt(await page.evaluate(() => Date.now()));
     await expect(page.locator('.result-fx-mark[data-kind="damage"] .intent-glyph')).toBeVisible();
     await expect(page.locator('.result-fx-mark[data-kind="block"] .intent-glyph')).toBeVisible();
     await expect(page.locator('.intent-trajectory[data-phase="resolved"]')).toHaveAttribute('data-source', 'cue-enemy-0');
@@ -92,6 +94,7 @@ for (const width of [1024, 1440] as const) test(`five resolved attackers do not 
   const remainingMs = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
   await page.clock.runFor(remainingMs + 80);
   await page.clock.runFor(650);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now()));
   await expect(page.locator('.result-fx-mark[data-kind="damage"]')).toBeVisible();
   await expect(page.locator('.intent-trajectory[data-phase="resolved"]')).toHaveCount(0);
   expect(await page.locator(".stage").boundingBox()).toEqual(before);
