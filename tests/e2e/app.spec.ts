@@ -76,7 +76,7 @@ test("title, compendium, club selection, map and battle controls work by keyboar
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
   await page.locator(".map-compendium").focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { name: "学園図鑑" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "カード名をタイプして行動" })).toBeVisible();
   await page.getByRole("button", { name: "戻る" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
