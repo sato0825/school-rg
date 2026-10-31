@@ -1,0 +1,2971 @@
+{
+  "schemaVersion": 1,
+  "generatedFrom": "repository source, 2026-10-31",
+  "counts": {
+    "cards": 84,
+    "relics": 11,
+    "potions": 6,
+    "total": 101
+  },
+  "duplicateInputs": [
+    {
+      "input": "sweep",
+      "ids": [
+        "BASE-011",
+        "KEN-007"
+      ]
+    }
+  ],
+  "similarEffects": [
+    {
+      "signature": "enemy:damage",
+      "ids": [
+        "BASE-001",
+        "BASE-003",
+        "KEN-003"
+      ]
+    },
+    {
+      "signature": "self:block",
+      "ids": [
+        "BASE-002",
+        "BASE-005",
+        "ART-002"
+      ]
+    },
+    {
+      "signature": "enemy:damage_multi",
+      "ids": [
+        "BASE-004",
+        "KEN-004",
+        "MUS-002"
+      ]
+    },
+    {
+      "signature": "self:add_time",
+      "ids": [
+        "BASE-017",
+        "BASE-023"
+      ]
+    },
+    {
+      "signature": "enemy:conditional_damage",
+      "ids": [
+        "BASE-022",
+        "KEN-006"
+      ]
+    },
+    {
+      "signature": "enemy:damage+draw",
+      "ids": [
+        "LIT-001",
+        "LIT-003",
+        "LIT-007",
+        "LIT-011",
+        "ART-001"
+      ]
+    },
+    {
+      "signature": "self:block+draw",
+      "ids": [
+        "LIT-002",
+        "LIT-008",
+        "SCI-004",
+        "SCI-006",
+        "KEN-002"
+      ]
+    },
+    {
+      "signature": "self:draw+add_time",
+      "ids": [
+        "LIT-004",
+        "MUS-004",
+        "MUS-009"
+      ]
+    },
+    {
+      "signature": "enemy:damage+block",
+      "ids": [
+        "LIT-006",
+        "KEN-010"
+      ]
+    },
+    {
+      "signature": "hand:exhaust_card+draw",
+      "ids": [
+        "LIT-009",
+        "ART-004"
+      ]
+    },
+    {
+      "signature": "all_enemies:damage_all+draw",
+      "ids": [
+        "LIT-012",
+        "ART-007"
+      ]
+    },
+    {
+      "signature": "self:block+thorns",
+      "ids": [
+        "KEN-001",
+        "KEN-005"
+      ]
+    },
+    {
+      "signature": "self:block+add_time",
+      "ids": [
+        "KEN-009",
+        "MUS-003",
+        "MUS-011"
+      ]
+    },
+    {
+      "signature": "all_enemies:damage_all+add_time",
+      "ids": [
+        "MUS-005",
+        "MUS-008",
+        "MUS-012"
+      ]
+    },
+    {
+      "signature": "all_enemies:damage_all+persistent_block",
+      "ids": [
+        "ART-006",
+        "ART-012"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "BASE-001",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "strike",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage"
+      ],
+      "effectParameters": [
+        {
+          "amount": 6
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "攻撃",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 242,
+            "version": "candidate-v1",
+            "source": "docs/design/issue242-assets/card-strike-candidate-v1.png",
+            "state": "unmerged-preview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "BASE-002",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "defend",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "amount": 5
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-003",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "heavy strike",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage"
+      ],
+      "effectParameters": [
+        {
+          "amount": 14
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "攻撃",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-004",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "quick attack",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage_multi"
+      ],
+      "effectParameters": [
+        {
+          "amount": 4,
+          "hits": 2
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "連続攻撃",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-005",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "guard",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "amount": 8
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-006",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "heal",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "heal"
+      ],
+      "effectParameters": [
+        {
+          "amount": 5
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "回復",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-007",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "draw",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "count": 2
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "ドロー",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 242,
+            "version": "candidate-v1",
+            "source": "docs/design/issue242-assets/card-draw-candidate-v1.png",
+            "state": "unmerged-preview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "BASE-008",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "strengthen",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "apply_strength"
+      ],
+      "effectParameters": [
+        {
+          "amount": 2
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "筋力上昇",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-009",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "weaken",
+      "type": "skill",
+      "target": "enemy",
+      "effectKinds": [
+        "apply_weak"
+      ],
+      "effectParameters": [
+        {
+          "turns": 2
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "弱体付与",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-010",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "poison",
+      "type": "skill",
+      "target": "enemy",
+      "effectKinds": [
+        "apply_poison"
+      ],
+      "effectParameters": [
+        {
+          "amount": 4
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "毒付与",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-011",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "sweep",
+      "type": "attack",
+      "target": "all_enemies",
+      "effectKinds": [
+        "damage_all"
+      ],
+      "effectParameters": [
+        {
+          "amount": 5
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "全体攻撃",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 242,
+            "version": "candidate-v1",
+            "source": "docs/design/issue242-assets/card-sweep-candidate-v1.png",
+            "state": "unmerged-preview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "BASE-012",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "pierce",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage_pierce"
+      ],
+      "effectParameters": [
+        {
+          "amount": 8
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "貫通攻撃",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-013",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "counter",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "thorns"
+      ],
+      "effectParameters": [
+        {
+          "amount": 3
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "反撃",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 242,
+            "version": "candidate-v1",
+            "source": "docs/design/issue242-assets/card-counter-candidate-v1.png",
+            "state": "unmerged-preview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "BASE-014",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "recover",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "retrieve_discard"
+      ],
+      "effectParameters": [
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "捨て札回収",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-015",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "exhaust",
+      "type": "skill",
+      "target": "hand",
+      "effectKinds": [
+        "exhaust_card"
+      ],
+      "effectParameters": [
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "除外",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-016",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "duplicate",
+      "type": "skill",
+      "target": "hand",
+      "effectKinds": [
+        "copy_card"
+      ],
+      "effectParameters": [
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "手札複製",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-017",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "boost",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "amountMs": 2000
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-018",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "cleanse",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "remove_debuff"
+      ],
+      "effectParameters": [
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "弱体解除",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-019",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "barrier",
+      "type": "power",
+      "target": "self",
+      "effectKinds": [
+        "persistent_block"
+      ],
+      "effectParameters": [
+        {
+          "amountPerTurn": 3
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "毎ターン防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-020",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "focus",
+      "type": "power",
+      "target": "self",
+      "effectKinds": [
+        "persistent_strength"
+      ],
+      "effectParameters": [
+        {
+          "amountPerTurn": 1
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "毎ターン筋力",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-021",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "sacrifice",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "pay_hp_draw"
+      ],
+      "effectParameters": [
+        {
+          "hpCost": 3,
+          "drawCount": 2
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "HP消費とドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-022",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "finish",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "conditional_damage"
+      ],
+      "effectParameters": [
+        {
+          "amount": 8,
+          "conditionalAmount": 16,
+          "condition": "target_hp_at_most_percent",
+          "thresholdPercent": 50
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "条件付き攻撃",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "BASE-023",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "delay",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "amountMs": 4000
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "残り時間増加",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 242,
+            "version": "candidate-v1",
+            "source": "docs/design/issue242-assets/card-delay-candidate-v1.png",
+            "state": "unmerged-preview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "BASE-024",
+      "kind": "card",
+      "club": "common-pool",
+      "name": "shield break",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "remove_block"
+      ],
+      "effectParameters": [
+        {
+          "all": true
+        }
+      ],
+      "source": "src/content/base-cards.ts",
+      "rarity": null,
+      "meaning": "敵防御解除",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "LIT-001",
+      "kind": "card",
+      "club": "literature",
+      "name": "jot",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 4
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "攻撃 + ドロー",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 242,
+            "version": "candidate-v1",
+            "source": "docs/design/issue242-assets/card-jot-candidate-v1.png",
+            "state": "unmerged-preview"
+          },
+          {
+            "issue": 246,
+            "version": "v1",
+            "source": "docs/art/candidates/issue246/card-lit-jot-v1.png",
+            "state": "draft-candidate"
+          }
+        ]
+      }
+    },
+    {
+      "id": "LIT-002",
+      "kind": "card",
+      "club": "literature",
+      "name": "leaf",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 4
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + ドロー",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 255,
+            "version": "v1",
+            "source": "docs/art/production/issue255/assets/card-lit-leaf-v1.png",
+            "state": "draft-candidate",
+            "sha256": "0eff5aafe9744f416157a313496364dc17d6aff0d735e6b8ec25651feaee64fa"
+          }
+        ]
+      }
+    },
+    {
+      "id": "LIT-003",
+      "kind": "card",
+      "club": "literature",
+      "name": "verse",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 7
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "攻撃 + ドロー",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 242,
+            "version": "candidate-v1",
+            "source": "docs/design/issue242-assets/card-verse-candidate-v1.png",
+            "state": "unmerged-preview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "LIT-004",
+      "kind": "card",
+      "club": "literature",
+      "name": "outline",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "draw",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "count": 2
+        },
+        {
+          "amountMs": 1000
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "ドロー + 残り時間増加",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 242,
+            "version": "candidate-v1",
+            "source": "docs/design/issue242-assets/card-outline-candidate-v1.png",
+            "state": "unmerged-preview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "LIT-005",
+      "kind": "card",
+      "club": "literature",
+      "name": "reread",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "retrieve_discard",
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "count": 1
+        },
+        {
+          "amount": 2
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "捨て札回収 + 防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "LIT-006",
+      "kind": "card",
+      "club": "literature",
+      "name": "proof",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage",
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "amount": 10
+        },
+        {
+          "amount": 3
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "攻撃 + 防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "LIT-007",
+      "kind": "card",
+      "club": "literature",
+      "name": "aside",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 5
+        },
+        {
+          "count": 2
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "攻撃 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "LIT-008",
+      "kind": "card",
+      "club": "literature",
+      "name": "footnote",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 4
+        },
+        {
+          "count": 2
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "LIT-009",
+      "kind": "card",
+      "club": "literature",
+      "name": "edit",
+      "type": "skill",
+      "target": "hand",
+      "effectKinds": [
+        "exhaust_card",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "count": 1
+        },
+        {
+          "count": 2
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "除外 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "LIT-010",
+      "kind": "card",
+      "club": "literature",
+      "name": "bookmark",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "retrieve_discard",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "count": 1
+        },
+        {
+          "amountMs": 500
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "捨て札回収 + 残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "LIT-011",
+      "kind": "card",
+      "club": "literature",
+      "name": "draft",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 3
+        },
+        {
+          "count": 2
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "攻撃 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "LIT-012",
+      "kind": "card",
+      "club": "literature",
+      "name": "anthology",
+      "type": "attack",
+      "target": "all_enemies",
+      "effectKinds": [
+        "damage_all",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 6
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/literature-cards.ts",
+      "rarity": null,
+      "meaning": "全体攻撃 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "SCI-001",
+      "kind": "card",
+      "club": "science",
+      "name": "sample",
+      "type": "skill",
+      "target": "enemy",
+      "effectKinds": [
+        "apply_poison",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 3
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "毒付与 + ドロー",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 255,
+            "version": "v1",
+            "source": "docs/art/production/issue255/assets/card-sci-sample-v1.png",
+            "state": "draft-candidate",
+            "sha256": "bab11abcf1682029e7f040f5dc226fa42ed4e3b98145dd939f28237821122d8b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "SCI-002",
+      "kind": "card",
+      "club": "science",
+      "name": "observe",
+      "type": "skill",
+      "target": "enemy",
+      "effectKinds": [
+        "apply_weak",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "turns": 1
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "弱体付与 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "SCI-003",
+      "kind": "card",
+      "club": "science",
+      "name": "reaction",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage_if_status"
+      ],
+      "effectParameters": [
+        {
+          "status": "poison",
+          "amount": 6,
+          "conditionalAmount": 12
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "状態条件攻撃",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 246,
+            "version": "v2",
+            "source": "docs/art/candidates/issue246/card-sci-reaction-v2.png",
+            "state": "draft-candidate"
+          }
+        ]
+      }
+    },
+    {
+      "id": "SCI-004",
+      "kind": "card",
+      "club": "science",
+      "name": "formula",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 7
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "SCI-005",
+      "kind": "card",
+      "club": "science",
+      "name": "distill",
+      "type": "skill",
+      "target": "enemy",
+      "effectKinds": [
+        "apply_poison",
+        "heal"
+      ],
+      "effectParameters": [
+        {
+          "amount": 5
+        },
+        {
+          "amount": 2
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "毒付与 + 回復",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "SCI-006",
+      "kind": "card",
+      "club": "science",
+      "name": "quarantine",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 10
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "SCI-007",
+      "kind": "card",
+      "club": "science",
+      "name": "catalyst",
+      "type": "skill",
+      "target": "enemy",
+      "effectKinds": [
+        "apply_poison",
+        "apply_weak"
+      ],
+      "effectParameters": [
+        {
+          "amount": 2
+        },
+        {
+          "turns": 1
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "毒付与 + 弱体付与",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "SCI-008",
+      "kind": "card",
+      "club": "science",
+      "name": "assay",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage_if_status",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "status": "weak",
+          "amount": 5,
+          "conditionalAmount": 10
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "状態条件攻撃 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "SCI-009",
+      "kind": "card",
+      "club": "science",
+      "name": "buffer",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "remove_debuff"
+      ],
+      "effectParameters": [
+        {
+          "amount": 6
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + 弱体解除",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "SCI-010",
+      "kind": "card",
+      "club": "science",
+      "name": "culture",
+      "type": "skill",
+      "target": "enemy",
+      "effectKinds": [
+        "apply_poison",
+        "persistent_block"
+      ],
+      "effectParameters": [
+        {
+          "amount": 4
+        },
+        {
+          "amountPerTurn": 1
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "毒付与 + 毎ターン防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "SCI-011",
+      "kind": "card",
+      "club": "science",
+      "name": "test tube",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage_if_status",
+        "apply_poison"
+      ],
+      "effectParameters": [
+        {
+          "status": "poison",
+          "amount": 7,
+          "conditionalAmount": 14
+        },
+        {
+          "amount": 2
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "状態条件攻撃 + 毒付与",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "SCI-012",
+      "kind": "card",
+      "club": "science",
+      "name": "neutralize",
+      "type": "skill",
+      "target": "enemy",
+      "effectKinds": [
+        "apply_weak",
+        "apply_poison",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "turns": 2
+        },
+        {
+          "amount": 2
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/science-cards.ts",
+      "rarity": null,
+      "meaning": "弱体付与 + 毒付与 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "KEN-001",
+      "kind": "card",
+      "club": "kendo",
+      "name": "parry",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "thorns"
+      ],
+      "effectParameters": [
+        {
+          "amount": 6
+        },
+        {
+          "amount": 2
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + 反撃",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 255,
+            "version": "v1",
+            "source": "docs/art/production/issue255/assets/card-ken-parry-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "e3e82a2ce6a73f5228c0884bf887a5960d19eb1adbc795ef1630417c4257d0ff"
+          },
+          {
+            "issue": 255,
+            "version": "v2",
+            "source": "docs/art/production/issue255/assets/card-ken-parry-v2.png",
+            "state": "draft-candidate",
+            "sha256": "1ae1a5421852652f8f05fef3dd574debd28e3cafa8aa636adcc9fbd4478ff9bf"
+          }
+        ]
+      }
+    },
+    {
+      "id": "KEN-002",
+      "kind": "card",
+      "club": "kendo",
+      "name": "stance",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 8
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "KEN-003",
+      "kind": "card",
+      "club": "kendo",
+      "name": "thrust",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage"
+      ],
+      "effectParameters": [
+        {
+          "amount": 8
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "攻撃",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "KEN-004",
+      "kind": "card",
+      "club": "kendo",
+      "name": "riposte",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage_multi"
+      ],
+      "effectParameters": [
+        {
+          "amount": 3,
+          "hits": 2
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "連続攻撃",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "KEN-005",
+      "kind": "card",
+      "club": "kendo",
+      "name": "kata",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "thorns"
+      ],
+      "effectParameters": [
+        {
+          "amount": 5
+        },
+        {
+          "amount": 4
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + 反撃",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "KEN-006",
+      "kind": "card",
+      "club": "kendo",
+      "name": "final cut",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "conditional_damage"
+      ],
+      "effectParameters": [
+        {
+          "condition": "target_hp_at_most_percent",
+          "thresholdPercent": 50,
+          "amount": 8,
+          "conditionalAmount": 16
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "条件付き攻撃",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 246,
+            "version": "v2",
+            "source": "docs/art/candidates/issue246/card-ken-final-cut-v2.png",
+            "state": "draft-candidate"
+          }
+        ]
+      }
+    },
+    {
+      "id": "KEN-007",
+      "kind": "card",
+      "club": "kendo",
+      "name": "sweep",
+      "type": "attack",
+      "target": "all_enemies",
+      "effectKinds": [
+        "damage_all",
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "amount": 5
+        },
+        {
+          "amount": 3
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "全体攻撃 + 防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "KEN-008",
+      "kind": "card",
+      "club": "kendo",
+      "name": "breath",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "thorns",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 4
+        },
+        {
+          "amount": 3
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + 反撃 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "KEN-009",
+      "kind": "card",
+      "club": "kendo",
+      "name": "guard step",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "amount": 5
+        },
+        {
+          "amountMs": 1000
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + 残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "KEN-010",
+      "kind": "card",
+      "club": "kendo",
+      "name": "pommel",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage",
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "amount": 6
+        },
+        {
+          "amount": 5
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "攻撃 + 防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "KEN-011",
+      "kind": "card",
+      "club": "kendo",
+      "name": "hasso",
+      "type": "power",
+      "target": "self",
+      "effectKinds": [
+        "persistent_strength",
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "amountPerTurn": 1
+        },
+        {
+          "amount": 4
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "毎ターン筋力 + 防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "KEN-012",
+      "kind": "card",
+      "club": "kendo",
+      "name": "circle cut",
+      "type": "attack",
+      "target": "all_enemies",
+      "effectKinds": [
+        "damage_all",
+        "thorns"
+      ],
+      "effectParameters": [
+        {
+          "amount": 6
+        },
+        {
+          "amount": 2
+        }
+      ],
+      "source": "src/content/kendo-cards.ts",
+      "rarity": null,
+      "meaning": "全体攻撃 + 反撃",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "MUS-001",
+      "kind": "card",
+      "club": "music",
+      "name": "tempo",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "add_time",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amountMs": 2000
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "残り時間増加 + ドロー",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 255,
+            "version": "v1",
+            "source": "docs/art/production/issue255/assets/card-mus-tempo-v1.png",
+            "state": "draft-candidate",
+            "sha256": "eaa2da40fdd6ae2b6e47fcfd7e95bd20bd0023e02d8ce9206d3fbed4cfdef555"
+          }
+        ]
+      }
+    },
+    {
+      "id": "MUS-002",
+      "kind": "card",
+      "club": "music",
+      "name": "beat",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage_multi"
+      ],
+      "effectParameters": [
+        {
+          "amount": 2,
+          "hits": 3
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "連続攻撃",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "MUS-003",
+      "kind": "card",
+      "club": "music",
+      "name": "rest",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "amount": 6
+        },
+        {
+          "amountMs": 2000
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + 残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "MUS-004",
+      "kind": "card",
+      "club": "music",
+      "name": "sync",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "draw",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "count": 2
+        },
+        {
+          "amountMs": 1000
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "ドロー + 残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "MUS-005",
+      "kind": "card",
+      "club": "music",
+      "name": "chorus",
+      "type": "attack",
+      "target": "all_enemies",
+      "effectKinds": [
+        "damage_all",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "amount": 5
+        },
+        {
+          "amountMs": 1000
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "全体攻撃 + 残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "MUS-006",
+      "kind": "card",
+      "club": "music",
+      "name": "crescendo",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage_multi",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "amount": 3,
+          "hits": 3
+        },
+        {
+          "amountMs": 2000
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "連続攻撃 + 残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "MUS-007",
+      "kind": "card",
+      "club": "music",
+      "name": "bridge",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "add_time",
+        "draw",
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "amountMs": 1000
+        },
+        {
+          "count": 2
+        },
+        {
+          "amount": 2
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "残り時間増加 + ドロー + 防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "MUS-008",
+      "kind": "card",
+      "club": "music",
+      "name": "refrain",
+      "type": "attack",
+      "target": "all_enemies",
+      "effectKinds": [
+        "damage_all",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "amount": 4
+        },
+        {
+          "amountMs": 2000
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "全体攻撃 + 残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "MUS-009",
+      "kind": "card",
+      "club": "music",
+      "name": "pickup",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "draw",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "count": 2
+        },
+        {
+          "amountMs": 2000
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "ドロー + 残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "MUS-010",
+      "kind": "card",
+      "club": "music",
+      "name": "riff",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage_multi",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 2,
+          "hits": 4
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "連続攻撃 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "MUS-011",
+      "kind": "card",
+      "club": "music",
+      "name": "backbeat",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "amount": 5
+        },
+        {
+          "amountMs": 3000
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + 残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "MUS-012",
+      "kind": "card",
+      "club": "music",
+      "name": "finale",
+      "type": "attack",
+      "target": "all_enemies",
+      "effectKinds": [
+        "damage_all",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "amount": 8
+        },
+        {
+          "amountMs": 1000
+        }
+      ],
+      "source": "src/content/music-cards.ts",
+      "rarity": null,
+      "meaning": "全体攻撃 + 残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "ART-001",
+      "kind": "card",
+      "club": "art",
+      "name": "sketch",
+      "type": "attack",
+      "target": "enemy",
+      "effectKinds": [
+        "damage",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 4
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "攻撃 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "ART-002",
+      "kind": "card",
+      "club": "art",
+      "name": "frame",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "amount": 7
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "防御",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 255,
+            "version": "v1",
+            "source": "docs/art/production/issue255/assets/card-art-frame-v1.png",
+            "state": "draft-candidate",
+            "sha256": "346067c76847ee07a4fd2634dad0976baf61c603cf3ecbb46f7153d5c65c8d68"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ART-003",
+      "kind": "card",
+      "club": "art",
+      "name": "paint",
+      "type": "skill",
+      "target": "hand",
+      "effectKinds": [
+        "copy_card",
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "count": 1
+        },
+        {
+          "amount": 2
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "手札複製 + 防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "ART-004",
+      "kind": "card",
+      "club": "art",
+      "name": "erase",
+      "type": "skill",
+      "target": "hand",
+      "effectKinds": [
+        "exhaust_card",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "count": 1
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "除外 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "ART-005",
+      "kind": "card",
+      "club": "art",
+      "name": "redraw",
+      "type": "skill",
+      "target": "hand",
+      "effectKinds": [
+        "transform_card",
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "cardId": "ART-006",
+          "upgraded": false
+        },
+        {
+          "amount": 3
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "手札変化 + 防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "ART-006",
+      "kind": "card",
+      "club": "art",
+      "name": "mural",
+      "type": "attack",
+      "target": "all_enemies",
+      "effectKinds": [
+        "damage_all",
+        "persistent_block"
+      ],
+      "effectParameters": [
+        {
+          "amount": 6
+        },
+        {
+          "amountPerTurn": 2
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "全体攻撃 + 毎ターン防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "ART-007",
+      "kind": "card",
+      "club": "art",
+      "name": "wash",
+      "type": "attack",
+      "target": "all_enemies",
+      "effectKinds": [
+        "damage_all",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amount": 4
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "全体攻撃 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "ART-008",
+      "kind": "card",
+      "club": "art",
+      "name": "layer",
+      "type": "skill",
+      "target": "self",
+      "effectKinds": [
+        "block",
+        "persistent_block"
+      ],
+      "effectParameters": [
+        {
+          "amount": 5
+        },
+        {
+          "amountPerTurn": 1
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "防御 + 毎ターン防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "ART-009",
+      "kind": "card",
+      "club": "art",
+      "name": "primer",
+      "type": "power",
+      "target": "self",
+      "effectKinds": [
+        "persistent_block",
+        "draw"
+      ],
+      "effectParameters": [
+        {
+          "amountPerTurn": 2
+        },
+        {
+          "count": 1
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "毎ターン防御 + ドロー",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "ART-010",
+      "kind": "card",
+      "club": "art",
+      "name": "palette",
+      "type": "skill",
+      "target": "hand",
+      "effectKinds": [
+        "copy_card",
+        "add_time"
+      ],
+      "effectParameters": [
+        {
+          "count": 1
+        },
+        {
+          "amountMs": 500
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "手札複製 + 残り時間増加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "ART-011",
+      "kind": "card",
+      "club": "art",
+      "name": "cutout",
+      "type": "skill",
+      "target": "hand",
+      "effectKinds": [
+        "exhaust_card",
+        "block"
+      ],
+      "effectParameters": [
+        {
+          "count": 1
+        },
+        {
+          "amount": 8
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "除外 + 防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "ART-012",
+      "kind": "card",
+      "club": "art",
+      "name": "triptych",
+      "type": "attack",
+      "target": "all_enemies",
+      "effectKinds": [
+        "damage_all",
+        "persistent_block"
+      ],
+      "effectParameters": [
+        {
+          "amount": 7
+        },
+        {
+          "amountPerTurn": 1
+        }
+      ],
+      "source": "src/content/art-cards.ts",
+      "rarity": null,
+      "meaning": "全体攻撃 + 毎ターン防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "library-bookmark",
+      "kind": "relic",
+      "club": "shared-or-starting",
+      "name": "図書室のしおり",
+      "triggerIds": [
+        "bookmark-acquired",
+        "bookmark-turn",
+        "bookmark-skill"
+      ],
+      "effectKinds": [],
+      "source": "src/content/demo-battle.ts",
+      "rarity": null,
+      "meaning": "獲得時ゴールド、ターン開始と技能使用で防御",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 242,
+            "version": "candidate-v1",
+            "source": "docs/design/issue242-assets/relic-bookmark-candidate-v1.png",
+            "state": "unmerged-preview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "lab-glasses",
+      "kind": "relic",
+      "club": "shared-or-starting",
+      "name": "観察眼鏡",
+      "triggerIds": [
+        "lab-glasses-combat-start"
+      ],
+      "effectKinds": [],
+      "source": "src/content/demo-battle.ts",
+      "rarity": null,
+      "meaning": "戦闘開始時に筋力",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 246,
+            "version": "v1",
+            "source": "docs/art/candidates/issue246/relic-lab-glasses-v1.png",
+            "state": "draft-candidate"
+          }
+        ]
+      }
+    },
+    {
+      "id": "bamboo-grip",
+      "kind": "relic",
+      "club": "shared-or-starting",
+      "name": "竹刀の握り",
+      "triggerIds": [
+        "bamboo-grip-turn-start"
+      ],
+      "effectKinds": [],
+      "source": "src/content/demo-battle.ts",
+      "rarity": null,
+      "meaning": "ターン開始時に反撃",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "metronome",
+      "kind": "relic",
+      "club": "shared-or-starting",
+      "name": "部室のメトロノーム",
+      "triggerIds": [
+        "metronome-turn-start"
+      ],
+      "effectKinds": [],
+      "source": "src/content/demo-battle.ts",
+      "rarity": null,
+      "meaning": "ターン開始時に入力時間を追加",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 246,
+            "version": "v1",
+            "source": "docs/art/candidates/issue246/relic-metronome-v1.png",
+            "state": "draft-candidate"
+          }
+        ]
+      }
+    },
+    {
+      "id": "sketchbook",
+      "kind": "relic",
+      "club": "shared-or-starting",
+      "name": "ポケットスケッチ帳",
+      "triggerIds": [
+        "sketchbook-card-used"
+      ],
+      "effectKinds": [],
+      "source": "src/content/demo-battle.ts",
+      "rarity": null,
+      "meaning": "美術部カード使用時に防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "spare-shoes",
+      "kind": "relic",
+      "club": "shared-or-starting",
+      "name": "予備の上履き",
+      "triggerIds": [
+        "spare-shoes-turn-start"
+      ],
+      "effectKinds": [],
+      "source": "src/content/demo-battle.ts",
+      "rarity": null,
+      "meaning": "ターン開始時に防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "hallway-clock",
+      "kind": "relic",
+      "club": "shared-or-starting",
+      "name": "廊下の小時計",
+      "triggerIds": [
+        "hallway-clock-turn-start"
+      ],
+      "effectKinds": [],
+      "source": "src/content/demo-battle.ts",
+      "rarity": null,
+      "meaning": "ターン開始時に入力時間を追加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "attendance-stamp",
+      "kind": "relic",
+      "club": "shared-or-starting",
+      "name": "出席のスタンプ",
+      "triggerIds": [
+        "stamp-acquired",
+        "stamp-combat-end"
+      ],
+      "effectKinds": [],
+      "source": "src/content/extra-consumables.ts",
+      "rarity": null,
+      "meaning": "獲得時と戦闘終了時にゴールド",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "lunch-coupon",
+      "kind": "relic",
+      "club": "shared-or-starting",
+      "name": "学食の引換券",
+      "triggerIds": [
+        "coupon-combat-end"
+      ],
+      "effectKinds": [],
+      "source": "src/content/extra-consumables.ts",
+      "rarity": null,
+      "meaning": "戦闘終了時に回復",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "pocket-bandage",
+      "kind": "relic",
+      "club": "shared-or-starting",
+      "name": "予備の絆創膏",
+      "triggerIds": [
+        "bandage-hit-taken"
+      ],
+      "effectKinds": [],
+      "source": "src/content/extra-consumables.ts",
+      "rarity": null,
+      "meaning": "HPダメージを受けた時に回復",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "practice-timer",
+      "kind": "relic",
+      "club": "shared-or-starting",
+      "name": "練習用タイマー",
+      "triggerIds": [
+        "timer-card-used"
+      ],
+      "effectKinds": [],
+      "source": "src/content/extra-consumables.ts",
+      "rarity": null,
+      "meaning": "カード使用時に入力時間を追加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "potion-time",
+      "kind": "potion",
+      "club": "shared",
+      "name": "時間の小瓶",
+      "input": "clock",
+      "target": "self",
+      "effectKinds": [
+        "potion-time-effect"
+      ],
+      "source": "src/content/demo-battle.ts",
+      "rarity": null,
+      "meaning": "入力時間を追加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "potion-heal",
+      "kind": "potion",
+      "club": "shared",
+      "name": "保健室の包帯",
+      "input": "bandage",
+      "target": "self",
+      "effectKinds": [
+        "potion-heal-effect"
+      ],
+      "source": "src/content/demo-battle.ts",
+      "rarity": null,
+      "meaning": "HP回復",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "potion-ink",
+      "kind": "potion",
+      "club": "shared",
+      "name": "インクの小瓶",
+      "input": "ink",
+      "target": "enemy",
+      "effectKinds": [
+        "potion-ink-effect"
+      ],
+      "source": "src/content/demo-battle.ts",
+      "rarity": null,
+      "meaning": "単体攻撃",
+      "art": {
+        "state": "candidate",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": [
+          {
+            "issue": 246,
+            "version": "v1",
+            "source": "docs/art/candidates/issue246/potion-ink-v1.png",
+            "state": "draft-candidate"
+          }
+        ]
+      }
+    },
+    {
+      "id": "potion-guard",
+      "kind": "potion",
+      "club": "shared",
+      "name": "厚紙の盾",
+      "input": "shield",
+      "target": "self",
+      "effectKinds": [
+        "potion-guard-effect"
+      ],
+      "source": "src/content/extra-consumables.ts",
+      "rarity": null,
+      "meaning": "防御",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "potion-splash",
+      "kind": "potion",
+      "club": "shared",
+      "name": "色水の小瓶",
+      "input": "splash",
+      "target": "all_enemies",
+      "effectKinds": [
+        "potion-splash-effect"
+      ],
+      "source": "src/content/extra-consumables.ts",
+      "rarity": null,
+      "meaning": "全体攻撃",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    },
+    {
+      "id": "potion-tea",
+      "kind": "potion",
+      "club": "shared",
+      "name": "温かいお茶",
+      "input": "tea",
+      "target": "self",
+      "effectKinds": [
+        "potion-tea-heal-effect",
+        "potion-tea-time-effect"
+      ],
+      "source": "src/content/extra-consumables.ts",
+      "rarity": null,
+      "meaning": "回復と入力時間追加",
+      "art": {
+        "state": "missing",
+        "acceptedVersion": null,
+        "editableSource": null,
+        "candidateRefs": []
+      }
+    }
+  ]
+}

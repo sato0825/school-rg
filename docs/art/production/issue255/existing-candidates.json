@@ -1,0 +1,19 @@
+{
+  "BASE-001": [{ "issue": 242, "version": "candidate-v1", "source": "docs/design/issue242-assets/card-strike-candidate-v1.png", "state": "unmerged-preview" }],
+  "BASE-007": [{ "issue": 242, "version": "candidate-v1", "source": "docs/design/issue242-assets/card-draw-candidate-v1.png", "state": "unmerged-preview" }],
+  "BASE-011": [{ "issue": 242, "version": "candidate-v1", "source": "docs/design/issue242-assets/card-sweep-candidate-v1.png", "state": "unmerged-preview" }],
+  "BASE-013": [{ "issue": 242, "version": "candidate-v1", "source": "docs/design/issue242-assets/card-counter-candidate-v1.png", "state": "unmerged-preview" }],
+  "BASE-023": [{ "issue": 242, "version": "candidate-v1", "source": "docs/design/issue242-assets/card-delay-candidate-v1.png", "state": "unmerged-preview" }],
+  "LIT-001": [
+    { "issue": 242, "version": "candidate-v1", "source": "docs/design/issue242-assets/card-jot-candidate-v1.png", "state": "unmerged-preview" },
+    { "issue": 246, "version": "v1", "source": "docs/art/candidates/issue246/card-lit-jot-v1.png", "state": "draft-candidate" }
+  ],
+  "LIT-003": [{ "issue": 242, "version": "candidate-v1", "source": "docs/design/issue242-assets/card-verse-candidate-v1.png", "state": "unmerged-preview" }],
+  "LIT-004": [{ "issue": 242, "version": "candidate-v1", "source": "docs/design/issue242-assets/card-outline-candidate-v1.png", "state": "unmerged-preview" }],
+  "SCI-003": [{ "issue": 246, "version": "v2", "source": "docs/art/candidates/issue246/card-sci-reaction-v2.png", "state": "draft-candidate" }],
+  "KEN-006": [{ "issue": 246, "version": "v2", "source": "docs/art/candidates/issue246/card-ken-final-cut-v2.png", "state": "draft-candidate" }],
+  "library-bookmark": [{ "issue": 242, "version": "candidate-v1", "source": "docs/design/issue242-assets/relic-bookmark-candidate-v1.png", "state": "unmerged-preview" }],
+  "lab-glasses": [{ "issue": 246, "version": "v1", "source": "docs/art/candidates/issue246/relic-lab-glasses-v1.png", "state": "draft-candidate" }],
+  "metronome": [{ "issue": 246, "version": "v1", "source": "docs/art/candidates/issue246/relic-metronome-v1.png", "state": "draft-candidate" }],
+  "potion-ink": [{ "issue": 246, "version": "v1", "source": "docs/art/candidates/issue246/potion-ink-v1.png", "state": "draft-candidate" }]
+}
