@@ -11,7 +11,8 @@ test("battle map remains on the combat scene and freezes only while explicitly o
 
   const mapButton = page.getByRole("button", { name: "マップ", exact: true });
   const time = page.getByRole("meter", { name: "入力時間の残り" });
-  await mapButton.click();
+  await mapButton.focus();
+  await page.keyboard.press("Enter");
   await expect(page.locator(".stage")).toBeVisible();
   await expect(page.getByRole("region", { name: "校内経路" })).toBeVisible();
   await expect(page.getByRole("button", { name: /閉じる Esc/ })).toBeFocused();
