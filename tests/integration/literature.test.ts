@@ -20,9 +20,9 @@ describe("literature club card identity", () => {
   it("ships distinct starter and reward words with visible compound effects", () => {
     const club = demoContent.clubs.find((item) => item.id === "literature-demo")!;
     expect(club.starterCardIds.filter((id) => id.startsWith("LIT-"))).toHaveLength(4);
-    expect(literatureCardDefinitions).toHaveLength(8);
+    expect(literatureCardDefinitions).toHaveLength(12);
     expect(literatureCardDefinitions.every((card) => club.cardPoolIds.includes(card.id))).toBe(true);
-    expect(new Set(literatureCardDefinitions.map((card) => card.input.text)).size).toBe(8);
+    expect(new Set(literatureCardDefinitions.map((card) => card.input.text)).size).toBe(12);
     expect(describeCard(literatureCardDefinitions[0]!, demoContent)).toBe("攻撃 4 · 1枚ドロー");
   });
 

@@ -47,7 +47,7 @@ function typeAndChoose(run: RunState, word: string, targetId: string): RunState 
 describe("art deck card operations", () => {
   it("has distinct starter, pool and equipment; retained frame survives a timeout", () => {
     const club = demoContent.clubs.find((item) => item.id === "art-demo")!;
-    expect(artCardDefinitions).toHaveLength(8);
+    expect(artCardDefinitions).toHaveLength(12);
     expect(club.starterCardIds.filter((id) => id.startsWith("ART-"))).toHaveLength(4);
     expect(artCardDefinitions.every((card) => club.cardPoolIds.includes(card.id))).toBe(true);
     expect(club.startingRelicId).toBe("sketchbook");

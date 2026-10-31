@@ -46,7 +46,7 @@ describe("expanded club reward pool", () => {
       expect(demoContent.clubs.filter((entry) => entry.signatureCardIds?.includes(cardId)).map((entry) => entry.id)).toEqual([clubId]);
     }
     for (const club of demoContent.clubs) {
-      expect(club.signatureCardIds).toHaveLength(8);
+      expect(club.signatureCardIds).toHaveLength(12);
       const reward = generateCardRewards(42, club);
       expect(reward.cardIds.some((cardId) => club.signatureCardIds?.includes(cardId))).toBe(true);
     }

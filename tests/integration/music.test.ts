@@ -33,7 +33,7 @@ function type(run: RunState, word: string): RunState {
 describe("music time economy", () => {
   it("has distinct cards, reward pool and a capped turn-start time relic", () => {
     const club = demoContent.clubs.find((item) => item.id === "music-demo")!;
-    expect(musicCardDefinitions).toHaveLength(8);
+    expect(musicCardDefinitions).toHaveLength(12);
     expect(club.starterCardIds.filter((id) => id.startsWith("MUS-"))).toHaveLength(4);
     expect(musicCardDefinitions.every((card) => club.cardPoolIds.includes(card.id))).toBe(true);
     const started = emitRelicEvent(musicCombat("MUS-001").run, "turn_start", demoRelicRules, demoContent).run;
