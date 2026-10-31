@@ -24,6 +24,7 @@ import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, 
 import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
 import { createAudioFeedback } from "./audio.js";
+import { imeLatinKey } from "./ime-key.js";
 import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
 
 const config = DEFAULT_GAME_CONFIG;
@@ -88,6 +89,10 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   }
   const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   let imeComposing = false;
+  let imeNeedsRecovery = false;
+  let keyboardLayoutMap: ReadonlyMap<string, string> | null = null;
+  const keyboardWithLayout = (navigator as Navigator & { keyboard?: { getLayoutMap?: () => Promise<ReadonlyMap<string, string>> } }).keyboard;
+  void keyboardWithLayout?.getLayoutMap?.().then((map) => { keyboardLayoutMap = map; }).catch(() => { /* Keep the ordinary key path when unsupported. */ });
   const setImeNotice = (notice: string) => {
     view.imeNotice = notice;
     const element = root.querySelector<HTMLElement>("#battle-ime-notice");
@@ -140,8 +145,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     catch { metricsLoadError = true; }
   };
   const render = () => {
-    if (session.screen !== "combat" || frontScreen !== null) { imeComposing = false; view.imeNotice = ""; }
-    else if (imeComposing) { imeComposing = false; view.imeNotice = "英数入力に切り替えて、カードの英単語を入力してください。"; }
+    if (session.screen !== "combat" || frontScreen !== null) { imeComposing = false; imeNeedsRecovery = false; view.imeNotice = ""; }
+    else if (imeComposing) { imeComposing = false; view.imeNotice = imeNeedsRecovery ? "英数入力に切り替えて、カードの英単語を入力してください。" : ""; }
     if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT") view.helpOpen = false;
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
     const battleMapScrollTop = root.querySelector<HTMLElement>(".battle-map-scroll")?.scrollTop;
@@ -375,17 +380,27 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       return;
     }
     if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
-    if (imeComposing || event.isComposing || event.keyCode === 229) {
-      setImeNotice("日本語入力中です。英数入力に切り替えるとカード名をタイプできます。");
+    const composing = imeComposing || event.isComposing || event.keyCode === 229;
+    const resolvedKey = composing ? imeLatinKey(event, keyboardLayoutMap) : null;
+    if (composing && !resolvedKey) {
+      if (!["Enter", " ", "Escape", "Backspace", "Delete", "Tab", "Shift", "Control", "Alt", "Meta"].includes(event.key)) {
+        imeNeedsRecovery = true;
+        setImeNotice("日本語入力中です。英数入力に切り替えるとカード名をタイプできます。");
+      }
       return;
     }
-    if (/^[a-z]$/i.test(event.key) && view.imeNotice) setImeNotice("");
+    const key = resolvedKey ?? event.key;
+    if (resolvedKey) {
+      imeComposing = false;
+      imeNeedsRecovery = false;
+    }
+    if (/^[a-z]$/i.test(key) && view.imeNotice) setImeNotice("");
     if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
-    const focusTypingInput = event.target instanceof HTMLButtonElement && event.key.length === 1;
-    if (event.target instanceof HTMLButtonElement && event.key.length === 1) event.target.blur();
-    if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (event.key === "Backspace" || event.key === "Delete"))) event.preventDefault();
-    if (view.helpOpen && event.key.length === 1) view.helpOpen = false;
-    submitInputKey(event.key, event.repeat, event.isComposing);
+    const focusTypingInput = event.target instanceof HTMLButtonElement && key.length === 1;
+    if (focusTypingInput) event.target.blur();
+    if (key.length === 1 || key === "Enter" || key === "Escape" || key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (key === "Backspace" || key === "Delete"))) event.preventDefault();
+    if (view.helpOpen && key.length === 1) view.helpOpen = false;
+    submitInputKey(key, event.repeat, false);
     if (focusTypingInput && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
   }
 
@@ -408,14 +423,15 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   function onCompositionStart(event: CompositionEvent): void {
     if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
     imeComposing = true;
-    setImeNotice("日本語入力中です。英数入力に切り替えるとカード名をタイプできます。");
+    imeNeedsRecovery = false;
+    setImeNotice("");
   }
 
   function onCompositionEnd(event: CompositionEvent): void {
     if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
     imeComposing = false;
     event.target.value = run.combat?.potionControl?.active ? run.combat.potionControl.typing.buffer : run.combat?.typing.buffer ?? "";
-    setImeNotice("英数入力に切り替えて、カードの英単語を入力してください。");
+    setImeNotice(imeNeedsRecovery ? "英数入力に切り替えて、カードの英単語を入力してください。" : "");
   }
 
   function onClick(event: MouseEvent): void {
