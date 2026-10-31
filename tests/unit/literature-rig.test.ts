@@ -6,6 +6,7 @@ describe("literature layered candidate", () => {
     const rig = literatureRigManifest();
     expect(rig.status).toBe("candidate");
     expect(rig.characterId).toBe("literature-student");
+    expect(rig.expressionLayers.map((part) => part.id)).toEqual(["head-hit"]);
     expect(rig.parts.map((part) => part.id)).toEqual([
       "left-leg", "right-leg", "torso", "left-arm-bag", "right-arm-notebook", "head",
     ]);
@@ -20,9 +21,10 @@ describe("literature layered candidate", () => {
 
   it("renders separate art layers under a replaceable candidate ID", () => {
     const markup = literatureRigMarkup();
-    expect(markup).toContain('data-rig-id="literature-rig-candidate-v1"');
+    expect(markup).toContain('data-rig-id="literature-rig-candidate-v2"');
     expect(markup).toContain('data-art-state="candidate"');
-    expect(markup.match(/class="rig-part"/g)).toHaveLength(6);
+    expect(markup.match(/class="rig-part"/g)).toHaveLength(7);
+    expect(markup).toContain('data-part="head-hit"');
     expect(markup).toContain('data-part="right-arm-notebook"');
     expect(markup).toContain('aria-hidden="true"');
   });

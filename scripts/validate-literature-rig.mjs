@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { Buffer } from "node:buffer";
+import console from "node:console";
 import { inflateRawSync } from "node:zlib";
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
@@ -6,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { pngInfo } from "./art-asset-checks.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const manifest = JSON.parse(await readFile(resolve(root, "docs/art/rigs/literature-rig-candidate-v1.json"), "utf8"));
+const manifest = JSON.parse(await readFile(resolve(root, "docs/art/rigs/literature-rig-candidate-v2.json"), "utf8"));
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
@@ -52,7 +54,8 @@ const ora = zipEntries(await readFile(resolve(root, manifest.editableSource)));
 assert(ora.get("mimetype")?.toString() === "image/openraster", "not an OpenRaster source");
 const xml = ora.get("stack.xml")?.toString("utf8") ?? "";
 assert(xml.includes(`w="${manifest.canvas.width}" h="${manifest.canvas.height}"`), "ORA canvas mismatch");
-for (const part of manifest.parts) {
+assert(manifest.expressionLayers.length === 1 && manifest.expressionLayers[0].id === "head-hit", "hit expression layer required");
+for (const part of [...manifest.parts, ...manifest.expressionLayers]) {
   const bytes = await readFile(resolve(root, part.file));
   const info = pngInfo(bytes);
   assert(sha(bytes) === part.sha256, `${part.id} hash changed`);
@@ -61,8 +64,9 @@ for (const part of manifest.parts) {
   assert(part.pivotX > 0 && part.pivotX < part.width && part.pivotY > 0 && part.pivotY < part.height, `${part.id} joint outside layer`);
   assert(ora.get(`data/${part.id}.png`)?.equals(bytes), `${part.id} ORA layer differs from source part`);
   assert(xml.includes(`name="${part.id}" src="data/${part.id}.png" x="${part.x}" y="${part.y}"`), `${part.id} ORA position differs`);
+  if (part.id === "head-hit") assert(xml.includes('name="head-hit" src="data/head-hit.png" x="300" y="140" opacity="1.0" visibility="hidden"'), "hit expression must be hidden in idle source");
 }
 const merged = ora.get("mergedimage.png");
 assert(merged?.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])), "ORA merged preview missing");
 assert(merged.readUInt32BE(16) === manifest.canvas.width && merged.readUInt32BE(20) === manifest.canvas.height, "ORA preview canvas mismatch");
-console.log(`Validated ${manifest.id}: six editable ORA layers, immutable source hashes and joint/canvas geometry`);
+console.log(`Validated ${manifest.id}: six body and one expression ORA layers, immutable source hashes and joint/canvas geometry`);

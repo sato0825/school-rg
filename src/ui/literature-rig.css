@@ -7,6 +7,9 @@
   transform-origin:50% 100%;pointer-events:none;filter:drop-shadow(9px 17px 8px #1c344c7c)
 }
 .game-shell .hero-rig .rig-part{position:absolute;display:block;object-fit:fill;max-width:none;will-change:transform}
+.game-shell .hero-rig [data-part="head-hit"]{visibility:hidden}
+.game-shell .ally-slot[data-actor-motion="hit"] .hero-rig [data-part="head"]{visibility:hidden}
+.game-shell .ally-slot[data-actor-motion="hit"] .hero-rig [data-part="head-hit"]{visibility:visible;animation-name:rig-hit-head}
 .game-shell .ally-slot[data-actor-rig="literature-v1"][data-actor-motion="idle"] .rig-part{animation-delay:var(--rig-idle-delay,0ms)}
 .game-shell .ally-slot[data-actor-rig="literature-v1"][data-actor-motion="idle"] [data-part="head"]{animation:rig-idle-head 3100ms ease-in-out infinite}
 .game-shell .ally-slot[data-actor-rig="literature-v1"][data-actor-motion="idle"] [data-part="torso"]{animation:rig-idle-torso 3100ms ease-in-out infinite}

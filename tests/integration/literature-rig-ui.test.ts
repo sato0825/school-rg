@@ -28,7 +28,7 @@ describe("layered character in actual combat render", () => {
       const actor = root.querySelector<HTMLElement>(".ally-slot")!;
       expect(actor.dataset.actorRig).toBe("literature-v1");
       expect(actor.dataset.actorMotion).toBe(expected);
-      expect(actor.querySelectorAll(".hero-rig .rig-part")).toHaveLength(6);
+      expect(actor.querySelectorAll(".hero-rig .rig-part")).toHaveLength(7);
       expect(actor.querySelector(".hero-art")?.getAttribute("alt")).toContain("吉野 こはる");
       expect(actor.querySelector(".hero-rig")?.getAttribute("aria-hidden")).toBe("true");
     }

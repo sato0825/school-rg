@@ -15,7 +15,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     const stageBefore = await stage.boundingBox();
     await expect(actor).toHaveAttribute("data-actor-motion", "idle");
     await expect(actor).toHaveAttribute("data-actor-rig", "literature-v1");
-    await expect(actor.locator(".hero-rig .rig-part")).toHaveCount(6);
+    await expect(actor.locator(".hero-rig .rig-part")).toHaveCount(7);
     await page.keyboard.type("outline");
 
     await expect(actor).toHaveAttribute("data-actor-motion", "card-use");
@@ -63,6 +63,8 @@ test("the enemy hit changes the same body parts without moving the stage", async
   await page.clock.runFor(650);
   await expect(actor).toHaveAttribute("data-actor-motion", "hit");
   await expect(actor.locator('[data-part="head"]')).toHaveCount(1);
+  expect(await actor.locator('[data-part="head"]').evaluate((node) => getComputedStyle(node).visibility)).toBe("hidden");
+  expect(await actor.locator('[data-part="head-hit"]').evaluate((node) => getComputedStyle(node).visibility)).toBe("visible");
   expect(await actor.locator('[data-part="head"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("rig-hit-head");
   expect(await actor.boundingBox()).toEqual(before);
   await expect(page.locator(".player-health strong")).not.toContainText("40/40");
