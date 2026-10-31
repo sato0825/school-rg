@@ -1,0 +1,13 @@
+/* #356 preview only: props occupy the empty sheltered bay, not the open arcade. */
+.game-shell[data-courtyard-service-preview="on"] .stage[data-stage-place="school-courtyard-service"] .location-scene[data-location="shop"] .location-prop {
+  top: 36%; left: 31%; width: 19%; height: 24%;
+}
+.game-shell[data-courtyard-service-preview="on"] .stage[data-stage-place="school-courtyard-service"] .location-scene[data-location="event"] .location-prop {
+  top: 35%; left: 38%; width: 15%; height: 26%;
+}
+@media (max-width: 1100px) {
+  .game-shell[data-courtyard-service-preview="on"] .stage[data-stage-place="school-courtyard-service"] .ally-slot,
+  .game-shell[data-courtyard-service-preview="on"] .stage[data-stage-place="school-courtyard-service"] .enemy-slot {
+    bottom: -8%;
+  }
+}
