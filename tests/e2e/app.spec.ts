@@ -530,7 +530,7 @@ test("three new potions can be typed in combat with visible block, damage and he
   expect(potionBoxes[0]!.right).toBeLessThanOrEqual(potionBoxes[1]!.left + 1);
   expect(potionBoxes[1]!.right).toBeLessThanOrEqual(potionBoxes[2]!.left + 1);
   if (process.env.SCHOOL_RG_CAPTURE_POTIONS === "1") {
-    await page.screenshot({ path: "docs/art/previews/issue166-three-potions-v4-390.png" });
+    await page.screenshot({ path: "docs/art/previews/issue166-three-potions-v5-390.png" });
   }
   await page.keyboard.press("F2");
   await page.keyboard.type("splash");
