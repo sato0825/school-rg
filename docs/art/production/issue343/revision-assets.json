@@ -9,14 +9,14 @@
     "priorSha256": "b22f44344bd4fd706c0e90844677ca4ae7427f92a437c0a2d1088c80c2cf98f6",
     "promptRef": "revision-prompts.md#KEN-002",
     "styleReference": "docs/art/production/issue338/assets/card-ken-kata-v1.png",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending old/new real-size comparison"
+    "visualReview": "1024-1440 hand/reward and five-club side-by-side static review",
+    "selectionDecision": "preferred for runtime comparison; formal adoption and rights review pending"
   },
   {
     "id": "KEN-009",
@@ -28,14 +28,14 @@
     "priorSha256": "7eedd19866f241fd6e21ee56eb7799f60e971a2f3d915805cd992a314d1ee5c6",
     "promptRef": "revision-prompts.md#KEN-009",
     "styleReference": "docs/art/production/issue338/assets/card-ken-kata-v1.png",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending old/new real-size comparison"
+    "visualReview": "1024-1440 hand/reward and five-club side-by-side static review",
+    "selectionDecision": "preferred for runtime comparison; formal adoption and rights review pending"
   },
   {
     "id": "KEN-011",
@@ -47,14 +47,14 @@
     "priorSha256": "7302b9a1c031de1de9dd436339e444df5ddc2f3f5d421b908b4f4e5bdbdad45b",
     "promptRef": "revision-prompts.md#KEN-011",
     "styleReference": "docs/art/production/issue338/assets/card-ken-kata-v1.png",
-    "state": "candidate",
+    "state": "superseded-candidate",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending old/new real-size comparison"
+    "visualReview": "1024-1440 hand/reward: subject too small in 112x57",
+    "selectionDecision": "not preferred; v4 enlarged subject"
   },
   {
     "id": "KEN-011",
@@ -66,14 +66,14 @@
     "priorSha256": "7302b9a1c031de1de9dd436339e444df5ddc2f3f5d421b908b4f4e5bdbdad45b",
     "promptRef": "revision-prompts.md#KEN-011-v4",
     "styleReference": "docs/art/production/issue338/assets/card-ken-kata-v1.png",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "v3 crop made subject too small; v4 to compare at actual size"
+    "visualReview": "1024-1440 hand/reward and five-club side-by-side static review",
+    "selectionDecision": "preferred for runtime comparison; formal adoption and rights review pending"
   },
   {
     "id": "KEN-004",
@@ -85,14 +85,14 @@
     "priorSha256": "01bcd635c7600269b8fcf678571a768a1a404941a77277dfb326f0aac07aea16",
     "promptRef": "revision-prompts.md#KEN-004",
     "styleReference": "docs/art/production/issue338/assets/card-ken-kata-v1.png",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending old/new real-size comparison"
+    "visualReview": "1024-1440 hand/reward and five-club side-by-side static review",
+    "selectionDecision": "preferred for runtime comparison; formal adoption and rights review pending"
   },
   {
     "id": "BASE-017",
@@ -104,14 +104,14 @@
     "priorSha256": "3f8d888dec4bad26b5382af2cacae64866f66f37bd508824d25142249f950f77",
     "promptRef": "revision-prompts.md#BASE-017",
     "styleReference": "docs/art/production/issue338/assets/card-ken-kata-v1.png",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending old/new real-size comparison"
+    "visualReview": "1024-1440 hand/reward and five-club side-by-side static review",
+    "selectionDecision": "preferred for runtime comparison; formal adoption and rights review pending"
   },
   {
     "id": "BASE-023",
@@ -123,13 +123,13 @@
     "priorSha256": "acb8ee03f0de8080301a81686d277bca5643cced676aa055dd14ab27d91c494c",
     "promptRef": "revision-prompts.md#BASE-023",
     "styleReference": "docs/art/production/issue338/assets/card-base-barrier-v1.png",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending old/new real-size comparison"
+    "visualReview": "1024-1440 hand/reward and five-club side-by-side static review",
+    "selectionDecision": "preferred for runtime comparison; formal adoption and rights review pending"
   }
 ]

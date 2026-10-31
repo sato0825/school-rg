@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import console from "node:console";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium } from "playwright";
@@ -6,7 +7,7 @@ import { chromium } from "playwright";
 const root = path.resolve(import.meta.dirname, "../../../..");
 const dir = import.meta.dirname;
 const catalog = fs.readFileSync(path.join(root, "src/ui/card-art.ts"), "utf8");
-const assets = [...catalog.matchAll(/"([A-Z]+-\d+)": candidate\([^\n]+?new URL\("\.\.\/assets\/cards\/([^\"]+)"/g)]
+const assets = [...catalog.matchAll(/"([A-Z]+-\d+)": candidate\([^\n]+?new URL\("\.\.\/assets\/cards\/([^"]+)"/g)]
   .map((match) => ({ id: match[1], relative: match[2] }));
 if (assets.length !== 56 || new Set(assets.map((asset) => asset.id)).size !== 56) throw new Error(`catalog mismatch: ${assets.length}`);
 
@@ -23,7 +24,7 @@ try {
     const page = await browser.newPage({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
     await page.goto(pathToFileURL(path.join(dir, "contact-sheet.html")).href);
     await page.evaluate(({ width, mode }) => {
-      const style = document.documentElement.style;
+      const style = globalThis.document.documentElement.style;
       style.setProperty("--w", `${width}px`);
       style.setProperty("--cols", mode === "hand" ? width === 1024 ? "6" : "8" : width === 1024 ? "5" : "7");
       style.setProperty("--cardw", mode === "hand" ? width === 1024 ? "140px" : "170px" : width === 1024 ? "165px" : "190px");

@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import console from "node:console";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium } from "playwright";
@@ -21,7 +22,7 @@ try {
     const page = await browser.newPage({ viewport: { width, height: 700 }, deviceScaleFactor: 1 });
     await page.goto(pathToFileURL(path.join(dir, "compare-kendo.html")).href);
     await page.evaluate(({ width, mode }) => {
-      const css = document.documentElement.style;
+      const css = globalThis.document.documentElement.style;
       css.setProperty("--w", `${width}px`);
       css.setProperty("--cw", mode === "hand" ? width === 1024 ? "140px" : "170px" : width === 1024 ? "165px" : "220px");
       css.setProperty("--ch", mode === "hand" ? "160px" : width === 1024 ? "220px" : "270px");
