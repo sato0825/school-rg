@@ -5,6 +5,7 @@ import { describeCard } from "./battle-view.js";
 import type { BattleArt } from "./battle-view.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
 import { ASCENSION_RULES, unlockedLevel, type Progression } from "../domain/ascension.js";
+import { presentationForClub } from "./club-presentation.js";
 import { formatPlaytestTime, type PlaytestRecord } from "./playtest-metrics.js";
 
 const kindNames: Record<MapNode["kind"], string> = {
@@ -23,14 +24,15 @@ function shell(title: string, body: string, art: BattleArt): string {
 }
 
 export function renderRunTitle(root: HTMLElement, art: BattleArt): void {
-  root.innerHTML = shell("放課後から始まる", `<section class="front-panel title-panel"><div class="front-copy"><span class="eyebrow">TYPE YOUR NEXT MOVE</span><h2>放課後を、打ち抜く。</h2><p>カード名を入力して行動する、学園タイピングローグライク。</p><div class="front-actions"><button type="button" data-action="open-clubs">ランを始める</button><button type="button" data-action="open-compendium">図鑑を見る</button></div><p class="front-note">現在は5部活の検証用デッキを公開中です。正式なカード内容とアートは制作中です。</p></div><img class="front-hero" src="${html(art.heroUrl)}" alt="文芸部の生徒" /></section>`, art);
+  root.innerHTML = shell("放課後から始まる", `<section class="front-panel title-panel"><div class="front-copy"><span class="eyebrow">TYPE YOUR NEXT MOVE</span><h2 aria-label="放課後を、打ち抜く。">放課後を、<br>打ち抜く。</h2><p>言葉が、行動になる。カード名を打ち込み、放課後の校舎を進むタイピングローグライク。</p><div class="title-features"><span>5つの部活</span><span>3つのAct</span><span>1秒を選ぶ戦闘</span></div><div class="front-actions"><button type="button" data-action="open-clubs">ランを始める <span aria-hidden="true">↗</span></button><button type="button" data-action="open-compendium">遊び方と図鑑</button></div><p class="front-note">5部活のデッキ・人物アートは制作候補です。正式な内容と素材の受入は進行中です。</p></div><img class="front-hero" src="${html(presentationForClub("literature-demo").idle)}" alt="文芸部の生徒" /></section>`, art);
 }
 
 export function renderClubSelect(root: HTMLElement, content: ContentRegistry, art: BattleArt, progression: Progression, selectedLevels: Readonly<Record<string, number>>, loadError: boolean): void {
   const clubs = content.clubs.map((item) => {
+    const visual = presentationForClub(item.id);
     const unlocked = unlockedLevel(progression, item.id);
     const levels = [0, ...ASCENSION_RULES.map((rule) => rule.level)].map((level) => `<button type="button" class="ascension-choice" data-action="ascension-level" data-id="${html(item.id)}:${level}" aria-pressed="${(selectedLevels[item.id] ?? 0) === level}" ${level > unlocked || loadError ? "disabled" : ""}>難度 ${level}${level === 0 ? " · 通常" : ` · ${html(ASCENSION_RULES[level - 1]!.label)}`}</button>`).join("");
-    return `<div class="club-option"><button type="button" class="club-choice" data-action="choose-club" data-id="${html(item.id)}"><img src="${html(art.heroUrl)}" alt="" /><span><small>CLUB</small><strong>${html(item.name)}</strong><em>初期HP ${item.startingHp} · デッキ ${item.starterCardIds.length}枚 · 解放難度 ${unlocked}</em></span></button><div class="ascension-choices" aria-label="${html(item.name)}の難度選択">${levels}</div></div>`;
+    return `<div class="club-option" style="--club-accent:${visual.accent}"><button type="button" class="club-choice" data-action="choose-club" data-id="${html(item.id)}"><span class="club-art"><small>${visual.number} / 05</small><img src="${html(visual.idle)}" alt="" loading="lazy" decoding="async" /></span><span class="club-copy"><small>CLUB · 制作候補</small><strong>${html(item.name)}</strong><em>${html(visual.style)}</em><span class="club-strategy">${html(visual.strategy)}</span><span class="club-stats">HP ${item.startingHp}　DECK ${item.starterCardIds.length}　難度 ${unlocked}</span></span></button><div class="ascension-choices" aria-label="${html(item.name)}の難度選択">${levels}</div></div>`;
   }).join("");
   root.innerHTML = shell("部活を選ぶ", `<section class="front-panel club-panel"><span class="eyebrow">CHOOSE YOUR CLUB</span><h2>所属する部活を選ぶ</h2><p>部活ごとに初期デッキとカードプールが変わります。</p><p>${loadError ? "解放状態を読めません。保存データを確認してください。" : "3 Actを完走すると、その部活の次の難度が解放されます。"}</p><div class="club-choices">${clubs}</div><button type="button" class="front-back" data-action="front-back">タイトルへ戻る</button></section>`, art);
 }

@@ -67,11 +67,18 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     } catch { metricsLoadError = true; }
   }
   const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
-  const artPreloads = [...Object.values(view.art.heroUrlByClubId ?? {}), ...Object.values(view.art.heroPosesByClubId ?? {}).flatMap((poses) => Object.values(poses))].map((url) => {
-    const image = new Image();
-    image.src = url;
-    return image;
-  });
+  const artPreloads: HTMLImageElement[] = [];
+  let preloadedClubId: string | null = null;
+  const preloadClubArt = (clubId: string) => {
+    if (preloadedClubId === clubId) return;
+    artPreloads.length = 0;
+    preloadedClubId = clubId;
+    for (const url of Object.values(view.art.heroPosesByClubId?.[clubId] ?? {})) {
+      const image = new Image();
+      image.src = url;
+      artPreloads.push(image);
+    }
+  };
   let enemyPending = false;
   let generation = 0;
   const setMotion = (motion: BattleView["motion"]) => { view.motion = motion; view.motionStartedAtMs = motion ? clock.nowMs() : null; };
@@ -81,6 +88,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     && document.visibilityState === "visible" && !(run.combat?.clock.paused ?? false);
   const observeMetrics = () => { if (metrics) metrics = observePlaytest(metrics, clock.nowMs(), metricsActive()); };
   const startCombat = () => {
+    preloadClubArt(run.clubId);
     view.cardFx = null;
     if (metrics) metrics = recordPlaytestBattle(metrics, run.map.currentNodeId);
     run = fireRelic(run, "combat_start");
@@ -428,6 +436,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   }, 80);
   const saveTimer = window.setInterval(persist, 1_000);
   if (session.screen === "combat" && run.combat?.phase === "PLAYER_START") startCombat();
+  if (session.screen === "combat") preloadClubArt(run.clubId);
   render();
   if (session.screen === "combat") enemyPhase();
   return () => {
