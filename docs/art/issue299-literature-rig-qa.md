@@ -35,3 +35,4 @@
 - 800msの部位画像遅延をかけたE2Eで、読み込み中は全身像が不透明・リグが不可視、全件decode後のみ切替を確認。1024/1440の再描画後もリグDOM同一性を確認。1440で低刺激設定のセーブ復帰/再読み込みが成立し、再読込後も7画像が揃い、頭部アニメは停止した。最終ツリーでlint/typecheck、単体119、統合166、ビルド、対象E2E7/7が通過。アート72件/ORAの前回検査は画像・原本が変わっていないため再利用。
 - 再録画: `outputs/issue299-literature-{1024,1440}-decoded-idle-card-hit-candidate-v5.webm`。キー入力直後に `card-use`、敵攻撃時に `hit`、HP37/40を機械確認して保存。1440動画の0.6〜0.8秒のマップ→戦闘フレームでは全身像の後に完全なリグが出て、欠けた部位は見えない。2.0〜2.2秒では入力に合わせてノートが上がり、効果表示と足元/人物枠が安定している。
 - 低刺激+遅延+再読み込みの動画 `outputs/issue299-literature-1024-quiet-reload-candidate-v1.webm` と静止画 `outputs/issue299-quiet-{loading-portrait,rig-ready,reload-ready}-1024-v1.png` では読み込み中の全身像、揃ったリグ、再読込後の静止姿勢を確認。Web viewportであり実機iPadの合格ではない。
+- #327の低刺激QAで見つかった既存GameShell欠落を併せて修正。戦闘前に作られるGameShellでも `data-effects` を初期化し、マップ/報酬オーバーレイへ低刺激状態を維持。統合テスト167/167、型検査、lint、対象E2E7/7、ビルドを最終コードで確認した。
