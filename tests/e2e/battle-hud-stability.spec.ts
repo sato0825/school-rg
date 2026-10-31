@@ -262,7 +262,9 @@ for (const [width, height] of [[1440, 900], [1024, 768]] as const) test(`quiet i
   const prepared = { ...session, run: { ...session.run, combat: { ...combat, drawPile: [...combat.drawPile.filter((id) => id !== sweepId), sweepId] } } };
   await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
   await page.goto("/");
+  await page.getByRole("button", { name: "操作", exact: true }).click();
   await page.locator("[data-action=toggle-stimulus]").click();
+  await page.keyboard.press("Escape");
   await page.keyboard.type("sweep");
   const mark = page.locator(".result-fx-mark[data-kind=damage]");
   await expect(mark).toBeVisible();
