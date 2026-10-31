@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
+import console from "node:console";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 

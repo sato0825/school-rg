@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { Buffer } from "node:buffer";
 import { createHash } from "node:crypto";
 import console from "node:console";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
