@@ -27,9 +27,15 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
     await page.setViewportSize(viewport);
     await page.clock.install();
     const { saved, frame } = paintedOpening();
-    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await page.addInitScript((value) => {
+      if (sessionStorage.getItem("art-deck-seeded")) return;
+      localStorage.setItem("school-rg-run-v1", value);
+      sessionStorage.setItem("art-deck-seeded", "1");
+    }, saved);
     await page.goto("/");
     await expect(page.locator(".card-word")).toContainText(["paint", "frame"]);
+    await page.getByRole("button", { name: "再開" }).click();
+    await page.locator(".typing-input").focus();
     await page.keyboard.type("paint");
     await expect(page.locator(".typing-hint")).toContainText("手札");
     await page.locator(`.card[data-id="${frame}"]`).click();

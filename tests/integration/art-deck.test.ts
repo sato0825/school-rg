@@ -46,8 +46,9 @@ function typeAndChoose(run: RunState, word: string, targetId: string): RunState 
 
 function typeWord(run: RunState, word: string): RunState {
   let current = run;
+  const startedAt = run.combat!.clock.lastEventAtMs;
   for (const [index, key] of [...word].entries()) {
-    current = submitPlayerKey(current, { key }, { nowMs: () => (index + 1) * 10 }, DEFAULT_GAME_CONFIG, demoContent,
+    current = submitPlayerKey(current, { key }, { nowMs: () => startedAt + (index + 1) * 10 }, DEFAULT_GAME_CONFIG, demoContent,
       (state, instanceId, targetEnemyInstanceId) => useCardEffects(state, instanceId, { targetEnemyInstanceId }, DEFAULT_GAME_CONFIG, demoContent), disposition);
   }
   return current;
