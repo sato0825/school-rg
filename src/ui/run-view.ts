@@ -122,12 +122,23 @@ export function renderRunMap(root: HTMLElement, session: RunSession, art: Battle
 }
 
 export function renderRunReward(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
+  const run = session.run;
+  const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
+  const hero = art.heroUrlByClubId?.[run.clubId] ?? art.heroUrl;
+  const lastEnemy = run.combat?.enemies.at(-1);
+  const enemy = lastEnemy ? art.enemyUrlById[lastEnemy.enemyId] : undefined;
+  const hpRatio = Math.max(0, Math.min(100, run.player.hp / run.player.maxHp * 100));
   const signature = new Set(content.clubs.find((club) => club.id === session.run.clubId)?.signatureCardIds ?? []);
   const cards = session.rewardCardIds.map((cardId) => {
     const card = content.cards.find((item) => item.id === cardId)!;
     return `<button type="button" class="reward-card ${signature.has(card.id) ? "signature" : ""}" data-card-kind="${card.type}" data-action="reward-card" data-id="${card.id}"><span class="offer-heading">${offerSymbol("card")}<small>${signature.has(card.id) ? "部活固有 · " : ""}${cardKindNames[card.type] ?? html(card.type)}</small></span><strong>${html(card.input.text)}</strong><span class="offer-description">${html(describeCard(card, content))}</span><span class="offer-outcome"><span aria-hidden="true">＋</span> デッキに追加</span></button>`;
   }).join("");
-  root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
+  root.innerHTML = `<main class="run-screen reward-scene" aria-label="戦闘報酬" style="background-image:url('${html(stageUrlForRun(art, run))}')">
+    <div class="reward-scene-actors" aria-hidden="true"><img class="reward-scene-hero" src="${html(hero)}" alt="" decoding="async" />${enemy ? `<img class="reward-scene-enemy" src="${html(enemy)}" alt="" decoding="async" />` : ""}</div>
+    <div class="reward-scene-shade" aria-hidden="true"></div>
+    <header class="run-header reward-scene-header" aria-label="報酬を選ぶ時のラン情報"><span class="reward-scene-location">ACT ${run.act} · ${node?.floor ?? 0}F <span>戦闘終了</span></span><span class="reward-scene-health"><strong>♥ ${run.player.hp}/${run.player.maxHp}</strong><span class="reward-scene-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span style="width:${hpRatio}%"></span></span></span><span class="reward-scene-resources"><span>◉ ${run.gold}G</span><span>▤ ${run.deck.length}枚</span></span></header>
+    <section class="reward-panel reward-scene-overlay" aria-label="カード報酬の選択"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button></section>
+  </main>`;
 }
 
 export function renderRunTreasure(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, config: GameConfig = DEFAULT_GAME_CONFIG): void {
