@@ -21,7 +21,7 @@ test("later floors show distinct school places in combat on PC and iPad sized sc
       await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
       await page.setViewportSize({ width, height });
       await page.goto("/");
-      await expect(page.locator(".run-screen")).toHaveAttribute("style", new RegExp(latePlates[act - 1]!));
+      await expect(page.locator(".game-shell .stage")).toHaveAttribute("style", new RegExp(latePlates[act - 1]!));
       if (process.env.SCHOOL_RG_CAPTURE_STAGE_VARIETY === "1" && width === 1024) {
         await page.screenshot({ path: `docs/art/previews/issue179-act${act}-map-1024.png`, fullPage: true });
       }
