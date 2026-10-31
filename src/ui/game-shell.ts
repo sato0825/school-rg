@@ -5,6 +5,7 @@ import type { StageArt } from "./stage-presentation.js";
 import { subscenePreviewForRun, type SubsceneConcept } from "./stage-subscene-experiment.js";
 import { stageStatePreviewForRun } from "./stage-state-preview.js";
 import { stageWingPreviewForRun } from "./stage-wing-preview.js";
+import { courtyardServicePreviewForRun } from "./courtyard-service-preview.js";
 import { identityForClub } from "../content/character-identities.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
 
@@ -23,6 +24,7 @@ export class GameShell {
   private readonly subsceneConcept: SubsceneConcept;
   private readonly stageStatePreview: boolean;
   private readonly stageWingPreview: boolean;
+  private readonly courtyardServicePreview: boolean;
   private readonly config: GameConfig;
   private stageNodeId: string | null = null;
 
@@ -52,6 +54,8 @@ export class GameShell {
     this.main.dataset.stageStatePreview = this.stageStatePreview ? "on" : "off";
     this.stageWingPreview = new URLSearchParams(window.location.search).get("experimentalStageWing") === "on";
     this.main.dataset.stageWingPreview = this.stageWingPreview ? "on" : "off";
+    this.courtyardServicePreview = new URLSearchParams(window.location.search).get("experimentalCourtyardService") === "on";
+    this.main.dataset.courtyardServicePreview = this.courtyardServicePreview ? "on" : "off";
     this.config = config;
     this.overlay.className = "game-shell-overlay";
     this.stage.append(this.overlay);
@@ -70,7 +74,7 @@ export class GameShell {
 
   private syncStage(run: RunState): void {
     if (this.stageNodeId === run.map.currentNodeId) return;
-    const selection = stageWingPreviewForRun(subscenePreviewForRun(this.art, run, this.subsceneConcept), run, this.stageWingPreview);
+    const selection = courtyardServicePreviewForRun(stageWingPreviewForRun(subscenePreviewForRun(this.art, run, this.subsceneConcept), run, this.stageWingPreview), run, this.courtyardServicePreview);
     this.stage.style.backgroundImage = `url("${selection.stageUrl}")`;
     this.stage.dataset.act = String(run.map.nodes.find((node) => node.id === run.map.currentNodeId)?.act ?? run.act);
     this.stage.dataset.stagePlace = selection.placeId ?? "";

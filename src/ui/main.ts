@@ -16,6 +16,7 @@ import "./visual-system.css";
 import "./location-stage.css";
 import "./stage-state-preview.css";
 import "./stage-wing-preview.css";
+import "./courtyard-service-preview.css";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("Missing #app root");
