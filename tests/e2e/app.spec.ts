@@ -237,7 +237,7 @@ test("music club starts with extra time and types a tempo card", async ({ page }
   await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
 });
 
-test("a newly rewarded club card remains readable and activates on a narrow battle screen", async ({ page }) => {
+test("a new club pool card remains readable and activates on a narrow battle screen", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
@@ -254,8 +254,9 @@ test("a newly rewarded club card remains readable and activates on a narrow batt
   const bridge = page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: /^bridge$/ }) });
   await expect(bridge).toBeVisible();
   await expect(bridge).toContainText("時間 +1秒");
+  await page.getByRole("button", { name: "再開" }).click();
   if (process.env.SCHOOL_RG_CAPTURE_CLUB_CARDS === "1") {
-    await page.screenshot({ path: "docs/content/previews/issue122-bridge-narrow-20261031.png", fullPage: true });
+    await page.screenshot({ path: "docs/content/previews/issue122-bridge-narrow-v2-20261031.png", fullPage: true });
   }
   await page.keyboard.type("bridge");
   await expect(page.locator(".battle-message")).toContainText("bridge を発動");
