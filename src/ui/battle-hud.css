@@ -86,11 +86,14 @@
 .stimulus-toggle{flex:none;padding:6px 8px;border:1px solid #9cabb9;border-radius:5px;background:#edf3f5;color:#294b66;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap}
 .stimulus-toggle[aria-pressed="true"]{border-color:#60808c;background:#dce8e7}
 .game[data-effects="quiet"] .hero-art,.game[data-effects="quiet"] .enemy-art,.game[data-effects="quiet"] .caret{animation:none!important;filter:none!important}
-.game[data-effects="quiet"] .card-fx-layer{display:none!important}
+.game[data-effects="quiet"] .card-fx-mark,.game[data-effects="quiet"] .card-fx-trail{animation:none!important;opacity:.8}
+.game[data-effects="quiet"] .card-fx-mark{transform:translate(-50%,-50%)}
+.game[data-effects="quiet"] .card-fx-trail{display:none}
+.game[data-effects="quiet"] .card-fx-mark i,.game[data-effects="quiet"] .card-fx-mark b{box-shadow:none}
 .game[data-effects="quiet"] .card,.game[data-effects="quiet"] .time-fill,.game[data-effects="quiet"] .enemy-health-fill,.game[data-effects="quiet"] .player-health-fill{transition:none!important}
 .game[data-effects="quiet"] .card:hover,.game[data-effects="quiet"] .card:focus-visible{transform:none}
 .game[data-effects="quiet"] .enemy-slot.targeted:after{box-shadow:0 0 0 3px #fff8}
-@media(prefers-reduced-motion:reduce){.card-fx-layer{display:none!important}.hero-art,.enemy-art,.caret{animation:none!important}.card:hover,.card:focus-visible{transform:none}}
+@media(prefers-reduced-motion:reduce){.hero-art,.enemy-art,.caret{animation:none!important}.card:hover,.card:focus-visible{transform:none}}
 
 @media(max-width:760px){
   .game{grid-template-rows:116px minmax(0,1fr) 350px}
@@ -105,22 +108,24 @@
   .topbar .battle-guide{padding:2px 6px;font-size:9px}
   .intent-ticket{min-height:42px;padding:3px 5px;gap:4px}
   .intent-icon{width:22px;height:22px;font-size:14px;border-width:1px}
-  .intent-ticket .intent-copy small{font-size:8px}
-  .intent-ticket .intent-copy strong{font-size:9px}
+  .intent-ticket .intent-copy small{font-size:10px}
+  .intent-ticket .intent-copy strong{font-size:12px}
   .intent-ticket b{font-size:14px}
   .enemy-hud,.stage[data-enemy-count="2"] .enemy-hud{display:grid;gap:2px;padding:4px;width:100%;text-align:left;white-space:normal}
-  .enemy-hud-head strong{font-size:9px}
-  .enemy-hp-number{font-size:11px}
+  .enemy-hud-head strong{font-size:11px}
+  .enemy-hp-number{font-size:13px}
   .enemy-hp-number small{font-size:8px}
   .enemy-health-track{height:8px}
   .enemy-block{font-size:8px}
   .player-health{min-width:64px}
   .player-health-track{height:6px}
   .typing-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px;margin:5px auto}
-  .typing-caption{font-size:10px}
+  .typing-caption{font-size:12px}
+  .time-label span{font-size:10px;letter-spacing:0;white-space:nowrap}
   .typing-hint{grid-column:1/-1}
   .typing-buffer .placeholder{font-size:10px}
   .game:has(.playtest-export){grid-template-rows:132px minmax(0,1fr) 350px}
   .topbar:has(.playtest-export){grid-template-rows:30px 42px 24px 16px}
   .topbar .playtest-export{grid-row:4}
+  .layout-preview-label{left:2%;transform:none;max-width:40%;font-size:8px}
 }
