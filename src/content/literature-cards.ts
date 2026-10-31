@@ -20,6 +20,12 @@ export const literatureCardSpecs: readonly ClubCardSpec[] = [
   { id: "LIT-006", word: "proof", type: "attack", target: "enemy",
     effects: [{ kind: "damage", parameters: { amount: 10 } }, { kind: "block", parameters: { amount: 3 } }],
     upgrades: [{ kind: "damage", parameters: { amount: 13 } }, { kind: "block", parameters: { amount: 4 } }] },
+  { id: "LIT-007", word: "aside", type: "attack", target: "enemy",
+    effects: [{ kind: "damage", parameters: { amount: 5 } }, { kind: "draw", parameters: { count: 2 } }],
+    upgrades: [{ kind: "damage", parameters: { amount: 7 } }, { kind: "draw", parameters: { count: 2 } }] },
+  { id: "LIT-008", word: "footnote", type: "skill", target: "self",
+    effects: [{ kind: "block", parameters: { amount: 4 } }, { kind: "draw", parameters: { count: 2 } }],
+    upgrades: [{ kind: "block", parameters: { amount: 7 } }, { kind: "draw", parameters: { count: 2 } }] },
 ];
 
 const suite = buildCardSuite(literatureCardSpecs);

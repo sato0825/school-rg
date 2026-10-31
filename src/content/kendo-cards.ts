@@ -20,6 +20,12 @@ export const kendoCardSpecs: readonly ClubCardSpec[] = [
   { id: "KEN-006", word: "final cut", type: "attack", target: "enemy",
     effects: [{ kind: "conditional_damage", parameters: { condition: "target_hp_at_most_percent", thresholdPercent: 50, amount: 8, conditionalAmount: 16 } }],
     upgrades: [{ kind: "conditional_damage", parameters: { condition: "target_hp_at_most_percent", thresholdPercent: 50, amount: 11, conditionalAmount: 20 } }] },
+  { id: "KEN-007", word: "sweep", type: "attack", target: "all_enemies",
+    effects: [{ kind: "damage_all", parameters: { amount: 5 } }, { kind: "block", parameters: { amount: 3 } }],
+    upgrades: [{ kind: "damage_all", parameters: { amount: 7 } }, { kind: "block", parameters: { amount: 4 } }] },
+  { id: "KEN-008", word: "breath", type: "skill", target: "self",
+    effects: [{ kind: "block", parameters: { amount: 4 } }, { kind: "thorns", parameters: { amount: 3 } }, { kind: "draw", parameters: { count: 1 } }],
+    upgrades: [{ kind: "block", parameters: { amount: 6 } }, { kind: "thorns", parameters: { amount: 4 } }, { kind: "draw", parameters: { count: 1 } }] },
 ];
 
 const suite = buildCardSuite(kendoCardSpecs);

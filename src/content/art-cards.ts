@@ -20,6 +20,12 @@ export const artCardSpecs: readonly ClubCardSpec[] = [
   { id: "ART-006", word: "mural", type: "attack", target: "all_enemies", keywordIds: ["exhaust"],
     effects: [{ kind: "damage_all", parameters: { amount: 6 } }, { kind: "persistent_block", parameters: { amountPerTurn: 2 } }],
     upgrades: [{ kind: "damage_all", parameters: { amount: 8 } }, { kind: "persistent_block", parameters: { amountPerTurn: 3 } }] },
+  { id: "ART-007", word: "wash", type: "attack", target: "all_enemies",
+    effects: [{ kind: "damage_all", parameters: { amount: 4 } }, { kind: "draw", parameters: { count: 1 } }],
+    upgrades: [{ kind: "damage_all", parameters: { amount: 6 } }, { kind: "draw", parameters: { count: 1 } }] },
+  { id: "ART-008", word: "layer", type: "skill", target: "self", keywordIds: ["retain"],
+    effects: [{ kind: "block", parameters: { amount: 5 } }, { kind: "persistent_block", parameters: { amountPerTurn: 1 } }],
+    upgrades: [{ kind: "block", parameters: { amount: 7 } }, { kind: "persistent_block", parameters: { amountPerTurn: 2 } }] },
 ];
 
 const suite = buildCardSuite(artCardSpecs);
