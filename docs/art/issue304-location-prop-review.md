@@ -32,3 +32,18 @@
 ## 本編統合時の契約
 
 見た目の透明画素をクリック範囲にしない。物体の有効領域を別の安定したボタン/タッチ領域として定義し、キーボード・読み上げ名と結果を `RunSession` の実状態へ接続する。原画の対象部分に対応する焦点を可視化し、低刺激設定では静止状態でも取得/購入/回復/イベント結果を確認できるようにする。CSSだけの汎用記号を完成絵の代替として残さない。
+
+## 本編への候補接続
+
+後続の地点GameShell候補では4点の透過派生を `src/ui/location-stage.ts` から asset ID を伴って表示する。物体は選択ボタンとは別レイヤーで、既存の `RunSession` 選択・保存・時計停止・読み上げ名を維持する。保管庫では取得した棚の領域とカードを短く強調してから経路へ進む。動き軽減時は強調を静止表示する。
+
+| 地点 | PC 1440×900 | iPad相当 1024×768 |
+| --- | --- | --- |
+| 保管庫 | [実画面](previews/issue304-runtime/treasure-1440.png) | [実画面](previews/issue304-runtime/treasure-1024.png) |
+| 購買 | [実画面](previews/issue304-runtime/shop-1440.png) | [実画面](previews/issue304-runtime/shop-1024.png) |
+| 休憩 | [実画面](previews/issue304-runtime/rest-1440.png) | [実画面](previews/issue304-runtime/rest-1024.png) |
+| イベント | [実画面](previews/issue304-runtime/event-1440.png) | [実画面](previews/issue304-runtime/event-1024.png) |
+
+[保管庫取得の局所反応 1024](previews/issue304-runtime/treasure-claim-1024.png)。画像は仮のAct 1地点ノードを `RunSession` に保存して本編UIを描いた証拠で、自然ランの全地点や実機iPadの証拠ではない。`SHA256SUMS` は同ディレクトリに記録した。Playwrightの独立Chromiumで4地点×2寸法の画像読み込み・スクロール外への逸脱なし、購買全5品と整理選択の表示、実時計で保管庫取得→経路→ボス突入を確認した。地点の既存状態/保存フローと合わせて対象E2E 20/20。
+
+依然として候補の段階。各商品の個別絵、保管庫の開閉/空状態、回復/強化の動作差分、イベントID別の掲示内容、Act 3の色調、5部活との組合せ、人手の画風・権利採用判定、実機iPad操作は未完了。
