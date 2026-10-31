@@ -144,6 +144,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const pileScrollTop = root.querySelector<HTMLElement>(".pile-card-list")?.scrollTop ?? 0;
     const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
     const restorePileCloseFocus = root.querySelector('#battle-pile-tray [data-action="close-pile"]') === document.activeElement;
+    const restorePileSwitchFocus = root.querySelector<HTMLButtonElement>('#battle-pile-tray [data-action="show-pile"]:focus')?.dataset.id;
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
     else if (frontScreen === "title") renderRunTitle(root, demoBattleArt, history);
     else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError);
@@ -169,6 +170,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     }
     if (restoreTypingFocus && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
     if (restorePileCloseFocus && view.pileOpen) root.querySelector<HTMLButtonElement>('#battle-pile-tray [data-action="close-pile"]')?.focus({ preventScroll: true });
+    if (restorePileSwitchFocus && view.pileOpen) root.querySelector<HTMLButtonElement>(`#battle-pile-tray [data-action="show-pile"][data-id="${restorePileSwitchFocus}"]`)?.focus({ preventScroll: true });
     const header = root.querySelector(".topbar, .run-header");
     if (header) {
       if (session.screen === "combat" && frontScreen === null) {
@@ -423,13 +425,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         root.querySelector<HTMLButtonElement>(view.helpOpen ? '#battle-help button' : '[data-action="toggle-battle-help"]')?.focus();
         return;
       }
-      if ((action === "toggle-pile" || action === "close-pile") && frontScreen === null && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT") {
+      if ((action === "toggle-pile" || action === "show-pile" || action === "close-pile") && frontScreen === null && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT") {
         const pile = id === "draw" || id === "discard" || id === "exhaust" ? id : null;
         const previous = view.pileOpen;
-        view.pileOpen = action === "close-pile" || !pile || previous === pile ? null : pile;
+        view.pileOpen = action === "close-pile" || !pile || (action === "toggle-pile" && previous === pile) ? null : pile;
         if (view.pileOpen) view.helpOpen = false;
         render();
-        if (view.pileOpen) root.querySelector<HTMLButtonElement>('#battle-pile-tray [data-action="close-pile"]')?.focus();
+        if (view.pileOpen) root.querySelector<HTMLButtonElement>(action === "show-pile" ? `#battle-pile-tray [data-action="show-pile"][data-id="${view.pileOpen}"]` : '#battle-pile-tray [data-action="close-pile"]')?.focus();
         else if (!run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus();
         else if (previous) root.querySelector<HTMLButtonElement>(`[data-action="toggle-pile"][data-id="${previous}"]`)?.focus();
         return;
