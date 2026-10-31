@@ -58,12 +58,13 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
         const card = page.locator(`.hand .card[data-art-id="card.${cardId}"]`);
         await expect(card.locator('.card-art[data-art-state="candidate"] img')).toBeVisible();
         expect(await card.locator(".card-art img").evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
-        expect(await card.evaluate((element) => {
+        const geometry = await card.evaluate((element) => {
           const word = element.querySelector(".card-word")!.getBoundingClientRect();
           const effect = element.querySelector(".card-effect")!.getBoundingClientRect();
           const frame = element.getBoundingClientRect();
-          return word.bottom <= effect.top && effect.bottom <= frame.bottom;
-        })).toBe(true);
+          return { wordBottom: word.bottom, effectTop: effect.top, effectBottom: effect.bottom, frameBottom: frame.bottom };
+        });
+        expect(geometry.wordBottom <= geometry.effectTop && geometry.effectBottom <= geometry.frameBottom, `${cardId}: ${JSON.stringify(geometry)}`).toBe(true);
       }
       if (name === "kendo") {
         const kendo = await page.locator('.hand .card[data-art-id="card.KEN-007"] .card-art img').getAttribute("src");
@@ -71,7 +72,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
         expect(kendo).not.toContain("base-sweep");
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-      await page.screenshot({ path: `docs/art/previews/issue329/${name}-${viewport.width}-hand-v4.png` });
+      await page.screenshot({ path: `docs/art/previews/issue329/${name}-${viewport.width}-hand-v5.png` });
 
       const context = page.context();
       await page.close();
@@ -91,7 +92,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
         })).toBe(true);
       }
       expect(await rewardPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-      await rewardPage.screenshot({ path: `docs/art/previews/issue329/${name}-${viewport.width}-reward-v4.png` });
+      await rewardPage.screenshot({ path: `docs/art/previews/issue329/${name}-${viewport.width}-reward-v5.png` });
     });
   }
 }
