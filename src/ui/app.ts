@@ -17,7 +17,7 @@ import { cardFxForUse } from "./card-fx.js";
 import { recordCombatResult } from "../domain/combat-action-log.js";
 import { MOTION_MS } from "./motion-timing.js";
 import { resultFxForTransition } from "./result-fx.js";
-import { renderClubSelect, renderCompendium, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
+import { renderClubSelect, renderCompendium, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserHistoryStore, browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
 import { appendRunHistory, emptyRunHistory, legacyTerminalRunId, parseRunHistory, terminalRunEntry } from "../domain/run-history.js";
@@ -189,9 +189,21 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (session.screen === "shop") { gameShell = null; renderRunShop(root, session, demoContent, demoBattleArt, view.message); }
     else if (session.screen === "rest") { gameShell = null; renderRunRest(root, session, demoContent, demoBattleArt); }
     else if (session.screen === "event") { gameShell = null; renderRunEvent(root, session, demoContent, demoBattleArt); }
+    else if (session.screen === "won") {
+      const arrivedFromBattle = gameShell !== null;
+      if (!gameShell) gameShell = new GameShell(root, run, view, demoContent);
+      gameShell.showVictory(session, lowStimulus, {
+        playtestActiveMs: metrics?.record.activeMs,
+        playtestVisits: metrics?.record.visits.length,
+        playtestBattles: metrics?.record.battleNodeIds.length,
+        playtestPartial: metrics?.record.partial,
+        playtestError: metricsLoadError,
+        historyError: historyLoadError || historySaveError,
+      }, arrivedFromBattle);
+    }
     else if (session.screen === "lost") {
       if (!gameShell) gameShell = new GameShell(root, run, view, demoContent);
-      gameShell.showLoss(session, demoContent, lowStimulus, {
+      gameShell.showLoss(session, lowStimulus, {
         playtestActiveMs: metrics?.record.activeMs,
         playtestVisits: metrics?.record.visits.length,
         playtestBattles: metrics?.record.battleNodeIds.length,
@@ -200,7 +212,6 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         historyError: historyLoadError || historySaveError,
       });
     }
-    else if (session.screen === "won") { gameShell = null; renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError); }
     else { gameShell = null; view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view, config); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
