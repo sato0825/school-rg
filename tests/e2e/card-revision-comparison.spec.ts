@@ -6,13 +6,14 @@ import { availableRunNodes, createRunSession, enterRunNode, type EncounterPool }
 import { serializeRunSession } from "../../src/domain/save.js";
 import { beginPlayerTurn } from "../../src/domain/turn-state.js";
 
-const stage = process.env.SCHOOL_RG_REVISION_STAGE === "before" ? "before" : "after";
+const stage = process.env.SCHOOL_RG_REVISION_STAGE === "before" ? "before"
+  : process.env.SCHOOL_RG_REVISION_STAGE === "after" ? "after" : "v4";
 const versions = stage === "before" ? {
   "KEN-002": "issue277-v1", "KEN-004": "issue284-v1", "KEN-009": "issue269-v1", "KEN-011": "issue269-v2",
   "BASE-017": "issue284-v2", "BASE-023": "issue242-v1",
 } : {
   "KEN-002": "issue343-v2", "KEN-004": "issue343-v2", "KEN-009": "issue343-v2", "KEN-011": "issue343-v4",
-  "BASE-017": "issue343-v3", "BASE-023": "issue343-v2",
+  "BASE-017": stage === "after" ? "issue343-v3" : "issue343-v4", "BASE-023": "issue343-v2",
 };
 const affected = new Set(Object.keys(versions));
 const pool: EncounterPool = { combat: ["paper-heap"], elite: ["paper-heap"], boss: ["final-exam"] };

@@ -3,17 +3,29 @@
   "assets": [
     {
       "cardId": "BASE-017",
-      "version": "issue343-v3",
-      "runtimePath": "src/assets/cards/issue352/base-boost-candidate-v3.png",
-      "originalPath": "docs/art/production/issue343/assets/base-boost-candidate-v3.png",
+      "version": "issue343-v4",
+      "runtimePath": "src/assets/cards/issue352/base-boost-candidate-v4.png",
+      "originalPath": "docs/art/production/issue343/assets/base-boost-candidate-v4.png",
       "sourceIssue": 343,
-      "sourceCommit": "ef5215f",
-      "sha256": "9e93d0710b5af1597dd3a9788108341fe8328ecb3533f94fa7dae6ea77ab47cf",
-      "priorRuntimePath": "src/assets/cards/issue261/base-boost-candidate-v2.png",
-      "priorSha256": "3f8d888dec4bad26b5382af2cacae64866f66f37bd508824d25142249f950f77",
+      "sourceCommit": "19b30ebe5f750e54f557409d34f4c84a2f326ee7",
+      "sha256": "f8844a0a490565371ddb04357e0e20919c98281cdd26601c0a751239e6ae04bf",
+      "priorRuntimePath": "src/assets/cards/issue352/base-boost-candidate-v3.png",
+      "priorSha256": "9e93d0710b5af1597dd3a9788108341fe8328ecb3533f94fa7dae6ea77ab47cf",
       "state": "candidate",
       "formalAdoption": false,
-      "rightsReview": "pending"
+      "rightsReview": "pending",
+      "supersededHistory": [
+        {
+          "version": "issue284-v2",
+          "runtimePath": "src/assets/cards/issue261/base-boost-candidate-v2.png",
+          "sha256": "3f8d888dec4bad26b5382af2cacae64866f66f37bd508824d25142249f950f77"
+        },
+        {
+          "version": "issue343-v3",
+          "runtimePath": "src/assets/cards/issue352/base-boost-candidate-v3.png",
+          "sha256": "9e93d0710b5af1597dd3a9788108341fe8328ecb3533f94fa7dae6ea77ab47cf"
+        }
+      ]
     },
     {
       "cardId": "BASE-023",

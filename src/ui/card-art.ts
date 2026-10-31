@@ -38,7 +38,7 @@ export const candidateCardArtCatalog: CardArtCatalog = Object.freeze({
   "BASE-014": candidate("BASE-014", "issue328-v1", new URL("../assets/cards/issue341/base-recover-candidate-v1.png", import.meta.url).href, 328),
   "BASE-015": candidate("BASE-015", "issue328-v1", new URL("../assets/cards/issue341/base-exhaust-candidate-v1.png", import.meta.url).href, 328),
   "BASE-016": candidate("BASE-016", "issue284-v1", new URL("../assets/cards/issue261/base-duplicate-candidate-v1.png", import.meta.url).href, 284),
-  "BASE-017": candidate("BASE-017", "issue343-v3", new URL("../assets/cards/issue352/base-boost-candidate-v3.png", import.meta.url).href, 343),
+  "BASE-017": candidate("BASE-017", "issue343-v4", new URL("../assets/cards/issue352/base-boost-candidate-v4.png", import.meta.url).href, 343),
   "BASE-018": candidate("BASE-018", "issue328-v1", new URL("../assets/cards/issue341/base-cleanse-candidate-v1.png", import.meta.url).href, 328),
   "BASE-023": candidate("BASE-023", "issue343-v2", new URL("../assets/cards/issue352/base-delay-candidate-v2.png", import.meta.url).href, 343),
   "LIT-001": candidate("LIT-001", "issue246-v1", new URL("../assets/cards/issue261/lit-jot-candidate-v1.png", import.meta.url).href, 246),
