@@ -6,6 +6,7 @@ import "./card-design.css";
 import "./map-design.css";
 import "./battle-hud.css";
 import "./multi-enemy.css";
+import "./result-fx.css";
 import "./choice-information.css";
 import "./battle-objects.css";
 import "./battle-map-overlay.css";
