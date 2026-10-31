@@ -37,9 +37,9 @@ function typedKendoCard(cardId: string, enemyHp = 20): RunState {
 }
 
 describe("kendo guard and counter", () => {
-  it("has six distinct cards, a starter counter relic, and a separate reward pool", () => {
+  it("has eight distinct cards, a starter counter relic, and a separate reward pool", () => {
     const club = demoContent.clubs.find((item) => item.id === "kendo-demo")!;
-    expect(kendoCardDefinitions).toHaveLength(6);
+    expect(kendoCardDefinitions).toHaveLength(8);
     expect(club.starterCardIds.filter((id) => id.startsWith("KEN-"))).toHaveLength(4);
     expect(kendoCardDefinitions.every((card) => club.cardPoolIds.includes(card.id))).toBe(true);
     expect(club.startingRelicId).toBe("bamboo-grip");

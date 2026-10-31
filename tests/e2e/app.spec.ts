@@ -237,6 +237,31 @@ test("music club starts with extra time and types a tempo card", async ({ page }
   await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
 });
 
+test("a new club pool card remains readable and activates on a narrow battle screen", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /軽音部/ }).click();
+  await enterNextNode(page);
+  await page.addInitScript(() => {
+    const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
+    const combat = saved.session.run.combat;
+    const held = combat.cards.find((card: { instanceId: string }) => card.instanceId === combat.hand[0]);
+    held.cardId = "MUS-007";
+    localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
+  });
+  await page.reload();
+  const bridge = page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: /^bridge$/ }) });
+  await expect(bridge).toBeVisible();
+  await expect(bridge).toContainText("時間 +1秒");
+  await page.getByRole("button", { name: "再開" }).click();
+  if (process.env.SCHOOL_RG_CAPTURE_CLUB_CARDS === "1") {
+    await page.screenshot({ path: "docs/content/previews/issue122-bridge-narrow-v2-20261031.png", fullPage: true });
+  }
+  await page.keyboard.type("bridge");
+  await expect(page.locator(".battle-message")).toContainText("bridge を発動");
+});
+
 test("art club types a distinct card and retains a frame through timeout", async ({ page }) => {
   test.setTimeout(60_000);
   await page.clock.install();

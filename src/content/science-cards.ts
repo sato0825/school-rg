@@ -20,6 +20,12 @@ export const scienceCardSpecs: readonly ClubCardSpec[] = [
   { id: "SCI-006", word: "quarantine", type: "skill", target: "self",
     effects: [{ kind: "block", parameters: { amount: 10 } }, { kind: "draw", parameters: { count: 1 } }],
     upgrades: [{ kind: "block", parameters: { amount: 13 } }, { kind: "draw", parameters: { count: 1 } }] },
+  { id: "SCI-007", word: "catalyst", type: "skill", target: "enemy",
+    effects: [{ kind: "apply_poison", parameters: { amount: 2 } }, { kind: "apply_weak", parameters: { turns: 1 } }],
+    upgrades: [{ kind: "apply_poison", parameters: { amount: 4 } }, { kind: "apply_weak", parameters: { turns: 2 } }] },
+  { id: "SCI-008", word: "assay", type: "attack", target: "enemy",
+    effects: [{ kind: "damage_if_status", parameters: { status: "poison", amount: 5, conditionalAmount: 10 } }, { kind: "draw", parameters: { count: 1 } }],
+    upgrades: [{ kind: "damage_if_status", parameters: { status: "poison", amount: 7, conditionalAmount: 13 } }, { kind: "draw", parameters: { count: 1 } }] },
 ];
 
 const suite = buildCardSuite(scienceCardSpecs);
