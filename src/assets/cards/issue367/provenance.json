@@ -1,0 +1,147 @@
+{
+  "assets": [
+    {
+      "cardId": "ART-010",
+      "version": "issue338-v1",
+      "runtimePath": "src/assets/cards/issue367/card-art-palette-v1.png",
+      "originalPath": "docs/art/production/issue338/assets/card-art-palette-v1.png",
+      "sourceIssue": 338,
+      "sourceCommit": "48a3d839da3eac69db4f5d28593ee28c1cfdd44d",
+      "sha256": "2aef3903f7d3bcbf10f93b34a7f68054aee1157fe59b11543ff22470adbf54b8",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-019",
+      "version": "issue338-v1",
+      "runtimePath": "src/assets/cards/issue367/card-base-barrier-v1.png",
+      "originalPath": "docs/art/production/issue338/assets/card-base-barrier-v1.png",
+      "sourceIssue": 338,
+      "sourceCommit": "48a3d839da3eac69db4f5d28593ee28c1cfdd44d",
+      "sha256": "c99447c8725f13f23db403824240b109508de54853ffc75e863649520800886f",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-020",
+      "version": "issue338-v1",
+      "runtimePath": "src/assets/cards/issue367/card-base-focus-v1.png",
+      "originalPath": "docs/art/production/issue338/assets/card-base-focus-v1.png",
+      "sourceIssue": 338,
+      "sourceCommit": "48a3d839da3eac69db4f5d28593ee28c1cfdd44d",
+      "sha256": "f238d6bd6e1dd9030e4c3d286b57788033ee22b7bb6c98468e575d0f5bb4ea9c",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-021",
+      "version": "issue338-v1",
+      "runtimePath": "src/assets/cards/issue367/card-base-sacrifice-v1.png",
+      "originalPath": "docs/art/production/issue338/assets/card-base-sacrifice-v1.png",
+      "sourceIssue": 338,
+      "sourceCommit": "48a3d839da3eac69db4f5d28593ee28c1cfdd44d",
+      "sha256": "844e95429388e7bc670779bb90bd4c054794ea10cc15952679b50ff94ab1681e",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-022",
+      "version": "issue338-v3",
+      "runtimePath": "src/assets/cards/issue367/card-base-finish-v3.png",
+      "originalPath": "docs/art/production/issue338/assets/card-base-finish-v3.png",
+      "sourceIssue": 338,
+      "sourceCommit": "6fa4f9622ec2371de238c348180ac0c3c5bf8a71",
+      "sha256": "126f357cea0e9cbccbf0ffccb749a749fe6d609f243b9f8048b4278789c57cee",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending",
+      "priorRuntimePath": "src/assets/cards/issue367/card-base-finish-v2.png",
+      "priorSha256": "97ee0d49270c3b77032bed1513898f4c836a1ddd6a83b75b88700b448337d411"
+    },
+    {
+      "cardId": "BASE-024",
+      "version": "issue338-v1",
+      "runtimePath": "src/assets/cards/issue367/card-base-shield-break-v1.png",
+      "originalPath": "docs/art/production/issue338/assets/card-base-shield-break-v1.png",
+      "sourceIssue": 338,
+      "sourceCommit": "48a3d839da3eac69db4f5d28593ee28c1cfdd44d",
+      "sha256": "c1b45d8cab20876041fbfff018517bde1e685067a8fb9bacf63b646f0f380217",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "KEN-005",
+      "version": "issue338-v2",
+      "runtimePath": "src/assets/cards/issue367/card-ken-kata-v2.png",
+      "originalPath": "docs/art/production/issue338/assets/card-ken-kata-v2.png",
+      "sourceIssue": 338,
+      "sourceCommit": "48a3d839da3eac69db4f5d28593ee28c1cfdd44d",
+      "sha256": "283af8c282dae4efa148889cef47c6b1e482f5c143c5dc96b9598e75060f0028",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "LIT-010",
+      "version": "issue338-v1",
+      "runtimePath": "src/assets/cards/issue367/card-lit-bookmark-v1.png",
+      "originalPath": "docs/art/production/issue338/assets/card-lit-bookmark-v1.png",
+      "sourceIssue": 338,
+      "sourceCommit": "48a3d839da3eac69db4f5d28593ee28c1cfdd44d",
+      "sha256": "c7953ffaaa5fecb5eff29f607124e612e05151aafd5e8cfc6e68a7b5be989a03",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "MUS-009",
+      "version": "issue338-v1",
+      "runtimePath": "src/assets/cards/issue367/card-mus-pickup-v1.png",
+      "originalPath": "docs/art/production/issue338/assets/card-mus-pickup-v1.png",
+      "sourceIssue": 338,
+      "sourceCommit": "48a3d839da3eac69db4f5d28593ee28c1cfdd44d",
+      "sha256": "4bbbd8ab723b321da822424a1b840984fbd5089df51221ed60d3e23dcb8e456c",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "SCI-011",
+      "version": "issue338-v1",
+      "runtimePath": "src/assets/cards/issue367/card-sci-test-tube-v1.png",
+      "originalPath": "docs/art/production/issue338/assets/card-sci-test-tube-v1.png",
+      "sourceIssue": 338,
+      "sourceCommit": "48a3d839da3eac69db4f5d28593ee28c1cfdd44d",
+      "sha256": "d50520225cd47e561c55c050f812b67671f8bfcba50db6a09e6507430d2a218c",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    }
+  ],
+  "excludedSuperseded": [
+    {
+      "cardId": "BASE-022",
+      "version": "issue338-v1",
+      "originalPath": "docs/art/production/issue338/assets/card-base-finish-v1.png",
+      "sha256": "7014b85952c41c4baac712818134725f364ab84756406c71c435f92fb7dd3cde"
+    },
+    {
+      "cardId": "KEN-005",
+      "version": "issue338-v1",
+      "originalPath": "docs/art/production/issue338/assets/card-ken-kata-v1.png",
+      "sha256": "9ffe98646ecebb1e40a0f445916f09f976d24011fd4937bcd1cf97c00f434086"
+    },
+    {
+      "cardId": "BASE-022",
+      "version": "issue338-v2",
+      "originalPath": "docs/art/production/issue338/assets/card-base-finish-v2.png",
+      "runtimePath": "src/assets/cards/issue367/card-base-finish-v2.png",
+      "sha256": "97ee0d49270c3b77032bed1513898f4c836a1ddd6a83b75b88700b448337d411"
+    }
+  ]
+}
