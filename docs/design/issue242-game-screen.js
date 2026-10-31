@@ -1,3 +1,4 @@
+/* global document, URLSearchParams, location, history, window, clearTimeout, setTimeout */
 /** Visual prototype only. It never loads or changes a saved run. */
 const shell = document.querySelector('.game-shell');
 const params = new URLSearchParams(location.search);
