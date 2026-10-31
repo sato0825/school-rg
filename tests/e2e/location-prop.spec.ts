@@ -27,6 +27,7 @@ for (const width of [1440, 1024]) for (const [place, artId] of Object.entries(pl
     const art = page.locator(`.location-prop-art[data-asset-id="${artId}"]`);
     await expect(art).toBeVisible();
     expect(await art.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+    await art.evaluate((image: HTMLImageElement) => image.decode());
     await expect(page.locator(".hero-art")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight)).toBe(true);
     if (place === "shop") {

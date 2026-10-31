@@ -41,9 +41,11 @@
 | --- | --- | --- |
 | 保管庫 | [実画面](previews/issue304-runtime/treasure-1440.png) | [実画面](previews/issue304-runtime/treasure-1024.png) |
 | 購買 | [実画面](previews/issue304-runtime/shop-1440.png) | [実画面](previews/issue304-runtime/shop-1024.png) |
-| 休憩 | [実画面](previews/issue304-runtime/rest-1440.png) | [実画面](previews/issue304-runtime/rest-1024.png) |
+| 休憩（満タン時） | [実画面](previews/issue304-runtime/rest-full-1440.png) | [実画面](previews/issue304-runtime/rest-full-1024.png) |
 | イベント | [実画面](previews/issue304-runtime/event-1440.png) | [実画面](previews/issue304-runtime/event-1024.png) |
 
 [保管庫取得の局所反応 1024](previews/issue304-runtime/treasure-claim-1024.png)。画像は仮のAct 1地点ノードを `RunSession` に保存して本編UIを描いた証拠で、自然ランの全地点や実機iPadの証拠ではない。`SHA256SUMS` は同ディレクトリに記録した。Playwrightの独立Chromiumで4地点×2寸法の画像読み込み・スクロール外への逸脱なし、購買全5品と整理選択の表示、実時計で保管庫取得→経路→ボス突入を確認した。地点の既存状態/保存フローと合わせて対象E2E 20/20。
+
+満タン休憩で未強化カードが残る場合は、0回復を選ぶボタンを無効にして「HPは満タン」を同じボタン内に示し、Tabで次のノート強化に進める。未強化カードもない場合は「効果なしで進む」を明示して進行できる。これらは対象E2E 4/4で確認した。休憩の旧スクリーンショット `rest-1440.png` / `rest-1024.png` は比較履歴として残し、上表は修正後の画像へ更新した。
 
 依然として候補の段階。各商品の個別絵、保管庫の開閉/空状態、回復/強化の動作差分、イベントID別の掲示内容、Act 3の色調、5部活との組合せ、人手の画風・権利採用判定、実機iPad操作は未完了。
