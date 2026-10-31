@@ -1016,6 +1016,54 @@
       "generator": "built-in imagegen; model version not exposed",
       "editableSource": null,
       "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act1-paper-library-candidate-v2",
+      "file": "src/assets/stages/act1-paper-library-candidate-v2.png",
+      "sha256": "aa1af5b439317164bf19e58216e049b3fbbbe7e759909a0151b9c1bb704cfbd1",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 1,
+      "referenceId": "act1-paper-library-candidate-v1",
+      "promptFile": "docs/art/prompts/issue263-paper-act1-places-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act1-paper-music-room-candidate-v1",
+      "file": "src/assets/stages/act1-paper-music-room-candidate-v1.png",
+      "sha256": "d58fef338f9a23c538495a6a6f77bf8ade9c7b86191e4af2ce2eb824ae0ad35a",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 1,
+      "referenceId": "act1-paper-atrium-candidate-v1",
+      "promptFile": "docs/art/prompts/issue263-paper-act1-places-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act1-paper-covered-courtyard-candidate-v1",
+      "file": "src/assets/stages/act1-paper-covered-courtyard-candidate-v1.png",
+      "sha256": "357e0daaa0115525ade26655a478b2097682d0bcdd5403e186423b0a1ff8da4c",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 1,
+      "referenceId": "act1-paper-atrium-candidate-v1",
+      "promptFile": "docs/art/prompts/issue263-paper-act1-places-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
     }
   ]
 }
