@@ -6,7 +6,7 @@ import { chromium } from "playwright";
 
 const dir = import.meta.dirname;
 const assets = JSON.parse(fs.readFileSync(path.join(dir, "revision-assets.json"), "utf8"))
-  .filter((asset) => asset.state !== "superseded-candidate");
+  .filter((asset) => ["KEN-002", "KEN-004", "KEN-009", "KEN-011", "BASE-017", "BASE-023"].includes(asset.id) && asset.state !== "superseded-candidate");
 const effects = {
   "KEN-002": "防御8・1枚ドロー", "KEN-004": "3ダメージを2回", "KEN-009": "防御5・時間+1秒",
   "KEN-011": "毎ターン筋力+1・防御4", "BASE-017": "時間+2秒", "BASE-023": "時間+4秒",

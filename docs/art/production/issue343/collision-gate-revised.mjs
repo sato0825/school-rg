@@ -1,0 +1,37 @@
+import fs from "node:fs";
+import path from "node:path";
+import console from "node:console";
+import { pathToFileURL } from "node:url";
+import { chromium } from "playwright";
+
+const dir = import.meta.dirname;
+const pairs = [
+  ["文芸", ["LIT-005", "reread", "捨て札1枚回収・防御2", "../../../../src/assets/cards/issue261/lit-reread-candidate-v3.png"], ["LIT-009", "edit", "手札1枚除外・2枚ドロー", "assets/lit-edit-candidate-v2.png"]],
+  ["科学", ["SCI-002", "observe", "敵を弱体1・1枚ドロー", "../../../../src/assets/cards/issue261/sci-observe-candidate-v2.png"], ["SCI-009", "buffer", "防御6・弱体を1つ解除", "assets/sci-buffer-candidate-v4.png"]],
+  ["剣道", ["KEN-002", "stance", "防御8・1枚ドロー", "assets/ken-stance-candidate-v2.png"], ["KEN-008", "breath", "防御4・反撃3・1枚ドロー", "assets/ken-breath-candidate-v2.png"]],
+];
+const html = `<!doctype html><html lang="ja"><meta charset="utf-8"><title>#343 類似形状と異効果</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#dce8eb;color:#19394b;font:12px system-ui,sans-serif}.page{width:1024px;padding:20px}h1{font-size:19px}.group{display:flex;gap:10px;margin-bottom:16px;align-items:flex-start}.club{width:58px;font-weight:700;padding-top:14px}.card{width:var(--cw);height:var(--ch);background:#f4f5ee;border:2px solid #55778b;border-radius:7px;padding:5px}.name{height:25px;font-weight:700}.art{width:var(--aw);height:var(--ah);display:block;object-fit:cover;margin:0 auto}.effect{margin-top:8px;border-top:1px solid #9cb5c0;padding-top:4px;font-size:11px}.thumb{width:72px;text-align:center;font-size:10px}.thumb img{width:48px;height:48px;display:block;object-fit:cover;margin:0 auto 4px}.gray img{filter:grayscale(1)}</style><div class="page"><h1>#343 同じ形に見える・効果が違う組</h1><div id="groups"></div></div>
+<script>const groups=${JSON.stringify(pairs)};for(const [club,...items] of groups){for(const mode of ['color','gray']){const g=document.createElement('div');g.className='group '+mode;g.innerHTML='<div class="club">'+club+' '+mode+'</div>';for(const [id,name,effect,image] of items){const c=document.createElement('div');c.className='card';c.innerHTML='<div class="name">'+name+'</div><img class="art" src="'+image+'"><div class="effect">'+effect+'</div>';g.append(c);const t=document.createElement('div');t.className='thumb';t.innerHTML='<img src="'+image+'">'+id;g.append(t)}document.querySelector('#groups').append(g)}}</script></html>`;
+fs.writeFileSync(path.join(dir, "collision-gate-revised.html"), html);
+const browser = await chromium.launch({ headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1024, height: 1500 }, deviceScaleFactor: 1 });
+  await page.goto(pathToFileURL(path.join(dir, "collision-gate-revised.html")).href);
+  const loaded = await page.locator("img").evaluateAll(async (images) => {
+    await Promise.all(images.map((image) => image.decode().catch(() => undefined)));
+    return images.filter((image) => image.naturalWidth).length;
+  });
+  if (loaded !== 24) throw new Error(`loaded ${loaded}/24`);
+  for (const mode of ["hand", "reward"]) {
+    await page.evaluate((mode) => {
+      const css = globalThis.document.documentElement.style;
+      css.setProperty("--cw", mode === "hand" ? "140px" : "165px");
+      css.setProperty("--ch", mode === "hand" ? "160px" : "220px");
+      css.setProperty("--aw", mode === "hand" ? "112px" : "135px");
+      css.setProperty("--ah", mode === "hand" ? "57px" : "91px");
+    }, mode);
+    await page.screenshot({ path: path.join(dir, `collision-${mode}-1024-v2.png`), fullPage: true });
+  }
+  console.log("3 pairs, 24 images loaded at reward and 48px size");
+} finally { await browser.close(); }

@@ -161,14 +161,14 @@
     "priorSha256": "7bd91bce650f5963d5c757409472153794d224d2279ee6bcb49a84641e3eeecd",
     "promptRef": "collision-prompts.md#LIT-009",
     "styleReference": "docs/art/production/issue338/assets/card-base-barrier-v1.png",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending pairwise real-size QA",
-    "selectionDecision": "separate main object from similar-effect-neighbor; pending static and runtime verification"
+    "visualReview": "1024 hand/reward, 112x57, central 48px, grayscale pairwise static QA; runtime pending",
+    "selectionDecision": "distinct object and silhouette from neighboring different-effect card; runtime and formal adoption pending"
   },
   {
     "id": "SCI-009",
@@ -180,14 +180,14 @@
     "priorSha256": "8c64b7e79ded3bb39b46e4ca0e0defd2286ce0c9959418d1bb0299c586e353ac",
     "promptRef": "collision-prompts.md#SCI-009",
     "styleReference": "docs/art/production/issue338/assets/card-base-barrier-v1.png",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending pairwise real-size QA",
-    "selectionDecision": "separate main object from similar-effect-neighbor; pending static and runtime verification"
+    "visualReview": "1024 hand/reward, 112x57, central 48px, grayscale pairwise static QA; runtime pending",
+    "selectionDecision": "distinct object and silhouette from neighboring different-effect card; runtime and formal adoption pending"
   },
   {
     "id": "KEN-008",
@@ -199,13 +199,13 @@
     "priorSha256": "8c4c32890daa1f4dcf08e4ebbb6bf0db4ced1403f5659cd7532d35754a3a422e",
     "promptRef": "collision-prompts.md#KEN-008",
     "styleReference": "docs/art/production/issue338/assets/card-base-barrier-v1.png",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending pairwise real-size QA",
-    "selectionDecision": "separate main object from similar-effect-neighbor; pending static and runtime verification"
+    "visualReview": "1024 hand/reward, 112x57, central 48px, grayscale pairwise static QA; runtime pending",
+    "selectionDecision": "distinct object and silhouette from neighboring different-effect card; runtime and formal adoption pending"
   }
 ]
