@@ -1,0 +1,102 @@
+[
+  {
+    "id": "KEN-011",
+    "version": "v1",
+    "path": "docs/art/production/issue269/assets/card-ken-hasso-v1.png",
+    "sha256": "414f23d431f629adacb143d529611f8a3095c2cc31834c52ea7e67199aa937d1",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-2b84a7d1-e4e6-4755-8887-0d87a218cf2a.png",
+    "promptRef": "wave2-prompts.json#KEN-011",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "MUS-005",
+    "version": "v1",
+    "path": "docs/art/production/issue269/assets/card-mus-chorus-v1.png",
+    "sha256": "10a3fe11a72d70dde66c2a8fa6416a00b79d662f3f28406af6ae8c1d8c4769f0",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-3da77bb4-020d-4fdd-a7ba-c20d72bb1d35.png",
+    "promptRef": "wave2-prompts.json#MUS-005",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "MUS-010",
+    "version": "v1",
+    "path": "docs/art/production/issue269/assets/card-mus-riff-v1.png",
+    "sha256": "f7ed3c206aab17989bb46e0be1a20fa1595f1b65511aa949b92bda6bfd1a4391",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-0ae92c05-140c-4b2e-9c31-e1b3feee18ca.png",
+    "promptRef": "wave2-prompts.json#MUS-010",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "ART-005",
+    "version": "v1",
+    "path": "docs/art/production/issue269/assets/card-art-redraw-v1.png",
+    "sha256": "45993507d58cbfae1b184cb087df6c6df8bf8aae4cbbc0606966f9439d091560",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-a356d28f-4c5d-4258-aaee-36b4243e1010.png",
+    "promptRef": "wave2-prompts.json#ART-005",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "ART-012",
+    "version": "v1",
+    "path": "docs/art/production/issue269/assets/card-art-triptych-v1.png",
+    "sha256": "e0f26b06c39f586da60495d2d3e62677fe5fb671c286f2732910aa654e38e264",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-972f36c5-06e3-474f-8cd5-610dbcd7cb48.png",
+    "promptRef": "wave2-prompts.json#ART-012",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  }
+]
