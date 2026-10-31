@@ -193,7 +193,7 @@ function combatLogEntry(entry: CombatActionLogEntry, enemies: readonly { instanc
   if (entry.timeDeltaMs) details.push(`時間 ${signed(entry.timeDeltaMs / 1_000)}秒`);
   if (entry.goldDelta) details.push(`所持金 ${signed(entry.goldDelta)}G`);
   const target = entry.targetEnemyInstanceId ? ` → ${enemyName(entry.targetEnemyInstanceId)}` : "";
-  return `<li class="combat-log-entry" data-kind="${entry.kind}"><span class="log-sequence">TURN ${entry.turn} · ${String(entry.sequence).padStart(2, "0")}</span><strong>${html(label ?? entry.actionId)}${html(target)}</strong><span class="log-kind">${entry.kind === "card" ? "カード" : entry.kind === "potion" ? "ポーション" : entry.kind === "turn" ? "進行" : entry.kind === "relic" ? "レリック" : entry.kind === "result" ? "結果" : "敵Intent"}</span><div class="log-changes">${(details.length ? details : [entry.kind === "turn" ? "フェーズ移行" : "状態変化なし"]).map((detail) => `<span>${html(detail)}</span>`).join("")}</div></li>`;
+  return `<li class="combat-log-entry" data-kind="${entry.kind}"><span class="log-sequence">TURN ${entry.turn} · ${String(entry.sequence).padStart(2, "0")}</span><strong>${html(label ?? entry.actionId)}${html(target)}</strong><span class="log-kind">${entry.kind === "card" ? "カード" : entry.kind === "potion" ? "ポーション" : entry.kind === "turn" ? "進行" : entry.kind === "relic" ? "レリック" : entry.kind === "result" ? "結果" : "敵Intent"}</span><div class="log-changes">${(details.length ? details : [entry.kind === "turn" ? "フェーズ移行" : entry.kind === "result" ? "戦闘終了" : "状態変化なし"]).map((detail) => `<span>${html(detail)}</span>`).join("")}</div></li>`;
 }
 
 export function renderRunCombatLog(root: HTMLElement, run: RunState, content: ContentRegistry, art: BattleArt): void {
