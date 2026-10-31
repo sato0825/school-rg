@@ -22,6 +22,8 @@ for (const width of [1024, 1440] as const) for (const quiet of [false, true] as 
     const prepared = { ...entered, run: { ...entered.run, combat: { ...combat, enemies, drawPile: [...combat.drawPile.filter((id) => id !== sweepId), sweepId] } } };
     await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
     await page.goto("/");
+    // Stop wall time before advancing the combat; result assertions then share one frame.
+    await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 500);
     if (quiet) {
       await page.getByRole("button", { name: "操作", exact: true }).click();
       await page.locator("[data-action=toggle-stimulus]").click();
@@ -88,6 +90,7 @@ for (const width of [1024, 1440] as const) test(`five resolved attackers do not 
   const prepared = { ...entered, run: { ...entered.run, combat: { ...combat, enemies } } };
   await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
   await page.goto("/");
+  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 500);
   const before = await page.locator(".stage").boundingBox();
   const remainingMs = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
   await page.clock.runFor(remainingMs + 80);
