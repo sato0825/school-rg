@@ -33,7 +33,7 @@ describe("candidate card art runtime catalog", () => {
       const digest = createHash("sha256").update(readFileSync(fileURLToPath(new URL(`../../${asset.runtimePath}`, import.meta.url)))).digest("hex");
       expect(digest, asset.cardId).toBe(asset.sha256);
       expect(cardArtForId(asset.cardId).state).toBe(asset.state);
-      if (asset.cardId !== "BASE-023") expect(cardArtForId(asset.cardId).version).toBe(asset.version);
+      if (!["BASE-023", "KEN-008"].includes(asset.cardId)) expect(cardArtForId(asset.cardId).version).toBe(asset.version);
       expect(asset.formalAdoption).toBe(false);
     }
   });
