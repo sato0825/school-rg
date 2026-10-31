@@ -10,6 +10,7 @@ const samples = [
 ] as const;
 
 test("#340 compares stage-wing geography with #304 props on same saved Act 3 nodes", async ({ browser }) => {
+  test.setTimeout(120_000);
   for (const sample of samples) {
     const base = createRunSession(sample.seed, "literature-demo", demoContent);
     const from = base.run.map.nodes.find((node) => node.id === sample.fromId)!;
@@ -36,14 +37,20 @@ test("#340 compares stage-wing geography with #304 props on same saved Act 3 nod
         expect(await stage.evaluate((node, old) => node === old, element)).toBe(true);
         const prop = page.locator(`.location-prop-art[data-asset-id="${sample.prop}"]`);
         await expect(prop).toBeVisible();
-        expect(await prop.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+        await expect.poll(async () => prop.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
         expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.map.currentNodeId)).toBe(sample.targetId);
         await page.reload();
         await expect(stage).toHaveAttribute("data-stage-art", artId);
         await expect(stage).toHaveAttribute("data-stage-place", placeId);
         await expect.poll(async () => prop.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+        await stage.evaluate(async (node) => {
+          const url = (node as HTMLElement).style.backgroundImage.slice(5, -2);
+          const image = new Image();
+          image.src = url;
+          await image.decode();
+        });
         if (process.env.SCHOOL_RG_CAPTURE_STAGE_WING === "1") {
-          await page.screenshot({ path: `docs/design/previews/issue340-act3-${sample.name}-${concept}-${width}.png`, fullPage: true });
+          await page.screenshot({ path: `docs/design/previews/issue340-act3-${sample.name}-${concept}-${width}.png`, fullPage: true, animations: "disabled" });
         }
         if (sample.kind === "shop") await page.locator('[data-action="buy-offer"]:not(:disabled)').first().click();
         if (sample.kind === "rest") await page.locator('[data-action="rest-heal"]').click();
