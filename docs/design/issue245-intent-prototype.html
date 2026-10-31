@@ -54,11 +54,12 @@
     .enemy-id{position:relative;z-index:4;display:grid;flex:none;gap:5px;width:100%;max-width:260px;min-height:97px;margin-top:-8px;padding:7px 9px 9px;background:#102d40ef;border:1px solid #95b7c1a8;border-radius:8px;box-shadow:0 5px 12px #0a203b66;text-align:left}
     .identity-row{display:flex;align-items:center;gap:5px;min-width:0}
     .identity-row strong{font-size:12px;line-height:1.1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .hp-row{display:flex;align-items:center;gap:5px;min-width:0}
     .class-mark{display:inline-grid;place-items:center;flex:none;width:13px;height:13px;border:1.5px solid #d2e2e3;transform:rotate(45deg);font-size:0}
     .enemy[data-class="elite"] .class-mark{border:2px double #e9c573;box-shadow:0 0 0 2px #e9c57355}
     .enemy[data-class="boss"] .class-mark{border:2px solid #e9a7ad;box-shadow:0 0 0 3px #e9a7ad55}
-    .hp-number{margin-left:auto;font-size:13px;font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
-    .enemy-hp{display:block;width:100%;height:6px;border-radius:3px;background:#667481;overflow:hidden}
+    .hp-number{font-size:13px;font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .enemy-hp{display:block;flex:1;height:7px;border-radius:3px;background:#667481;overflow:hidden}
     .enemy-hp i{display:block;width:var(--hp);height:100%;background:#e08d9e}
     .enemy-status{position:relative;z-index:5;flex:none;margin-top:4px;height:24px;display:flex;align-items:center;justify-content:center;gap:5px;color:#102c3c}
     .status{background:#d4e7e7e8;padding:2px 5px;border-radius:4px;font-size:11px;font-weight:900}
@@ -68,16 +69,17 @@
     .stage-detail[data-open="true"]{opacity:1}
     .stage-detail strong{display:block;font-size:14px;margin-bottom:3px}
     .preview-watermark{position:absolute;z-index:6;bottom:5px;right:5px;font-size:9px;background:#152f3e;color:#d5e9ea;padding:2px 5px}
-    .game-frame[data-count="5"] .enemy-line{left:31%;right:2%;gap:5px}
+    .game-frame[data-count="5"] .enemy-line{left:26%;right:1%;gap:5px}
     .game-frame[data-count="5"] .hero{left:2%;height:min(59%,340px)}
-    .game-frame[data-count="5"] .step{font-size:12px;padding:2px;gap:1px}
-    .game-frame[data-count="5"] .step svg{width:14px;height:14px}
-    .game-frame[data-count="5"] .seq-arrow{font-size:12px}
-    .game-frame[data-count="5"] .target-mark{font-size:9px}
+    .game-frame[data-count="5"] .step{font-size:13px;padding:3px;gap:1px}
+    .game-frame[data-count="5"] .step svg{width:16px;height:16px}
+    .game-frame[data-count="5"] .seq-arrow{font-size:14px}
+    .game-frame[data-count="5"] .target-mark{font-size:11px}
     .game-frame[data-count="5"] .enemy-art{height:50%}
-    .game-frame[data-count="5"] .enemy-id{min-height:91px;padding:5px}
-    .game-frame[data-count="5"] .identity-row strong{font-size:10px}
-    .game-frame[data-count="5"] .hp-number{font-size:10px}
+    .game-frame[data-count="5"] .enemy-id{min-height:108px;padding:5px}
+    .game-frame[data-count="5"] .identity-row strong{font-size:11px}
+    .game-frame[data-count="5"] .hp-number{font-size:11px}
+    .game-frame[data-count="5"] .stage-detail{left:2%;top:3%;bottom:auto;width:240px}
     .game-frame[data-quiet="true"] .enemy-art,.game-frame[data-quiet="true"] .feedback{transition:none!important;animation:none!important}
     .game-frame[data-quiet="true"] .enemy[data-active="true"] .enemy-art{transform:none}
     @media(prefers-reduced-motion:reduce){.enemy[data-active="true"] .enemy-art{transform:none}}
@@ -86,10 +88,10 @@
       .game-head{padding:0 14px}.hero{left:2%;height:70%}
       .enemy-line{left:32%;right:2%;gap:5px}
       .stage-detail{left:26%}
-      .game-frame[data-count="5"] .enemy-line{left:28%;right:1%}
-      .game-frame[data-count="5"] .step{font-size:11px}
-      .game-frame[data-count="5"] .step svg{width:12px;height:12px}
-      .game-frame[data-count="5"] .identity-row strong{font-size:9px}
+      .game-frame[data-count="5"] .enemy-line{left:25%;right:1%}
+      .game-frame[data-count="5"] .step{font-size:13px}
+      .game-frame[data-count="5"] .step svg{width:16px;height:16px}
+      .game-frame[data-count="5"] .identity-row strong{font-size:11px}
     }
   </style>
 </head>
@@ -157,7 +159,7 @@
       const aria=`${enemy.name}、HP ${enemy.hp}/${enemy.max}、ブロック ${enemy.block}。次の行動: ${enemy.steps.map(fullStep).join('、続いて ')}。`;
       return `<button class="enemy" type="button" data-index="${index}" data-selected="false" data-class="${className}" aria-label="${escapeHtml(aria)}">
         <img class="enemy-art" alt="" src="${enemy.art}">
-        <div class="enemy-id"><div class="identity-row"><span class="class-mark" aria-hidden="true"></span><strong>${escapeHtml(enemy.name)}</strong><span class="hp-number">${enemy.hp}/${enemy.max}</span></div><span class="enemy-hp" role="meter" aria-label="${escapeHtml(enemy.name)}のHP" aria-valuemin="0" aria-valuemax="${enemy.max}" aria-valuenow="${enemy.hp}"><i style="--hp:${enemy.hp/enemy.max*100}%"></i></span><div class="intent-sequence" aria-label="次の行動">${effects}</div></div>
+        <div class="enemy-id"><div class="identity-row"><span class="class-mark" aria-hidden="true"></span><strong>${escapeHtml(enemy.name)}</strong></div><div class="hp-row"><span class="enemy-hp" role="meter" aria-label="${escapeHtml(enemy.name)}のHP" aria-valuemin="0" aria-valuemax="${enemy.max}" aria-valuenow="${enemy.hp}"><i style="--hp:${enemy.hp/enemy.max*100}%"></i></span><span class="hp-number">${enemy.hp}/${enemy.max}</span></div><div class="intent-sequence" aria-label="次の行動">${effects}</div></div>
         <div class="enemy-status">${enemy.block>0?`<span class="status">◇ ${enemy.block}</span>`:''}</div>
         <div class="feedback" aria-hidden="true">${escapeHtml(enemy.steps[0][1])}</div>
       </button>`;

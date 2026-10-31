@@ -44,6 +44,9 @@ test("five enemies retain separate HP and intent at iPad landscape size", async 
   }
   await page.locator("#quiet").click();
   await expect(page.locator(".game-frame")).toHaveAttribute("data-quiet", "true");
+  await enemies.nth(3).click();
+  await expect(page.locator("#stage-detail")).toContainText("1. 防御 +4、自分へ");
+  await expect(page.locator("#stage-detail")).toContainText("2. 攻撃 3、味方へ");
 });
 
 test("encounter class and composite elite intent stay explicit", async ({ page }) => {
@@ -51,4 +54,8 @@ test("encounter class and composite elite intent stay explicit", async ({ page }
   await expect(page.locator("#class-text")).toHaveText("強敵戦");
   await expect(page.locator(".enemy")).toHaveAttribute("data-class", "elite");
   await expect(page.locator(".enemy .step-text")).toHaveText(["4", "+3"]);
+  await page.goto(`${prototype}?case=boss`);
+  await expect(page.locator("#class-text")).toHaveText("ボス戦");
+  await expect(page.locator(".enemy")).toHaveAttribute("data-class", "boss");
+  await expect(page.locator(".enemy .step-text")).toHaveText(["7"]);
 });
