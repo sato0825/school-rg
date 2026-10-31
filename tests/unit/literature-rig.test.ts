@@ -7,6 +7,7 @@ describe("literature layered candidate", () => {
     expect(rig.status).toBe("candidate");
     expect(rig.characterId).toBe("literature-student");
     expect(rig.expressionLayers.map((part) => part.id)).toEqual(["head-hit"]);
+    expect(rig.expressionLayers[0]?.file).toContain("head-hit-v2.png");
     expect(rig.parts.map((part) => part.id)).toEqual([
       "left-leg", "right-leg", "torso", "left-arm-bag", "right-arm-notebook", "head",
     ]);
@@ -21,7 +22,7 @@ describe("literature layered candidate", () => {
 
   it("renders separate art layers under a replaceable candidate ID", () => {
     const markup = literatureRigMarkup();
-    expect(markup).toContain('data-rig-id="literature-rig-candidate-v2"');
+    expect(markup).toContain('data-rig-id="literature-rig-candidate-v3"');
     expect(markup).toContain('data-art-state="candidate"');
     expect(markup.match(/class="rig-part"/g)).toHaveLength(7);
     expect(markup).toContain('data-part="head-hit"');

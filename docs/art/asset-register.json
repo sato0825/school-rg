@@ -1005,6 +1005,19 @@
       "rights": "original generated candidate normalization for school-rg"
     },
     {
+      "id": "literature-rig-head-hit-generated-candidate-v2", "file": "docs/art/candidates/literature-rig-head-hit-generated-v2.png",
+      "sha256": "8d24c9d66a429e07a7e3a4dc25d4105f8df2b587c6d9133325bf1a3981e6cef1", "width": 1239, "height": 1269,
+      "alpha": "transparent", "status": "candidate", "role": "reference", "characterId": "literature-student",
+      "promptFile": "docs/art/prompts/issue299-literature-hit-head-v2.md", "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "literature-rig-head-hit-candidate-v2", "file": "docs/art/candidates/literature-rig-parts-v1/head-hit-v2.png",
+      "sha256": "5bc3b732f6f51edf174eb5982d9cc1523ef1ca4e2bf604c5365f22b9b7d77b3b", "width": 459, "height": 470,
+      "alpha": "transparent", "status": "candidate", "role": "reference", "characterId": "literature-student",
+      "referenceId": "literature-rig-head-hit-generated-candidate-v2", "promptFile": "docs/art/prompts/issue299-literature-hit-head-v2.md",
+      "rights": "original generated candidate normalized without aspect distortion for school-rg"
+    },
+    {
       "id": "literature-rig-right-leg-candidate-v1", "file": "docs/art/candidates/literature-rig-parts-v1/right-leg.png",
       "sha256": "11ff143c2815a5c995bcc8a40d3ab87f229c7b44d223f233ccdc5ba5a822bd47",
       "width": 232, "height": 529, "alpha": "transparent", "status": "candidate", "role": "reference",

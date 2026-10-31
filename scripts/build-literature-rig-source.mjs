@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 /** Build a layer-editable OpenRaster source; no pixels are repainted here. */
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const manifest = JSON.parse(await readFile(resolve(root, "docs/art/rigs/literature-rig-candidate-v2.json"), "utf8"));
+const manifest = JSON.parse(await readFile(resolve(root, "docs/art/rigs/literature-rig-candidate-v3.json"), "utf8"));
 const target = resolve(root, manifest.editableSource);
 const source = resolve(root, manifest.sourceSheet.file);
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");

@@ -6,6 +6,19 @@
   aspect-ratio:1024/1536;transform:translateX(-50%) scale(var(--rig-scale,1));
   transform-origin:50% 100%;pointer-events:none;filter:drop-shadow(9px 17px 8px #1c344c7c)
 }
+.game-shell .hero-rig::before,.game-shell .hero-rig::after{
+  content:"";position:absolute;z-index:-1;bottom:.5%;height:1.5%;width:21%;
+  border-radius:50%;background:#16344987;filter:blur(5px);pointer-events:none
+}
+.game-shell .hero-rig::before{left:20%}
+.game-shell .hero-rig::after{right:17%}
+.game-shell .ally-slot[data-actor-motion="idle"] .hero-rig::before{animation:rig-left-contact 3100ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+.game-shell .ally-slot[data-actor-motion="idle"] .hero-rig::after{animation:rig-right-contact 3100ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+@keyframes rig-left-contact{0%,100%{transform:translateX(0) scaleX(1);opacity:.68}50%{transform:translateX(2%) scaleX(.94);opacity:.58}}
+@keyframes rig-right-contact{0%,100%{transform:translateX(0) scaleX(1);opacity:.68}50%{transform:translateX(-2%) scaleX(.96);opacity:.62}}
+.game-shell .ally-slot[data-actor-motion="card-use"] .hero-rig::before{transform:translateX(-3%) scaleX(1.02);opacity:.75}
+.game-shell .ally-slot[data-actor-motion="card-use"] .hero-rig::after{transform:translateX(2%) scaleX(1.02);opacity:.75}
+.game-shell .ally-slot[data-actor-motion="hit"] .hero-rig::before,.game-shell .ally-slot[data-actor-motion="hit"] .hero-rig::after{transform:scaleX(.9);opacity:.58}
 .game-shell .hero-rig .rig-part{position:absolute;display:block;object-fit:fill;max-width:none;will-change:transform}
 .game-shell .hero-rig [data-part="head-hit"]{visibility:hidden}
 .game-shell .ally-slot[data-actor-motion="hit"] .hero-rig [data-part="head"]{visibility:hidden}
@@ -50,6 +63,7 @@
 @keyframes rig-hit-step{0%,18%{transform:rotate(2deg)}100%{transform:rotate(0)}}
 
 .game[data-effects="quiet"] .hero-rig .rig-part{animation:none!important}
+.game[data-effects="quiet"] .hero-rig::before,.game[data-effects="quiet"] .hero-rig::after{animation:none!important}
 .game[data-effects="quiet"] .ally-slot[data-actor-motion="card-use"] [data-part="right-arm-notebook"]{transform:rotate(-35deg)}
 .game[data-effects="quiet"] .ally-slot[data-actor-motion="card-use"] [data-part="head"]{transform:rotate(3deg)}
 .game[data-effects="quiet"] .ally-slot[data-actor-motion="hit"] [data-part="head"]{transform:rotate(-8deg)}
@@ -57,6 +71,7 @@
 .game[data-effects="quiet"] .ally-slot[data-actor-motion="hit"] [data-part="right-arm-notebook"]{transform:rotate(20deg)}
 @media(prefers-reduced-motion:reduce){
   .game-shell .hero-rig .rig-part{animation:none!important}
+  .game-shell .hero-rig::before,.game-shell .hero-rig::after{animation:none!important}
   .game-shell .ally-slot[data-actor-motion="card-use"] [data-part="right-arm-notebook"]{transform:rotate(-35deg)}
   .game-shell .ally-slot[data-actor-motion="card-use"] [data-part="head"]{transform:rotate(3deg)}
   .game-shell .ally-slot[data-actor-motion="hit"] [data-part="head"]{transform:rotate(-8deg)}

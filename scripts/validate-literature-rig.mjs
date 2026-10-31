@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { pngInfo } from "./art-asset-checks.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const manifest = JSON.parse(await readFile(resolve(root, "docs/art/rigs/literature-rig-candidate-v2.json"), "utf8"));
+const manifest = JSON.parse(await readFile(resolve(root, "docs/art/rigs/literature-rig-candidate-v3.json"), "utf8"));
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 

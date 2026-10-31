@@ -16,6 +16,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     await expect(actor).toHaveAttribute("data-actor-motion", "idle");
     await expect(actor).toHaveAttribute("data-actor-rig", "literature-v1");
     await expect(actor.locator(".hero-rig .rig-part")).toHaveCount(7);
+    expect(await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node, "::before").animationName)).toBe("rig-left-contact");
     await page.keyboard.type("outline");
 
     await expect(actor).toHaveAttribute("data-actor-motion", "card-use");
@@ -44,6 +45,7 @@ test("reduced motion keeps the event pose as a still with no overlay animation",
   await expect(actor.locator(".hero-motion-frame")).toHaveCount(0);
   expect(await actor.locator('[data-part="right-arm-notebook"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
   expect(await actor.locator('[data-part="right-arm-notebook"]').evaluate((node) => getComputedStyle(node).transform)).not.toBe("none");
+  expect(await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node, "::before").animationName)).toBe("none");
 });
 
 test("the enemy hit changes the same body parts without moving the stage", async ({ page }) => {

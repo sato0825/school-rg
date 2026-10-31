@@ -1,8 +1,8 @@
-import manifest from "../../docs/art/rigs/literature-rig-candidate-v2.json";
+import manifest from "../../docs/art/rigs/literature-rig-candidate-v3.json";
 
 const urls: Readonly<Record<string, string>> = {
   "head": new URL("../../docs/art/candidates/literature-rig-parts-v1/head.png", import.meta.url).href,
-  "head-hit": new URL("../../docs/art/candidates/literature-rig-parts-v1/head-hit.png", import.meta.url).href,
+  "head-hit": new URL("../../docs/art/candidates/literature-rig-parts-v1/head-hit-v2.png", import.meta.url).href,
   "torso": new URL("../../docs/art/candidates/literature-rig-parts-v1/torso.png", import.meta.url).href,
   "left-arm-bag": new URL("../../docs/art/candidates/literature-rig-parts-v1/left-arm-bag.png", import.meta.url).href,
   "right-arm-notebook": new URL("../../docs/art/candidates/literature-rig-parts-v1/right-arm-notebook.png", import.meta.url).href,
