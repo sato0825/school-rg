@@ -449,6 +449,15 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
     };
   });
   await expectIntentMatchesSavedBattle(page);
+  if (process.env.SCHOOL_RG_CAPTURE_261 === "1") {
+    const original = page.viewportSize()!;
+    for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
+      await page.setViewportSize(viewport);
+      await page.locator(".hero-art,.enemy-art,.card-art img").evaluateAll(async (images) => Promise.all(images.map((image) => (image as HTMLImageElement).decode())));
+      await page.screenshot({ path: `docs/art/previews/issue261-combat-${viewport.width}-candidate-v3.png` });
+    }
+    await page.setViewportSize(original);
+  }
   const initialHp = Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"));
   await page.keyboard.type("heavy strike");
   await page.keyboard.type("strike");
@@ -480,6 +489,15 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
         && Math.abs(saved.stageRect.top - stageRect.top) < 1 && Math.abs(saved.stageRect.height - stageRect.height) < 1
         && Math.abs(saved.actorRect.left - actorRect.left) < 1 && Math.abs(saved.actorRect.bottom - actorRect.bottom) < 1;
     })).toBe(true);
+    if (process.env.SCHOOL_RG_CAPTURE_261 === "1") {
+      const original = page.viewportSize()!;
+      for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
+        await page.setViewportSize(viewport);
+        await page.locator(".hero-art,.reward-card .card-art img").evaluateAll(async (images) => Promise.all(images.map((image) => (image as HTMLImageElement).decode())));
+        await page.screenshot({ path: `docs/art/previews/issue261-${screen}-${viewport.width}-candidate-v3.png` });
+      }
+      await page.setViewportSize(original);
+    }
   }
   await page.reload();
   expect(await page.locator('.game-shell[data-screen="map"] .map-node.available').count()).toBeGreaterThan(0);
