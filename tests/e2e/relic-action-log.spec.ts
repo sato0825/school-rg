@@ -21,12 +21,12 @@ test("a typed victory keeps its result and reward history visible after reload",
   });
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.getByRole("button", { name: "戦闘ログを見る" }).click();
-  await expect(page.locator('.combat-log-entry[data-kind="result"]')).toContainText(["勝利確定", "戦闘報酬"]);
-  await expect(page.locator('.combat-log-entry[data-kind="card"]')).toContainText("strike");
+  await expect(page.getByRole("button", { name: /戦闘ログ/ })).toHaveCount(0);
+  const before = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.lastCombatLog);
+  expect(before.entries.some((entry: { kind: string; actionId: string }) => entry.kind === "card" && entry.actionId === "BASE-001")).toBe(true);
+  expect(before.entries.filter((entry: { kind: string }) => entry.kind === "result")).toHaveLength(2);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
-  await page.getByRole("button", { name: "前の画面に戻る" }).click();
   await page.reload();
-  await page.getByRole("button", { name: "戦闘ログを見る" }).click();
-  await expect(page.locator('.combat-log-entry[data-kind="result"]')).toContainText(["勝利確定", "戦闘報酬"]);
+  const after = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.lastCombatLog);
+  expect(after).toEqual(before);
 });
