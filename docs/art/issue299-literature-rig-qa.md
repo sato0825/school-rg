@@ -27,3 +27,11 @@
 - `npm run lint`、`npm run typecheck`、`npm run check:art`（72件とv3 ORA）、単体119件、統合166件、ビルド、専用ポート4302のE2E 5件が通過。1024/1440の被弾静止画 `outputs/issue299-literature-{1024,1440}-hit-rig-candidate-v3.png` で被弾顔とHP37/40を確認した。
 - **録画の訂正:** 初回のv1およびv3録画は、通常は非表示の `head-hit` レイヤーをPlaywrightの既定`visible`で待ったため、カード入力が敵ターン後になっていた。カード発動の連続動作の証拠には使用しない。録画条件を `state:'attached'` に直し、キー入力直後の `data-actor-motion="card-use"` をアサートして、`outputs/issue299-literature-{1024,1440}-idle-card-hit-candidate-v4.webm` を撮り直した。両サイズでカード発動状態を記録し、終了HP37/40を確認した。録画はWeb viewportで、実機ではない。
 - v3でも初見観察者/原画編集者の承認は未実施。影は控えめで、靴と床の接地判定を動画のフレームごとに外部評価したわけではない。実機iPad未確認も継続。
+
+## v5 初回読み込み・再描画の根因修正（最終候補証拠）
+
+- v4動画をフレーム検査すると、マップ→戦闘の初回に7部位が個別に読み込まれて人物が欠ける数フレームがあった。`GameShell.showBattle` がタイマー/入力再描画で actor をDOMから外し、リグ画像も再生成していたことが原因。v1/v3/v4動画はこの欠けの記録として保持するが、完成証拠から除外する。
+- 修正: `hero-art` の全身像を表示したまま7画像を `decode()` し、全件成功後にリグへ一括切替。失敗時は全身像のままにする。以降は actor/ally-group とリグDOMをステージに接続したまま保持し、入力/タイマー再描画で画像とCSSアニメ位相を再生成しない。
+- 800msの部位画像遅延をかけたE2Eで、読み込み中は全身像が不透明・リグが不可視、全件decode後のみ切替を確認。1024/1440の再描画後もリグDOM同一性を確認。1440で低刺激設定のセーブ復帰/再読み込みが成立し、再読込後も7画像が揃い、頭部アニメは停止した。追加E2Eを含む対象7件を最終実行する。
+- 再録画: `outputs/issue299-literature-{1024,1440}-decoded-idle-card-hit-candidate-v5.webm`。キー入力直後に `card-use`、敵攻撃時に `hit`、HP37/40を機械確認して保存。1440動画の0.6〜0.8秒のマップ→戦闘フレームでは全身像の後に完全なリグが出て、欠けた部位は見えない。2.0〜2.2秒では入力に合わせてノートが上がり、効果表示と足元/人物枠が安定している。
+- 低刺激+遅延+再読み込みの動画 `outputs/issue299-literature-1024-quiet-reload-candidate-v1.webm` と静止画 `outputs/issue299-quiet-{loading-portrait,rig-ready,reload-ready}-1024-v1.png` では読み込み中の全身像、揃ったリグ、再読込後の静止姿勢を確認。Web viewportであり実機iPadの合格ではない。

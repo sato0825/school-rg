@@ -53,6 +53,26 @@ test("the complete portrait remains visible until every rig layer decodes", asyn
   expect(await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node).visibility)).toBe("visible");
 });
 
+test("reload restores a complete rig without exposing individual loading layers", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("school-rg-low-stimulus-v1", "1"));
+  await page.route("**/literature-rig-parts-v1/*.png", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    await route.continue();
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
+  await expect(page.locator(".game-shell .ally-slot").first()).toHaveAttribute("data-rig-ready", "true");
+  await page.reload();
+  const actor = page.locator(".game-shell .ally-slot").first();
+  await expect(actor).toHaveAttribute("data-rig-ready", "true");
+  await expect(page.locator(".game")).toHaveAttribute("data-effects", "quiet");
+  expect(await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node).visibility)).toBe("visible");
+  expect(await actor.locator('[data-part="head"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+});
+
 test("reduced motion keeps the event pose as a still with no overlay animation", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.clock.install();
