@@ -53,3 +53,63 @@
 /* Relic reward is an object on stage, with a compact caption. */
 .relic-layer{gap:24px;background:#0e33465e}.relic-aura{position:absolute;left:52%;top:27%;width:390px;height:390px;border-radius:50%;background:radial-gradient(circle,#f4efc56b,transparent 70%);transform:translateX(-50%);pointer-events:none}.relic-object{position:relative;z-index:1;width:280px;height:280px;padding:12px;border:1px solid #f8edc4c7;border-radius:50%;background:#edf6ed82;box-shadow:0 0 0 10px #f1e8be44,0 17px 38px #0f2e3e91;overflow:hidden}.relic-object img{width:100%;height:100%;object-fit:cover;border-radius:50%;filter:saturate(.85)}.relic-copy{position:relative;z-index:1;width:300px;color:#f7f8f1;text-shadow:0 2px 9px #0a2e43}.relic-label{display:inline-flex;padding:5px 9px;border:1px solid #f1dba5;border-radius:100px;background:#1f4a58bc;color:#f7e9bb;font:800 11px/1 ui-monospace,monospace;letter-spacing:.12em}.relic-copy h2{font-size:25px;margin:17px 0 15px}.relic-copy p{display:flex;align-items:center;gap:10px;margin:0;font-size:14px}.relic-effect-symbol{display:grid;place-items:center;width:31px;height:31px;border:1px solid #e5e5d5;border-radius:50%;font-size:19px}.relic-copy small{display:block;margin-top:15px;color:#c3d6d9;font-size:10px}.relic-continue{position:absolute;z-index:2;left:50%;bottom:22%;padding:9px 17px;border-radius:100px;border:1px solid #d5e7e5;background:#214c5bd9;color:#f6f8f3;font-size:12px}
 @media(max-width:1100px){.game-shell{--rail-h:246px}.cards{height:calc(100% - 76px)}.game-card{height:180px}.card-art{flex-basis:57px}.game-card .card-word{font-size:18px}.intent{right:-1%;min-width:168px;height:45px}.reward-card{height:220px}.reward-card .card-art{flex-basis:91px}.detail-focus-card.game-card{width:224px;height:344px}.detail-focus-card .card-art{flex-basis:176px}.relic-object{width:250px;height:250px}.relic-copy{width:260px}.relic-continue{bottom:18%}}
+
+/* The stage remains visible when choosing, inspecting, and losing. */
+.game-shell[data-scene="reward"] .clear-mark{opacity:0}
+.detail-layer{background:radial-gradient(ellipse at 50% 53%,#0c2a3c79,transparent 62%);backdrop-filter:none}
+.relic-layer{background:radial-gradient(ellipse at 52% 50%,#0e334681,transparent 65%);backdrop-filter:none}
+.map-node.beyond{opacity:.62;border-style:dashed}
+.game-shell[data-scene="defeat"] .combat-rail,.game-shell[data-scene="last-hit"] .combat-rail{opacity:0;transform:translateY(105%);pointer-events:none}
+.game-shell[data-scene="defeat"] .enemy-image{opacity:.58;filter:grayscale(.7) drop-shadow(8px 8px 6px #0d30425f)}
+.game-shell[data-scene="defeat"] .intent,.game-shell[data-scene="defeat"] .enemy-hud,.game-shell[data-scene="defeat"] .enemy-status{opacity:0}
+.game-shell[data-scene="defeat"] .hero-image,.game-shell[data-scene="last-hit"] .hero-image{content:url('../../docs/art/candidates/literature-hit-candidate-v2.png')}
+.game-shell[data-scene="defeat"] .hero-hud .health-numbers b,.game-shell[data-scene="last-hit"] .hero-hud .health-numbers b{color:#f3a1b0}
+.game-shell[data-scene="defeat"] .hero-hud .health-track i,.game-shell[data-scene="last-hit"] .hero-hud .health-track i{width:0}
+.game-shell[data-scene="last-hit"] .action-arc{left:16%;right:34%;opacity:1;transform:scaleX(-1)}
+.game-shell[data-scene="last-hit"] .action-arc b{right:-5%;top:0}
+.defeat-layer{position:absolute;z-index:13;inset:0;display:flex;align-items:center;justify-content:flex-end;padding:70px 9% 25px;opacity:0;visibility:hidden;pointer-events:none;background:linear-gradient(90deg,transparent 40%,#0b2d3b6b 100%)}
+.game-shell[data-scene="defeat"] .defeat-layer{opacity:1;visibility:visible;pointer-events:auto}
+.defeat-sheet{position:relative;width:360px;min-height:390px;padding:30px 34px 25px;border:1px solid #e8f3e1b5;border-radius:4px 17px 6px 4px;background:linear-gradient(135deg,#f4f2e3eb,#dfebe7e8);color:#25475a;box-shadow:-12px 18px 34px #0b253a8f,inset 0 0 0 7px #ffffff61;transform:rotate(1deg)}
+.defeat-sheet::before{content:'';position:absolute;left:13px;top:17px;bottom:15px;border-left:2px solid #7ba6aa71}
+.defeat-sheet-top{display:flex;align-items:center;gap:9px;color:#62858c;font-size:11px;font-weight:800;letter-spacing:.06em}
+.defeat-seal{display:grid;place-items:center;width:27px;height:27px;border:1px solid #bc7890;border-radius:50%;color:#bc6681;font-size:18px}
+.defeat-sheet h2{margin:35px 0 28px;font-size:29px;letter-spacing:.08em}
+.defeat-location{display:flex;align-items:baseline;gap:11px}.defeat-location span{font:800 12px/1 ui-monospace,monospace;color:#b25f79}.defeat-location strong{font-size:16px}
+.defeat-rule{height:1px;margin:20px 0 16px;background:#81a8ac72}
+.defeat-stats{display:flex;gap:48px}.defeat-stats span{display:flex;align-items:baseline;gap:7px}.defeat-stats b{font:800 33px/1 ui-monospace,monospace}.defeat-stats small{font-size:10px;font-weight:700;color:#5f7c85}
+.defeat-actions{display:flex;align-items:center;gap:11px;margin-top:39px}.defeat-actions button{padding:9px 15px;border-radius:100px;font-size:11px;font-weight:800}.defeat-retry{background:#235769;color:#f8f7ee;border:1px solid #235769}.defeat-exit{background:transparent;color:#365d69;border:1px solid #8eb0b4}
+@media(max-width:1100px){.defeat-layer{padding:56px 4% 18px}.defeat-sheet{width:315px;min-height:338px;padding:25px 27px 21px}.defeat-sheet h2{margin:27px 0 24px;font-size:24px}.defeat-stats{gap:20px}.defeat-stats b{font-size:29px}.defeat-actions{margin-top:30px}}
+.game-shell[data-background="paint"] .room{background-image:url('./issue242-assets/corridor-gouache-candidate-v1.png')}
+.defeat-cause{display:flex;flex-direction:column;gap:4px;margin-top:13px}.defeat-cause span{font-size:9px;font-weight:700;color:#688790}.defeat-cause strong{font-size:12px;color:#9a5471}
+.game-shell[data-background="atrium"] .room{background-image:url('./issue242-assets/paper-atrium-issue249-candidate-v1.png')}
+.enemy-hud{left:13%;right:13%;padding:7px 9px 8px}
+.enemy-hud-name{align-items:center}.enemy-tier{display:grid;place-items:center;flex:0 0 17px;width:17px;height:17px;border:1px solid #acc6cc;transform:rotate(45deg);font-size:0}.enemy-tier::after{content:'◆';font-size:9px;transform:rotate(-45deg);color:#c3e1e2}
+.enemy-hp-track{margin-top:5px}
+.enemy-hud .intent{position:static;display:flex;justify-content:flex-start;gap:5px;min-width:0;max-width:none;width:100%;height:26px;margin-top:6px;padding:4px 0 0;border:0;border-top:1px solid #a4c1c65d;border-radius:0;background:none;box-shadow:none;color:#f3b1bf}
+.enemy-hud .intent-step{gap:3px}.enemy-hud .intent-step i{width:18px;height:18px;border:0;font-size:15px}.enemy-hud .intent-step b{font-size:12px}.enemy-hud .intent-step small{font-size:11px;color:#f5bdc6}.enemy-hud .intent-step.defend{color:#b8e0e0}.enemy-hud .intent-step.defend small{color:#b8e0e0}.enemy-hud .intent-arrow{font-size:14px;color:#a1bbc0}
+.game-shell[data-scene="defeat"] .enemy-anchor{right:31%;width:320px;opacity:.7}
+.game-shell[data-scene="defeat"] .hero-image{content:url('./issue242-assets/literature-defeat-issue252-candidate-v1.png')}
+.game-shell[data-scene="defeat"] .hero-anchor{width:430px;left:40px;height:min(91%,540px)}
+.game-shell[data-scene="defeat"] .hero-effects,.game-shell[data-scene="defeat"] .hero-hud .block,.game-shell[data-scene="defeat"] .hero-hud .hero-status,.game-shell[data-scene="defeat"] .pause-button{opacity:0}
+@media(max-width:1100px){.game-shell[data-scene="defeat"] .enemy-anchor{right:32%;width:270px}.game-shell[data-scene="defeat"] .hero-anchor{width:330px;left:5px;height:min(86%,420px)}.enemy-hud{left:13%;right:13%}}
+.game-shell[data-scene="relic"] .combat-rail{opacity:0;transform:translateY(105%);pointer-events:none}
+.game-shell[data-scene="relic"] .enemy-anchor{opacity:.18;filter:grayscale(1)}
+.game-shell[data-scene="relic"] .enemy-hud,.game-shell[data-scene="relic"] .enemy-status{opacity:0}
+.relic-owned{display:flex;align-items:baseline;gap:13px;margin-top:24px;padding-top:10px;border-top:1px solid #deeddf70;font-size:11px}.relic-owned b{font:800 16px/1 ui-monospace,monospace;color:#ffdfa4}
+.enemy-group{display:none;position:absolute;z-index:4;left:28%;right:2%;bottom:55px;height:57%;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end;gap:4px}
+.group-enemy{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-width:0;height:100%;filter:drop-shadow(3px 7px 5px #0b2c3e7b)}
+.group-enemy img{display:block;width:100%;height:calc(100% - 80px);object-fit:contain;object-position:center bottom}
+.group-plate{height:78px;padding:6px 6px 5px;border:1px solid #96b6c5a8;border-radius:6px;background:#173a4de9;box-shadow:0 5px 10px #0d273998;color:#f0f2e9}
+.group-plate>div{display:flex;align-items:center;gap:3px;white-space:nowrap;min-width:0}.group-plate b{overflow:hidden;text-overflow:ellipsis;font-size:9px}.group-plate strong{margin-left:auto;font:700 10px/1 ui-monospace,monospace;color:#f4ccd5}
+.tier-diamond{display:grid;place-items:center;flex:0 0 13px;height:13px;border:1px solid #bed8df;border-radius:1px;transform:rotate(45deg);font-size:0}.tier-diamond::after{content:'◆';font-size:7px;transform:rotate(-45deg)}.tier-diamond.elite{border-color:#d9b7ea;color:#e5c6ec}
+.group-hp{display:block;height:5px;margin:6px 0;background:#e28fa5;border-radius:9px;box-shadow:0 0 0 1px #d6e1df50}
+.group-intent{display:block;white-space:nowrap;overflow:hidden;text-overflow:clip;font:800 12px/1.5 ui-monospace,monospace;color:#f1ced6}.group-intent em{font-style:normal;color:#a6c1c7}
+.game-shell[data-scene="multi"] .enemy-anchor{display:none}.game-shell[data-scene="multi"] .enemy-group{display:grid}
+.game-shell[data-scene="turn-end"] .combat-rail{opacity:0;transform:translateY(105%);pointer-events:none}
+.game-shell[data-scene="turn-end"] .hero-image{content:url('../../docs/art/candidates/literature-hit-candidate-v2.png')}
+.game-shell[data-scene="turn-end"] .hero-hud .health-track i{width:65%}.game-shell[data-scene="turn-end"] .hero-hud .block{opacity:.45}
+.game-shell[data-scene="turn-end"] .action-arc{left:16%;right:34%;opacity:1;transform:scaleX(-1)}
+.game-shell[data-scene="turn-end"] .action-arc b{right:-5%;top:0}
+.timeout-mark{position:absolute;z-index:7;left:50%;bottom:9%;display:none;align-items:center;gap:7px;transform:translateX(-50%);padding:7px 11px;border:1px solid #c5d9dc91;border-radius:100px;background:#183e4ddf;color:#f4d6bd;font-size:12px}.timeout-mark b{font:800 16px/1 ui-monospace,monospace}.timeout-mark small{padding-left:8px;border-left:1px solid #a5c3c58a;color:#e8eeea;font-size:9px;font-weight:800}.game-shell[data-scene="turn-end"] .timeout-mark{display:flex}
+@media(max-width:1100px){.enemy-group{left:30%;right:1%;height:54%;gap:2px}.group-plate{padding:4px 3px;height:70px}.group-plate b{font-size:8px}.group-plate strong{font-size:9px}.group-intent{font-size:10px}}
+.review-nav{position:absolute;z-index:60;right:15px;top:67px;display:flex;flex-wrap:wrap;gap:4px;width:202px;padding:6px;border:1px solid #aac9cd;border-radius:9px;background:#14394cdd;color:#eaf3ed;box-shadow:0 8px 20px #0924346b}.review-nav summary{list-style:none;cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.08em}.review-nav summary::-webkit-details-marker{display:none}.review-nav[open]{display:flex}.review-nav button{padding:5px 6px;border:1px solid #7ca3ad88;border-radius:5px;background:#d9e8e9;color:#235062;font-size:10px;font-weight:700}
