@@ -1,4 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { demoContent, demoEnemyAi } from "../../src/content/demo-battle.js";
+import { createRunSession, enterRunNode } from "../../src/domain/run-flow.js";
+import { serializeRunSession } from "../../src/domain/save.js";
+import type { MapNode } from "../../src/domain/schema.js";
 
 async function enterMusicBattle(page: import("@playwright/test").Page) {
   await page.goto("/?shortRun=1&seed=42");
@@ -70,3 +74,30 @@ test("low stimulus keeps an understandable still card pose", async ({ page }) =>
   expect(await actor.locator('[data-part="right-arm"]').evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
   expect(await actor.locator('[data-part="right-arm"]').evaluate((element) => getComputedStyle(element).transform)).not.toBe("none");
 });
+
+for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900 }]) {
+  test(`music actor stays visible beside three enemies at ${viewport.width}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    const base = createRunSession(42, "music-demo", demoContent);
+    const start: MapNode = { id: "music-roster-start", act: 1, floor: 0, kind: "start", nextIds: ["music-roster-fight"] };
+    const fight: MapNode = { id: "music-roster-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+    const entered = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
+      demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
+    const first = entered.run.combat!.enemies[0]!;
+    const enemies = Array.from({ length: 3 }, (_, index) => ({ ...first, instanceId: `music-enemy-${index}` }));
+    const saved = serializeRunSession({ ...entered, run: { ...entered.run, combat: { ...entered.run.combat!, enemies } } }, demoContent, { nowMs: () => 0 }, () => "discard");
+    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await page.goto("/");
+    const actor = page.locator(".game-shell .ally-slot").first();
+    await expect(actor).toHaveAttribute("data-rig-ready", "true");
+    await expect(actor).toHaveAttribute("data-actor-rig", "music-v1");
+    await expect(page.locator(".enemy-slot")).toHaveCount(3);
+    const bounds = await actor.boundingBox();
+    const stage = await page.locator(".game-shell .stage").boundingBox();
+    expect(bounds!.x).toBeGreaterThanOrEqual(stage!.x);
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(stage!.x + stage!.width);
+    await page.locator(".enemy-roster-button").nth(1).click();
+    await expect(page.locator(".enemy-roster-button").nth(1)).toBeFocused();
+    expect(await actor.boundingBox()).toEqual(bounds);
+  });
+}
