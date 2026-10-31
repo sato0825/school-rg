@@ -1262,6 +1262,12 @@ test("battle help stays on the battle screen and does not alter the clock", asyn
   expect(await time.innerText()).toBe(pausedAt);
   await page.getByRole("button", { name: "閉じる" }).click();
   await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "再開" })).toBeFocused();
+  await page.getByRole("button", { name: "再開" }).click();
+  await page.getByRole("button", { name: "操作" }).click();
+  await page.keyboard.press("s");
+  await expect(page.locator("#battle-help")).toBeHidden();
+  await expect(page.locator(".typing-input")).toHaveValue("s");
 });
 
 for (const viewport of [{ width: 1280, height: 800 }, { width: 820, height: 1180 }]) {
