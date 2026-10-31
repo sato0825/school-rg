@@ -17,7 +17,7 @@ function fakeContext() {
     createBuffer: (_channels: number, frames: number) => ({ getChannelData: () => new Float32Array(frames) }),
     createBufferSource: () => ({ buffer: null, connect: vi.fn(), start: () => textureStarts.push(1), stop: vi.fn() }),
     createBiquadFilter: () => ({ type: "lowpass", frequency: { value: 0 }, connect: vi.fn() }),
-    resume: vi.fn(async () => undefined), close: vi.fn(async () => undefined),
+    resume: vi.fn(async (): Promise<void> => undefined), close: vi.fn(async () => undefined),
   };
   return { context, starts, textureStarts, gains };
 }
