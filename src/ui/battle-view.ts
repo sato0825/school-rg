@@ -175,7 +175,8 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
       .map(([kind, count]) => `${statusNames[kind] ?? kind} ${count}`).join("、");
     const targeted = (potionActive ? potionControl!.typing.targetEnemyInstanceId : combat.typing.targetEnemyInstanceId) === enemy.instanceId;
     const enemyLabel = `敵 ${index + 1}を対象に選ぶ。${intentVisual.ariaLabel}${statusDescription ? `。状態: ${statusDescription}` : ""}${targeted ? "。選択中" : ""}`;
-    if (targeted && intentVisual.steps.some((step) => (step.kind === "attack" || step.kind === "debuff") && step.target === "player")) {
+    if (targeted && view.motion !== "hero" && !view.cardFx && !view.resultFx
+      && intentVisual.steps.some((step) => (step.kind === "attack" || step.kind === "debuff") && step.target === "player")) {
       const sourceX = layout.enemies[index]!.xPercent;
       const targetX = layout.allies[0]!.xPercent;
       selectedThreatPath = `<svg class="intent-trajectory" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M ${sourceX} 39 C ${sourceX - 12} 36 ${targetX + 14} 29 ${targetX} 28"/><path d="m ${targetX + 1.5} 25 -1.5 3 3 1"/></svg>`;
