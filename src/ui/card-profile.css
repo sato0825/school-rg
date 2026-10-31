@@ -6,7 +6,7 @@
 .game-shell .card-profile::before{content:"仮";padding-right:2px;border-right:1px solid #a3b0b2;color:#586a74;font-size:8px}
 .game-shell .card-profile svg{display:block;width:14px;height:14px;flex:none;fill:none;stroke:var(--profile-tone);stroke-width:1.8}
 .game-shell [data-profile="scarce"] .card-profile svg{fill:var(--profile-tone);stroke-width:.5}
-.game-shell .hand>.card .card-profile{position:absolute;top:8px;right:22px}
+.game-shell .hand>.card .card-profile{position:absolute;top:5px;right:22px}
 .game-shell .card-profile-frame{position:absolute;z-index:2;inset:3px;display:none;border:1px solid var(--profile-tone);border-radius:3px 8px 3px 3px;pointer-events:none;opacity:.68}
 .game-shell [data-profile]>.card-profile-frame{display:block}
 .game-shell [data-profile="occasional"]>.card-profile-frame{border-style:dashed}
