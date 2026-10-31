@@ -1380,7 +1380,8 @@ test("sound toggle stays usable on a narrow screen and survives reload", async (
   await expect(sound).toHaveAttribute("aria-pressed", "true");
 });
 
-test("one typed card emits one sound and mute suppresses the next card", async ({ page }) => {
+for (const width of [1024, 1440]) test(`one typed attack has one launch and result cue at ${width}px; mute suppresses both`, async ({ page }) => {
+  await page.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
   await page.addInitScript(() => {
     let starts = 0;
     Object.defineProperty(window, "__soundStarts", { get: () => starts });
@@ -1396,11 +1397,16 @@ test("one typed card emits one sound and mute suppresses the next card", async (
   });
   await startDemoRun(page);
   await enterNextNode(page);
+  const stageBefore = await page.locator(".stage").boundingBox();
+  await page.locator("[data-action=toggle-stimulus]").click();
+  await expect(page.locator("[data-action=toggle-stimulus]")).toHaveAttribute("aria-pressed", "true");
+  const stageAfter = await page.locator(".stage").boundingBox();
+  expect(stageAfter).toEqual(stageBefore);
   await page.keyboard.type("heavy strike");
-  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(2);
+  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(4);
   await page.locator("[data-action=toggle-audio]").click();
   await page.keyboard.type("strike");
-  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(2);
+  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(4);
 });
 
 test("battle help stays on the battle screen and does not alter the clock", async ({ page }) => {
