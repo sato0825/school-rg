@@ -127,4 +127,3 @@ const effectGroups = Map.groupBy(cards, (card) => `${card.target}:${card.effectK
 const similarEffects = [...effectGroups].filter(([, group]) => group.length > 1).map(([signature, group]) => ({ signature, ids: group.map((card) => card.id) }));
 const report = { schemaVersion: 1, generatedFrom: "repository source, 2026-10-31", counts, duplicateInputs, similarEffects, items };
 fs.writeFileSync(path.join(output, "content-art-inventory.json"), `${JSON.stringify(report, null, 2)}\n`);
-console.log(JSON.stringify({ counts, duplicateInputs: duplicateInputs.length, similarEffects: similarEffects.length, existingCandidates: items.filter((item) => item.art.candidateRefs.length > 0).length }));

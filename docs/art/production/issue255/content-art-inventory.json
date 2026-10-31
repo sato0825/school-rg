@@ -153,6 +153,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "攻撃",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -184,6 +185,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -208,6 +210,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "攻撃",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -233,6 +236,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "連続攻撃",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -257,6 +261,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -281,6 +286,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "回復",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -305,6 +311,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "ドロー",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -336,6 +343,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "筋力上昇",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -360,6 +368,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "弱体付与",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -384,6 +393,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "毒付与",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -408,6 +418,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "全体攻撃",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -439,6 +450,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "貫通攻撃",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -463,6 +475,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "反撃",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -494,6 +507,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "捨て札回収",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -518,6 +532,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "除外",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -542,6 +557,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "手札複製",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -566,6 +582,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -590,6 +607,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "弱体解除",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -614,6 +632,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "毎ターン防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -638,6 +657,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "毎ターン筋力",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -663,6 +683,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "HP消費とドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -690,6 +711,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "条件付き攻撃",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -714,6 +736,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "残り時間増加",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -745,6 +768,7 @@
       ],
       "source": "src/content/base-cards.ts",
       "rarity": null,
+      "meaning": "敵防御解除",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -773,6 +797,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "攻撃 + ドロー",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -814,6 +839,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "防御 + ドロー",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -850,6 +876,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "攻撃 + ドロー",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -885,6 +912,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "ドロー + 残り時間増加",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -920,6 +948,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "捨て札回収 + 防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -948,6 +977,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "攻撃 + 防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -976,6 +1006,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "攻撃 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1004,6 +1035,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "防御 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1032,6 +1064,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "除外 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1060,6 +1093,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "捨て札回収 + 残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1088,6 +1122,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "攻撃 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1116,6 +1151,7 @@
       ],
       "source": "src/content/literature-cards.ts",
       "rarity": null,
+      "meaning": "全体攻撃 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1144,6 +1180,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "毒付与 + ドロー",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -1180,6 +1217,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "弱体付与 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1206,6 +1244,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "状態条件攻撃",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -1241,6 +1280,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "防御 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1269,6 +1309,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "毒付与 + 回復",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1297,6 +1338,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "防御 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1325,6 +1367,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "毒付与 + 弱体付与",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1355,6 +1398,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "状態条件攻撃 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1383,6 +1427,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "防御 + 弱体解除",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1411,6 +1456,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "毒付与 + 毎ターン防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1441,6 +1487,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "状態条件攻撃 + 毒付与",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1473,6 +1520,7 @@
       ],
       "source": "src/content/science-cards.ts",
       "rarity": null,
+      "meaning": "弱体付与 + 毒付与 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1501,6 +1549,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "防御 + 反撃",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -1544,6 +1593,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "防御 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1568,6 +1618,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "攻撃",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1593,6 +1644,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "連続攻撃",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1621,6 +1673,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "防御 + 反撃",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1648,6 +1701,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "条件付き攻撃",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -1683,6 +1737,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "全体攻撃 + 防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1715,6 +1770,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "防御 + 反撃 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1743,6 +1799,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "防御 + 残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1771,6 +1828,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "攻撃 + 防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1799,6 +1857,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "毎ターン筋力 + 防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1827,6 +1886,7 @@
       ],
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
+      "meaning": "全体攻撃 + 反撃",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1855,6 +1915,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "残り時間増加 + ドロー",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -1888,6 +1949,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "連続攻撃",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1916,6 +1978,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "防御 + 残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1944,6 +2007,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "ドロー + 残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -1972,6 +2036,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "全体攻撃 + 残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2001,6 +2066,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "連続攻撃 + 残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2033,6 +2099,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "残り時間増加 + ドロー + 防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2061,6 +2128,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "全体攻撃 + 残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2089,6 +2157,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "ドロー + 残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2118,6 +2187,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "連続攻撃 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2146,6 +2216,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "防御 + 残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2174,6 +2245,7 @@
       ],
       "source": "src/content/music-cards.ts",
       "rarity": null,
+      "meaning": "全体攻撃 + 残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2202,6 +2274,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "攻撃 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2226,6 +2299,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "防御",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -2262,6 +2336,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "手札複製 + 防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2290,6 +2365,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "除外 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2319,6 +2395,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "手札変化 + 防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2347,6 +2424,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "全体攻撃 + 毎ターン防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2375,6 +2453,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "全体攻撃 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2403,6 +2482,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "防御 + 毎ターン防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2431,6 +2511,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "毎ターン防御 + ドロー",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2459,6 +2540,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "手札複製 + 残り時間増加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2487,6 +2569,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "除外 + 防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2515,6 +2598,7 @@
       ],
       "source": "src/content/art-cards.ts",
       "rarity": null,
+      "meaning": "全体攻撃 + 毎ターン防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2535,6 +2619,7 @@
       "effectKinds": [],
       "source": "src/content/demo-battle.ts",
       "rarity": null,
+      "meaning": "獲得時ゴールド、ターン開始と技能使用で防御",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -2560,6 +2645,7 @@
       "effectKinds": [],
       "source": "src/content/demo-battle.ts",
       "rarity": null,
+      "meaning": "戦闘開始時に筋力",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -2585,6 +2671,7 @@
       "effectKinds": [],
       "source": "src/content/demo-battle.ts",
       "rarity": null,
+      "meaning": "ターン開始時に反撃",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2603,6 +2690,7 @@
       "effectKinds": [],
       "source": "src/content/demo-battle.ts",
       "rarity": null,
+      "meaning": "ターン開始時に入力時間を追加",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -2628,6 +2716,7 @@
       "effectKinds": [],
       "source": "src/content/demo-battle.ts",
       "rarity": null,
+      "meaning": "美術部カード使用時に防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2646,6 +2735,7 @@
       "effectKinds": [],
       "source": "src/content/demo-battle.ts",
       "rarity": null,
+      "meaning": "ターン開始時に防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2664,6 +2754,7 @@
       "effectKinds": [],
       "source": "src/content/demo-battle.ts",
       "rarity": null,
+      "meaning": "ターン開始時に入力時間を追加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2683,6 +2774,7 @@
       "effectKinds": [],
       "source": "src/content/extra-consumables.ts",
       "rarity": null,
+      "meaning": "獲得時と戦闘終了時にゴールド",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2701,6 +2793,7 @@
       "effectKinds": [],
       "source": "src/content/extra-consumables.ts",
       "rarity": null,
+      "meaning": "戦闘終了時に回復",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2719,6 +2812,7 @@
       "effectKinds": [],
       "source": "src/content/extra-consumables.ts",
       "rarity": null,
+      "meaning": "HPダメージを受けた時に回復",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2737,6 +2831,7 @@
       "effectKinds": [],
       "source": "src/content/extra-consumables.ts",
       "rarity": null,
+      "meaning": "カード使用時に入力時間を追加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2756,6 +2851,7 @@
       ],
       "source": "src/content/demo-battle.ts",
       "rarity": null,
+      "meaning": "入力時間を追加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2775,6 +2871,7 @@
       ],
       "source": "src/content/demo-battle.ts",
       "rarity": null,
+      "meaning": "HP回復",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2794,6 +2891,7 @@
       ],
       "source": "src/content/demo-battle.ts",
       "rarity": null,
+      "meaning": "単体攻撃",
       "art": {
         "state": "candidate",
         "acceptedVersion": null,
@@ -2820,6 +2918,7 @@
       ],
       "source": "src/content/extra-consumables.ts",
       "rarity": null,
+      "meaning": "防御",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2839,6 +2938,7 @@
       ],
       "source": "src/content/extra-consumables.ts",
       "rarity": null,
+      "meaning": "全体攻撃",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
@@ -2859,6 +2959,7 @@
       ],
       "source": "src/content/extra-consumables.ts",
       "rarity": null,
+      "meaning": "回復と入力時間追加",
       "art": {
         "state": "missing",
         "acceptedVersion": null,
