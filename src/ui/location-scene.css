@@ -125,6 +125,7 @@
 .event-panel .event-choices { max-width: 560px; margin: 15px auto 0; }
 .event-panel .event-choice,
 .event-panel .event-target-choice { background: #fffefaed; }
+.event-panel .event-target-choice { color: #29475f; }
 
 .location-scene[data-effects="quiet"] .location-panel {
   background: #19384be6;
