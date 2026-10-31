@@ -27,9 +27,11 @@ describe("combat objects", () => {
       { instanceId: "draw-strike", cardId: "card-strike", upgraded: true },
       { instanceId: "draw-draft", cardId: "card-draft", upgraded: false },
       { instanceId: "discard-strike", cardId: "card-strike", upgraded: false },
+      { instanceId: "exhaust-draft", cardId: "card-draft", upgraded: false },
     );
     run.combat!.drawPile = ["draw-strike", "draw-draft"];
     run.combat!.discardPile = ["discard-strike"];
+    run.combat!.exhaustPile = ["exhaust-draft"];
     const before = structuredClone(run.combat);
     const root = new JSDOM("<div id='game'></div>").window.document.getElementById("game")!;
 
@@ -43,7 +45,11 @@ describe("combat objects", () => {
     expect(root.querySelectorAll(".pile-card")).toHaveLength(1);
     expect(root.querySelector(".pile-order-note")).toBeNull();
     renderBattle(root, run, content, { ...view, pileOpen: "exhaust" });
+    expect(root.querySelector(".pile-card strong")?.textContent).toBe("draft");
+    run.combat!.exhaustPile = [];
+    renderBattle(root, run, content, { ...view, pileOpen: "exhaust" });
     expect(root.querySelector(".pile-empty")?.textContent).toBe("カードはありません");
+    run.combat!.exhaustPile = ["exhaust-draft"];
     expect(run.combat).toEqual(before);
   });
 

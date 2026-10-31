@@ -14,7 +14,7 @@ for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, he
     const session = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
       demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
     const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
-    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await page.addInitScript((value) => { if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", value); }, saved);
     await page.goto("/");
 
     const draw = page.locator('.pile-token[data-pile="draw"]');
@@ -59,6 +59,13 @@ for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, he
     await page.keyboard.press("Escape");
     await expect(page.locator(".battle-map-overlay")).toHaveCount(0);
     await expect(page.locator(".typing-input")).toBeFocused();
+    await page.keyboard.type("strike");
+    await expect(page.locator('.pile-token[data-pile="discard"]')).toHaveAttribute("aria-label", /捨て札 1枚/);
+    await page.locator('.pile-token[data-pile="discard"]').click();
+    await expect(page.locator("#battle-pile-tray .pile-card strong")).toHaveText("strike");
+    await page.reload();
+    await expect(page.locator("#battle-pile-tray")).toBeHidden();
+    await expect(page.locator('.pile-token[data-pile="discard"]')).toHaveAttribute("aria-label", /捨て札 1枚/);
   });
 
   test(`card piles and both sides' statuses stay readable at ${width}×${height}`, async ({ page }) => {
