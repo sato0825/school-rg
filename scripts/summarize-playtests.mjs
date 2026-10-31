@@ -92,6 +92,9 @@ function usableContentEvents(record) {
     if (!event || typeof event.eventId !== "string" || ids.has(event.eventId)
       || visited.get(event.nodeId) !== event.act || !Number.isSafeInteger(event.atActiveMs)
       || event.atActiveMs < 0 || event.atActiveMs > record.activeMs
+      || (event.contentId !== null && (typeof event.contentId !== "string" || !event.contentId))
+      || (event.offerId !== null && (typeof event.offerId !== "string" || !event.offerId))
+      || ![true, false, null].includes(event.available)
       || !["offered", "selected", "skipped", "acquired", "consumed", "discarded"].includes(event.action)
       || !["card", "relic", "potion", "event_choice"].includes(event.kind)
       || !["reward", "treasure", "shop", "event", "combat"].includes(event.source)) return false;
@@ -102,7 +105,8 @@ function usableContentEvents(record) {
 }
 
 function emptyContentCount() {
-  return { offered: 0, selected: 0, skipped: 0, acquired: 0, consumed: 0, discarded: 0, repeatedOffers: 0, selectionRate: null };
+  return { offered: 0, availableOffers: 0, unavailableOffers: 0, unknownAvailabilityOffers: 0,
+    selected: 0, skipped: 0, acquired: 0, consumed: 0, discarded: 0, repeatedOffers: 0, selectionRate: null };
 }
 
 function contentExposure(records) {
@@ -116,6 +120,10 @@ function contentExposure(records) {
       act[event.action]++;
       source[event.action]++;
       if (event.action === "offered") {
+        const availabilityKey = event.available === true ? "availableOffers"
+          : event.available === false ? "unavailableOffers" : "unknownAvailabilityOffers";
+        act[availabilityKey]++;
+        source[availabilityKey]++;
         const key = `${event.act}:${event.kind}:${event.contentId}`;
         if (seen.has(key)) { act.repeatedOffers++; source.repeatedOffers++; }
         else seen.add(key);

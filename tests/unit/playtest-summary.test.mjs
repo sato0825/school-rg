@@ -95,10 +95,11 @@ describe("local playtest summary", () => {
       { ...complete, runId: "partial", contentPartial: true },
       { ...complete, runId: "unfinished", result: null },
       { ...complete, runId: "broken", contentEvents: [complete.contentEvents[0], complete.contentEvents[0]] },
+      { ...complete, runId: "missing", contentEvents: [{ ...complete.contentEvents[0], available: undefined }] },
     ]);
     const exposure = report.clubs["science-demo"].contentExposure;
     expect(exposure.runsWithUsableContentRecords).toBe(1);
-    expect(exposure.byAct[0]).toMatchObject({ offered: 2, selected: 1, acquired: 1, repeatedOffers: 1, selectionRate: 0.5,
+    expect(exposure.byAct[0]).toMatchObject({ offered: 2, availableOffers: 2, selected: 1, acquired: 1, repeatedOffers: 1, selectionRate: 0.5,
       bySource: { reward: { offered: 2, selected: 1, acquired: 1, repeatedOffers: 1, selectionRate: 0.5 } } });
     expect(exposure.byAct[1]).toMatchObject({ offered: 1, skipped: 1, selectionRate: 0,
       bySource: { shop: { offered: 1, skipped: 1, selectionRate: 0 } } });
