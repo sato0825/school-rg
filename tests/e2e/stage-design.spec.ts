@@ -19,9 +19,12 @@ test("each Act uses its own school plate on map and in typed combat at desktop a
       await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
       await page.setViewportSize({ width, height: 844 });
       await page.goto("/");
-      await expect(page.locator(".run-screen")).toHaveAttribute("style", new RegExp(plates[act - 1]!));
-      await page.locator(".map-node.available").click();
       const stage = page.locator(".stage");
+      await expect(page.locator('.game-shell[data-screen="map"]')).toBeVisible();
+      await expect(stage).toHaveAttribute("style", new RegExp(plates[act - 1]!));
+      const originalStage = await stage.elementHandle();
+      await page.locator(".map-node.available").click();
+      expect(await stage.evaluate((element, initial) => element === initial, originalStage)).toBe(true);
       await expect(stage).toHaveAttribute("data-act", String(act));
       await expect(stage).toHaveAttribute("style", new RegExp(plates[act - 1]!));
       await stage.evaluate(async (element) => {
