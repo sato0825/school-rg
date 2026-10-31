@@ -1,6 +1,7 @@
 .game { position: relative; }
 .battle-map-trigger {
   flex: none;
+  margin-left: auto;
   padding: 6px 8px;
   border: 1px solid #8ba5b8;
   border-radius: 6px;
