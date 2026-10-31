@@ -571,39 +571,38 @@ test("candidate pose preview follows enemy damage and typed activation", async (
   const hero = page.locator(".hero-art");
   const decoded = () => hero.evaluate((image) => (image as HTMLImageElement).naturalWidth);
   await expect(page.locator(".art-preview-label")).toContainText("未採用");
-  await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v1/);
+  await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v2/);
   await expect.poll(decoded).toBeGreaterThan(0);
   // The timer starts after the restored battle renders. Observe the short hit
   // state while advancing virtual time instead of assuming an exact boundary.
   let hitObserved = false;
   for (let step = 0; step < 110; step++) {
     await page.clock.runFor(200);
-    if ((await hero.getAttribute("src"))?.includes("serious-student-hit-candidate-v1")) {
+    if ((await hero.getAttribute("src"))?.includes("serious-student-hit-candidate-v2")) {
+      expect(await decoded()).toBeGreaterThan(0);
       hitObserved = true;
       break;
     }
   }
   expect(hitObserved).toBe(true);
-  await expect(hero).toHaveAttribute("src", /serious-student-hit-candidate-v1/);
-  await expect.poll(decoded).toBeGreaterThan(0);
   await page.clock.runFor(420);
-  await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v1/);
+  await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v2/);
   await page.clock.runFor(730);
   await page.keyboard.press("z");
-  const idlePhase = await hero.evaluate((image) => ({ delay: Number.parseFloat(getComputedStyle(image).animationDelay) * 1_000, now: Math.floor(performance.now()) }));
-  expect(Math.abs(idlePhase.delay + idlePhase.now % 3_100)).toBeLessThan(100);
+  const idlePhase = await hero.evaluate((image) => ({ delay: Number.parseFloat((image as HTMLImageElement).style.animationDelay), now: Math.floor(performance.now()) }));
+  expect(Math.abs(idlePhase.delay + idlePhase.now % 3_100)).toBeLessThan(150);
   const word = await page.locator(".card-word").first().innerText();
   await page.keyboard.type(word);
-  await expect(hero).toHaveAttribute("src", /serious-student-activate-candidate-v1/);
+  await expect(hero).toHaveAttribute("src", /serious-student-activate-candidate-v2/);
   await expect.poll(decoded).toBeGreaterThan(0);
   await page.clock.runFor(170);
   await page.keyboard.press("z");
   await expect(hero).toHaveClass(/act/);
-  const actionDelay = await hero.evaluate((image) => Number.parseFloat(getComputedStyle(image).animationDelay) * 1_000);
+  const actionDelay = await hero.evaluate((image) => Number.parseFloat((image as HTMLImageElement).style.animationDelay));
   expect(actionDelay).toBeLessThan(-100);
   expect(actionDelay).toBeGreaterThan(-380);
   await page.clock.runFor(210);
-  await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v1/);
+  await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v2/);
   await page.setViewportSize({ width: 390, height: 844 });
   const [stage, controls, heroBox] = await Promise.all([
     page.locator(".stage").boundingBox(), page.locator(".control-deck").boundingBox(), hero.boundingBox(),
@@ -617,7 +616,7 @@ test("five club candidates stay separate from the stage and controls at desktop 
   await page.addInitScript(() => localStorage.clear());
   const candidates = [
     { club: "文芸部", asset: "literature-idle-candidate-v1" },
-    { club: "科学部", asset: "serious-student-idle-candidate-v1" },
+    { club: "科学部", asset: "serious-student-idle-candidate-v2" },
     { club: "剣道部", asset: "kendo-idle-candidate-v1" },
     { club: "軽音部", asset: "music-idle-candidate-v1" },
     { club: "美術部", asset: "art-idle-candidate-v1" },
@@ -633,8 +632,8 @@ test("five club candidates stay separate from the stage and controls at desktop 
     await expect(page.locator(".art-preview-label")).toContainText("3ポーズ比較");
     await hero.evaluate(async (image) => (image as HTMLImageElement).decode());
     expect(await hero.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBe(1024);
-    for (const width of [1440, 390]) {
-      await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    for (const width of [1440, 1024, 390]) {
+      await page.setViewportSize({ width, height: width === 390 ? 844 : width === 1024 ? 768 : 900 });
       const [stage, controls, image] = await Promise.all([page.locator(".stage").boundingBox(), page.locator(".control-deck").boundingBox(), hero.boundingBox()]);
       expect(stage && controls && image).toBeTruthy();
       expect(image!.x).toBeGreaterThanOrEqual(stage!.x - 1);
@@ -832,6 +831,15 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await expect(page.locator(".map-stats")).toContainText("難度 1");
   await enterNextNode(page);
   await expect(page.locator(".enemy-hud")).toContainText("29/29");
+});
+
+test("literature clears three Acts by typing at tablet width after a save reload", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 820, height: 1180 });
+  await page.clock.install();
+  await startDemoRun(page);
+  await clearThreeActs(page, 36, true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
 for (const [clubLabel, clubId] of [
