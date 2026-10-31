@@ -60,3 +60,26 @@ test("closing the map preserves a manual pause and reload does not reopen the ov
   await expect(page.locator(".battle-map-overlay")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
 });
+
+test("opening the map during Japanese composition restores English typing focus after closing", async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
+
+  const input = page.getByRole("textbox", { name: "カード名をタイプ" });
+  const firstLetter = (await page.locator(".card-word").first().innerText()).trim()[0]!;
+  await input.focus();
+  await input.dispatchEvent("compositionstart", { data: "にほんご" });
+  await expect(page.locator("#battle-ime-notice")).toContainText("日本語入力中");
+  await page.getByRole("button", { name: "マップ", exact: true }).click();
+  await expect(page.getByRole("region", { name: "校内経路" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(input).toBeFocused();
+  await input.press(firstLetter);
+  await expect(input).toHaveValue(firstLetter.toLowerCase());
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
+});
