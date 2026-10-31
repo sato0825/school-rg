@@ -19,7 +19,7 @@
 
 敵2体: [1024×768](previews/issue330/kendo-two-enemies-1024.png) · [1440×900](previews/issue330/kendo-two-enemies-1440.png)。敵2枠と俳優の矩形重なりがないことをE2Eで確認。
 
-短縮ラン seed=42 の剣道部で `counter`（防御）、`strike`（攻撃）を実入力し、敵の行動まで録画。防御は閉じた構え、攻撃は竹刀の振りと踏み込み、被弾は別表情と竹刀を戻す構えです。動きは手札入力完了を起点とし、入力途中では発火しません。敵の行動は既存ターン進行に従います。俳優DOMと舞台矩形はカード使用・被弾中も保持。全レイヤーのデコード完了まで既存の一枚絵を表示し、ロード途中の欠けを防ぎます。静音/動きを減らす設定では静止した構えと被弾表情に切り替えます。
+短縮ラン seed=42 の剣道部で `counter`（反撃）、`strike`（攻撃）を実入力し、敵の行動まで録画。防御は閉じた構え、反撃は受けから竹刀を返す構え、攻撃は竹刀の振りと踏み込み、`final cut` は大きい振りの候補、被弾は別表情と竹刀を戻す構えです。動きは手札入力完了を起点とし、入力途中では発火しません。敵の行動は既存ターン進行に従います。俳優DOMと舞台矩形はカード使用・被弾中も保持。全レイヤーのデコード完了まで既存の一枚絵を表示し、ロード途中の欠けを防ぎます。静音/動きを減らす設定では静止した構えと被弾表情に切り替えます。反撃と決め技はカードIDから構えを選ぶ統合テストで確認し、両者の実入力映像は未収録です。
 
 ## 目視の未解決点
 
@@ -32,7 +32,6 @@
 
 - `npm run check:art`: 成功。
 - `npx vitest run tests/integration/kendo-rig-ui.test.ts tests/unit/actor-motion.test.ts`: 5件成功。
-- `SCHOOL_RG_E2E_PORT=45333 npx playwright test tests/e2e/kendo-rig.spec.ts`: PC/iPad相当の4件成功。ステージ/actor矩形、DOM保持、ガード・攻撃・被弾、敵2体、原子ロード、再読込、静音を確認。
-- `SCHOOL_RG_E2E_PORT=45332 npx playwright test tests/e2e/kendo-rig.spec.ts tests/e2e/app.spec.ts --grep 'Kendo rig|kendo deck clears three Acts'`: 剣道部の短縮3 ActとAscension解放を含む4件成功。
-- 全E2E 148件の実行は69件成功後に停止。軽音部の通常尺ランで180秒のテスト制限に達した時点では画面は全Actクリア済みで、テスト補助関数が戦闘入力欄を待機していた。タイムアウトの原因切り分けと全件再実行は未完了。対象の剣道部通常尺3 Actテストは通過済み。
+- `SCHOOL_RG_E2E_PORT=45335 npx playwright test tests/e2e/kendo-rig.spec.ts tests/e2e/app.spec.ts --grep 'Kendo rig|kendo deck clears three Acts'`: PC/iPad相当の姿勢、敵2体、原子ロード、再読込、静音、剣道部の短縮3 Act/Ascension解放を含む5件成功。
+- `SCHOOL_RG_E2E_PORT=45334 npx playwright test tests/e2e/app.spec.ts --grep '軽音部 clears the normal 12-floor three-Act map by typing'`: 1件成功。前回の全E2Eでは69件成功後、軽音部通常尺ランの画面が全Actクリアへ遷移したのにテスト補助関数が戦闘入力欄を待ち、180秒で失敗。PR #312 と同じ終端セレクタ修正を局所移植して対象1件を再実行した。全E2E 148件の再実行は未実施。
 - `npm run typecheck`: 成功。
