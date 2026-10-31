@@ -1,4 +1,5 @@
 import { chromium } from "@playwright/test";
+import process from "node:process";
 import { mkdir, copyFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
@@ -17,13 +18,13 @@ try {
     await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
     const actor = page.locator(".game-shell .ally-slot").first();
     await actor.locator('[data-rig-id="science-rig-candidate-v4"]').waitFor();
-    await actor.locator('[data-part="head-hit"]').evaluate((node) => node instanceof HTMLImageElement && node.decode());
+    await actor.locator('[data-part="head-hit"]').evaluate((node) => node.decode());
     await page.screenshot({ path: resolve(output, `science-${viewport.width}-idle.png`) });
     const word = (await page.locator(".card-word").first().textContent()).trim();
     await page.keyboard.type(word);
     await page.waitForTimeout(120);
     await page.screenshot({ path: resolve(output, `science-${viewport.width}-card-use.png`) });
-    const remainingMs = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")).session.run.combat.clock.remainingMs);
+    const remainingMs = await page.evaluate(() => JSON.parse(globalThis.localStorage.getItem("school-rg-run-v1")).session.run.combat.clock.remainingMs);
     await page.clock.runFor(remainingMs + 1);
     await page.clock.runFor(650);
     await actor.locator('[data-part="head-hit"]').waitFor();
