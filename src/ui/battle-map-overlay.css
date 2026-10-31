@@ -81,6 +81,7 @@
   font-size: 12px;
 }
 .battle-map-context strong { color: white; font-size: 15px; }
+.battle-map-time-state { color: #d8e9e5; font-size: 11px; font-weight: 800; }
 .battle-map-next-count {
   margin-left: auto;
   padding: 5px 9px;

@@ -5,7 +5,7 @@ import { battleMapOverlayMarkup } from "../../src/ui/battle-map-overlay.js";
 
 describe("battle map overlay", () => {
   it("shows the actual current node and its connected successors without allowing route selection", () => {
-    const start = createRunSession(42, "literature-demo", demoContent, { floorsPerAct: 2, lanes: 4 });
+    const start = createRunSession(42, "literature-demo", demoContent);
     const session = { ...start, screen: "combat" as const };
     const current = session.run.map.nodes.find((node) => node.id === session.run.map.currentNodeId)!;
     const markup = battleMapOverlayMarkup(session);

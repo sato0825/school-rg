@@ -357,6 +357,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   function onKeyDown(event: KeyboardEvent): void {
     if (battleMapOpen) {
       if (event.key === "Escape") { event.preventDefault(); closeBattleMap(); }
+      else if (event.key === "Tab") { event.preventDefault(); root.querySelector<HTMLButtonElement>(".battle-map-close")?.focus({ preventScroll: true }); }
       else if (event.key.length === 1 || event.key === "Enter") event.preventDefault();
       return;
     }
