@@ -132,10 +132,11 @@ export class GameShell {
     this.header.append(hp);
   }
 
-  showVictory(session: RunSession, lowStimulus: boolean, options: VictoryNoteOptions): void {
+  showVictory(session: RunSession, lowStimulus: boolean, options: VictoryNoteOptions, arrivedFromBattle: boolean): void {
     const firstArrival = this.main.dataset.screen !== "won";
     const { run } = session;
     this.main.dataset.screen = "won";
+    this.main.dataset.terminalTransition = firstArrival && arrivedFromBattle ? "live" : "still";
     this.main.dataset.club = run.clubId;
     this.main.dataset.effects = lowStimulus ? "quiet" : "standard";
     this.stage.dataset.act = String(run.act);

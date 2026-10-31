@@ -17,6 +17,7 @@ for (const width of [1024, 1440]) {
       await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), save);
       await page.goto("/");
       await expect(page.locator('.game-shell[data-screen="won"]')).toBeVisible();
+      await expect(page.locator('.game-shell[data-screen="won"]')).toHaveAttribute("data-terminal-transition", "still");
       await expect(page.getByRole("heading", { name: "全Actクリア" })).toBeVisible();
       await expect(page.locator(".hero-art.victory-pose")).toBeVisible();
       await expect(page.locator(".hero-nameplate")).toContainText(club.name);
@@ -27,7 +28,7 @@ for (const width of [1024, 1440]) {
       await expect(page.getByRole("button", { name: "ラン履歴を見る" })).toBeInViewport();
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
       if (process.env.SCHOOL_RG_VICTORY_OUTPUT_DIR) {
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(1500);
         await page.screenshot({ path: join(process.env.SCHOOL_RG_VICTORY_OUTPUT_DIR, `issue292-victory-${club.id}-${width}.png`) });
       }
       const firstStage = await page.locator(".stage").evaluate((element) => {
@@ -63,6 +64,7 @@ test("quiet victory retains actions with no pose animation", async ({ page }) =>
   await page.goto("/");
   await expect(page.locator('.game-shell[data-effects="quiet"][data-screen="won"]')).toBeVisible();
   expect(await page.locator(".victory-pose").evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
+  expect(await page.locator(".victory-note").evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
   await page.getByRole("button", { name: "ラン履歴を見る" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".history-entry")).toHaveCount(1);

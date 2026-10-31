@@ -182,6 +182,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (session.screen === "rest") { gameShell = null; renderRunRest(root, session, demoContent, demoBattleArt); }
     else if (session.screen === "event") { gameShell = null; renderRunEvent(root, session, demoContent, demoBattleArt); }
     else if (session.screen === "won") {
+      const arrivedFromBattle = gameShell !== null;
       if (!gameShell) gameShell = new GameShell(root, run, view, demoContent);
       gameShell.showVictory(session, lowStimulus, {
         playtestActiveMs: metrics?.record.activeMs,
@@ -190,7 +191,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         playtestPartial: metrics?.record.partial,
         playtestError: metricsLoadError,
         historyError: historyLoadError || historySaveError,
-      });
+      }, arrivedFromBattle);
     }
     else if (session.screen === "lost") { gameShell = null; renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError); }
     else { gameShell = null; view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view, config); }

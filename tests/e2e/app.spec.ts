@@ -1008,6 +1008,18 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
   expect(battles).toBeGreaterThanOrEqual(3);
   if (reloadAtActTwo) expect(reloadedAtActTwo).toBe(true);
   await expect(page.locator(".run-header")).toContainText("全Act完走");
+  await expect(page.locator('.game-shell[data-screen="won"]')).toHaveAttribute("data-terminal-transition", "live");
+  const phases = await page.evaluate(() => {
+    const animation = (selector: string) => {
+      const css = getComputedStyle(document.querySelector(selector)!);
+      return { name: css.animationName, delay: css.animationDelay };
+    };
+    return { enemy: animation(".enemy-group"), hero: animation(".victory-pose"), note: animation(".victory-note"), stage: animation(".stage") };
+  });
+  expect(phases.enemy.name).toBe("victory-enemy-depart");
+  expect(phases.hero).toEqual({ name: "victory-pose-settle", delay: "0.18s" });
+  expect(phases.note).toEqual({ name: "victory-note-arrive", delay: "0.5s" });
+  expect(phases.stage.name).toBe("none");
   expect(await page.evaluate(() => {
     const nodes = Reflect.get(window, "issue292TerminalNodes") as { stage: Element; actor: Element; input: Element };
     return nodes.stage === document.querySelector(".stage") && nodes.actor === document.querySelector(".ally-slot") && nodes.input === document.querySelector(".typing-input");
@@ -1021,7 +1033,10 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await page.setViewportSize({ width: 1024, height: 768 });
   await startDemoRun(page);
   await clearThreeActs(page);
-  if (process.env.SCHOOL_RG_VICTORY_OUTPUT_DIR) await page.screenshot({ path: `${process.env.SCHOOL_RG_VICTORY_OUTPUT_DIR}/issue292-victory-actual-3act-1024.png` });
+  if (process.env.SCHOOL_RG_VICTORY_OUTPUT_DIR) {
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: `${process.env.SCHOOL_RG_VICTORY_OUTPUT_DIR}/issue292-victory-actual-3act-1024.png` });
+  }
   await expect(page.getByRole("button", { name: /戦闘ログ/ })).toHaveCount(0);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.lastCombatLog.entries.some((entry: { actionId: string }) => entry.actionId === "won"))).toBe(true);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["literature-demo"])).toBe(1);
