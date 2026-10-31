@@ -1,0 +1,21 @@
+{
+  "id": "literature-rig-candidate-v1",
+  "characterId": "literature-student",
+  "status": "candidate",
+  "canvas": { "width": 1024, "height": 1536 },
+  "runtimeScale": 1.09,
+  "groundY": 1509,
+  "sourceSheet": {
+    "file": "docs/art/candidates/literature-rig-parts-sheet-candidate-v1.png",
+    "sha256": "73b27627b57626c1698dd18051a1d31cd315d898c6ed356f0fa62a235ae971e7"
+  },
+  "editableSource": "docs/art/sources/literature-rig-candidate-v1.ora",
+  "parts": [
+    { "id": "left-leg", "file": "docs/art/candidates/literature-rig-parts-v1/left-leg.png", "sha256": "76ce9c62caac0c3e24377c1b277420fcc98cb659d7f21cd00ba8c0fcca17e6b7", "x": 230, "y": 980, "width": 324, "height": 518, "pivotX": 230, "pivotY": 20 },
+    { "id": "right-leg", "file": "docs/art/candidates/literature-rig-parts-v1/right-leg.png", "sha256": "11ff143c2815a5c995bcc8a40d3ab87f229c7b44d223f233ccdc5ba5a822bd47", "x": 597, "y": 980, "width": 232, "height": 529, "pivotX": 80, "pivotY": 20 },
+    { "id": "torso", "file": "docs/art/candidates/literature-rig-parts-v1/torso.png", "sha256": "6559b7b6ddc301c06a91eabfdb106e81530d73f8ec4d6f3bdde64a277f934213", "x": 280, "y": 482, "width": 483, "height": 594, "pivotX": 242, "pivotY": 500 },
+    { "id": "left-arm-bag", "file": "docs/art/candidates/literature-rig-parts-v1/left-arm-bag.png", "sha256": "1645020e1d9ae5cae471cbcabd567653175bc29437cf267ef1069ac6dbccbc6e", "x": 190, "y": 515, "width": 341, "height": 581, "pivotX": 220, "pivotY": 50 },
+    { "id": "right-arm-notebook", "file": "docs/art/candidates/literature-rig-parts-v1/right-arm-notebook.png", "sha256": "4f082a94005eb1029e41fea4e82a5b4721432ab384583919df1ab8512c87973f", "x": 575, "y": 534, "width": 358, "height": 391, "pivotX": 80, "pivotY": 45 },
+    { "id": "head", "file": "docs/art/candidates/literature-rig-parts-v1/head.png", "sha256": "efea712be8dff9c4a983745c55edb78eee0f17fecc2bdd5648002fd829609de0", "x": 300, "y": 140, "width": 459, "height": 470, "pivotX": 235, "pivotY": 420 }
+  ]
+}
