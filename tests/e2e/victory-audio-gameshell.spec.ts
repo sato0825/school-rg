@@ -6,14 +6,16 @@ import type { MapNode } from "../../src/domain/schema.js";
 import { MOTION_MS } from "../../src/ui/motion-timing.js";
 
 const soundCases = [
-  { label: "live", quiet: false, mute: false, width: 1440, firstWinAt: 0.18 },
-  { label: "quiet", quiet: true, mute: false, width: 1024, firstWinAt: 0 },
-  { label: "muted", quiet: false, mute: true, width: 1024, firstWinAt: null },
+  { label: "live", quiet: false, mute: false, reducedMotion: false, width: 1440, firstWinAt: 0.18 },
+  { label: "quiet", quiet: true, mute: false, reducedMotion: false, width: 1024, firstWinAt: 0 },
+  { label: "system reduced motion", quiet: false, mute: false, reducedMotion: true, width: 1024, firstWinAt: 0 },
+  { label: "muted", quiet: false, mute: true, reducedMotion: false, width: 1024, firstWinAt: null },
 ] as const;
 
-for (const { label, quiet, mute, width, firstWinAt } of soundCases) {
+for (const { label, quiet, mute, reducedMotion, width, firstWinAt } of soundCases) {
   test(`${label} final victory sound follows the pose and never replays on restore`, async ({ page }) => {
     await page.clock.install();
+    if (reducedMotion) await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width, height: width === 1440 ? 900 : 768 });
     const base = createRunSession(42, "literature-demo", demoContent);
     const start: MapNode = { id: "audio-final-start", act: 3, floor: 0, kind: "start", nextIds: ["audio-final-boss"] };
@@ -64,6 +66,7 @@ for (const { label, quiet, mute, width, firstWinAt } of soundCases) {
     await page.clock.runFor(MOTION_MS.hero);
     await expect(page.locator('.game-shell[data-screen="won"]')).toHaveAttribute("data-terminal-transition", "live");
     await expect(page.locator('.game-shell[data-effects="quiet"]')).toHaveCount(quiet ? 1 : 0);
+    if (quiet || reducedMotion) expect(await page.locator(".victory-pose").evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
     const events = await page.evaluate(() => JSON.parse(sessionStorage.getItem("audio-victory-events") ?? "[]") as { hz: number; at: number }[]);
     const winStarts = events.filter((event) => event.hz === 1046);
     if (firstWinAt === null) expect(events).toEqual([]);
