@@ -4,6 +4,7 @@ import { stageLayout } from "./stage-layout.js";
 import { actionDelayMs, loopDelayMs, MOTION_MS } from "./motion-timing.js";
 import type { CardFx } from "./card-fx.js";
 import type { ResultFx } from "./result-fx.js";
+import { intentGlyphMarkup, intentTargetMarkup } from "./intent-glyph.js";
 import { cardArtForId } from "./card-art.js";
 import { describeEnemyIntent, type IntentVisualStep } from "./intent-visual.js";
 import { DEFAULT_GAME_CONFIG, type GameConfig } from "../domain/config.js";
@@ -99,7 +100,7 @@ function pileMarkup(name: string, kind: string, count: number): string {
 }
 
 function intentStepsMarkup(steps: readonly IntentVisualStep[]): string {
-  return `<span class="intent-steps" aria-hidden="true">${steps.map((step, index) => `<span class="intent-step" data-kind="${html(step.kind)}" title="${html(step.description)}"><span class="intent-step-target">${html(step.targetSymbol)}</span><span class="intent-step-icon">${html(step.icon)}</span><strong>${html(step.value)}</strong></span>${index < steps.length - 1 ? `<span class="intent-sequence">›</span>` : ""}`).join("")}</span>`;
+  return `<span class="intent-steps" aria-hidden="true">${steps.map((step, index) => `<span class="intent-step" data-kind="${html(step.kind)}" data-target="${html(step.target)}" title="${html(step.description)}">${intentTargetMarkup(step.target)}${intentGlyphMarkup(step.kind)}<strong>${html(step.value)}</strong></span>${index < steps.length - 1 ? `<span class="intent-sequence">›</span>` : ""}`).join("")}</span>`;
 }
 
 function cardFxMarkup(fx: CardFx | null, clubId: string, nowMs: number, palette: BattleArt["fxPaletteByClubId"]): string {
@@ -122,7 +123,8 @@ function resultFxMarkup(fx: ResultFx | null, nowMs: number): string {
     const sameActor = previous.filter((item) => item.xPercent === mark.xPercent).length;
     const actorOrder = new Set([...previous.map((item) => item.xPercent), mark.xPercent]).size - 1;
     const stack = sameActor * 2 + actorOrder % 2;
-    return `<span class="result-fx-mark" data-kind="${mark.kind}" style="left:${mark.xPercent}%;--fx-offset:${stack * 36}px;animation-delay:${delay}ms">${html(mark.label)}</span>`;
+    const kind = mark.kind === "damage" ? "attack" : mark.kind === "block-loss" ? "block" : mark.kind;
+    return `<span class="result-fx-mark" data-kind="${mark.kind}" style="left:${mark.xPercent}%;--fx-offset:${stack * 36}px;animation-delay:${delay}ms">${intentGlyphMarkup(kind)}<span>${html(mark.label)}</span></span>`;
   }).join("")}</div>`;
 }
 
@@ -172,10 +174,12 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
       .map(([kind, count]) => `${statusNames[kind] ?? kind} ${count}`).join("、");
     const targeted = (potionActive ? potionControl!.typing.targetEnemyInstanceId : combat.typing.targetEnemyInstanceId) === enemy.instanceId;
     const enemyLabel = `敵 ${index + 1}を対象に選ぶ。${intentVisual.ariaLabel}${statusDescription ? `。状態: ${statusDescription}` : ""}${targeted ? "。選択中" : ""}`;
+    const leadingStep = intentVisual.steps.find((step) => step.kind !== "unknown") ?? intentVisual.steps[0];
     if (denseFormation) enemyRoster.push(`<button type="button" class="enemy-roster-button ${targeted ? "targeted" : ""}" data-action="enemy" data-id="${enemy.instanceId}" aria-pressed="${targeted}" aria-label="${html(enemyLabel)}"><span class="enemy-roster-head"><span class="enemy-roster-order" aria-hidden="true">${index + 1}</span><span class="enemy-tier" data-tier="${intentVisual.tier.kind}" aria-hidden="true">${html(intentVisual.tier.symbol)}</span><span class="enemy-roster-name">${html(definition?.name ?? "敵")}</span><span class="enemy-roster-value">${enemy.hp}<small>/${enemy.maxHp}</small></span></span><span class="enemy-roster-bar" role="meter" aria-label="敵 ${index + 1}のHP" aria-valuemin="0" aria-valuemax="${enemy.maxHp}" aria-valuenow="${enemy.hp}"><span style="width:${hpRatio}%"></span></span>${intentStepsMarkup(intentVisual.steps)}${enemy.block > 0 ? `<span class="enemy-block">◇ ${enemy.block}</span>` : ""}<span class="enemy-detail" aria-hidden="true"><span class="enemy-detail-heading"><span>敵 ${index + 1}</span><strong>${html(definition?.name ?? "敵")}</strong></span><strong>次の行動 · ${html(intentVisual.title)}</strong>${intentStepsMarkup(intentVisual.steps)}${intentVisual.steps.map((step, order) => `<span>${order + 1}. ${html(step.description)}</span>`).join("")}${statusDescription ? `<span class="enemy-detail-status">${statusMarkup(enemyStatuses)}</span>` : ""}</span></button>`);
     const slotTag = denseFormation || enemy.hp <= 0 ? "div" : "button";
     return `<${slotTag} class="enemy-slot ${targeted ? "targeted" : ""} ${enemy.hp <= 0 ? "defeated" : ""}" style="--slot-x:${layout.enemies[index]!.xPercent}%" ${slotTag === "div" ? 'aria-hidden="true"' : `type="button" data-action="enemy" data-id="${enemy.instanceId}" aria-pressed="${targeted}" aria-label="${html(enemyLabel)}"`}>
       <img class="enemy-art ${view.motion === "enemy" ? "act" : ""}" style="animation-delay:${enemyDelay}ms" src="${html(view.art.enemyUrlById[enemy.enemyId] ?? "")}" alt="" />
+      ${leadingStep ? `<span class="intent-omen" data-kind="${leadingStep.kind}" data-target="${leadingStep.target}" aria-hidden="true">${intentGlyphMarkup(leadingStep.kind)}${intentTargetMarkup(leadingStep.target)}</span>` : ""}
       ${denseFormation ? `<span class="enemy-art-number" aria-hidden="true">${index + 1}</span>` : ""}
       <span class="enemy-hud"><span class="enemy-hud-head"><span class="enemy-tier" data-tier="${intentVisual.tier.kind}" aria-hidden="true">${html(intentVisual.tier.symbol)}</span><strong>${targeted ? "対象: " : ""}${html(definition?.name ?? "敵")}</strong><span class="enemy-hp-number">${enemy.hp}<small>/${enemy.maxHp}</small></span></span><span class="enemy-health-track" role="meter" aria-label="${html(definition?.name ?? "敵")}のHP" aria-valuemin="0" aria-valuemax="${enemy.maxHp}" aria-valuenow="${enemy.hp}"><span class="enemy-health-fill" style="width:${hpRatio}%"></span></span><span class="intent-ticket" aria-hidden="true"><span class="intent-copy"><small>次の行動 · </small><strong>${html(intentVisual.title)}</strong></span></span>${intentStepsMarkup(intentVisual.steps)}${enemy.block > 0 ? `<span class="enemy-block">◇ ${enemy.block} ブロック</span>` : ""}</span>
       <span class="enemy-status">${statusMarkup(enemyStatuses)}</span>
