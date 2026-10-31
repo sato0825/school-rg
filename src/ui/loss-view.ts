@@ -27,22 +27,36 @@ export function createLossNote(session: RunSession, content: ContentRegistry, op
   note.setAttribute("role", "region");
   note.setAttribute("aria-label", "ランの結果");
   const heading = document.createElement("h2");
-  heading.textContent = "今日はここまで";
-  heading.setAttribute("aria-label", "敗北");
+  heading.textContent = "敗北";
   heading.tabIndex = -1;
   const eyebrow = document.createElement("span");
   eyebrow.className = "loss-note-eyebrow";
-  eyebrow.textContent = "✦　敗北 · 活動記録";
+  eyebrow.textContent = "✦　活動記録";
+  const subtitle = document.createElement("p");
+  subtitle.className = "loss-note-subtitle";
+  subtitle.textContent = "今日はここまで";
   const lastDamage = run.lastCombatLog?.entries.filter((entry) => entry.playerHpDelta < 0).at(-1);
   const damage = document.createElement("p");
   damage.className = "loss-note-damage";
+  const damageLabel = document.createElement("span");
+  damageLabel.className = "loss-note-damage-label";
+  damageLabel.textContent = lastDamage ? "最後の被弾" : "残りHP";
+  const damageValue = document.createElement("strong");
+  damageValue.className = "loss-note-damage-value";
+  damage.append(damageLabel, damageValue);
   if (lastDamage) {
     const enemyId = run.lastCombatLog?.enemies.find((enemy) => enemy.instanceId === lastDamage.actorEnemyInstanceId)?.enemyId;
     const source = content.enemies.find((enemy) => enemy.id === enemyId)?.name;
     const amount = Math.abs(lastDamage.playerHpDelta);
     damage.setAttribute("aria-label", `${source ? `${source}の行動で` : "最後の行動で"}HP ${amount}減少`);
-    damage.textContent = `♥ −${amount}${source ? ` · ${source}` : ""}`;
-  } else damage.textContent = `♥ ${run.player.hp}/${run.player.maxHp}`;
+    damageValue.textContent = `♥ −${amount}`;
+    if (source) {
+      const sourceName = document.createElement("span");
+      sourceName.className = "loss-note-damage-source";
+      sourceName.textContent = source;
+      damage.append(sourceName);
+    }
+  } else damageValue.textContent = `♥ ${run.player.hp}/${run.player.maxHp}`;
   const actions = document.createElement("div");
   actions.className = "loss-note-actions";
   for (const [label, visible, action] of [["新しいランを始める", "もう一度", "new-run"], ["ラン履歴を見る", "記録を見る", "open-history"]] as const) {
@@ -53,7 +67,7 @@ export function createLossNote(session: RunSession, content: ContentRegistry, op
     button.textContent = visible;
     actions.append(button);
   }
-  note.append(eyebrow, heading, damage, actions);
+  note.append(eyebrow, heading, subtitle, damage, actions);
   if (options.playtestActiveMs !== undefined) {
     const metrics = document.createElement("div");
     metrics.className = "loss-note-metrics";
