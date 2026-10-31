@@ -109,6 +109,16 @@ for (const asset of register.assets) {
       assert(asset.reviewFile, `review record missing: ${asset.id}`);
       await access(projectPath(asset.reviewFile));
     } else assert(asset.status === "candidate", `invalid enemy status: ${asset.id}`);
+  } else if (asset.role === "environment-plate") {
+    assert([1, 2, 3].includes(asset.act), `environment Act missing: ${asset.id}`);
+    assert(typeof asset.generator === "string" && asset.promptFile, `environment provenance missing: ${asset.id}`);
+    await access(projectPath(asset.promptFile));
+    if (asset.status === "approved-runtime") {
+      assert(asset.editableSource && /\.(aseprite|kra|psd|svg)$/.test(asset.editableSource), `editable original missing: ${asset.id}`);
+      await access(projectPath(asset.editableSource));
+      assert(asset.reviewFile, `review record missing: ${asset.id}`);
+      await access(projectPath(asset.reviewFile));
+    } else assert(asset.status === "candidate", `invalid environment status: ${asset.id}`);
   } else assert(asset.role === "reference", `invalid art role: ${asset.id}`);
   console.log(`${asset.id}: ${info.width}x${info.height}, alpha ${info.minAlpha}..${info.maxAlpha}, SHA OK`);
 }

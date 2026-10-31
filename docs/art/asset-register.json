@@ -461,6 +461,36 @@
       "generator": "built-in imagegen; model version not exposed",
       "editableSource": null,
       "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act2-science-wing-candidate-v1",
+      "file": "src/assets/stages/act2-science-wing-candidate-v1.png",
+      "sha256": "0e2b22e1695c82fecdac8d624308f1a1d8e6441916cfef974ff5b327ca747a41",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 2,
+      "promptFile": "docs/art/prompts/stage-candidates-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act3-auditorium-foyer-candidate-v1",
+      "file": "src/assets/stages/act3-auditorium-foyer-candidate-v1.png",
+      "sha256": "6d79927db4be045d8fdfaf47b703ab72d7ee1b996216e5ee29cf4ce0310713e3",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 3,
+      "promptFile": "docs/art/prompts/stage-candidates-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
     }
   ]
 }
