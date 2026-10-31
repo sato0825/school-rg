@@ -116,8 +116,21 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let gameShell: GameShell | null = null;
   let generation = 0;
   const setMotion = (motion: BattleView["motion"]) => { view.motion = motion; view.motionStartedAtMs = motion ? clock.nowMs() : null; };
-  const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
-    emitRelicEvent(state, kind, demoRelicRules, demoContent, detail).run;
+  const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState => {
+    const result = emitRelicEvent(state, kind, demoRelicRules, demoContent, detail);
+    if (state.combat && result.trace.length) {
+      const cue = { relicId: result.trace[0]!.relicId, startedAtMs: clock.nowMs() };
+      view.relicCue = cue;
+      const currentGeneration = generation;
+      window.setTimeout(() => {
+        if (generation === currentGeneration && view.relicCue === cue) {
+          view.relicCue = null;
+          if (session.screen === "combat") render();
+        }
+      }, 700);
+    }
+    return result.run;
+  };
   const metricsActive = () => frontScreen === null && !restoreError && session.screen !== "won" && session.screen !== "lost"
     && document.visibilityState === "visible" && !(run.combat?.clock.paused ?? false);
   const observeMetrics = () => { if (metrics) metrics = observePlaytest(metrics, clock.nowMs(), metricsActive()); };
@@ -135,6 +148,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     preloadClubArt(run.clubId);
     view.cardFx = null;
     view.resultFx = null;
+    view.selectedRelicId = null;
     view.dyingEnemyInstanceIds = [];
     if (metrics) metrics = recordPlaytestBattle(metrics, run);
     run = fireRelic(run, "combat_start");
@@ -476,6 +490,12 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (action === "open-battle-map") { openBattleMap(); return; }
       if (action === "close-battle-map") { closeBattleMap(); return; }
       if (action === "toggle-audio") { audio.toggle(); render(); return; }
+      if (action === "relic-detail" && frontScreen === null && session.screen === "combat" && run.relicIds.includes(id)) {
+        view.selectedRelicId = view.selectedRelicId === id ? null : id;
+        render();
+        root.querySelector<HTMLButtonElement>(`[data-action="relic-detail"][data-id="${id}"]`)?.focus();
+        return;
+      }
       if (action === "new-run" || action === "restart") { restart(); return; }
       if (action === "open-clubs" && frontScreen === "title") { frontScreen = "clubs"; render(); return; }
       if (action === "open-history" && (frontScreen === "title" || (frontScreen === null && (session.screen === "won" || session.screen === "lost")))) {

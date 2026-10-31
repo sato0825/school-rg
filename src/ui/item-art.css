@@ -1,0 +1,23 @@
+/* Candidate relic objects remain separate from the stage and can be exchanged by art ID. */
+.game-shell .topbar .relic-row { flex: 0 1 auto; align-items: center; gap: 4px; max-width: 230px; min-height: 38px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
+.game-shell .relic-item { position: relative; display: grid; flex: none; place-items: center; width: 38px; height: 38px; padding: 2px; border: 1px solid #8eaeb2; border-radius: 5px; background: #f0f6ed; cursor: pointer; }
+.game-shell .relic-item:hover, .game-shell .relic-item[aria-expanded="true"] { border-color: #bd728b; background: #fff6ed; }
+.game-shell .relic-item:focus-visible { outline: 3px solid #22698a; outline-offset: 2px; }
+.game-shell .relic-object { display: grid; place-items: center; width: 33px; height: 33px; color: #607888; font-size: 18px; }
+.game-shell .relic-object img, .game-shell .relic-inspect-art img, .game-shell .relic-activation-art img { width: 100%; height: 100%; object-fit: contain; }
+.game-shell .relic-item-count { position: absolute; right: 0; bottom: 0; min-width: 12px; border-radius: 3px; background: #244c5b; color: white; font-size: 10px; line-height: 12px; text-align: center; }
+.game-shell .relic-inspect { position: absolute; z-index: 45; top: 12px; right: 16px; display: flex; align-items: center; gap: 10px; width: min(330px, 40%); min-height: 98px; padding: 10px 13px; border: 1px solid #a4bdbe; border-radius: 6px; background: #ecf4edee; box-shadow: 0 9px 25px #122e426b; color: #1d4552; }
+.game-shell .relic-inspect-art { display: grid; flex: none; place-items: center; width: 74px; height: 74px; }
+.game-shell .relic-inspect strong { font-size: 14px; }
+.game-shell .relic-inspect p { margin: 4px 0 0; font-size: 11px; line-height: 1.4; }
+.game-shell .relic-activation { position: absolute; z-index: 29; top: 50%; left: 23%; display: grid; place-items: center; width: 66px; height: 66px; border: 2px solid #bfd6c8; border-radius: 50%; background: #edf5e9de; box-shadow: 0 0 0 8px #b0d7cc44; pointer-events: none; animation: relic-appear .62s ease-out both; }
+.game-shell .relic-activation-art { display: grid; place-items: center; width: 58px; height: 58px; }
+@keyframes relic-appear { from { opacity: 0; transform: translateY(12px) scale(.8); } 25% { opacity: 1; } to { opacity: 0; transform: translateY(-20px) scale(1); } }
+@media (max-width: 1100px) {
+  .game-shell .topbar .relic-row { max-width: 170px; }
+  .game-shell .relic-item { width: 34px; height: 34px; }
+  .game-shell .relic-object { width: 30px; height: 30px; }
+  .game-shell .relic-inspect { width: min(315px, 42%); }
+}
+@media (prefers-reduced-motion: reduce) { .game-shell .relic-activation { animation: none; opacity: 1; } }
+.game-shell[data-effects="quiet"] .relic-activation { animation: none; opacity: 1; box-shadow: none; }

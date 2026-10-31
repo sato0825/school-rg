@@ -1,0 +1,138 @@
+{
+  "issue": 308,
+  "adoption": "candidate",
+  "items": [
+    {
+      "id": "library-bookmark",
+      "artId": "relic-library-bookmark",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#242 candidate-v1; style review required",
+      "source": "docs/art/production/issue308/sources/library-bookmark-v1.png",
+      "sourceSha256": "0598c1c911908b76b26ce31f817a7a3887d79b2544bc0a2a1b8daffc9070b997",
+      "runtime": "src/assets/relics/issue308/library-bookmark-v1-256.webp",
+      "runtimeSha256": "198af27eb78704831411a3e7bb2e67e7a23e1486ceae8029c63b88ec99e9fe71",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "lab-glasses",
+      "artId": "relic-lab-glasses",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#246 v1; style review required",
+      "source": "docs/art/production/issue308/sources/lab-glasses-v1.png",
+      "sourceSha256": "c8e69adbdfca65843692a06d900b7f2c9e04592bc1e26a24ef1a3ee65de3f786",
+      "runtime": "src/assets/relics/issue308/lab-glasses-v1-256.webp",
+      "runtimeSha256": "964e131475f03c0d343c3f09de00234c2e4bf392617b9afd9d823e0972be7ae0",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "bamboo-grip",
+      "artId": "relic-bamboo-grip",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#291 v1",
+      "source": "docs/art/production/issue308/sources/bamboo-grip-v1.png",
+      "sourceSha256": "91e5d0cdc7d476db0c5b3effb83505de7bc6cdfffd2e28490a207fbbed9a694e",
+      "runtime": "src/assets/relics/issue308/bamboo-grip-v1-256.webp",
+      "runtimeSha256": "bbfb9a5434ffad341f929d8950c070af00f757eea1d22d933909e58f9bd7dd5f",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "metronome",
+      "artId": "relic-metronome",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#246 v1; style review required",
+      "source": "docs/art/production/issue308/sources/metronome-v1.png",
+      "sourceSha256": "a2d379b687416c26b0cd27c963137a75b1e5813638d0d1617512246a4bd447b4",
+      "runtime": "src/assets/relics/issue308/metronome-v1-256.webp",
+      "runtimeSha256": "5d3b72439df7ce240927f6d6cfb37eb87ef76c5b953ea607375990c7e9276064",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "sketchbook",
+      "artId": "relic-sketchbook",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#291 v1",
+      "source": "docs/art/production/issue308/sources/sketchbook-v1.png",
+      "sourceSha256": "3d14d1dba71ba2c2c1c703ae654b318f7519c85f787389260daf13ce6c57a7a3",
+      "runtime": "src/assets/relics/issue308/sketchbook-v1-256.webp",
+      "runtimeSha256": "a8422aa43ea98f5d189186e4941d62d704e903abef3e1b3afe65b416187ad0a5",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "spare-shoes",
+      "artId": "relic-spare-shoes",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#291 v1",
+      "source": "docs/art/production/issue308/sources/spare-shoes-v1.png",
+      "sourceSha256": "ed47a6d060de3554e12f7443a785f3df2bea4c6a8265f0f67b74f9ec002f60ed",
+      "runtime": "src/assets/relics/issue308/spare-shoes-v1-256.webp",
+      "runtimeSha256": "98493c1cb1f22c7cfc0bae73f405ac1e7435b769b8af6fe683920fa847cac670",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "attendance-stamp",
+      "artId": "relic-attendance-stamp",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#291 v1",
+      "source": "docs/art/production/issue308/sources/attendance-stamp-v1.png",
+      "sourceSha256": "99242139447acdfbbe194b6fd11231c51ecb5def63d9e60683ddc0aac4c4e11b",
+      "runtime": "src/assets/relics/issue308/attendance-stamp-v1-256.webp",
+      "runtimeSha256": "84d0363d31b65825b6ea077898b4a39094f18e52dd37c48fffc6ecef994e38cc",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "hallway-clock",
+      "artId": "relic-hallway-clock",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#301 v1",
+      "source": "docs/art/production/issue308/sources/hallway-clock-v1.png",
+      "sourceSha256": "17c5d9bae2eb447a5f31b7f8490995c046577b306d2d0a4ecf413a3840669371",
+      "runtime": "src/assets/relics/issue308/hallway-clock-v1-256.webp",
+      "runtimeSha256": "b713fc1c9017bc707e7e810be2f5f6a9d969f380aa2d058d938951c15e001847",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "lunch-coupon",
+      "artId": "relic-lunch-coupon",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#301 v1",
+      "source": "docs/art/production/issue308/sources/lunch-coupon-v1.png",
+      "sourceSha256": "76ddda777e2d19a6eb7bf6e14ce4a6f249b0c77f158176ffa2844d8de83b5d52",
+      "runtime": "src/assets/relics/issue308/lunch-coupon-v1-256.webp",
+      "runtimeSha256": "fb39eed8193455b54a12b919649eb3f695137687253843ce9ca9fcf3b98a59d0",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "pocket-bandage",
+      "artId": "relic-pocket-bandage",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#301 v1",
+      "source": "docs/art/production/issue308/sources/pocket-bandage-v1.png",
+      "sourceSha256": "b2d74ef49d83084e070caaefdd8b6da1b5108d188ecac08d1cd874617629cd32",
+      "runtime": "src/assets/relics/issue308/pocket-bandage-v1-256.webp",
+      "runtimeSha256": "263d0e2bcf563d7dd6be81ac1cb7907c4e835844dab3abf9943899782cd20ce5",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    },
+    {
+      "id": "practice-timer",
+      "artId": "relic-practice-timer",
+      "version": "candidate-v1",
+      "adoption": "candidate",
+      "origin": "#301 v1",
+      "source": "docs/art/production/issue308/sources/practice-timer-v1.png",
+      "sourceSha256": "abe640afd7d1b99f7c4f424805c136ce295343630db8d1ae0cea4f7caa5f5898",
+      "runtime": "src/assets/relics/issue308/practice-timer-v1-256.webp",
+      "runtimeSha256": "a43782e2f138f6c0817420bc2aefc43e285f4c87b42e1afdb1752499f4252c06",
+      "runtimeProfile": "256x256 WebP q86 alpha100"
+    }
+  ]
+}
