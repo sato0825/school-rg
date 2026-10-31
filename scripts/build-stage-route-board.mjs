@@ -1,4 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
+import console from "node:console";
 import process from "node:process";
 
 const [seed42Path, seed97Path, outputPath] = process.argv.slice(2);
