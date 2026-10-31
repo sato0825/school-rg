@@ -77,9 +77,9 @@ test("card damage shows the enemy's hit reaction and quiet mode keeps the action
   if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-hit-quiet-1440.png` });
 });
 
-for (const [pose, intentId, quiet] of [["attack", "paper-intent-hit", false], ["guard", "paper-intent-guard", false], ["guard", "paper-intent-guard", true]] as const) test(`${pose} silhouette fits five enemies at 1024px${quiet ? " in quiet mode" : ""}`, async ({ page }) => {
+for (const width of [1024, 1440] as const) for (const [pose, intentId, quiet] of [["attack", "paper-intent-hit", false], ["guard", "paper-intent-guard", false], ["guard", "paper-intent-guard", true]] as const) test(`${pose} silhouette fits five enemies at ${width}px${quiet ? " in quiet mode" : ""}`, async ({ page }) => {
   await page.clock.install();
-  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
   const base = createRunSession(97, "science-demo", demoContent);
   const start: MapNode = { id: "five-start", act: 1, floor: 0, kind: "start", nextIds: ["five-fight"] };
   const fight: MapNode = { id: "five-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
@@ -110,9 +110,9 @@ for (const [pose, intentId, quiet] of [["attack", "paper-intent-hit", false], ["
   expect(paper!.x).toBeGreaterThan(hero!.x + hero!.width);
   expect(paper!.x + paper!.width).toBeLessThanOrEqual(stage!.x + stage!.width);
   if (captureDir) {
-    await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-${pose}${quiet ? "-quiet" : ""}-1024.png` });
+    await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-${pose}${quiet ? "-quiet" : ""}-${width}.png` });
     const labelsHidden = await page.addStyleTag({ content: ".enemy-hud,.enemy-roster,.enemy-art-number,.intent-body-cue,.intent-trajectory{visibility:hidden!important}" });
-    await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-${pose}${quiet ? "-quiet" : ""}-visual-only-1024.png` });
+    await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-${pose}${quiet ? "-quiet" : ""}-visual-only-${width}.png` });
     await labelsHidden.evaluate((element) => element.parentNode?.removeChild(element));
   }
   // Selection keeps every slot fixed while enlarging the authored action image.
@@ -123,7 +123,7 @@ for (const [pose, intentId, quiet] of [["attack", "paper-intent-hit", false], ["
   const selectedPaper = await page.locator(".enemy-action-art").boundingBox();
   expect(selectedPaper!.width).toBeGreaterThan(paper!.width * 1.3);
   expect(await page.locator(".stage").boundingBox()).toEqual(stage);
-  if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-${pose}${quiet ? "-quiet" : ""}-selected-1024.png` });
+  if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-${pose}${quiet ? "-quiet" : ""}-selected-${width}.png` });
   await page.locator('.enemy-roster-button[data-id="five-1"]').click();
   await page.clock.runFor(250);
   expect(await page.locator(".enemy-slot").first().boundingBox()).toEqual(slotBefore);

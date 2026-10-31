@@ -35,7 +35,7 @@ test("all registered enemy candidates decode and keep battle controls readable a
       : ["hall-mop", "folded-school-map", "stage-spotlight", "archive-clock"].includes(enemyId) ? 1024 : 390;
     await scene.setViewportSize({ width, height: 844 });
     await scene.goto("/");
-    const enemy = scene.locator(".enemy-art");
+    const enemy = scene.locator(".enemy-slot img.enemy-art, .enemy-slot .enemy-action-art .enemy-pose-idle").first();
     await expect(enemy).toHaveAttribute("src", new RegExp(`${enemyId}-candidate-v${["lost-and-found", "hall-mop"].includes(enemyId) ? 2 : 1}`));
     await enemy.evaluate(async (image) => (image as HTMLImageElement).decode());
     expect(await enemy.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(1_000);
