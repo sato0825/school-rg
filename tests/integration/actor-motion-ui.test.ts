@@ -25,7 +25,7 @@ describe("literature actor candidate in live battle markup", () => {
     expect(slot.style.getPropertyValue("--actor-delay")).toBe("-190ms");
     expect(slot.querySelector<HTMLImageElement>(".hero-art")?.src).toContain("idle.png");
     expect(slot.querySelector<HTMLImageElement>(".hero-motion-frame")?.src).toContain("activate.png");
-    expect(slot.querySelector(".hero-art")?.getAttribute("alt")).toContain("文芸部");
+    expect(slot.querySelector(".hero-art")?.getAttribute("alt")).toContain("吉野 こはる");
     expect(slot.querySelector(".hero-motion-frame")?.getAttribute("aria-hidden")).toBe("true");
     expect(render("hit").querySelector<HTMLImageElement>(".hero-motion-frame")?.src).toContain("hit.png");
     expect(render(null).querySelector(".hero-motion-frame")).toBeNull();
