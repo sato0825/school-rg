@@ -18,13 +18,15 @@
 
 | 画面 | 証拠 |
 | --- | --- |
-| PC 1440×900 待機 | [待機](previews/issue233-idle-desktop-v2.png) |
-| PC 1440×900 発動 | [発動](previews/issue233-activate-desktop-v2.png) |
-| PC 1440×900 被弾 | [被弾](previews/issue233-hit-desktop-v2.png) |
-| iPad相当1024×768のブラウザー幅 | [被弾](previews/issue233-hit-ipad-viewport-v2.png) |
-| 390×844 | [被弾](previews/issue233-hit-mobile-v2.png) |
+| PC 1440×900 待機 | [待機](previews/issue233-idle-desktop-v3.png) |
+| PC 1440×900 発動 | [発動](previews/issue233-activate-desktop-v3.png) |
+| PC 1440×900 被弾 | [被弾](previews/issue233-hit-desktop-v3.png) |
+| iPad相当1024×768のブラウザー幅 | [被弾](previews/issue233-hit-ipad-viewport-v3.png) |
+| 390×844 | [被弾](previews/issue233-hit-mobile-v3.png) |
 
 最初の390pxキャプチャでは開発用の長い候補ラベルが敵HPと重なった。元の[失敗画像](previews/issue233-hit-mobile.png)を保存し、ラベルを短くして再撮影した。最初のE2E失敗は被弾アニメーションの0.4pxのサブピクセル移動を境界違反と誤判定したためで、1pxの描画許容を加えた。画像やゲームルールの不具合をテストだけで隠してはいない。
+
+上表は最新mainの局所演出を取り込んだ後に再撮影した。旧キャプチャも版を変えて保持する。局所演出が人物と重なる瞬間や、他の敵・複数味方との相性は別審査が必要。背景は人物より写実的な床反射を持ち、敵の線と質感も異なるため、画面全体の最終的な画風統一は未判定。
 
 実機iPadは `xcrun devicectl list devices` で `unavailable` と表示され、接続できなかった。1024×768はPCブラウザーでの表示確認であり、実機QAの合格とは扱わない。シミュレータは起動していない。
 
