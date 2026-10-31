@@ -225,7 +225,7 @@ test("shop relic, potion and card purchases persist and respect one-time stock",
   await expect(potion).toContainText("購入済み");
   await expect(page.locator(".run-potions")).toHaveAttribute("aria-label", "ポーション 3/3枠");
   await expect(page.locator(`.location-item-result [data-art-id="${potionArtId}"]`)).toBeVisible();
-  await expect(page.locator(`.topbar [data-art-id="${potionArtId}"]`)).toBeVisible();
+  await expect(page.locator(`.topbar [data-art-id="${potionArtId}"]`).first()).toBeVisible();
   await page.locator("[data-action=buy-offer]").first().focus();
   await page.keyboard.press("Enter");
   await page.reload();
