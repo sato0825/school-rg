@@ -269,7 +269,8 @@ test("renders the combat HUD and accepts direct keyboard input", async ({ page }
   expect(seconds).toBeGreaterThan(0);
   expect(seconds).toBeLessThanOrEqual(10);
   await page.keyboard.press("z");
-  await expect(page.locator(".typing-buffer .placeholder")).toBeVisible();
+  await expect(page.locator(".typing-visual")).toHaveText("");
+  await expect(page.locator(".typing-input")).not.toHaveAttribute("placeholder");
   await page.keyboard.type("heavy strike");
   await expect(page.locator(".enemy-hud")).toContainText("10/24");
   await expect(page.locator(".card")).toHaveCount(4);
@@ -328,6 +329,56 @@ test("music club starts with extra time and types a tempo card", async ({ page }
   expect(unique).toBeDefined();
   await page.keyboard.type(unique!);
   await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
+});
+
+test("music chains timed cards by direct input at iPad width after a save reload", async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 820, height: 1180 });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /軽音部/ }).click();
+  await enterNextNode(page);
+  await page.evaluate(() => {
+    const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
+    const combat = saved.session.run.combat;
+    const cardId = (id: string) => combat.cards.find((card: { cardId: string }) => card.cardId === id).instanceId;
+    const tempo = cardId("MUS-001");
+    const sync = cardId("MUS-004");
+    const beat = cardId("MUS-002");
+    combat.hand = [tempo];
+    combat.drawPile = [...combat.cards.map((card: { instanceId: string }) => card.instanceId)
+      .filter((id: string) => id !== tempo && id !== sync && id !== beat), beat, sync];
+    combat.discardPile = [];
+    combat.exhaustPile = [];
+    combat.resolvingPile = [];
+    combat.typing = { buffer: "", candidateCardInstanceIds: [tempo], selectedCardInstanceId: null,
+      progress: 0, targetEnemyInstanceId: null, targetHandInstanceId: null };
+    combat.clock.remainingMs = 10_000;
+    localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
+  });
+  await page.reload();
+  await page.getByRole("button", { name: "再開" }).click();
+  const typeWithTime = async (word: string) => {
+    for (const key of word) {
+      await page.clock.runFor(450);
+      await page.keyboard.press(key);
+    }
+  };
+  await typeWithTime("tempo");
+  await expect(page.locator(".card-word").filter({ hasText: /^sync$/ })).toBeVisible();
+  await page.reload();
+  await page.getByRole("button", { name: "再開" }).click();
+  await typeWithTime("sync");
+  await expect(page.locator(".card-word").filter({ hasText: /^beat$/ })).toBeVisible();
+  const enemyBefore = Number(await page.locator(".enemy-health-track").first().getAttribute("aria-valuenow"));
+  await typeWithTime("beat");
+  await expect(page.locator(".battle-message")).toContainText("beat を発動");
+  expect(Number(await page.locator(".enemy-health-track").first().getAttribute("aria-valuenow"))).toBe(enemyBefore - 6);
+  expect(Number.parseFloat(await page.locator("[data-role=time]").innerText())).toBeGreaterThan(4);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  if (process.env.SCHOOL_RG_CAPTURE_MUSIC === "1") {
+    await page.screenshot({ path: "docs/content/previews/issue76-music-chain-ipad-20261031.png", fullPage: true });
+  }
 });
 
 test("a new club pool card remains readable and activates on a narrow battle screen", async ({ page }) => {
