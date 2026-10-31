@@ -6,10 +6,12 @@ test("a typed victory keeps its result and reward history visible after reload",
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /文芸部/ }).click();
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).first().click();
-  await page.evaluate(() => {
+  await page.addInitScript(() => {
+    if (sessionStorage.getItem("test-log-enemy-hp-set")) return;
     const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
     saved.session.run.combat.enemies[0].hp = 1;
     localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
+    sessionStorage.setItem("test-log-enemy-hp-set", "1");
   });
   await page.reload();
   if (await page.getByRole("button", { name: "再開" }).count()) await page.getByRole("button", { name: "再開" }).click();
