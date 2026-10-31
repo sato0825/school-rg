@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { demoContent } from "../../src/content/demo-battle.js";
 import { createRunSession } from "../../src/domain/run-flow.js";
 import { demoBattleArt } from "../../src/ui/demo-art.js";
@@ -38,5 +39,26 @@ it("leaves other nodes on their existing stage in either concept", () => {
     const preview = subscenePreviewForRun(demoBattleArt, atNode, "annex");
     if (preview.proxy) continue; // Other matching place/kind nodes use the same provisional rule.
     expect(preview.stageUrl).toBe(stageSelectionForRun(demoBattleArt, atNode).stageUrl);
+  }
+});
+
+it("projects the 42-node audit routes without mistaking extra image changes for new places", () => {
+  const fixture = JSON.parse(readFileSync(new URL("../fixtures/issue315-stage-routes.json", import.meta.url), "utf8")) as {
+    routes: { seed: number; visits: { id: string; kind: string }[] }[];
+  };
+  for (const route of fixture.routes) {
+    const run = createRunSession(route.seed, "literature-demo", demoContent).run;
+    expect(route.visits).toHaveLength(42);
+    const arts = { local: [] as string[], annex: [] as string[] };
+    for (const visit of route.visits) {
+      const node = run.map.nodes.find((item) => item.id === visit.id)!;
+      expect(node.kind).toBe(visit.kind);
+      const atNode = { ...run, act: node.act, map: { ...run.map, currentNodeId: node.id } };
+      arts.local.push(subscenePreviewForRun(demoBattleArt, atNode, "local").artId!);
+      arts.annex.push(subscenePreviewForRun(demoBattleArt, atNode, "annex").artId!);
+    }
+    const repeated = (sequence: string[]) => sequence.slice(1).filter((art, index) => art === sequence[index]).length;
+    expect(repeated(arts.local)).toBe(30);
+    expect(repeated(arts.annex)).toBe(route.seed === 42 ? 26 : 28);
   }
 });
