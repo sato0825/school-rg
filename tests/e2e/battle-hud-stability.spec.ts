@@ -222,6 +222,7 @@ test("impact cues remain legible on the three late-Act stages at PC and iPad siz
     for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
       const page = await context.newPage();
       await page.clock.install();
+      await page.clock.pauseAt(new Date());
       await page.setViewportSize({ width, height });
       await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
       await page.goto("/");
