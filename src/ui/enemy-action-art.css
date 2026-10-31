@@ -13,6 +13,11 @@
 .game-shell .enemy-action-art.act[data-pose="guard"]{animation:paper-guard-brace .65s ease-out both}
 .game-shell .enemy-action-art[data-phase="action"]:not(.act)[data-pose="attack"]{animation:paper-pencil-recoil .42s ease-out both}
 .game-shell .enemy-action-art[data-phase="action"]:not(.act)[data-pose="guard"]{animation:paper-guard-settle .42s ease-out both}
+/* Bosses keep their own material and action rhythms; the art remains the primary silhouette. */
+.game-shell .enemy-action-art.act[data-art-id="enemy-closing-bell-action"][data-pose="attack"]{animation:bell-clapper-swing .65s ease-in-out both}
+.game-shell .enemy-action-art.act[data-art-id="enemy-closing-bell-action"][data-pose="guard"]{animation:bell-cord-lock .65s ease-out both}
+.game-shell .enemy-action-art.act[data-art-id="enemy-graduation-curtain-action"][data-pose="attack"]{animation:curtain-double-sweep .65s ease-in-out both}
+.game-shell .enemy-action-art.act[data-art-id="enemy-graduation-curtain-action"][data-pose="prepare"]{animation:curtain-gather .65s ease-out both}
 /* Keep the lower folded-paper shield visible; the live values sit in the empty gap. */
 .game-shell .stage[data-enemy-count="1"] .enemy-slot:has(.enemy-action-art) .enemy-hud{right:calc(100% - 22px);bottom:6%;width:250px}
 /* A selected member of a dense formation is inspected at a larger scale.
@@ -30,6 +35,10 @@
 @keyframes paper-guard-brace{0%,40%{transform:translateX(0) scale(.98)}70%{transform:translateX(3%) scale(.96)}100%{transform:translateX(-4%) scale(1.08)}}
 @keyframes paper-pencil-recoil{0%{transform:translateX(-20%) rotate(-4deg)}100%{transform:translateX(0) rotate(0)}}
 @keyframes paper-guard-settle{0%{transform:translateX(-4%) scale(1.08)}100%{transform:translateX(0) scale(1)}}
+@keyframes bell-clapper-swing{0%,25%{transform:rotate(0)}65%{transform:rotate(-8deg) translateX(-10%)}100%{transform:rotate(4deg) translateX(-13%)}}
+@keyframes bell-cord-lock{0%,35%{transform:scale(1)}100%{transform:scale(.95) translateY(2%)}}
+@keyframes curtain-double-sweep{0%{transform:translateX(0)}40%{transform:translateX(-7%) rotate(-2deg)}55%{transform:translateX(0)}100%{transform:translateX(-11%) rotate(-2deg)}}
+@keyframes curtain-gather{0%,35%{transform:scaleX(1)}100%{transform:scaleX(.94) translateY(2%)}}
 .game[data-effects="quiet"] .enemy-action-art,
 .game[data-effects="quiet"] .enemy-action-art .enemy-pose-idle,
 .game[data-effects="quiet"] .enemy-action-art .enemy-pose-action{animation:none!important;transition:none!important}
