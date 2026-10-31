@@ -2,6 +2,8 @@
 
 状態: **制作候補・未承認**。#29/#31 のキャラクター差別化を剣道部の戦闘画面で確認するための成果物です。デッキの確定値や最終立ち絵の承認を示しません。
 
+人物・制服・竹刀・向き・動きの再制作条件は [作画仕様](kendo-rig-production-spec.md) に固定します。初回生成時の完全な入力文は保存されておらず、再制作ではこの仕様を使います。
+
 ## 原本と再現性
 
 - 原画: `docs/art/candidates/kendo-rig-parts-sheet-candidate-v1.png`。生成時の透明シートを保存し、抽出位置・SHAを `scripts/extract-kendo-rig.mjs` に固定。
