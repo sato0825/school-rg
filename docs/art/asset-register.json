@@ -1214,6 +1214,22 @@
       "rights": "original generated candidate for school-rg"
     },
     {
+      "id": "act2-paper-terrace-stair-candidate-v1",
+      "file": "src/assets/stages/act2-paper-terrace-stair-candidate-v1.png",
+      "sha256": "048c401a1aa834977392c13ab820d08a5b32835ca7b6ab7ff86cc66d41a80304",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 2,
+      "referenceId": "act2-paper-observation-terrace-candidate-v1",
+      "promptFile": "docs/art/prompts/issue357-terrace-stair-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": "docs/art/sources/issue357-terrace-stair-v1.ora",
+      "rights": "original generated candidate for school-rg"
+    },
+    {
       "id": "issue304-archive-locker-source-v1",
       "file": "docs/art/sources/issue304/archive-locker-source-v1.png",
       "sha256": "1de8ba03398462a76e2428a2dadca1a1c2c5b63a364f22838e4724fb8ef9375b",
