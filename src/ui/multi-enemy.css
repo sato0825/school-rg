@@ -6,6 +6,7 @@
 .stage:is([data-enemy-count="3"],[data-enemy-count="4"],[data-enemy-count="5"]) .enemy-slot .enemy-status{display:none}
 .stage:is([data-enemy-count="3"],[data-enemy-count="4"],[data-enemy-count="5"]) .enemy-slot{bottom:52px;pointer-events:none;cursor:default}
 .stage:is([data-enemy-count="3"],[data-enemy-count="4"],[data-enemy-count="5"]) .enemy-slot.targeted:after{inset:12% -3% 4%;border-width:2px;box-shadow:0 0 0 2px #fff8}
+.enemy-art-number{position:absolute;z-index:5;top:17%;left:50%;display:grid;place-items:center;width:23px;height:23px;transform:translateX(-50%);border:2px solid #fff;border-radius:50%;background:#17354c;color:#fff;box-shadow:0 2px 7px #152b42b5;font:900 12px/1 ui-monospace,monospace}
 .enemy-roster{position:absolute;z-index:8;right:16px;bottom:10px;left:43%;display:grid;grid-template-columns:repeat(var(--enemy-count),minmax(0,1fr));gap:6px;pointer-events:auto}
 .enemy-roster-button{position:relative;display:grid;gap:5px;min-width:0;min-height:47px;padding:5px 7px;border:1px solid #d1e0e6;border-top:3px solid #e47786;border-radius:5px;background:#142d41f2;box-shadow:0 4px 9px #12273d70;color:#f3f8f5;cursor:pointer;text-align:left}
 .enemy-roster-button.targeted{outline:3px solid #f4f6ea;outline-offset:2px;border-color:#d0445e}
@@ -31,6 +32,7 @@
   .enemy-roster-value small{font-size:8px}
   .enemy-roster-bar{height:8px}
   .enemy-roster-button .enemy-detail{width:min(190px,50vw)}
+  .enemy-art-number{top:22%;width:21px;height:21px;font-size:11px}
   .enemy-detail-heading{display:flex;align-items:baseline;gap:6px;min-width:0}
   .enemy-detail-heading>span{flex:none;color:#a43c56;font-size:10px;font-weight:900}
   .enemy-detail-heading strong{min-width:0;overflow-wrap:anywhere;font-size:13px;line-height:1.1}
@@ -44,5 +46,5 @@
   .enemy-detail-status{color:#675374}
 }
 @media(max-width:760px) and (min-height:800px){
-  .enemy-roster-button .enemy-detail{bottom:calc(100% + 180px)}
+  .enemy-roster-button .enemy-detail{bottom:calc(100% + clamp(90px, calc(100dvh - 675px), 170px));max-height:150px;overflow-y:auto;pointer-events:auto}
 }
