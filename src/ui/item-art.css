@@ -35,6 +35,11 @@
 .game-shell .location-choice:has(.potion-object) .location-choice-copy span { font-size: 11px; -webkit-line-clamp: 3; }
 .game-shell .locker-open .relic-object, .game-shell .locker-open .potion-object { width: 55px; height: 54px; }
 .game-shell .shop-display .relic-object, .game-shell .shop-display .potion-object { width: 100%; height: 100%; }
+.game-shell .location-result-toast:has(.relic-object), .game-shell .location-result-toast:has(.potion-object) { display: flex; align-items: center; gap: 9px; }
+.game-shell .location-result-toast .relic-object, .game-shell .location-result-toast .potion-object { flex: none; width: 46px; height: 46px; }
+.game-shell .location-result-toast img, .game-shell .location-item-result img { width: 100%; height: 100%; object-fit: contain; }
+.game-shell .location-item-result { position: absolute; z-index: 7; left: 8%; bottom: 9%; display: flex; align-items: center; gap: 9px; min-height: 68px; max-width: 80%; padding: 7px 13px; border: 2px solid #bdd4c8; border-radius: 7px; background: #f3f7eaf0; color: #214e59; font-size: 13px; font-weight: 800; box-shadow: 2px 4px 0 #31536777; pointer-events: none; }
+.game-shell .location-item-result .relic-object, .game-shell .location-item-result .potion-object { display: grid; flex: none; place-items: center; width: 48px; height: 48px; }
 @keyframes relic-appear { from { opacity: 0; transform: translateY(12px) scale(.8); } 25% { opacity: 1; } to { opacity: 0; transform: translateY(-20px) scale(1); } }
 @media (max-width: 1100px) {
   .game-shell .topbar .relic-row { max-width: 170px; }

@@ -29,6 +29,7 @@ import { createAudioFeedback } from "./audio.js";
 import { imeLatinKey } from "./ime-key.js";
 import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
 import { GameShell } from "./game-shell.js";
+import { potionObjectMarkup, relicObjectMarkup } from "./item-art.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
@@ -117,7 +118,25 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let gameShell: GameShell | null = null;
   let locationTransitioning = false;
   let locationFeedback: string | null = null;
+  let locationFeedbackItem: { kind: "relic" | "potion"; id: string } | null = null;
   let generation = 0;
+  const acquiredItem = (before: RunState, after: RunState): { kind: "relic" | "potion"; id: string } | null => {
+    const relicId = after.relicIds.find((id) => after.relicIds.filter((candidate) => candidate === id).length > before.relicIds.filter((candidate) => candidate === id).length);
+    if (relicId) return { kind: "relic", id: relicId };
+    const potionId = after.potionIds.find((id) => after.potionIds.filter((candidate) => candidate === id).length > before.potionIds.filter((candidate) => candidate === id).length);
+    return potionId ? { kind: "potion", id: potionId } : null;
+  };
+  const showLocationResult = (scene: Element | null): void => {
+    if (!scene || !locationFeedback || !locationFeedbackItem) return;
+    const toast = document.createElement("div");
+    toast.className = "location-item-result";
+    toast.setAttribute("role", "status");
+    toast.innerHTML = locationFeedbackItem.kind === "relic" ? relicObjectMarkup(locationFeedbackItem.id) : potionObjectMarkup(locationFeedbackItem.id);
+    const label = document.createElement("span");
+    label.textContent = locationFeedback;
+    toast.append(label);
+    scene.append(toast);
+  };
   const setMotion = (motion: BattleView["motion"]) => { view.motion = motion; view.motionStartedAtMs = motion ? clock.nowMs() : null; };
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState => {
     const result = emitRelicEvent(state, kind, demoRelicRules, demoContent, detail);
@@ -141,13 +160,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (!id) return;
     const cue = { potionId: id, startedAtMs: clock.nowMs() };
     view.potionCue = cue;
-    view.resultFx = resultFxForTransition(before, after, view.layoutPreviewAllies ?? 1, clock.nowMs());
+    const resultCue = resultFxForTransition(before, after, view.layoutPreviewAllies ?? 1, clock.nowMs());
+    view.resultFx = resultCue;
     view.message = `${demoContent.potions.find((item) => item.id === id)?.name ?? id}を使用`;
     const currentGeneration = generation;
     window.setTimeout(() => {
       if (generation === currentGeneration && view.potionCue === cue) {
         view.potionCue = null;
-        view.resultFx = null;
+        if (view.resultFx === resultCue) view.resultFx = null;
         if (session.screen === "combat") render();
       }
     }, 700);
@@ -275,6 +295,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (current && scroll) scroll.scrollTop = battleMapScrollTop ?? Math.max(0, current.offsetTop - scroll.clientHeight / 2 + current.clientHeight / 2);
     }
     if (frontScreen === null && (session.screen === "treasure" || session.screen === "shop" || session.screen === "rest" || session.screen === "event")) {
+      if (session.screen === "shop" || session.screen === "event") showLocationResult(root.querySelector(".location-scene"));
       const buttons = [...root.querySelectorAll<HTMLButtonElement>(".location-scene button[data-action], .topbar button[data-action]")];
       const same = buttons.find((button) => !button.disabled && button.dataset.action === locationFocused?.action && button.dataset.id === locationFocused?.id);
       if (same) same.focus({ preventScroll: true });
@@ -285,6 +306,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       toast.className = "location-result-toast";
       toast.setAttribute("role", "status");
       toast.textContent = locationFeedback;
+      if (locationFeedbackItem) toast.insertAdjacentHTML("afterbegin", locationFeedbackItem.kind === "relic" ? relicObjectMarkup(locationFeedbackItem.id) : potionObjectMarkup(locationFeedbackItem.id));
       root.querySelector(".stage")?.append(toast);
     }
     persist();
@@ -610,6 +632,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (session.screen === "map" && action === "enter-node") {
         locationFeedback = null;
+        locationFeedbackItem = null;
         observeMetrics();
         session = enterRunNode(session, id, demoContent, demoEnemyAi, demoRunContentTables);
         run = session.run;
@@ -627,12 +650,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (session.screen === "treasure" && (action === "treasure-offer" || action === "skip-treasure")) {
         const chosenName = action === "treasure-offer" ? button.querySelector("strong")?.textContent ?? "品" : null;
+        const beforeChoice = run;
         const relicCount = run.relicIds.length;
         session = chooseRunTreasure(session, action === "skip-treasure" ? null : id, demoContent, config);
         run = session.run;
         for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
         if (chosenName) {
           locationFeedback = `${chosenName}を受け取った`;
+          locationFeedbackItem = acquiredItem(beforeChoice, run);
           persist();
           locationTransitioning = true;
           const scene = button.closest<HTMLElement>(".location-scene");
@@ -650,17 +675,21 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         return;
       }
       if (session.screen === "event" && action === "event-choice") {
+        const beforeChoice = run;
         const relicCount = run.relicIds.length;
         const targetCardInstanceId = button.closest(".event-target-choice")?.querySelector<HTMLInputElement>("input[type=radio]:checked")?.value;
         session = chooseRunEventChoice(session, id, demoContent, demoEnemyAi, config, targetCardInstanceId);
         run = session.run;
         for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
+        locationFeedbackItem = acquiredItem(beforeChoice, run);
+        locationFeedback = locationFeedbackItem ? `${(locationFeedbackItem.kind === "relic" ? demoContent.relics : demoContent.potions).find((item) => item.id === locationFeedbackItem!.id)?.name ?? locationFeedbackItem.id}を受け取った` : null;
         if (session.screen === "combat") startCombat();
         view.message = "";
         render();
         return;
       }
       if (session.screen === "shop") {
+        const beforeChoice = run;
         if (action === "buy-offer") { session = buyRunShopCard(session, id); view.message = "カードを購入しました。"; }
         else if (action === "buy-relic") {
           session = buyRunShopRelic(session, id, demoContent);
@@ -672,6 +701,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         else if (action === "remove-shop-card") { session = removeRunShopCard(session, id); view.message = "カードを削除しました。"; }
         else if (action === "leave-shop") session = leaveRunShop(session);
         run = session.run;
+        locationFeedbackItem = acquiredItem(beforeChoice, run);
+        locationFeedback = locationFeedbackItem ? `${(locationFeedbackItem.kind === "relic" ? demoContent.relics : demoContent.potions).find((item) => item.id === locationFeedbackItem!.id)?.name ?? locationFeedbackItem.id}を購入した` : null;
         render();
         return;
       }
