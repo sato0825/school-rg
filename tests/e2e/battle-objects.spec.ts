@@ -28,7 +28,7 @@ for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, he
     await expect(page.locator('.pile-token[data-pile="exhaust"]')).toHaveAttribute("aria-label", /除外 \d+枚/);
     await expect(page.locator('.topbar .status-chip[data-status="strength"]')).toHaveAttribute("aria-label", /力 \d+/);
     await expect(page.locator('.enemy-roster-button[data-id="objects-enemy-3"]')).toHaveAttribute("aria-label", /弱体 2/);
-    await expect(page.locator(".hero-nameplate")).toContainText("科学部");
+    await expect(page.locator(".hero-nameplate")).toHaveText("さき");
     await expect(page.locator(".hand .card").first()).toBeInViewport();
     await expect(page.locator(".pile-token").first()).toBeInViewport();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
