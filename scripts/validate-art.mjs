@@ -39,7 +39,7 @@ for (const asset of register.assets) {
   else throw new Error(`unknown alpha policy: ${asset.id}`);
   assert(typeof asset.rights === "string" && asset.rights.length > 0, `rights missing: ${asset.id}`);
   if (asset.role === "character-pose") {
-    assert(typeof asset.characterId === "string" && ["idle", "activate", "hit"].includes(asset.pose), `pose metadata missing: ${asset.id}`);
+    assert(typeof asset.characterId === "string" && ["idle", "activate", "hit", "victory"].includes(asset.pose), `pose metadata missing: ${asset.id}`);
     assert(typeof asset.generator === "string" && asset.promptFile && asset.referenceId, `provenance missing: ${asset.id}`);
     await access(projectPath(asset.promptFile));
     const group = grouped.get(asset.characterId) ?? [];
