@@ -202,7 +202,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
     }
     if (session.screen === "combat" && frontScreen === null && battleMapOpen) {
-      root.querySelector(".game")?.insertAdjacentHTML("beforeend", battleMapOverlayMarkup(session));
+      root.querySelector(".game")?.insertAdjacentHTML("beforeend", battleMapOverlayMarkup({ ...session, run }));
       if (restoreBattleMapFocus) root.querySelector<HTMLButtonElement>(".battle-map-close")?.focus({ preventScroll: true });
       const current = root.querySelector<HTMLElement>(".battle-map-floor[data-current-floor='true']");
       const scroll = root.querySelector<HTMLElement>(".battle-map-scroll");
