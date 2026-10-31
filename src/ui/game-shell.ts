@@ -83,6 +83,8 @@ export class GameShell {
     this.actor.style.cssText = slot.style.cssText;
     if (slot.dataset.actorMotion) this.actor.dataset.actorMotion = slot.dataset.actorMotion;
     else delete this.actor.dataset.actorMotion;
+    if (slot.dataset.actorRig) this.actor.dataset.actorRig = slot.dataset.actorRig;
+    else delete this.actor.dataset.actorRig;
     slot.replaceWith(this.actor);
     this.actor.replaceChildren(this.hero, ...[...slot.childNodes].filter((child) => child !== hero));
     this.overlay.remove();
