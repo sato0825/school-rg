@@ -26,6 +26,18 @@ export const literatureCardSpecs: readonly ClubCardSpec[] = [
   { id: "LIT-008", word: "footnote", type: "skill", target: "self",
     effects: [{ kind: "block", parameters: { amount: 4 } }, { kind: "draw", parameters: { count: 2 } }],
     upgrades: [{ kind: "block", parameters: { amount: 7 } }, { kind: "draw", parameters: { count: 2 } }] },
+  { id: "LIT-009", word: "edit", type: "skill", target: "hand",
+    effects: [{ kind: "exhaust_card", parameters: { count: 1 } }, { kind: "draw", parameters: { count: 2 } }],
+    upgrades: [{ kind: "exhaust_card", parameters: { count: 1 } }, { kind: "draw", parameters: { count: 3 } }] },
+  { id: "LIT-010", word: "bookmark", type: "skill", target: "self",
+    effects: [{ kind: "retrieve_discard", parameters: { count: 1 } }, { kind: "add_time", parameters: { amountMs: 500 } }],
+    upgrades: [{ kind: "retrieve_discard", parameters: { count: 1 } }, { kind: "add_time", parameters: { amountMs: 1_000 } }] },
+  { id: "LIT-011", word: "draft", type: "attack", target: "enemy",
+    effects: [{ kind: "damage", parameters: { amount: 3 } }, { kind: "draw", parameters: { count: 2 } }],
+    upgrades: [{ kind: "damage", parameters: { amount: 5 } }, { kind: "draw", parameters: { count: 2 } }] },
+  { id: "LIT-012", word: "anthology", type: "attack", target: "all_enemies",
+    effects: [{ kind: "damage_all", parameters: { amount: 6 } }, { kind: "draw", parameters: { count: 1 } }],
+    upgrades: [{ kind: "damage_all", parameters: { amount: 8 } }, { kind: "draw", parameters: { count: 1 } }] },
 ];
 
 const suite = buildCardSuite(literatureCardSpecs);

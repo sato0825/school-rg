@@ -26,6 +26,18 @@ export const musicCardSpecs: readonly ClubCardSpec[] = [
   { id: "MUS-008", word: "refrain", type: "attack", target: "all_enemies",
     effects: [{ kind: "damage_all", parameters: { amount: 4 } }, { kind: "add_time", parameters: { amountMs: 2_000 } }],
     upgrades: [{ kind: "damage_all", parameters: { amount: 6 } }, { kind: "add_time", parameters: { amountMs: 2_000 } }] },
+  { id: "MUS-009", word: "pickup", type: "skill", target: "self",
+    effects: [{ kind: "draw", parameters: { count: 2 } }, { kind: "add_time", parameters: { amountMs: 2_000 } }],
+    upgrades: [{ kind: "draw", parameters: { count: 3 } }, { kind: "add_time", parameters: { amountMs: 2_000 } }] },
+  { id: "MUS-010", word: "riff", type: "attack", target: "enemy",
+    effects: [{ kind: "damage_multi", parameters: { amount: 2, hits: 4 } }, { kind: "draw", parameters: { count: 1 } }],
+    upgrades: [{ kind: "damage_multi", parameters: { amount: 3, hits: 4 } }, { kind: "draw", parameters: { count: 1 } }] },
+  { id: "MUS-011", word: "backbeat", type: "skill", target: "self",
+    effects: [{ kind: "block", parameters: { amount: 5 } }, { kind: "add_time", parameters: { amountMs: 3_000 } }],
+    upgrades: [{ kind: "block", parameters: { amount: 8 } }, { kind: "add_time", parameters: { amountMs: 3_000 } }] },
+  { id: "MUS-012", word: "finale", type: "attack", target: "all_enemies", keywordIds: ["exhaust"],
+    effects: [{ kind: "damage_all", parameters: { amount: 8 } }, { kind: "add_time", parameters: { amountMs: 1_000 } }],
+    upgrades: [{ kind: "damage_all", parameters: { amount: 11 } }, { kind: "add_time", parameters: { amountMs: 1_000 } }] },
 ];
 
 const suite = buildCardSuite(musicCardSpecs);

@@ -26,6 +26,18 @@ export const kendoCardSpecs: readonly ClubCardSpec[] = [
   { id: "KEN-008", word: "breath", type: "skill", target: "self",
     effects: [{ kind: "block", parameters: { amount: 4 } }, { kind: "thorns", parameters: { amount: 3 } }, { kind: "draw", parameters: { count: 1 } }],
     upgrades: [{ kind: "block", parameters: { amount: 6 } }, { kind: "thorns", parameters: { amount: 4 } }, { kind: "draw", parameters: { count: 1 } }] },
+  { id: "KEN-009", word: "guard step", type: "skill", target: "self",
+    effects: [{ kind: "block", parameters: { amount: 5 } }, { kind: "add_time", parameters: { amountMs: 1_000 } }],
+    upgrades: [{ kind: "block", parameters: { amount: 8 } }, { kind: "add_time", parameters: { amountMs: 1_000 } }] },
+  { id: "KEN-010", word: "pommel", type: "attack", target: "enemy",
+    effects: [{ kind: "damage", parameters: { amount: 6 } }, { kind: "block", parameters: { amount: 5 } }],
+    upgrades: [{ kind: "damage", parameters: { amount: 8 } }, { kind: "block", parameters: { amount: 7 } }] },
+  { id: "KEN-011", word: "hasso", type: "power", target: "self",
+    effects: [{ kind: "persistent_strength", parameters: { amountPerTurn: 1 } }, { kind: "block", parameters: { amount: 4 } }],
+    upgrades: [{ kind: "persistent_strength", parameters: { amountPerTurn: 1 } }, { kind: "block", parameters: { amount: 7 } }] },
+  { id: "KEN-012", word: "circle cut", type: "attack", target: "all_enemies",
+    effects: [{ kind: "damage_all", parameters: { amount: 6 } }, { kind: "thorns", parameters: { amount: 2 } }],
+    upgrades: [{ kind: "damage_all", parameters: { amount: 8 } }, { kind: "thorns", parameters: { amount: 3 } }] },
 ];
 
 const suite = buildCardSuite(kendoCardSpecs);
