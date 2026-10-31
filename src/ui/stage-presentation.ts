@@ -2,7 +2,7 @@ import type { MapNode, RunState } from "../domain/schema.js";
 
 /** Environment plates stay separate from characters, enemies, effects and game rules. */
 export const stageCandidateUrlByAct: Readonly<Record<number, string>> = {
-  1: new URL("../assets/stage-hallway-v1.png", import.meta.url).href,
+  1: new URL("../assets/stages/act1-paper-atrium-candidate-v1.png", import.meta.url).href,
   2: new URL("../assets/stages/act2-science-wing-candidate-v1.png", import.meta.url).href,
   3: new URL("../assets/stages/act3-auditorium-foyer-candidate-v1.png", import.meta.url).href,
 };

@@ -11,6 +11,8 @@ import "./choice-information.css";
 import "./battle-objects.css";
 import "./battle-map-overlay.css";
 import "./game-shell.css";
+import "./card-visuals.css";
+import "./visual-system.css";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("Missing #app root");
