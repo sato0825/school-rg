@@ -198,3 +198,43 @@ for (const { count, width, height } of [{ count: 3, width: 1024, height: 768 }, 
     }
   });
 }
+
+test("impact cues remain legible on the three late-Act stages at PC and iPad sizes", async ({ context }) => {
+  for (const act of [1, 2, 3]) {
+    const base = createRunSession(42, "science-demo", demoContent);
+    const current = base.run.map.nodes.find((node) => node.act === act && node.floor >= 7 && node.floor < 12 && node.nextIds.some((id) => {
+      const next = base.run.map.nodes.find((candidate) => candidate.id === id);
+      return next?.kind === "combat" || next?.kind === "elite";
+    }))!;
+    const target = base.run.map.nodes.find((node) => current.nextIds.includes(node.id) && (node.kind === "combat" || node.kind === "elite"))!;
+    const run = { ...base, run: { ...base.run, act, map: { ...base.run.map, currentNodeId: current.id } }, completedNodeIds: [current.id] };
+    const session = enterRunNode(run, target.id, demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
+    const combat = session.run.combat!;
+    const sweepId = combat.cards.find((card) => card.cardId === "BASE-011")!.instanceId;
+    const prepared = { ...session, run: { ...session.run, combat: { ...combat, drawPile: [...combat.drawPile.filter((id) => id !== sweepId), sweepId] } } };
+    const saved = serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard");
+    for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
+      const page = await context.newPage();
+      await page.clock.install();
+      await page.setViewportSize({ width, height });
+      await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+      await page.goto("/");
+      await expect(page.locator(".stage")).toHaveAttribute("data-stage-phase", "late");
+      await page.keyboard.type("sweep");
+      const mark = page.locator(".result-fx-mark[data-kind=damage]").first();
+      await expect(mark).toBeVisible();
+      await expect(mark).toContainText(/−\d+/);
+      const box = await mark.boundingBox();
+      const stage = await page.locator(".stage").boundingBox();
+      expect(box!.x).toBeGreaterThanOrEqual(stage!.x);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(stage!.x + stage!.width);
+      expect(box!.y).toBeGreaterThanOrEqual(stage!.y);
+      expect(box!.y + box!.height).toBeLessThanOrEqual(stage!.y + stage!.height);
+      if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") {
+        await mark.evaluate((node) => node.getAnimations().forEach((animation) => { animation.currentTime = 170; }));
+        await page.screenshot({ path: `docs/art/previews/issue177-act${act}-impact-${width}.png` });
+      }
+      await page.close();
+    }
+  }
+});
