@@ -25,6 +25,8 @@ for (const [selector, active] of [
   node.inert = !active;
   node.setAttribute('aria-hidden', String(!active));
 }
+// A selected-target visual state for reading the composition; selection rules stay in #30.
+(enemies === 5 ? shell.querySelector('.group-enemy:first-child') : shell.querySelector('.enemy-anchor')).classList.add('formation-targeted');
 
 const characterPoses = {
   literature: { idle: 'literature-idle-candidate-v1.png', activate: 'literature-activate-candidate-v2.png', hit: 'literature-hit-candidate-v2.png', label: '吉野こはる · 文芸部' },

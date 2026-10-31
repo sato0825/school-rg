@@ -56,7 +56,7 @@ async function inspect(page) {
     const rail = shell.querySelector('.combat-rail').getBoundingClientRect();
     const silhouettesClearRail = actors.every((actor) => actor.bottom <= rail.top + 1);
     const loaded = [...shell.querySelectorAll('img')].filter((image) => visible(image.closest('.ally-group,.hero-anchor,.enemy-group,.enemy-anchor') ?? image)).every((image) => image.naturalWidth > 0);
-    return { actors, intentOverflow, silhouettesClearRail, loaded, railTop: Math.round(rail.top), typed: shell.querySelector('.typed-prefix').textContent };
+    return { actors, intentOverflow, silhouettesClearRail, loaded, targetPreviewCount: shell.querySelectorAll('.formation-targeted').length, railTop: Math.round(rail.top), typed: shell.querySelector('.typed-prefix').textContent };
   });
 }
 
@@ -94,6 +94,6 @@ try {
   }
 } finally { await browser.close(); }
 await writeFile(resolve(root, 'docs/design/issue347-measurements.json'), `${JSON.stringify(results, null, 2)}\n`);
-const failures = results.filter((result) => !result.loaded || !result.silhouettesClearRail || result.intentOverflow.some((tile) => tile.clipped || tile.nameClipped || tile.intentClipped) || result.errors.length);
+const failures = results.filter((result) => !result.loaded || !result.silhouettesClearRail || result.targetPreviewCount !== 1 || result.intentOverflow.some((tile) => tile.clipped || tile.nameClipped || tile.intentClipped) || result.errors.length);
 console.log(JSON.stringify({ captures: results.length, failed: failures.map((entry) => entry.id), ratios: results.filter((entry) => entry.ratios).map((entry) => ({ id: entry.id, ratios: entry.ratios })) }));
 if (failures.length) process.exitCode = 1;

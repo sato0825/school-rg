@@ -11,6 +11,9 @@
 .game-shell[data-study="347"][data-enemies="5"] .enemy-anchor{display:none}
 .game-shell[data-study="347"][data-enemies="5"] .enemy-group{display:grid}
 .game-shell[data-study="347"][data-enemies="1"] .enemy-group{display:none}
+.game-shell[data-study="347"] .group-enemy.formation-targeted .group-plate{outline:2px solid #f1d490;outline-offset:2px}
+.game-shell[data-study="347"] .group-enemy.formation-targeted img{filter:drop-shadow(0 0 9px #fae2a99c)}
+.game-shell[data-study="347"] .enemy-anchor.formation-targeted .enemy-hud{outline:2px solid #f1d490;outline-offset:2px}
 .game-shell[data-study="347"][data-allies="3"][data-enemies="5"] .ally-group{width:52%;height:min(80%,450px)}
 .game-shell[data-study="347"][data-allies="3"][data-enemies="5"] .ally img{transform:scale(1.11);transform-origin:center bottom}
 .game-shell[data-study="347"][data-allies="3"][data-enemies="5"] .enemy-group{left:52%;right:1%;bottom:56px;height:62%;gap:3px}
