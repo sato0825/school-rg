@@ -15,7 +15,7 @@ import { renderBattle, type BattleView } from "./battle-view.js";
 import { candidateBattleArt, demoBattleArt } from "./demo-art.js";
 import { cardFxForUse } from "./card-fx.js";
 import { MOTION_MS } from "./motion-timing.js";
-import { renderClubSelect, renderCompendium, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
+import { renderClubSelect, renderCompendium, renderRunCombatLog, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserHistoryStore, browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
 import { appendRunHistory, emptyRunHistory, legacyTerminalRunId, parseRunHistory, terminalRunEntry } from "../domain/run-history.js";
@@ -50,9 +50,9 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   } catch { historyLoadError = true; }
   const selectedAscensionLevels: Record<string, number> = {};
   let session = createRunSession(0, "literature-demo", demoContent, mapOptions);
-  let frontScreen: "title" | "clubs" | "compendium" | "history" | null = "title";
+  let frontScreen: "title" | "clubs" | "compendium" | "combat-log" | "history" | null = "title";
   let frontReturn: "title" | null = "title";
-  let resumeAfterCompendium = false;
+  let resumeAfterOverlay = false;
   let restoreError = false;
   try {
     const saved = store.read();
@@ -131,6 +131,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (frontScreen === "title") renderRunTitle(root, demoBattleArt, history);
     else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError);
     else if (frontScreen === "compendium") renderCompendium(root, demoContent, demoBattleArt);
+    else if (frontScreen === "combat-log") renderRunCombatLog(root, run, demoContent, demoBattleArt);
     else if (frontScreen === "history") renderRunHistory(root, history, demoContent, demoBattleArt, historyLoadError, historySaveError);
     else if (session.screen === "map") renderRunMap(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
@@ -257,7 +258,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     metrics = null;
     frontScreen = "title";
     frontReturn = "title";
-    resumeAfterCompendium = false;
+    resumeAfterOverlay = false;
     restoreError = false;
     restoreError = false;
     view.message = "カード名をタイプして発動。誤入力は無視されます。";
@@ -315,16 +316,26 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (action === "open-compendium" && (frontScreen === "title" || (frontScreen === null && (session.screen === "map" || (session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT"))))) {
         frontReturn = frontScreen === "title" ? "title" : null;
-        resumeAfterCompendium = session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused;
-        if (resumeAfterCompendium) run = pausePlayerTurn(run, clock, disposition);
+        resumeAfterOverlay = session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused;
+        if (resumeAfterOverlay) run = pausePlayerTurn(run, clock, disposition);
         frontScreen = "compendium";
         render();
         return;
       }
+      if (action === "open-combat-log" && frontScreen === null && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT") {
+        frontReturn = null;
+        resumeAfterOverlay = !run.combat.clock.paused;
+        if (resumeAfterOverlay) run = pausePlayerTurn(run, clock, disposition);
+        if (run.combat?.phase !== "PLAYER_INPUT") { resumeAfterOverlay = false; render(); enemyPhase(); return; }
+        frontScreen = "combat-log";
+        render();
+        root.querySelector<HTMLButtonElement>("[data-action=front-back]")?.focus();
+        return;
+      }
       if (action === "front-back" && frontScreen) {
         frontScreen = frontScreen === "clubs" ? "title" : frontReturn;
-        if (resumeAfterCompendium && run.combat?.phase === "PLAYER_INPUT" && run.combat.clock.paused) run = resumePlayerTurn(run, clock);
-        resumeAfterCompendium = false;
+        if (resumeAfterOverlay && run.combat?.phase === "PLAYER_INPUT" && run.combat.clock.paused) run = resumePlayerTurn(run, clock);
+        resumeAfterOverlay = false;
         render();
         enemyPhase();
         return;
