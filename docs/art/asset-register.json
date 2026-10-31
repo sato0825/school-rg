@@ -1132,6 +1132,54 @@
       "generator": "built-in imagegen; model version not exposed",
       "editableSource": null,
       "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act3-paper-auditorium-plaza-candidate-v1",
+      "file": "src/assets/stages/act3-paper-auditorium-plaza-candidate-v1.png",
+      "sha256": "5888aab4d87ffdcd60913a4b091c5dfbc1e6a0bc28a5a30b60ed37adf51d76d7",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 3,
+      "referenceId": "act3-paper-auditorium-stage-candidate-v1",
+      "promptFile": "docs/art/prompts/issue265-paper-act3-places-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act3-paper-auditorium-foyer-candidate-v1",
+      "file": "src/assets/stages/act3-paper-auditorium-foyer-candidate-v1.png",
+      "sha256": "8fcd09ffb20703cfa6a0206254443cfb26a39e055ec95fbcaeccafe9c478fb6f",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 3,
+      "referenceId": "act3-paper-auditorium-stage-candidate-v1",
+      "promptFile": "docs/art/prompts/issue265-paper-act3-places-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act3-paper-backstage-candidate-v1",
+      "file": "src/assets/stages/act3-paper-backstage-candidate-v1.png",
+      "sha256": "7a28f5459e15846c5e974672b679a3fc7b0c0f4eda38208ff5e526712fec7135",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 3,
+      "referenceId": "act3-paper-auditorium-stage-candidate-v1",
+      "promptFile": "docs/art/prompts/issue265-paper-act3-places-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
     }
   ]
 }
