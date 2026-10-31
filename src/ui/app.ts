@@ -21,6 +21,7 @@ import { browserPlaytestStore, browserProgressStore, browserSaveStore, type Save
 import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, MAX_ASCENSION_LEVEL } from "../domain/ascension.js";
 import { finishPlaytest, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
+import { createAudioFeedback } from "./audio.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
@@ -28,6 +29,7 @@ const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>
 const shortMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 2, treasure: 2 } };
 
 export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(), progressStore: SaveStore = browserProgressStore(), playtestStore: SaveStore = browserPlaytestStore()): () => void {
+  const audio = createAudioFeedback();
   const params = new URLSearchParams(window.location.search);
   const mapOptions = import.meta.env.DEV && params.get("shortRun") === "1" ? shortMapOptions : DEFAULT_MAP_OPTIONS;
   const createSeed = () => newRunSeed(window.location.search, browserRandomUint32, import.meta.env.DEV);
@@ -105,11 +107,23 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt);
     else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);
     else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
+    const header = root.querySelector(".topbar, .run-header");
+    if (header) {
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "audio-toggle";
+      toggle.dataset.action = "toggle-audio";
+      toggle.setAttribute("aria-pressed", String(audio.enabled));
+      toggle.setAttribute("aria-label", audio.enabled ? "効果音をオフにする" : "効果音をオンにする");
+      toggle.textContent = audio.enabled ? "音 ON" : "音 OFF";
+      header.append(toggle);
+    }
     persist();
   };
 
   function settleIfFinished(): void {
     if (session.screen !== "combat" || (run.combat?.phase !== "WON" && run.combat?.phase !== "LOST")) return;
+    audio.play(run.combat.phase === "WON" ? "win" : "lose");
     run = fireRelic(run, "combat_end");
     session = settleRunCombat({ ...session, run }, demoContent);
     run = session.run;
@@ -131,6 +145,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       targetDiscardInstanceId: view.selectedDiscardId,
       targetDebuff: view.selectedDebuff as "weak" | "vulnerable" | "frail" | "poison" | null,
     }, config, demoContent);
+    audio.play("card");
     view.message = `${card.input.text} を発動`;
     view.cardFx = cardFx;
     setMotion("hero");
@@ -156,6 +171,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     }
     if (run.combat?.phase === "WON" || run.combat?.phase === "LOST") { settleIfFinished(); render(); return; }
     enemyPending = true;
+    audio.play("enemy");
     setMotion("enemy");
     view.message = "敵が予告した行動を実行します。";
     render();
@@ -171,6 +187,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
               return fireRelic(hitState, "hit_taken", { hpLost });
             })), config);
         enemyPending = false;
+        if (receivedHit) audio.play("hit");
         setMotion(receivedHit ? "hit" : null);
         if (run.combat?.phase === "PLAYER_START") {
           run = beginPlayerTurn(run, clock, config, demoContent);
@@ -223,6 +240,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const action = button.dataset.action;
     const id = button.dataset.id ?? "";
     try {
+      if (action === "toggle-audio") { audio.toggle(); render(); return; }
       if (action === "new-run" || action === "restart") { restart(); return; }
       if (action === "open-clubs" && frontScreen === "title") { frontScreen = "clubs"; render(); return; }
       if (action === "ascension-level" && frontScreen === "clubs") {
@@ -402,6 +420,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   render();
   if (session.screen === "combat") enemyPhase();
   return () => {
+    audio.dispose();
     artPreloads.length = 0;
     window.clearInterval(timer);
     window.clearInterval(saveTimer);

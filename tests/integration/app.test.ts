@@ -27,4 +27,19 @@ describe("run and typing combat HUD", () => {
     expect(root.querySelector(".typing-buffer")?.textContent).toContain("ここに入力が表示されます");
     unmount();
   });
+
+  it("keeps the sound choice across rendering and mounting", () => {
+    window.localStorage.removeItem("school-rg-audio-v1");
+    const root = document.querySelector<HTMLElement>("#app")!;
+    const unmount = mountApp(root);
+    expect(root.querySelector("[data-action=toggle-audio]")?.getAttribute("aria-pressed")).toBe("true");
+    root.querySelector<HTMLButtonElement>("[data-action=toggle-audio]")!.click();
+    expect(root.querySelector("[data-action=toggle-audio]")?.getAttribute("aria-pressed")).toBe("false");
+    expect(window.localStorage.getItem("school-rg-audio-v1")).toBe("off");
+    unmount();
+    const unmountAgain = mountApp(root);
+    expect(root.querySelector("[data-action=toggle-audio]")?.getAttribute("aria-pressed")).toBe("false");
+    unmountAgain();
+    window.localStorage.removeItem("school-rg-audio-v1");
+  });
 });
