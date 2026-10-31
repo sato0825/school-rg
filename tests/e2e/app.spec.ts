@@ -108,6 +108,10 @@ test("one opt-in route records reward, shop, event and typed potion together", a
     ["event", "selected"], ["combat", "consumed"]]) {
     expect(record.contentEvents, `${source}/${action}`).toEqual(expect.arrayContaining([expect.objectContaining({ source, action })]));
   }
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "計測JSONを保存" }).click();
+  const exported = JSON.parse(await readFile((await (await downloadPromise).path())!, "utf8"));
+  expect(exported.contentEvents).toEqual(record.contentEvents);
 });
 
 test("map routes match the saved seed and remain keyboard operable on narrow screens", async ({ page }) => {
