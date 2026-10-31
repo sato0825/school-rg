@@ -583,6 +583,22 @@
       "rights": "original generated candidate for school-rg"
     },
     {
+      "id": "lost-and-found-candidate-v2",
+      "file": "src/assets/enemies/lost-and-found-candidate-v2.png",
+      "sha256": "91f8230a4c294d8b040447b28530326f23224bfd6d2463ca4faa93e9d5545130",
+      "width": 1065,
+      "height": 1477,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "enemy-portrait",
+      "enemyId": "lost-and-found",
+      "referenceId": "lost-and-found-candidate-v1",
+      "promptFile": "docs/art/prompts/lost-and-found-v2.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
       "id": "late-pass-candidate-v1",
       "file": "src/assets/enemies/late-pass-candidate-v1.png",
       "sha256": "6c7ea099a27d2ee39c5d620113799bf9deeff4207200b2c7b9135fe9aa188026",

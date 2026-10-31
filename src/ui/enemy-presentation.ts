@@ -14,7 +14,7 @@ export const enemyCandidateUrlById = {
   "graduation-curtain": new URL("../assets/enemies/graduation-curtain-candidate-v1.png", import.meta.url).href,
   "notice-board": new URL("../assets/enemies/notice-board-candidate-v1.png", import.meta.url).href,
   "night-announcement": new URL("../assets/enemies/night-announcement-candidate-v1.png", import.meta.url).href,
-  "lost-and-found": new URL("../assets/enemies/lost-and-found-candidate-v1.png", import.meta.url).href,
+  "lost-and-found": new URL("../assets/enemies/lost-and-found-candidate-v2.png", import.meta.url).href,
   "late-pass": new URL("../assets/enemies/late-pass-candidate-v1.png", import.meta.url).href,
   "safety-sign": new URL("../assets/enemies/safety-sign-candidate-v1.png", import.meta.url).href,
   "stairwell-echo": new URL("../assets/enemies/stairwell-echo-candidate-v1.png", import.meta.url).href,

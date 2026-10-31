@@ -31,7 +31,7 @@ test("all 25 enemy candidates decode and keep battle controls readable across th
     await scene.setViewportSize({ width, height: 844 });
     await scene.goto("/");
     const enemy = scene.locator(".enemy-art");
-    await expect(enemy).toHaveAttribute("src", new RegExp(`${enemyId}-candidate-v1`));
+    await expect(enemy).toHaveAttribute("src", new RegExp(`${enemyId}-candidate-v${enemyId === "lost-and-found" ? 2 : 1}`));
     await enemy.evaluate(async (image) => (image as HTMLImageElement).decode());
     expect(await enemy.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(1_000);
     await expect(scene.locator(".intent-ticket")).toBeInViewport();
