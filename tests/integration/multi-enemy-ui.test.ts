@@ -34,7 +34,7 @@ describe("dense enemy target roster", () => {
         expect(target.dataset.id).toBe(`enemy-${index + 1}`);
         expect(target.getAttribute("aria-label")).toContain(`敵 ${index + 1}`);
         expect(target.querySelector(".enemy-roster-bar")?.getAttribute("aria-valuenow")).toBe(String(first.maxHp - index * 2));
-        expect(root.querySelectorAll(".enemy-slot")[index]?.getAttribute("aria-hidden")).toBe("true");
+        expect(root.querySelectorAll(".enemy-slot")[index]?.tagName).toBe("DIV");
       });
       expect(targets[count - 1]?.getAttribute("aria-label")).toContain("毒 2");
       expect(targets[count - 1]?.querySelector(".enemy-detail")?.textContent).toContain("次の行動");

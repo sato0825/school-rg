@@ -24,7 +24,7 @@ for (const [count, width] of [[3, 390], [4, 390], [5, 390], [5, 1440]] as const)
     const roster = page.locator(".enemy-roster-button");
     await expect(roster).toHaveCount(count);
     await expect(page.locator(".enemy-slot")).toHaveCount(count);
-    await expect(page.locator(".enemy-slot[aria-hidden=true]")).toHaveCount(count);
+    await expect(page.locator("div.enemy-slot[aria-hidden=true]")).toHaveCount(count);
     const stage = await page.locator(".stage").boundingBox();
     const boxes = await roster.evaluateAll((nodes) => nodes.map((node) => {
       const rect = node.getBoundingClientRect();
@@ -45,7 +45,7 @@ for (const [count, width] of [[3, 390], [4, 390], [5, 390], [5, 1440]] as const)
     expect(detail!.x).toBeGreaterThanOrEqual(stage!.x - 1);
     expect(detail!.x + detail!.width).toBeLessThanOrEqual(stage!.x + stage!.width + 1);
     if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1" && count === 5) await page.screenshot({ path: `docs/art/previews/issue170-five-enemies-${width}.png` });
-    await page.locator(".enemy-slot").nth(1).click();
+    await roster.nth(1).click();
     await expect(roster.nth(1)).toBeFocused();
     await expect(roster.nth(1).locator(".enemy-detail")).toBeVisible();
   });
