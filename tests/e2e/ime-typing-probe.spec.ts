@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-async function startBattle(page: import("@playwright/test").Page): Promise<void> {
+async function startBattle(page: import("@playwright/test").Page, width = 390, height = 844): Promise<void> {
   await page.clock.install();
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width, height });
   await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /文芸部/ }).click();
@@ -80,3 +80,28 @@ test("unresolved IME text explains recovery and the next Latin key clears it", a
   await input.dispatchEvent("compositionend", { data: "あ" });
   await expect(page.locator("#battle-ime-notice")).toBeEmpty();
 });
+
+for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900 }]) {
+  test(`IME typing, help and card piles stay usable at ${viewport.width}px`, async ({ page }) => {
+    await startBattle(page, viewport.width, viewport.height);
+    const help = page.getByRole("button", { name: "操作", exact: true });
+    await help.click();
+    await expect(page.locator("#battle-help")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#battle-help")).toBeHidden();
+    const input = page.locator(".typing-input");
+    await input.focus();
+    await input.dispatchEvent("compositionstart");
+    const beforeHp = Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"));
+    for (const letter of "strike") {
+      await input.evaluate((element, key) => element.dispatchEvent(new KeyboardEvent("keydown", {
+        key, code: `Key${key.toUpperCase()}`, isComposing: true, bubbles: true, cancelable: true,
+      })), letter);
+    }
+    await expect(page.locator("#battle-ime-notice")).toBeEmpty();
+    await expect(input).toBeFocused();
+    expect(Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"))).toBeLessThan(beforeHp);
+    await expect(page.locator(".pile-counts")).toBeVisible();
+    if (process.env.SCHOOL_RG_CAPTURE_IME_PROBE === "1") await page.screenshot({ path: `docs/art/previews/issue195-ime-typing-v1-${viewport.width}.png` });
+  });
+}
