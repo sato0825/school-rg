@@ -6,7 +6,7 @@
     "sha256": "0dc11fbb84d484edbbc249ed8e91918ca7b954e7fcdb6d7c8e5bf17d5f456467",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-cbfe8f55-0384-4d1c-82a6-fa11dda882da.png",
     "promptRef": "prompt.json",
-    "state": "draft-candidate",
+    "state": "superseded-candidate",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -17,6 +17,7 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending"
+    "visualReview": "pending",
+    "selectionDecision": "warm background and busy scene; v2 preferred for hand window"
   }
 ]
