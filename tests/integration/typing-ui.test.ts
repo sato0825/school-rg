@@ -71,7 +71,10 @@ describe("typing selection in the battle view", () => {
     expect(input.type).toBe("text");
     expect(input.value).toBe(run.combat!.typing.buffer);
     expect(input.labels?.[0]?.textContent).toBe("カード名をタイプ");
-    expect(root.querySelector(input.getAttribute("aria-describedby") ? `#${input.getAttribute("aria-describedby")}` : "missing")?.textContent).toContain("Escape");
+    const describedBy = input.getAttribute("aria-describedby")?.split(" ") ?? [];
+    expect(describedBy).toContain("battle-typing-help");
+    expect(describedBy).toContain("battle-ime-notice");
+    expect(root.querySelector("#battle-typing-help")?.textContent).toContain("Escape");
     const typing = root.querySelector(".typing-row")!;
     const hand = root.querySelector(".hand")!;
     const potions = root.querySelector(".potion-row")!;
