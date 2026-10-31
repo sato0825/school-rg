@@ -368,6 +368,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         view.lowStimulus = lowStimulus;
         try { localStorage.setItem("school-rg-low-stimulus-v1", lowStimulus ? "1" : "0"); } catch { /* Setting still applies in this session. */ }
         render();
+        root.querySelector<HTMLButtonElement>("[data-action=toggle-stimulus]")?.focus();
         return;
       }
       if (action === "export-playtest" && metrics) {
