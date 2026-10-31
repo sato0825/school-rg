@@ -258,9 +258,9 @@ export const demoEncounterTable: EncounterTable = {
 };
 
 export const demoEventPools: EventPools = {
-  1: ["after-school-board", "collection-box", "gym-supply-locker", "unfinished-draft"],
-  2: ["archive-inventory", "lab-ventilation", "lab-cleanup", "stairwell-memo"],
-  3: ["closing-library", "night-broadcast", "exam-material-box", "last-train-board"],
+  1: ["after-school-board", "collection-box", "gym-supply-locker", "unfinished-draft", "classroom-proofreading"],
+  2: ["archive-inventory", "lab-ventilation", "lab-cleanup", "stairwell-memo", "archive-return-slip"],
+  3: ["closing-library", "night-broadcast", "exam-material-box", "last-train-board", "festival-layout-desk"],
 };
 
 export const demoRunContentTables: RunContentTables = { enemies: demoEncounterTable, events: demoEventPools };
