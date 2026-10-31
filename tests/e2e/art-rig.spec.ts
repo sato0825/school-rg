@@ -35,7 +35,7 @@ function artOpening(options: { enemyCount?: number; enemyHp?: number; playerHp?:
     { nowMs: () => 0 }, () => "discard");
 }
 
-async function openArtBattle(page: import("@playwright/test").Page, saved = artOpening()) {
+async function openArtBattle(page: import("@playwright/test").Page, saved = artOpening(), waitForRig = true) {
   await page.clock.install();
   await page.addInitScript((value) => {
     if (sessionStorage.getItem("art-rig-seeded")) return;
@@ -46,6 +46,7 @@ async function openArtBattle(page: import("@playwright/test").Page, saved = artO
   await page.getByRole("button", { name: "再開" }).click();
   const actor = page.locator(".game-shell .ally-slot").first();
   await expect(actor).toHaveAttribute("data-actor-rig", "art-v1");
+  if (waitForRig) await expect(actor).toHaveAttribute("data-rig-ready", "true");
   return actor;
 }
 
@@ -86,7 +87,7 @@ test("the whole-body fallback stays visible until every art layer decodes", asyn
     await new Promise((resolve) => setTimeout(resolve, 3_000));
     await route.continue();
   });
-  const actor = await openArtBattle(page);
+  const actor = await openArtBattle(page, artOpening(), false);
   expect(routed).toBeGreaterThan(0);
   expect(await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node).visibility)).toBe("hidden");
   expect(await actor.locator(".hero-art").evaluate((node) => getComputedStyle(node).opacity)).toBe("1");
@@ -162,8 +163,8 @@ for (const [cardId, word, cue] of [["ART-003", "paint", "copy"], ["ART-005", "re
     await expect(actor).toHaveAttribute("data-art-action", cue);
     await expect(actor.locator(".rig-art-token")).toHaveCSS("animation-name", "art-token-in");
     // CSS animation time is compositor time, while page.clock controls the game event timer.
-    await new Promise((resolve) => setTimeout(resolve, 220));
-    expect(Number(await actor.locator(".rig-art-token").evaluate((node) => getComputedStyle(node).opacity))).toBeGreaterThan(0.5);
+    await expect.poll(async () => Number(await actor.locator(".rig-art-token").evaluate((node) => getComputedStyle(node).opacity)),
+      { intervals: [20], timeout: 3_000 }).toBeGreaterThan(0.5);
     await page.screenshot({ path: test.info().outputPath(`${cue}-mark.png`) });
   });
 }
