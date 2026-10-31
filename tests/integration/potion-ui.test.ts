@@ -14,6 +14,7 @@ const view: BattleView = {
   animationNowMs: 0,
   potionModeKey: "F2",
   potionSlotLimit: 3,
+  lowStimulus: false,
 };
 
 describe("potion target display", () => {
