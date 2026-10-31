@@ -162,6 +162,7 @@
  .game-shell[data-screen="map"] .map-panel{width:min(540px,60%)}
 }
 @media(max-width:760px){
+ .game-shell .hand{justify-content:flex-start}
  .game-shell[data-screen="reward"] .game-shell-overlay{justify-content:center;padding:8px}
  .game-shell[data-screen="reward"] .reward-panel{width:calc(100vw - 16px);max-height:calc(100dvh - 80px);overflow:hidden}
  .game-shell[data-screen="reward"] .reward-options{justify-content:flex-start;max-width:100%;overflow-x:auto;padding:8px 4px 14px}

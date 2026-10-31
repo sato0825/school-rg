@@ -4,7 +4,7 @@ import { createRunSession } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
 import type { MapNode } from "../../src/domain/schema.js";
 
-const plates = ["stage-hallway-v1", "act2-science-wing-candidate-v1", "act3-auditorium-foyer-candidate-v1"];
+const plates = ["act1-paper-atrium-candidate-v1", "act2-science-wing-candidate-v1", "act3-auditorium-foyer-candidate-v1"];
 
 test("each Act uses its own school plate on map and in typed combat at desktop and narrow widths", async ({ context }) => {
   for (const act of [1, 2, 3] as const) {
@@ -19,7 +19,7 @@ test("each Act uses its own school plate on map and in typed combat at desktop a
       await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
       await page.setViewportSize({ width, height: 844 });
       await page.goto("/");
-      await expect(page.locator(".run-screen")).toHaveAttribute("style", new RegExp(plates[act - 1]!));
+      await expect(page.locator(".game-shell .stage")).toHaveAttribute("style", new RegExp(plates[act - 1]!));
       await page.locator(".map-node.available").click();
       const stage = page.locator(".stage");
       await expect(stage).toHaveAttribute("data-act", String(act));
