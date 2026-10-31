@@ -1,7 +1,8 @@
 import type { RunState } from "../domain/schema.js";
 import type { ContentRegistry } from "../domain/schema.js";
 import type { BattleView } from "./battle-view.js";
-import { stageSelectionForRun, type StageArt } from "./stage-presentation.js";
+import type { StageArt } from "./stage-presentation.js";
+import { subscenePreviewForRun, type SubsceneConcept } from "./stage-subscene-experiment.js";
 import { identityForClub } from "../content/character-identities.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
 
@@ -17,6 +18,7 @@ export class GameShell {
   private readonly overlay: HTMLElement;
   private readonly content: ContentRegistry;
   private readonly art: StageArt;
+  private readonly subsceneConcept: SubsceneConcept;
   private readonly config: GameConfig;
   private stageNodeId: string | null = null;
 
@@ -41,6 +43,7 @@ export class GameShell {
     this.overlay = document.createElement("div");
     this.content = content;
     this.art = view.art;
+    this.subsceneConcept = new URLSearchParams(window.location.search).get("experimentalSubscene") === "annex" ? "annex" : "local";
     this.config = config;
     this.overlay.className = "game-shell-overlay";
     this.stage.append(this.overlay);
@@ -59,12 +62,15 @@ export class GameShell {
 
   private syncStage(run: RunState): void {
     if (this.stageNodeId === run.map.currentNodeId) return;
-    const selection = stageSelectionForRun(this.art, run);
+    const selection = subscenePreviewForRun(this.art, run, this.subsceneConcept);
     this.stage.style.backgroundImage = `url("${selection.stageUrl}")`;
     this.stage.dataset.act = String(run.map.nodes.find((node) => node.id === run.map.currentNodeId)?.act ?? run.act);
     this.stage.dataset.stagePlace = selection.placeId ?? "";
     this.stage.dataset.stageArt = selection.artId ?? "";
     this.stage.dataset.stageBand = selection.band === null ? "" : String(selection.band);
+    this.stage.dataset.stageSubscene = selection.subsceneId ?? "";
+    this.stage.dataset.stageConcept = this.subsceneConcept;
+    this.stage.dataset.stageProxy = String(selection.proxy);
     this.stageNodeId = run.map.currentNodeId;
   }
 

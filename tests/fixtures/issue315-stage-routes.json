@@ -1,0 +1,355 @@
+{
+  "sourceIssue": 310,
+  "routes": [
+    {
+      "seed": 42,
+      "clubId": "literature-demo",
+      "routePolicy": "safe",
+      "visits": [
+        {
+          "id": "a1-f0-n0",
+          "kind": "start"
+        },
+        {
+          "id": "a1-f1-n1",
+          "kind": "rest"
+        },
+        {
+          "id": "a1-f2-n1",
+          "kind": "combat"
+        },
+        {
+          "id": "a1-f3-n1",
+          "kind": "elite"
+        },
+        {
+          "id": "a1-f4-n1",
+          "kind": "treasure"
+        },
+        {
+          "id": "a1-f5-n1",
+          "kind": "combat"
+        },
+        {
+          "id": "a1-f6-n1",
+          "kind": "treasure"
+        },
+        {
+          "id": "a1-f7-n1",
+          "kind": "event"
+        },
+        {
+          "id": "a1-f8-n0",
+          "kind": "elite"
+        },
+        {
+          "id": "a1-f9-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a1-f10-n0",
+          "kind": "rest"
+        },
+        {
+          "id": "a1-f11-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a1-f12-n0",
+          "kind": "shop"
+        },
+        {
+          "id": "a1-f13-n0",
+          "kind": "boss"
+        },
+        {
+          "id": "a2-f0-n0",
+          "kind": "start"
+        },
+        {
+          "id": "a2-f1-n0",
+          "kind": "shop"
+        },
+        {
+          "id": "a2-f2-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f3-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f4-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f5-n0",
+          "kind": "rest"
+        },
+        {
+          "id": "a2-f6-n0",
+          "kind": "treasure"
+        },
+        {
+          "id": "a2-f7-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f8-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a2-f9-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a2-f10-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f11-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f12-n0",
+          "kind": "treasure"
+        },
+        {
+          "id": "a2-f13-n0",
+          "kind": "boss"
+        },
+        {
+          "id": "a3-f0-n0",
+          "kind": "start"
+        },
+        {
+          "id": "a3-f1-n0",
+          "kind": "rest"
+        },
+        {
+          "id": "a3-f2-n0",
+          "kind": "elite"
+        },
+        {
+          "id": "a3-f3-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a3-f4-n0",
+          "kind": "rest"
+        },
+        {
+          "id": "a3-f5-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a3-f6-n0",
+          "kind": "rest"
+        },
+        {
+          "id": "a3-f7-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a3-f8-n0",
+          "kind": "shop"
+        },
+        {
+          "id": "a3-f9-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a3-f10-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a3-f11-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a3-f12-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a3-f13-n0",
+          "kind": "boss"
+        }
+      ]
+    },
+    {
+      "seed": 97,
+      "clubId": "literature-demo",
+      "routePolicy": "safe",
+      "visits": [
+        {
+          "id": "a1-f0-n0",
+          "kind": "start"
+        },
+        {
+          "id": "a1-f1-n1",
+          "kind": "shop"
+        },
+        {
+          "id": "a1-f2-n1",
+          "kind": "event"
+        },
+        {
+          "id": "a1-f3-n1",
+          "kind": "event"
+        },
+        {
+          "id": "a1-f4-n1",
+          "kind": "combat"
+        },
+        {
+          "id": "a1-f5-n1",
+          "kind": "combat"
+        },
+        {
+          "id": "a1-f6-n1",
+          "kind": "combat"
+        },
+        {
+          "id": "a1-f7-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a1-f8-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a1-f9-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a1-f10-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a1-f11-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a1-f12-n0",
+          "kind": "elite"
+        },
+        {
+          "id": "a1-f13-n0",
+          "kind": "boss"
+        },
+        {
+          "id": "a2-f0-n0",
+          "kind": "start"
+        },
+        {
+          "id": "a2-f1-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a2-f2-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f3-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a2-f4-n0",
+          "kind": "treasure"
+        },
+        {
+          "id": "a2-f5-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f6-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f7-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f8-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f9-n0",
+          "kind": "event"
+        },
+        {
+          "id": "a2-f10-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f11-n0",
+          "kind": "treasure"
+        },
+        {
+          "id": "a2-f12-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a2-f13-n0",
+          "kind": "boss"
+        },
+        {
+          "id": "a3-f0-n0",
+          "kind": "start"
+        },
+        {
+          "id": "a3-f1-n0",
+          "kind": "rest"
+        },
+        {
+          "id": "a3-f2-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a3-f3-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a3-f4-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a3-f5-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a3-f6-n0",
+          "kind": "combat"
+        },
+        {
+          "id": "a3-f7-n1",
+          "kind": "event"
+        },
+        {
+          "id": "a3-f8-n1",
+          "kind": "combat"
+        },
+        {
+          "id": "a3-f9-n1",
+          "kind": "elite"
+        },
+        {
+          "id": "a3-f10-n1",
+          "kind": "combat"
+        },
+        {
+          "id": "a3-f11-n1",
+          "kind": "shop"
+        },
+        {
+          "id": "a3-f12-n2",
+          "kind": "rest"
+        },
+        {
+          "id": "a3-f13-n0",
+          "kind": "boss"
+        }
+      ]
+    }
+  ]
+}
