@@ -145,6 +145,7 @@ export class GameShell {
     this.control.inert = true;
     this.control.setAttribute("aria-hidden", "true");
     this.hero.className = "hero-art victory-pose";
+    this.hero.style.removeProperty("animation-delay");
     this.hero.src = victoryCandidateByClubId[run.clubId] ?? this.hero.src;
     const club = this.content.clubs.find((item) => item.id === run.clubId)?.name ?? "部活動";
     const name = identityForClub(run.clubId)?.fullName;
