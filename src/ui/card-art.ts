@@ -27,6 +27,7 @@ export const candidateCardArtCatalog: CardArtCatalog = Object.freeze({
   "BASE-003": candidate("BASE-003", "issue275-v2", new URL("../assets/cards/issue261/base-heavy-strike-candidate-v2.png", import.meta.url).href, 275),
   "BASE-007": candidate("BASE-007", "issue242-v2", new URL("../assets/cards/issue261/base-draw-candidate-v2.png", import.meta.url).href, 242),
   "BASE-011": candidate("BASE-011", "issue242-v2", new URL("../assets/cards/issue261/base-sweep-candidate-v2.png", import.meta.url).href, 242),
+  "BASE-013": candidate("BASE-013", "issue242-v1", new URL("../assets/cards/issue261/base-counter-candidate-v1.png", import.meta.url).href, 242),
   "BASE-016": candidate("BASE-016", "issue284-v1", new URL("../assets/cards/issue261/base-duplicate-candidate-v1.png", import.meta.url).href, 284),
   "BASE-017": candidate("BASE-017", "issue284-v2", new URL("../assets/cards/issue261/base-boost-candidate-v2.png", import.meta.url).href, 284),
   "LIT-001": candidate("LIT-001", "issue246-v1", new URL("../assets/cards/issue261/lit-jot-candidate-v1.png", import.meta.url).href, 246),
