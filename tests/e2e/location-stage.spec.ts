@@ -94,6 +94,9 @@ test("Act 3 rest uses its selected stage inside GameShell", async ({ page }) => 
 
 test("treasure object marks the chosen item before the map shows its result", async ({ page }) => {
   await openLocation(page, "treasure", 1440);
+  const chosenArtId = await page.locator('[data-action="treasure-offer"]:not(:disabled) .location-choice-icon [data-art-id]').first().getAttribute("data-art-id");
+  expect(chosenArtId).toBeTruthy();
+  await expect(page.locator(`.locker-open [data-art-id="${chosenArtId}"]`)).toBeVisible();
   await page.clock.install();
   await page.locator('[data-action="treasure-offer"]:not(:disabled)').first().click();
   await expect(page.locator('.location-scene[data-claiming="true"]')).toBeVisible();
@@ -104,6 +107,9 @@ test("treasure object marks the chosen item before the map shows its result", as
   await page.clock.runFor(350);
   await expect(page.locator(".map-panel")).toBeVisible();
   await expect(page.locator(".location-result-toast")).toContainText("受け取った");
+  await expect(page.locator(`.location-result-toast [data-art-id="${chosenArtId}"]`)).toBeVisible();
+  await expect(page.locator(`.topbar [data-art-id="${chosenArtId}"]`)).toBeVisible();
+  expect(await page.locator(`.topbar [data-art-id="${chosenArtId}"] img`).evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
 });
 
 test("reduced motion keeps treasure choice clear without a lift animation", async ({ page }) => {

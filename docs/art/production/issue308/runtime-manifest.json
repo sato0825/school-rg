@@ -4,7 +4,7 @@
   "relics": [
     {
       "id": "library-bookmark",
-      "artId": "relic-library-bookmark",
+      "artId": "relic.library-bookmark",
       "version": "candidate-v1",
       "adoption": "candidate",
       "origin": "#242 candidate-v1; style review required",
@@ -16,7 +16,7 @@
     },
     {
       "id": "lab-glasses",
-      "artId": "relic-lab-glasses",
+      "artId": "relic.lab-glasses",
       "version": "candidate-v1",
       "adoption": "candidate",
       "origin": "#246 v1; style review required",
@@ -28,7 +28,7 @@
     },
     {
       "id": "bamboo-grip",
-      "artId": "relic-bamboo-grip",
+      "artId": "relic.bamboo-grip",
       "version": "candidate-v1",
       "adoption": "candidate",
       "origin": "#291 v1",
@@ -40,7 +40,7 @@
     },
     {
       "id": "metronome",
-      "artId": "relic-metronome",
+      "artId": "relic.metronome",
       "version": "candidate-v1",
       "adoption": "candidate",
       "origin": "#246 v1; style review required",
@@ -52,7 +52,7 @@
     },
     {
       "id": "sketchbook",
-      "artId": "relic-sketchbook",
+      "artId": "relic.sketchbook",
       "version": "candidate-v1",
       "adoption": "candidate",
       "origin": "#291 v1",
@@ -64,7 +64,7 @@
     },
     {
       "id": "spare-shoes",
-      "artId": "relic-spare-shoes",
+      "artId": "relic.spare-shoes",
       "version": "candidate-v1",
       "adoption": "candidate",
       "origin": "#291 v1",
@@ -76,7 +76,7 @@
     },
     {
       "id": "attendance-stamp",
-      "artId": "relic-attendance-stamp",
+      "artId": "relic.attendance-stamp",
       "version": "candidate-v1",
       "adoption": "candidate",
       "origin": "#291 v1",
@@ -88,7 +88,7 @@
     },
     {
       "id": "hallway-clock",
-      "artId": "relic-hallway-clock",
+      "artId": "relic.hallway-clock",
       "version": "candidate-v1",
       "adoption": "candidate",
       "origin": "#301 v1",
@@ -100,7 +100,7 @@
     },
     {
       "id": "lunch-coupon",
-      "artId": "relic-lunch-coupon",
+      "artId": "relic.lunch-coupon",
       "version": "candidate-v1",
       "adoption": "candidate",
       "origin": "#301 v1",
@@ -112,7 +112,7 @@
     },
     {
       "id": "pocket-bandage",
-      "artId": "relic-pocket-bandage",
+      "artId": "relic.pocket-bandage",
       "version": "candidate-v1",
       "adoption": "candidate",
       "origin": "#301 v1",
@@ -124,7 +124,7 @@
     },
     {
       "id": "practice-timer",
-      "artId": "relic-practice-timer",
+      "artId": "relic.practice-timer",
       "version": "candidate-v1",
       "adoption": "candidate",
       "origin": "#301 v1",

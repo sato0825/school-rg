@@ -36,7 +36,7 @@ const relics = ids.map((id) => {
   const runtime = join(outputDir, `${id}-v1-256.webp`);
   execFileSync("cwebp", ["-quiet", "-q", "86", "-alpha_q", "100", "-resize", "256", "256", source, "-o", runtime]);
   return {
-    id, artId: `relic-${id}`, version: "candidate-v1", adoption: "candidate",
+    id, artId: `relic.${id}`, version: "candidate-v1", adoption: "candidate",
     origin: origins[id],
     source: relative(root, source), sourceSha256: hash(source),
     runtime: relative(root, runtime), runtimeSha256: hash(runtime),
