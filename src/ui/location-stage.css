@@ -118,7 +118,7 @@
   .game-shell .location-shelf, .game-shell .location-choice-list:has(> .location-choice) { gap: 5px; }
   .game-shell .location-event-description { max-height: 50px; }
   .game-shell[data-screen="shop"] .location-prop { top: 31%; left: 27%; width: 33%; height: 53%; }
-  .game-shell[data-screen="shop"] .location-choices { bottom: 4%; width: 48%; max-height: 61%; }
+  .game-shell[data-screen="shop"] .location-choices { bottom: 4%; width: 48%; max-height: 70%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .game-shell .location-choice { transform: none !important; transition: none !important; }
