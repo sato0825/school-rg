@@ -127,8 +127,8 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     </button>`;
   }).join("");
   const previewAllies = layout.allies.slice(1).map((slot, index) => `<div class="ally-slot mock-ally" style="--slot-x:${slot.xPercent}%" aria-hidden="true"><div class="mock-ally-body"><span>仮配置 ${index + 2}</span></div></div>`).join("");
-  const cards = hand.map(({ instanceId, card }, index) => `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-action="card" data-id="${instanceId}" aria-pressed="${selected === instanceId}" aria-label="${html(card.input.text)} ${html(describeCard(card, content))}${selected === instanceId ? "（選択中）" : ""}">
-    <span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-kind">${html(card.type.toUpperCase())}</span>
+  const cards = hand.map(({ instanceId, card }, index) => `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-card-kind="${card.type}" data-action="card" data-id="${instanceId}" aria-pressed="${selected === instanceId}" aria-label="${html(card.input.text)} ${html(describeCard(card, content))}${selected === instanceId ? "（選択中）" : ""}">
+    <span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-kind">${html(card.type.toUpperCase())}</span><span class="card-sigil" aria-hidden="true"></span>
     <strong class="card-word">${wordMarkup(card.input.text, combat.typing.buffer)}</strong><span class="card-effect">${html(describeCard(card, content))}</span>
   </button>`).join("");
   const potions = run.potionIds.map((potionId, index) => {

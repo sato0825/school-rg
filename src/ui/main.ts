@@ -2,6 +2,7 @@ import { mountApp } from "./app.js";
 import "./style.css";
 import "./card-fx.css";
 import "./design-v2.css";
+import "./card-design.css";
 import "./map-design.css";
 
 const root = document.querySelector<HTMLElement>("#app");
