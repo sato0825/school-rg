@@ -173,7 +173,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         gameShell.showOverlay("reward", run, rendered);
       } else {
         view.animationNowMs = clock.nowMs();
-        renderBattle(rendered, run, demoContent, view);
+        renderBattle(rendered, run, demoContent, view, config);
         gameShell.showBattle(run, rendered);
       }
     }
@@ -182,7 +182,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (session.screen === "rest") { gameShell = null; renderRunRest(root, session, demoContent, demoBattleArt); }
     else if (session.screen === "event") { gameShell = null; renderRunEvent(root, session, demoContent, demoBattleArt); }
     else if (session.screen === "won" || session.screen === "lost") { gameShell = null; renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError); }
-    else { gameShell = null; view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
+    else { gameShell = null; view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view, config); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
     const mapScroll = root.querySelector<HTMLElement>(".map-scroll");

@@ -2,6 +2,7 @@ import type { RunState } from "../domain/schema.js";
 import type { ContentRegistry } from "../domain/schema.js";
 import type { BattleView } from "./battle-view.js";
 import { stageUrlForRun } from "./stage-presentation.js";
+import { identityForClub } from "../content/character-identities.js";
 
 /** The stage and actor belong to the run, rather than to an individual screen. */
 export class GameShell {
@@ -43,8 +44,9 @@ export class GameShell {
     this.actor.style.setProperty("--slot-x", "22%");
     this.hero.src = view.art.heroPosesByClubId?.[run.clubId]?.idle ?? view.art.heroUrlByClubId?.[run.clubId] ?? view.art.heroUrl;
     const clubName = content.clubs.find((club) => club.id === run.clubId)?.name ?? "主人公";
-    this.hero.alt = `${clubName}の生徒`;
-    this.actor.querySelector(".hero-nameplate")!.textContent = clubName;
+    const characterName = identityForClub(run.clubId)?.fullName ?? clubName;
+    this.hero.alt = `${characterName}、${clubName}`;
+    this.actor.querySelector(".hero-nameplate")!.textContent = `${characterName} · ${clubName} · 仮名`;
     root.replaceChildren(main);
   }
 
