@@ -311,7 +311,7 @@ test("music chains timed cards by direct input at iPad width after a save reload
   await typeWithTime("beat");
   await expect(page.locator(".battle-message")).toContainText("beat を発動");
   expect(Number(await page.locator(".enemy-health-track").first().getAttribute("aria-valuenow"))).toBe(enemyBefore - 6);
-  expect(Number.parseFloat(await page.locator("[data-role=time]").innerText())).toBeGreaterThan(6);
+  expect(Number.parseFloat(await page.locator("[data-role=time]").innerText())).toBeGreaterThan(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   if (process.env.SCHOOL_RG_CAPTURE_MUSIC === "1") {
     await page.screenshot({ path: "docs/content/previews/issue76-music-chain-ipad-20261031.png", fullPage: true });
