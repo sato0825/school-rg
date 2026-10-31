@@ -1,13 +1,6 @@
-import type { MapNode } from "../domain/schema.js";
 import type { RunSession } from "../domain/run-flow.js";
 import { MAP_ROW_HEIGHT, mapRouteSegments } from "./map-layout.js";
-
-const kindLabels: Record<MapNode["kind"], string> = {
-  start: "開始", combat: "戦闘", elite: "強敵", event: "出来事", shop: "購買", rest: "休憩", treasure: "宝箱", boss: "ボス",
-};
-const kindMarks: Record<MapNode["kind"], string> = {
-  start: "◆", combat: "✦", elite: "✧", event: "?", shop: "▣", rest: "☕", treasure: "◇", boss: "★",
-};
+import { mapKindIcons as kindMarks, mapKindNames as kindLabels } from "./map-symbols.js";
 
 function html(value: string): string {
   return value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]!);

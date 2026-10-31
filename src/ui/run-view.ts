@@ -1,22 +1,16 @@
 import { availableRunNodes, type RunSession } from "../domain/run-flow.js";
 import { activeEvent, availableEventChoices, eventChoiceTargets } from "../domain/events.js";
-import type { ContentRegistry, MapNode } from "../domain/schema.js";
+import type { ContentRegistry } from "../domain/schema.js";
 import { describeCard } from "./battle-view.js";
 import type { BattleArt } from "./battle-view.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
 import { ASCENSION_RULES, unlockedLevel, type Progression } from "../domain/ascension.js";
 import { presentationForClub } from "./club-presentation.js";
 import { MAP_ROW_HEIGHT, mapRouteSegments } from "./map-layout.js";
+import { mapKindIcons as kindIcons, mapKindNames as kindNames } from "./map-symbols.js";
 import { stageUrlForAct } from "./stage-presentation.js";
 import { formatPlaytestTime, type PlaytestRecord } from "./playtest-metrics.js";
 import { historyCounts, type RunHistory } from "../domain/run-history.js";
-
-const kindNames: Record<MapNode["kind"], string> = {
-  start: "開始", combat: "戦闘", elite: "強敵", event: "イベント", shop: "購買", rest: "休憩", treasure: "宝箱", boss: "ボス",
-};
-const kindIcons: Record<MapNode["kind"], string> = {
-  start: "◆", combat: "✦", elite: "✧", event: "?", shop: "▣", rest: "☕", treasure: "◇", boss: "★",
-};
 
 function html(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
