@@ -3,6 +3,8 @@ import type { ContentRegistry } from "../domain/schema.js";
 import type { BattleView } from "./battle-view.js";
 import { stageUrlForRun } from "./stage-presentation.js";
 import { identityForClub } from "../content/character-identities.js";
+import type { RunSession } from "../domain/run-flow.js";
+import { createVictoryNote, victoryCandidateByClubId, victoryHeader, type VictoryNoteOptions } from "./victory-view.js";
 
 /** The stage and actor belong to the run, rather than to an individual screen. */
 export class GameShell {
@@ -128,5 +130,32 @@ export class GameShell {
     const ratio = Math.max(0, Math.min(100, run.player.hp / run.player.maxHp * 100));
     hp.innerHTML = `<span class="player-health"><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><span class="player-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span class="player-health-fill" style="width:${ratio}%"></span></span></span><span class="run-gold" aria-label="所持金 ${run.gold}">◉ ${run.gold}</span><span class="run-deck" aria-label="デッキ ${run.deck.length}枚">▣ ${run.deck.length}</span>`;
     this.header.append(hp);
+  }
+
+  showVictory(session: RunSession, lowStimulus: boolean, options: VictoryNoteOptions): void {
+    const firstArrival = this.main.dataset.screen !== "won";
+    const { run } = session;
+    this.main.dataset.screen = "won";
+    this.main.dataset.club = run.clubId;
+    this.main.dataset.effects = lowStimulus ? "quiet" : "standard";
+    this.stage.dataset.act = String(run.act);
+    this.input.disabled = true;
+    this.input.value = "";
+    this.control.inert = true;
+    this.control.setAttribute("aria-hidden", "true");
+    this.hero.className = "hero-art victory-pose";
+    this.hero.src = victoryCandidateByClubId[run.clubId] ?? this.hero.src;
+    const club = this.content.clubs.find((item) => item.id === run.clubId)?.name ?? "部活動";
+    const name = identityForClub(run.clubId)?.fullName;
+    this.hero.alt = `${name ? `${name}、` : ""}${club}の生徒の達成姿勢（制作候補）`;
+    this.actor.querySelector(".hero-nameplate")!.textContent = `${name ? `${name} · ` : ""}${club}${name ? " · 仮名" : ""}`;
+    for (const transient of this.stage.querySelectorAll(".card-fx-layer, .result-fx-layer")) transient.remove();
+    this.main.querySelector("#battle-help")?.remove();
+    this.main.querySelector(".result-backdrop")?.remove();
+    this.header.classList.add("run-header");
+    this.header.replaceChildren(victoryHeader(run, this.content));
+    const note = createVictoryNote(session, options);
+    this.overlay.replaceChildren(note);
+    if (firstArrival) note.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
   }
 }

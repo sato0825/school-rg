@@ -991,6 +991,11 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
       }
       if (await page.locator(".run-meta").getAttribute("data-kind") === "boss") {
         await expect(page.locator(".enemy-hud")).toContainText(bossNames[bosses]!);
+        if (bosses === 2) await page.evaluate(() => {
+          Reflect.set(window, "issue292TerminalNodes", {
+            stage: document.querySelector(".stage"), actor: document.querySelector(".ally-slot"), input: document.querySelector(".typing-input"),
+          });
+        });
         bosses++;
       }
       battles++;
@@ -1003,6 +1008,10 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
   expect(battles).toBeGreaterThanOrEqual(3);
   if (reloadAtActTwo) expect(reloadedAtActTwo).toBe(true);
   await expect(page.locator(".run-header")).toContainText("全Act完走");
+  expect(await page.evaluate(() => {
+    const nodes = Reflect.get(window, "issue292TerminalNodes") as { stage: Element; actor: Element; input: Element };
+    return nodes.stage === document.querySelector(".stage") && nodes.actor === document.querySelector(".ally-slot") && nodes.input === document.querySelector(".typing-input");
+  })).toBe(true);
   return { battles, bosses };
 }
 

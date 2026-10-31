@@ -181,7 +181,18 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (session.screen === "shop") { gameShell = null; renderRunShop(root, session, demoContent, demoBattleArt, view.message); }
     else if (session.screen === "rest") { gameShell = null; renderRunRest(root, session, demoContent, demoBattleArt); }
     else if (session.screen === "event") { gameShell = null; renderRunEvent(root, session, demoContent, demoBattleArt); }
-    else if (session.screen === "won" || session.screen === "lost") { gameShell = null; renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError); }
+    else if (session.screen === "won") {
+      if (!gameShell) gameShell = new GameShell(root, run, view, demoContent);
+      gameShell.showVictory(session, lowStimulus, {
+        playtestActiveMs: metrics?.record.activeMs,
+        playtestVisits: metrics?.record.visits.length,
+        playtestBattles: metrics?.record.battleNodeIds.length,
+        playtestPartial: metrics?.record.partial,
+        playtestError: metricsLoadError,
+        historyError: historyLoadError || historySaveError,
+      });
+    }
+    else if (session.screen === "lost") { gameShell = null; renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError); }
     else { gameShell = null; view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view, config); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
