@@ -1,6 +1,6 @@
 import { actionDelayMs, MOTION_MS } from "./motion-timing.js";
 
-/** Candidate whole-pose sources. Authored in-between frames and editable layers are still missing. */
+/** Whole-pose fallback sources remain visible until every candidate rig layer decodes. */
 export type ActorPoseSources = Readonly<{ idle: string; activate: string; hit: string }>;
 export type ActorMotionKind = "card-use" | "hit";
 

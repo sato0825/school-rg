@@ -2,6 +2,9 @@
 .game-shell .ally-slot[data-actor-rig="art-v1"][data-rig-ready="true"]>.hero-art{opacity:0!important;animation:none!important}
 .game-shell .ally-slot[data-actor-rig="art-v1"]:not([data-rig-ready="true"])>.hero-rig{visibility:hidden}
 .game-shell .ally-slot[data-actor-rig="art-v1"]>.hero-motion-frame{display:none}
+.game-shell .ally-slot[data-actor-rig="art-v1"] .rig-paint-trace{position:absolute;z-index:3;left:47%;top:42%;width:11%;height:1%;border-radius:100%;background:linear-gradient(90deg,#2c968d00,#2c968dc9 28%,#f0c36c99 70%,#f0c36c00);transform:rotate(-17deg) scaleX(0);transform-origin:0 50%;opacity:0;pointer-events:none}
+.game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] .rig-paint-trace{animation:art-paint-trace var(--actor-duration) ease-out var(--actor-delay) both}
+@keyframes art-paint-trace{0%,18%{transform:rotate(-17deg) scaleX(0);opacity:0}42%,70%{transform:rotate(-17deg) scaleX(1);opacity:.9}100%{transform:rotate(-17deg) scaleX(1);opacity:0}}
 .game-shell .ally-slot[data-actor-rig="art-v1"] .rig-part{animation-delay:var(--actor-delay,0ms)}
 .game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="idle"] .rig-part{animation-delay:var(--rig-idle-delay,0ms)}
 .game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="idle"] [data-part="head"]{animation:art-look-board 3300ms ease-in-out infinite}
@@ -41,7 +44,9 @@
 .game[data-effects="quiet"] .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="right-arm-brush"]{transform:var(--art-static-use)}
 .game[data-effects="quiet"] .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="left-arm-board"]{transform:rotate(-12deg)}
 .game[data-effects="quiet"] .ally-slot[data-actor-rig="art-v1"][data-actor-motion="hit"] [data-part="left-arm-board"]{transform:rotate(20deg)}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="art-v1"] .rig-paint-trace{animation:none!important;opacity:0}
 @media(prefers-reduced-motion:reduce){
+  .game-shell .ally-slot[data-actor-rig="art-v1"] .rig-paint-trace{animation:none!important;opacity:0}
   .game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="right-arm-brush"]{transform:rotate(-25deg)}
   .game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="card-use"] [data-part="left-arm-board"]{transform:rotate(-12deg)}
   .game-shell .ally-slot[data-actor-rig="art-v1"][data-actor-motion="hit"] [data-part="left-arm-board"]{transform:rotate(20deg)}

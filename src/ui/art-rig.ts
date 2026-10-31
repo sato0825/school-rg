@@ -24,7 +24,7 @@ export function artRigMarkup(): string {
     const pivotY = (part.pivotY / part.height * 100).toFixed(5);
     return `<img class="rig-part" data-part="${part.id}" src="${url}" alt="" style="left:${left}%;top:${top}%;width:${partWidth}%;height:${partHeight}%;transform-origin:${pivotX}% ${pivotY}%" />`;
   }).join("");
-  return `<div class="hero-rig" data-rig-id="${manifest.id}" data-art-state="${manifest.status}" style="--rig-scale:${manifest.runtimeScale}" aria-hidden="true">${parts}</div>`;
+  return `<div class="hero-rig" data-rig-id="${manifest.id}" data-art-state="${manifest.status}" style="--rig-scale:${manifest.runtimeScale}" aria-hidden="true">${parts}<span class="rig-paint-trace"></span></div>`;
 }
 
 export function artRigManifest() { return manifest; }

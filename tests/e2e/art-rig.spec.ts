@@ -30,7 +30,7 @@ async function openArtBattle(page: import("@playwright/test").Page) {
     localStorage.setItem("school-rg-run-v1", value);
     sessionStorage.setItem("art-rig-seeded", "1");
   }, artOpening());
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "再開" }).click();
   const actor = page.locator(".game-shell .ally-slot").first();
   await expect(actor).toHaveAttribute("data-actor-rig", "art-v1");
@@ -46,13 +46,16 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     await expect(actor.locator(".hero-rig .rig-part")).toHaveCount(7);
     const before = await actor.boundingBox();
     const stageBefore = await stage.boundingBox();
+    await page.screenshot({ path: test.info().outputPath("idle.png") });
     const rigNode = await actor.locator(".hero-rig").elementHandle();
     await page.clock.runFor(200);
     expect(await actor.locator(".hero-rig").evaluate((node, previous) => node === previous, rigNode)).toBe(true);
     await page.keyboard.type("frame");
     await expect(actor).toHaveAttribute("data-actor-motion", "card-use");
-    expect(await actor.locator('[data-part="right-arm-brush"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("art-use-brush");
-    expect(await actor.locator('[data-part="left-arm-board"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("art-use-board");
+    await expect(actor.locator('[data-part="right-arm-brush"]')).toHaveCSS("animation-name", "art-use-brush");
+    await expect(actor.locator('[data-part="left-arm-board"]')).toHaveCSS("animation-name", "art-use-board");
+    await expect(actor.locator(".rig-paint-trace")).toHaveCSS("animation-name", "art-paint-trace");
+    await page.screenshot({ path: test.info().outputPath("card-use.png") });
     expect(await actor.boundingBox()).toEqual(before);
     expect(await stage.boundingBox()).toEqual(stageBefore);
     await page.clock.runFor(500);
@@ -62,18 +65,21 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
 
 test("the whole-body fallback stays visible until every art layer decodes", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
+  let routed = 0;
   await page.route("**/art-rig-parts-v2/*.png", async (route) => {
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    routed++;
+    await new Promise((resolve) => setTimeout(resolve, 3_000));
     await route.continue();
   });
   const actor = await openArtBattle(page);
+  expect(routed).toBeGreaterThan(0);
   expect(await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node).visibility)).toBe("hidden");
   expect(await actor.locator(".hero-art").evaluate((node) => getComputedStyle(node).opacity)).toBe("1");
   await expect(actor).toHaveAttribute("data-rig-ready", "true");
   expect(await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node).visibility)).toBe("visible");
 });
 
-test("quiet/reload preserves complete art layers and a readable hit", async ({ page }) => {
+test("quiet/reload preserves complete art layers", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.addInitScript(() => localStorage.setItem("school-rg-low-stimulus-v1", "1"));
   const actor = await openArtBattle(page);
@@ -82,8 +88,12 @@ test("quiet/reload preserves complete art layers and a readable hit", async ({ p
   await expect(actor).toHaveAttribute("data-rig-ready", "true");
   await expect(page.locator(".game")).toHaveAttribute("data-effects", "quiet");
   expect(await actor.locator('[data-part="head"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
-  await page.keyboard.type("frame");
-  await page.clock.runFor(500);
+});
+
+test("quiet effects retain the art student hit expression without moving limbs", async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.addInitScript(() => localStorage.setItem("school-rg-low-stimulus-v1", "1"));
+  const actor = await openArtBattle(page);
   const remainingMs = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.clock.remainingMs as number);
   await page.clock.runFor(remainingMs + 1);
   await page.clock.runFor(650);
