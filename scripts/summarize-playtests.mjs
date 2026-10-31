@@ -12,10 +12,14 @@ function median(values) {
   return Math.round((sorted[Math.floor((sorted.length - 1) / 2)] + sorted[Math.floor(sorted.length / 2)]) / 2);
 }
 
+function range(values) {
+  return values.length ? { min: Math.min(...values), max: Math.max(...values) } : null;
+}
+
 function validRecord(value) {
   if (!value || ![1, 2].includes(value.formatVersion) || typeof value.runId !== "string" || !CLUB_IDS.includes(value.clubId)
     || !Number.isSafeInteger(value.activeMs) || value.activeMs < 0 || !["won", "lost", null].includes(value.result)
-    || !Array.isArray(value.visits) || !Array.isArray(value.battleNodeIds)
+    || typeof value.partial !== "boolean" || !Array.isArray(value.visits) || !Array.isArray(value.battleNodeIds)
     || (value.battles !== undefined && !Array.isArray(value.battles))
     || (value.formatVersion === 2 && (typeof value.contentPartial !== "boolean" || !Array.isArray(value.contentEvents)))) throw new Error("invalid playtest record");
   return value;
@@ -124,7 +128,8 @@ function contentExposure(records) {
           : event.available === false ? "unavailableOffers" : "unknownAvailabilityOffers";
         act[availabilityKey]++;
         source[availabilityKey]++;
-        const key = `${event.act}:${event.kind}:${event.contentId}`;
+        const key = JSON.stringify([event.act, event.kind, event.contentId,
+          event.kind === "event_choice" ? event.offerId : null]);
         if (seen.has(key)) { act.repeatedOffers++; source.repeatedOffers++; }
         else seen.add(key);
       }
@@ -163,7 +168,9 @@ export function summarizePlaytests(values) {
       completionRate: records.length ? terminal.length / records.length : null,
       winRate: terminal.length ? won.length / terminal.length : null,
       medianTerminalMs: median(terminal.map((record) => record.activeMs)),
-      medianWonMs, wonGapToTargetMs: medianWonMs === null ? null : medianWonMs - TARGET_RUN_MS,
+      rangeTerminalMs: range(terminal.map((record) => record.activeMs)),
+      medianWonMs, rangeWonMs: range(won.map((record) => record.activeMs)),
+      wonGapToTargetMs: medianWonMs === null ? null : medianWonMs - TARGET_RUN_MS,
       battlesRecorded: battles.length, battlesWithHpAndTime: finishedBattles.length,
       medianBattleMs: median(finishedBattles.map((battle) => battle.endedAtActiveMs - battle.startedAtActiveMs)),
       totalHpLoss: finishedBattles.reduce((sum, battle) => sum + Math.max(0, battle.hpBefore - battle.hpAfter), 0),

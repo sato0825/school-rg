@@ -25,7 +25,8 @@ describe("local playtest summary", () => {
     ]);
     expect(report.uniqueRuns).toBe(3);
     expect(report.clubs["literature-demo"]).toMatchObject({ runs: 2, won: 1, lost: 0, incomplete: 1,
-      completionRate: 0.5, medianWonMs: TARGET_RUN_MS + 5_000, wonGapToTargetMs: 5_000,
+      completionRate: 0.5, medianWonMs: TARGET_RUN_MS + 5_000,
+      rangeWonMs: { min: TARGET_RUN_MS + 5_000, max: TARGET_RUN_MS + 5_000 }, wonGapToTargetMs: 5_000,
       battlesRecorded: 2, battlesWithHpAndTime: 1, medianBattleMs: 400, totalHpLoss: 6,
       medianActMs: [1_000, 1_000, TARGET_RUN_MS + 3_000] });
     expect(report.clubs["science-demo"]).toMatchObject({ lost: 1, battlesRecorded: 0, medianWonMs: null });
@@ -104,5 +105,19 @@ describe("local playtest summary", () => {
     expect(exposure.byAct[1]).toMatchObject({ offered: 1, skipped: 1, selectionRate: 0,
       bySource: { shop: { offered: 1, skipped: 1, selectionRate: 0 } } });
     expect(exposure.byAct[2].selectionRate).toBeNull();
+  });
+
+  it("counts separate choices in one event as distinct offers, then detects actual re-exposure", () => {
+    const base = makeRecord("events", "art-demo", "won", 3_000);
+    const event = (eventId, nodeId, offerId) => ({ eventId, nodeId, act: 1, source: "event", kind: "event_choice",
+      action: "offered", contentId: "after-school-board", offerId, available: true, atActiveMs: 1_000 });
+    const record = { ...base, formatVersion: 2, contentPartial: false, visits: [
+      { nodeId: "event-1", act: 1, kind: "event", atActiveMs: 1_000 },
+      { nodeId: "event-2", act: 1, kind: "event", atActiveMs: 2_000 },
+    ], contentEvents: [event("help-1", "event-1", "help"), event("borrow-1", "event-1", "borrow"),
+      event("help-2", "event-2", "help")] };
+    const summary = summarizePlaytests([record]);
+    expect(summary.clubs["art-demo"].contentExposure.byAct[0]).toMatchObject({ offered: 3, repeatedOffers: 1 });
+    expect(summary.clubs["art-demo"].rangeWonMs).toEqual({ min: 3_000, max: 3_000 });
   });
 });
