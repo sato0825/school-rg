@@ -446,7 +446,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     } catch (error) { handleError(error); }
   }, 80);
   const saveTimer = window.setInterval(persist, 1_000);
-  if (metrics && session.screen === "combat" && run.combat) metrics = recordPlaytestBattle(metrics, run);
+  if (metrics && session.screen === "combat" && run.combat) metrics = recordPlaytestBattle(metrics, run, true);
   if (session.screen === "combat" && run.combat?.phase === "PLAYER_START") startCombat();
   if (session.screen === "combat") preloadClubArt(run.clubId);
   render();

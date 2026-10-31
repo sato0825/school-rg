@@ -8,7 +8,7 @@ const BattleSampleSchema = z.strictObject({
   nodeId: z.string().min(1), act: z.number().int().min(1).max(3),
   enemyIds: z.array(z.string().min(1)).min(1), startedAtActiveMs: nonnegative, endedAtActiveMs: nonnegative.nullable(),
   hpBefore: nonnegative, hpAfter: nonnegative.nullable(), turns: nonnegative.nullable(),
-  result: z.enum(["won", "lost"]).nullable(),
+  result: z.enum(["won", "lost"]).nullable(), partial: z.boolean().default(false),
 });
 export const PlaytestRecordSchema = z.strictObject({
   formatVersion: z.literal(1), runId: z.string().min(1), clubId: z.string().min(1), seed: nonnegative,
@@ -55,7 +55,7 @@ export function visitPlaytestNode(tracker: PlaytestTracker, node: MapNode): Play
     visits: [...tracker.record.visits, { nodeId: node.id, act: node.act, kind: node.kind, atActiveMs: tracker.record.activeMs }] } };
 }
 
-export function recordPlaytestBattle(tracker: PlaytestTracker, run: RunState): PlaytestTracker {
+export function recordPlaytestBattle(tracker: PlaytestTracker, run: RunState, partial = false): PlaytestTracker {
   if (!run.combat) throw new RangeError("playtest battle requires active combat");
   const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
   if (!node) throw new RangeError("playtest battle node is missing");
@@ -63,12 +63,12 @@ export function recordPlaytestBattle(tracker: PlaytestTracker, run: RunState): P
   return { ...tracker, record: { ...tracker.record,
     battleNodeIds: tracker.record.battleNodeIds.includes(node.id) ? tracker.record.battleNodeIds : [...tracker.record.battleNodeIds, node.id],
     battles: [...tracker.record.battles, { nodeId: node.id, act: node.act, enemyIds: run.combat.enemies.map((enemy) => enemy.enemyId),
-      startedAtActiveMs: tracker.record.activeMs, endedAtActiveMs: null, hpBefore: run.player.hp, hpAfter: null, turns: null, result: null }],
+      startedAtActiveMs: tracker.record.activeMs, endedAtActiveMs: null, hpBefore: run.player.hp, hpAfter: null, turns: null, result: null, partial }],
   } };
 }
 
 export function finishPlaytestBattle(tracker: PlaytestTracker, run: RunState, result: "won" | "lost"): PlaytestTracker {
-  const started = recordPlaytestBattle(tracker, run);
+  const started = recordPlaytestBattle(tracker, run, true);
   return { ...started, record: { ...started.record, battles: started.record.battles.map((battle) =>
     battle.nodeId === run.map.currentNodeId && battle.result === null
       ? { ...battle, endedAtActiveMs: started.record.activeMs, hpAfter: run.player.hp, turns: run.combat!.turn, result }
