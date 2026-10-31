@@ -95,9 +95,10 @@ export function victoryHeader(run: RunState, content: ContentRegistry): HTMLElem
   const header = document.createElement("div");
   header.className = "victory-header-facts";
   const club = content.clubs.find((item) => item.id === run.clubId)?.name ?? "部活動";
+  const floor = run.map.nodes.find((item) => item.id === run.map.currentNodeId)?.floor ?? 0;
   const place = document.createElement("span");
   place.className = "victory-header-place";
-  place.textContent = `${club} · ACT ${run.act} · 全Act完走`;
+  place.textContent = `${club} · ACT ${run.act} · ${floor}F · 全Act完走`;
   const health = document.createElement("span");
   health.className = "victory-header-health";
   health.setAttribute("aria-label", `残りHP ${run.player.hp}/${run.player.maxHp}`);

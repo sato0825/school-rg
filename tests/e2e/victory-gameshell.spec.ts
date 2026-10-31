@@ -18,6 +18,7 @@ for (const width of [1024, 1440]) {
       await page.goto("/");
       await expect(page.locator('.game-shell[data-screen="won"]')).toBeVisible();
       await expect(page.locator('.game-shell[data-screen="won"]')).toHaveAttribute("data-terminal-transition", "still");
+      await expect(page.locator(".victory-header-place")).toContainText(`${boss.floor}F`);
       await expect(page.getByRole("heading", { name: "全Actクリア" })).toBeVisible();
       await expect(page.getByRole("heading", { name: "全Actクリア" })).toBeFocused();
       await expect(page.locator(".hero-art.victory-pose")).toBeVisible();
