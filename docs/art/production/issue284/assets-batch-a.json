@@ -1,0 +1,107 @@
+[
+  {
+    "id": "BASE-016",
+    "version": "v1",
+    "path": "docs/art/production/issue284/assets/card-base-duplicate-v1.png",
+    "sha256": "0db9815ba8d814348c6ba59be9361245d241cd50255f019344d09004f8ecc9f1",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-1a1da887-cd34-42e8-8a93-0de4db1dc391.png",
+    "promptRef": "prompts.json#BASE-016",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1759,
+      894
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "static-board-reviewed",
+    "selectionDecision": "main object legible in 112x57 hand art and 48px center crop; no formal runtime adoption"
+  },
+  {
+    "id": "BASE-017",
+    "version": "v1",
+    "path": "docs/art/production/issue284/assets/card-base-boost-v1.png",
+    "sha256": "18549421881ebd3f009a451b311c737ed6bf38e961a776ef3bea4a91ee842074",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-9095074b-6d0c-4c18-91b3-1cec58b9345f.png",
+    "promptRef": "prompts.json#BASE-017",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "revised for 48px: clock/relic collision or mural lost as landscape"
+  },
+  {
+    "id": "KEN-004",
+    "version": "v1",
+    "path": "docs/art/production/issue284/assets/card-ken-riposte-v1.png",
+    "sha256": "01bcd635c7600269b8fcf678571a768a1a404941a77277dfb326f0aac07aea16",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-059169cb-aaa8-4532-a897-9fdbe2568d19.png",
+    "promptRef": "prompts.json#KEN-004",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "static-board-reviewed",
+    "selectionDecision": "main object legible in 112x57 hand art and 48px center crop; no formal runtime adoption"
+  },
+  {
+    "id": "MUS-004",
+    "version": "v1",
+    "path": "docs/art/production/issue284/assets/card-mus-sync-v1.png",
+    "sha256": "844280279c0aaca14a4657a2156c5922f0eebbae500dd125d00d0c600ae6d369",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-54e4066e-47df-46d1-bb8a-24a685518fed.png",
+    "promptRef": "prompts.json#MUS-004",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "static-board-reviewed",
+    "selectionDecision": "main object legible in 112x57 hand art and 48px center crop; no formal runtime adoption"
+  },
+  {
+    "id": "ART-006",
+    "version": "v1",
+    "path": "docs/art/production/issue284/assets/card-art-mural-v1.png",
+    "sha256": "b0a4d4e0dfed0e07950d154c78843d07f42a097ed916c6c4f0dbb97961b946df",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-91993fb6-d365-454a-a7ca-f7f2c14a67e1.png",
+    "promptRef": "prompts.json#ART-006",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "revised for 48px: clock/relic collision or mural lost as landscape"
+  }
+]

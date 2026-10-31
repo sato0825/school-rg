@@ -1,0 +1,44 @@
+[
+  {
+    "id": "BASE-017",
+    "version": "v2",
+    "path": "docs/art/production/issue284/assets/card-base-boost-v2.png",
+    "sha256": "3f8d888dec4bad26b5382af2cacae64866f66f37bd508824d25142249f950f77",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-d0a48adf-4943-4883-9b4f-adbd510f9325.png",
+    "promptRef": "revision-prompts.json#BASE-017",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "static-board-reviewed",
+    "selectionDecision": "main object legible in 112x57 hand art and 48px center crop; no formal runtime adoption"
+  },
+  {
+    "id": "ART-006",
+    "version": "v2",
+    "path": "docs/art/production/issue284/assets/card-art-mural-v2.png",
+    "sha256": "6ecf896fdbe02361ca05f6c9e1230c615fe97ef70a39e71e74d8690aa2ad8463",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-2ed39c3a-4594-4b51-9b31-ed3d6e2a51d7.png",
+    "promptRef": "revision-prompts.json#ART-006",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1760,
+      894
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "static-board-reviewed",
+    "selectionDecision": "main object legible in 112x57 hand art and 48px center crop; no formal runtime adoption"
+  }
+]

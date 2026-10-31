@@ -17,7 +17,10 @@ const heavyStrike = ["assets-v1.json", "assets-v2.json"]
 const wave3Dir = path.join(root, "docs/art/production/issue277");
 const wave3 = ["observe-v1-assets.json", "observe-v2-assets.json", "assets-batch-a.json", "assets-batch-b.json", "revision-assets.json"]
   .flatMap((file) => JSON.parse(fs.readFileSync(path.join(wave3Dir, file), "utf8")));
-const allProducedAssets = [...wave1.map((asset) => ({ ...asset, issue: 255 })), ...wave2.map((asset) => ({ ...asset, issue: 269 })), ...heavyStrike.map((asset) => ({ ...asset, issue: 275 })), ...wave3.map((asset) => ({ ...asset, issue: 277 }))];
+const wave4Dir = path.join(root, "docs/art/production/issue284");
+const wave4 = ["assets-batch-a.json", "assets-batch-b.json", "revision-assets.json"]
+  .flatMap((file) => JSON.parse(fs.readFileSync(path.join(wave4Dir, file), "utf8")));
+const allProducedAssets = [...wave1.map((asset) => ({ ...asset, issue: 255 })), ...wave2.map((asset) => ({ ...asset, issue: 269 })), ...heavyStrike.map((asset) => ({ ...asset, issue: 275 })), ...wave3.map((asset) => ({ ...asset, issue: 277 })), ...wave4.map((asset) => ({ ...asset, issue: 284 }))];
 if (new Set(allProducedAssets.map((asset) => `${asset.id}:${asset.version}`)).size !== allProducedAssets.length) throw new Error("duplicate produced asset ID/version");
 for (const asset of allProducedAssets) {
   const actual = createHash("sha256").update(fs.readFileSync(path.join(root, asset.path))).digest("hex");
