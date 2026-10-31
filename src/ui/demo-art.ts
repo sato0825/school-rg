@@ -5,7 +5,7 @@ import { stageCandidateUrlByAct, stageCandidateUrlByActPhase } from "./stage-pre
 
 /** Demo presentation is kept outside battle logic so later club and enemy art can replace it. */
 export const demoBattleArt: BattleArt = {
-  stageUrl: new URL("../assets/stage-hallway-v1.png", import.meta.url).href,
+  stageUrl: stageCandidateUrlByAct[1]!,
   stageUrlByAct: stageCandidateUrlByAct,
   stageUrlByActPhase: stageCandidateUrlByActPhase,
   heroUrl: clubPresentation["literature-demo"].idle,

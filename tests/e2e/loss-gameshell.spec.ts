@@ -42,7 +42,7 @@ test("last enemy action reaches HP zero without replacing the stage or actor", a
     const actor = document.querySelector(".game-shell .ally-slot")?.getBoundingClientRect();
     return [local.__lossStage === document.querySelector(".game-shell .stage"), local.__lossActor === document.querySelector(".game-shell .ally-slot"), local.__lossInput === document.querySelector(".game-shell .typing-input"), Math.abs((local.__lossStageRect?.y ?? 0) - (stage?.y ?? 999)) < 2, Math.abs((local.__lossStageRect?.height ?? 0) - (stage?.height ?? 999)) < 2, Math.abs((local.__lossActorRect?.x ?? 0) - (actor?.x ?? 999)) < 2];
   })).toEqual([true, true, true, true, true, true]);
-  await expect(page.locator('.game-shell[data-screen="lost"]')).toHaveCSS("background-image", /stage-hallway/);
+  await expect(page.locator('.game-shell[data-screen="lost"] .stage')).not.toHaveCSS("background-image", "none");
   const before = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.clock.remainingMs as number);
   await page.keyboard.type("strike");
   await page.clock.runFor(5_000);

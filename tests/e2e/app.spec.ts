@@ -483,7 +483,7 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   }
   await page.reload();
   expect(await page.locator('.game-shell[data-screen="map"] .map-node.available').count()).toBeGreaterThan(0);
-  await expect(page.locator('.game-shell .hero-art')).toHaveAttribute("alt", "文芸部の生徒");
+  await expect(page.locator('.game-shell .hero-art')).toHaveAttribute("alt", "吉野 こはる、文芸部");
 });
 
 test("an elite formation accepts a typed single target and an all-enemy attack", async ({ page }) => {

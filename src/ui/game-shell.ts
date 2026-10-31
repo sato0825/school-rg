@@ -4,6 +4,7 @@ import type { BattleView } from "./battle-view.js";
 import { stageUrlForRun } from "./stage-presentation.js";
 import { createLossNote, defeatCandidateByClubId, lossHeader, type LossNoteOptions } from "./loss-view.js";
 import type { RunSession } from "../domain/run-flow.js";
+import { identityForClub } from "../content/character-identities.js";
 
 /** The stage and actor belong to the run, rather than to an individual screen. */
 export class GameShell {
@@ -15,6 +16,7 @@ export class GameShell {
   private readonly control: HTMLElement;
   private readonly header: HTMLElement;
   private readonly overlay: HTMLElement;
+  private readonly content: ContentRegistry;
   private stageNodeId: string | null = null;
 
   constructor(root: HTMLElement, run: RunState, view: BattleView, content: ContentRegistry) {
@@ -36,6 +38,7 @@ export class GameShell {
     this.control = control;
     this.header = header;
     this.overlay = document.createElement("div");
+    this.content = content;
     this.overlay.className = "game-shell-overlay";
     this.stage.append(this.overlay);
     this.stage.style.backgroundImage = `url("${stageUrlForRun(view.art, run)}")`;
@@ -43,8 +46,9 @@ export class GameShell {
     this.actor.style.setProperty("--slot-x", "22%");
     this.hero.src = view.art.heroPosesByClubId?.[run.clubId]?.idle ?? view.art.heroUrlByClubId?.[run.clubId] ?? view.art.heroUrl;
     const clubName = content.clubs.find((club) => club.id === run.clubId)?.name ?? "主人公";
-    this.hero.alt = `${clubName}の生徒`;
-    this.actor.querySelector(".hero-nameplate")!.textContent = clubName;
+    const characterName = identityForClub(run.clubId)?.fullName ?? clubName;
+    this.hero.alt = `${characterName}、${clubName}`;
+    this.actor.querySelector(".hero-nameplate")!.textContent = `${characterName} · ${clubName} · 仮名`;
     root.replaceChildren(main);
   }
 
@@ -97,6 +101,8 @@ export class GameShell {
       if (extra) this.main.append(extra);
     }
     this.main.dataset.screen = "combat";
+    this.control.inert = false;
+    this.control.removeAttribute("aria-hidden");
     this.overlay.replaceChildren();
   }
 
@@ -106,6 +112,8 @@ export class GameShell {
     this.overlay.replaceChildren(panel);
     this.main.dataset.screen = screen;
     this.input.disabled = true;
+    this.control.inert = true;
+    this.control.setAttribute("aria-hidden", "true");
     for (const child of [...this.stage.children]) {
       if (child !== this.overlay && !child.classList.contains("stage-vignette") && !child.classList.contains("ally-group")) child.remove();
     }
@@ -114,19 +122,19 @@ export class GameShell {
     const meta = document.createElement("div");
     meta.className = "run-meta";
     const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
-    meta.textContent = `ACT ${run.act} · ${node?.floor ?? 0}F · ${screen === "reward" ? "戦闘報酬" : "経路選択"}`;
+    meta.textContent = `ACT ${run.act} · ${node?.floor ?? 0}F · ${screen === "reward" ? "報酬" : "経路"}`;
     this.header.append(meta);
+    const hp = document.createElement("div");
+    hp.className = "player-hud run-player-hud";
+    hp.setAttribute("aria-label", `${this.content.clubs.find((club) => club.id === run.clubId)?.name ?? "主人公"}の状態`);
+    const ratio = Math.max(0, Math.min(100, run.player.hp / run.player.maxHp * 100));
+    hp.innerHTML = `<span class="player-health"><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><span class="player-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span class="player-health-fill" style="width:${ratio}%"></span></span></span><span class="run-gold" aria-label="所持金 ${run.gold}">◉ ${run.gold}</span><span class="run-deck" aria-label="デッキ ${run.deck.length}枚">▣ ${run.deck.length}</span>`;
+    this.header.append(hp);
   }
 
   showLoss(session: RunSession, content: ContentRegistry, lowStimulus: boolean, options: LossNoteOptions): void {
     const wasLoss = this.main.dataset.screen === "lost";
     const { run } = session;
-    if (!wasLoss) {
-      const stageImage = this.stage.style.backgroundImage;
-      this.main.style.setProperty("--loss-stage-image", stageImage);
-      this.main.style.backgroundImage = `linear-gradient(0deg,#102d40a8,transparent 53%,#0e2c3d40),${stageImage}`;
-      this.stage.style.backgroundImage = "none";
-    }
     this.main.dataset.screen = "lost";
     this.main.dataset.club = run.clubId;
     this.main.dataset.effects = lowStimulus ? "quiet" : "standard";
@@ -134,11 +142,13 @@ export class GameShell {
     this.input.disabled = true;
     this.input.value = "";
     this.control.inert = true;
+    this.control.setAttribute("aria-hidden", "true");
     this.hero.className = "hero-art loss-pose";
     this.hero.src = defeatCandidateByClubId[run.clubId] ?? this.hero.src;
     const club = content.clubs.find((item) => item.id === run.clubId)?.name ?? "部活動";
-    this.hero.alt = `${club}の生徒の敗北姿勢（制作候補）`;
-    this.actor.querySelector(".hero-nameplate")!.textContent = club;
+    const name = identityForClub(run.clubId)?.fullName;
+    this.hero.alt = `${name ? `${name}、` : ""}${club}の生徒の敗北姿勢（制作候補）`;
+    this.actor.querySelector(".hero-nameplate")!.textContent = `${name ? `${name} · ` : ""}${club}${name ? " · 仮名" : ""}`;
     for (const transient of this.stage.querySelectorAll(".card-fx-layer, .result-fx-layer")) transient.remove();
     this.main.querySelector("#battle-help")?.remove();
     this.main.querySelector(".result-backdrop")?.remove();

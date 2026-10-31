@@ -11,6 +11,8 @@ import "./choice-information.css";
 import "./battle-objects.css";
 import "./battle-map-overlay.css";
 import "./game-shell.css";
+import "./card-visuals.css";
+import "./visual-system.css";
 import "./loss-view.css";
 
 const root = document.querySelector<HTMLElement>("#app");
