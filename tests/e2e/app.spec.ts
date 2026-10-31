@@ -523,8 +523,14 @@ test("three new potions can be typed in combat with visible block, damage and he
   await expect(page.locator(".potion-slot")).toHaveCount(3);
   await expect(page.locator(".potion-mode")).toBeInViewport();
   for (const potion of await page.locator(".potion-slot").all()) await expect(potion).toBeInViewport();
+  const potionBoxes = await page.locator(".potion-slot").evaluateAll((slots) => slots.map((slot) => {
+    const { left, right } = slot.getBoundingClientRect();
+    return { left, right };
+  }));
+  expect(potionBoxes[0]!.right).toBeLessThanOrEqual(potionBoxes[1]!.left + 1);
+  expect(potionBoxes[1]!.right).toBeLessThanOrEqual(potionBoxes[2]!.left + 1);
   if (process.env.SCHOOL_RG_CAPTURE_POTIONS === "1") {
-    await page.screenshot({ path: "docs/content/previews/issue118-potions-narrow-v2-20261031.png", fullPage: true });
+    await page.screenshot({ path: "docs/art/previews/issue166-three-potions-390.png" });
   }
   await page.keyboard.press("F2");
   await page.keyboard.type("splash");

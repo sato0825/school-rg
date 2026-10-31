@@ -40,14 +40,13 @@
   .topbar .status-row,.topbar .relic-row{max-width:22%;font-size:9px}
   .topbar .status-chip,.topbar .relic-chip{font-size:8px;padding:2px 3px}
   .control-deck{height:350px;min-height:0;padding:8px;overflow-y:auto}
-  .potion-row{display:flex;height:42px;min-height:0;align-content:center;justify-content:flex-start;overflow:hidden}
-  .potion-row.active{height:64px;flex-wrap:wrap}
-  .potion-row .potion-mode{flex:none}
-  .potion-row .potion-buffer{flex:1;order:3;min-width:100%;height:17px}
-  .potion-slots{display:flex;flex:1;grid-column:auto;min-width:0;min-height:30px;overflow-x:auto}
-  .potion-slot{flex:none;height:31px}
-  .potion{flex-direction:row;align-items:center;gap:4px;height:31px;padding:3px 5px}
-  .potion strong{max-width:75px}
+  .potion-row,.potion-row.active{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:24px 31px;height:62px;min-height:0;align-content:start;justify-content:stretch;overflow:visible}
+  .potion-row .potion-mode{grid-column:1;grid-row:1;padding:3px 6px}
+  .potion-row .potion-buffer{grid-column:2;grid-row:1;min-width:0;height:17px}
+  .potion-slots{display:grid;grid-column:1/-1;grid-row:2;grid-template-columns:repeat(3,minmax(0,1fr));min-width:0;min-height:31px;overflow:hidden}
+  .potion-slot{width:100%;min-width:0;height:31px}
+  .potion{flex-direction:column;align-items:flex-start;gap:1px;min-width:0;width:100%;height:31px;padding:2px 5px}
+  .potion strong{max-width:100%}
   .hand-guide{display:flex;min-height:14px;align-items:center}
   .hand{height:122px;min-height:0}
   .game:has(.playtest-export){grid-template-rows:116px minmax(0,1fr) 350px}
