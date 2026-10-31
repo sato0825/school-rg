@@ -101,7 +101,8 @@ function usableContentEvents(record) {
       || ![true, false, null].includes(event.available)
       || !["offered", "selected", "skipped", "acquired", "consumed", "discarded"].includes(event.action)
       || !["card", "relic", "potion", "event_choice"].includes(event.kind)
-      || !["reward", "treasure", "shop", "event", "combat"].includes(event.source)) return false;
+      || !["reward", "treasure", "shop", "event", "combat"].includes(event.source)
+      || (event.source === "event" && event.kind === "event_choice" && (!event.contentId || !event.offerId))) return false;
     ids.add(event.eventId);
     return true;
   })) return null;
@@ -110,7 +111,8 @@ function usableContentEvents(record) {
 
 function emptyContentCount() {
   return { offered: 0, availableOffers: 0, unavailableOffers: 0, unknownAvailabilityOffers: 0,
-    selected: 0, skipped: 0, acquired: 0, consumed: 0, discarded: 0, repeatedOffers: 0, selectionRate: null };
+    selected: 0, skipped: 0, acquired: 0, consumed: 0, discarded: 0,
+    repeatedOffers: 0, eventsShown: 0, repeatedEvents: 0, selectionRate: null };
 }
 
 function contentExposure(records) {
@@ -118,12 +120,25 @@ function contentExposure(records) {
   const byAct = [1, 2, 3].map((act) => ({ act, ...emptyContentCount(), bySource: {} }));
   for (const events of usable) {
     const seen = new Set();
+    const seenEventNodes = new Set();
+    const seenEventTypes = new Set();
     for (const event of events) {
       const act = byAct[event.act - 1];
       const source = act.bySource[event.source] ??= emptyContentCount();
       act[event.action]++;
       source[event.action]++;
       if (event.action === "offered") {
+        if (event.source === "event" && event.kind === "event_choice") {
+          const nodeKey = `${event.act}:${event.nodeId}`;
+          if (!seenEventNodes.has(nodeKey)) {
+            seenEventNodes.add(nodeKey);
+            act.eventsShown++;
+            source.eventsShown++;
+            const typeKey = `${event.act}:${event.contentId}`;
+            if (seenEventTypes.has(typeKey)) { act.repeatedEvents++; source.repeatedEvents++; }
+            else seenEventTypes.add(typeKey);
+          }
+        }
         const availabilityKey = event.available === true ? "availableOffers"
           : event.available === false ? "unavailableOffers" : "unknownAvailabilityOffers";
         act[availabilityKey]++;

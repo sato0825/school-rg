@@ -117,7 +117,8 @@ describe("local playtest summary", () => {
     ], contentEvents: [event("help-1", "event-1", "help"), event("borrow-1", "event-1", "borrow"),
       event("help-2", "event-2", "help")] };
     const summary = summarizePlaytests([record]);
-    expect(summary.clubs["art-demo"].contentExposure.byAct[0]).toMatchObject({ offered: 3, repeatedOffers: 1 });
+    expect(summary.clubs["art-demo"].contentExposure.byAct[0]).toMatchObject({ offered: 3, repeatedOffers: 1,
+      eventsShown: 2, repeatedEvents: 1 });
     expect(summary.clubs["art-demo"].rangeWonMs).toEqual({ min: 3_000, max: 3_000 });
   });
 });

@@ -15,6 +15,7 @@
 `encounterVariety` は完了したランの利用可能な戦闘記録から、同じAct内で同じ敵編成に再遭遇した回数を数えます。敵の並び順だけが違う編成は同じものとして扱います。部分記録、途中終了ラン、旧形式で戦闘詳細のないランは分母から外し、`runsWithUsableEncounterRecords` に採用件数を示します。`observedVisits` は完全な記録で終わったランの訪問ノード種別を集計します。どちらもコンテンツへの実際の接触を調べる補助値であり、面白さ、約60分の達成、未完了を離脱とみなす判定には使いません。
 
 `contentExposure` は完了し、全体とコンテンツ記録が共に完全で、イベントIDと訪問ノードが整合するv2ランだけを集計します。部活別・Act別・取得元別に提示、選択、スキップ、取得、消費、破棄を数え、提示の選択可否も `availableOffers`、`unavailableOffers`、`unknownAvailabilityOffers` に分けます。`selectionRate` は選択数÷全提示数を示すため、選択できない候補も分母に入ります。`repeatedOffers` は同一ランの同一Actで同じ種類・コンテンツが再提示された回数です。`runsWithUsableContentRecords` が採用ラン数です。提示されても選ばれない候補や、繰り返し出る候補を調べる補助値であり、実プレイの満足度を代弁しません。
+イベントは選択肢の提示と別に `eventsShown` でイベントを表示したノード数、`repeatedEvents` で同じActに同じイベントを再表示した回数を集計します。
 
 ### #68 の実プレイ記録
 
