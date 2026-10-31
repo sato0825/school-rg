@@ -23,10 +23,11 @@ describe("candidate actor motion timeline", () => {
       .toEqual({ baseUrl: "hit.png", overlayUrl: "idle.png", kind: "hit", delayMs: -140 });
   });
 
-  it("uses the action pose without movement in quiet mode and leaves other clubs unchanged", () => {
+  it("uses the action pose without movement in quiet mode for both rigged clubs", () => {
     expect(actorMotionState("hero", 1_000, 1_190, true, "literature-demo", poses))
       .toEqual({ baseUrl: "activate.png", overlayUrl: null, kind: "card-use", delayMs: 0 });
-    expect(actorMotionState("hit", 1_000, 1_140, false, "science-demo", poses)).toBeNull();
+    expect(actorMotionState("hit", 1_000, 1_140, false, "science-demo", poses))
+      .toEqual({ baseUrl: "hit.png", overlayUrl: "idle.png", kind: "hit", delayMs: -140 });
     expect(actorMotionState(null, null, 0, false, "literature-demo", poses))
       .toEqual({ baseUrl: "idle.png", overlayUrl: null, kind: null, delayMs: 0 });
   });

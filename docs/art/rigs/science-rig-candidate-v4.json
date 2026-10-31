@@ -1,0 +1,87 @@
+{
+  "id": "science-rig-candidate-v4",
+  "characterId": "science-student",
+  "status": "candidate",
+  "canvas": {
+    "width": 1024,
+    "height": 1536
+  },
+  "runtimeScale": 1.09,
+  "groundY": 1506,
+  "sourceSheet": {
+    "file": "docs/art/candidates/science-rig-parts-sheet-candidate-v1.png",
+    "sha256": "5032d0f23e3e9ea57e9775b043d7d4cc78a33870a5a0f044a4e878ebe6f36f23"
+  },
+  "editableSource": "docs/art/sources/science-rig-candidate-v4.ora",
+  "expressionLayers": [
+    {
+      "id": "head-hit",
+      "file": "docs/art/candidates/science-rig-parts-v1/head-hit-v2.png",
+      "sha256": "ae057d027080b19a3fb488fb873cd33442f47dcbc3877461418cb3f6cf086740",
+      "x": 320,
+      "y": 65,
+      "width": 384,
+      "height": 334,
+      "pivotX": 180,
+      "pivotY": 310,
+      "visible": false
+    }
+  ],
+  "parts": [
+    {
+      "id": "lower-body",
+      "file": "docs/art/candidates/science-rig-parts-v1/lower-body-idle-v2.png",
+      "sha256": "dc11bf26e1cea9327f8cc24e04108ce95c926d2d4d1b04e5f7fb5ff188a11938",
+      "x": 200,
+      "y": 810,
+      "width": 600,
+      "height": 726,
+      "pivotX": 300,
+      "pivotY": 15
+    },
+    {
+      "id": "torso",
+      "file": "docs/art/candidates/science-rig-parts-v1/torso.png",
+      "sha256": "d574e6d58aa74201c1b7a932d01d7e04024b93e98ea15b4734e12711587ffad5",
+      "x": 245,
+      "y": 365,
+      "width": 470,
+      "height": 477,
+      "pivotX": 235,
+      "pivotY": 420
+    },
+    {
+      "id": "right-arm-pen",
+      "file": "docs/art/candidates/science-rig-parts-v1/right-arm-pen.png",
+      "sha256": "0280506e198f828151bef0cf3e8430da32b9fe80d75bee7aaa0a5df725262d14",
+      "x": 300,
+      "y": 280,
+      "width": 181,
+      "height": 366,
+      "pivotX": 42,
+      "pivotY": 107
+    },
+    {
+      "id": "left-arm-notebook",
+      "file": "docs/art/candidates/science-rig-parts-v1/left-arm-notebook.png",
+      "sha256": "1ad212236e348d9535407071ecd8f416fb952f561aac6530b26d90b14578cd9f",
+      "x": 520,
+      "y": 420,
+      "width": 287,
+      "height": 290,
+      "pivotX": 52,
+      "pivotY": 14
+    },
+    {
+      "id": "head",
+      "file": "docs/art/candidates/science-rig-parts-v1/head.png",
+      "sha256": "17b79bbaf79c29efe7e17db9663bde78539c9ce7f2009d97488f9e01a080def2",
+      "x": 320,
+      "y": 65,
+      "width": 384,
+      "height": 334,
+      "pivotX": 180,
+      "pivotY": 310
+    }
+  ]
+}

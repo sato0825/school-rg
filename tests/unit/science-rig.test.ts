@@ -22,7 +22,7 @@ describe("science layered candidate", () => {
 
   it("renders six addressable candidate layers for the battle actor", () => {
     const markup = scienceRigMarkup();
-    expect(markup).toContain('data-rig-id="science-rig-candidate-v3"');
+    expect(markup).toContain('data-rig-id="science-rig-candidate-v4"');
     expect(markup.match(/class="rig-part"/g)).toHaveLength(6);
     expect(markup).toContain('data-part="right-arm-pen"');
     expect(markup).toContain('data-part="head-hit"');

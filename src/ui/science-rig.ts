@@ -1,4 +1,4 @@
-import manifest from "../../docs/art/rigs/science-rig-candidate-v3.json";
+import manifest from "../../docs/art/rigs/science-rig-candidate-v4.json";
 
 const urls: Readonly<Record<string, string>> = {
   "lower-body": new URL("../../docs/art/candidates/science-rig-parts-v1/lower-body-idle-v2.png", import.meta.url).href,
@@ -6,7 +6,7 @@ const urls: Readonly<Record<string, string>> = {
   "right-arm-pen": new URL("../../docs/art/candidates/science-rig-parts-v1/right-arm-pen.png", import.meta.url).href,
   "left-arm-notebook": new URL("../../docs/art/candidates/science-rig-parts-v1/left-arm-notebook.png", import.meta.url).href,
   "head": new URL("../../docs/art/candidates/science-rig-parts-v1/head.png", import.meta.url).href,
-  "head-hit": new URL("../../docs/art/candidates/science-rig-parts-v1/head-hit-v1.png", import.meta.url).href,
+  "head-hit": new URL("../../docs/art/candidates/science-rig-parts-v1/head-hit-v2.png", import.meta.url).href,
 };
 
 /** Science candidate layers share the stage anchor but retain independent joints. */
