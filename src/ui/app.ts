@@ -17,7 +17,7 @@ import { cardFxForUse } from "./card-fx.js";
 import { recordCombatResult } from "../domain/combat-action-log.js";
 import { MOTION_MS } from "./motion-timing.js";
 import { resultFxForTransition } from "./result-fx.js";
-import { renderClubSelect, renderCompendium, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
+import { renderClubSelect, renderCompendium, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserHistoryStore, browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
 import { appendRunHistory, emptyRunHistory, legacyTerminalRunId, parseRunHistory, terminalRunEntry } from "../domain/run-history.js";
@@ -28,6 +28,7 @@ import { createAudioFeedback } from "./audio.js";
 import { imeLatinKey } from "./ime-key.js";
 import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
 import { GameShell } from "./game-shell.js";
+import { defeatCandidateByClubId } from "./loss-view.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
@@ -109,6 +110,12 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     for (const url of Object.values(view.art.heroPosesByClubId?.[clubId] ?? {})) {
       const image = new Image();
       image.src = url;
+      artPreloads.push(image);
+    }
+    const defeatUrl = defeatCandidateByClubId[clubId];
+    if (defeatUrl) {
+      const image = new Image();
+      image.src = defeatUrl;
       artPreloads.push(image);
     }
   };
@@ -193,7 +200,17 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         historyError: historyLoadError || historySaveError,
       }, arrivedFromBattle);
     }
-    else if (session.screen === "lost") { gameShell = null; renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError); }
+    else if (session.screen === "lost") {
+      if (!gameShell) gameShell = new GameShell(root, run, view, demoContent);
+      gameShell.showLoss(session, lowStimulus, {
+        playtestActiveMs: metrics?.record.activeMs,
+        playtestVisits: metrics?.record.visits.length,
+        playtestBattles: metrics?.record.battleNodeIds.length,
+        playtestPartial: metrics?.record.partial,
+        playtestError: metricsLoadError,
+        historyError: historyLoadError || historySaveError,
+      });
+    }
     else { gameShell = null; view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view, config); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
@@ -333,8 +350,9 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
             })), config);
         view.resultFx = resultFxForTransition(beforeEnemyAction, run, view.layoutPreviewAllies ?? 1, clock.nowMs());
         enemyPending = false;
-        if (receivedHit) audio.play("hit");
-        setMotion(receivedHit ? "hit" : null);
+        // Quiet defeat settles immediately; avoid stacking hit and loss cues.
+        if (receivedHit && !(lowStimulus && run.combat?.phase === "LOST")) audio.play("hit");
+        setMotion(receivedHit && !(lowStimulus && run.combat?.phase === "LOST") ? "hit" : null);
         if (run.combat?.phase === "PLAYER_START") {
           run = beginPlayerTurn(run, clock, config, demoContent);
           run = fireRelic(run, "turn_start");
