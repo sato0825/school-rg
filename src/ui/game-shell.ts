@@ -4,6 +4,7 @@ import type { BattleView } from "./battle-view.js";
 import type { StageArt } from "./stage-presentation.js";
 import { subscenePreviewForRun, type SubsceneConcept } from "./stage-subscene-experiment.js";
 import { stageStatePreviewForRun } from "./stage-state-preview.js";
+import { stageWingPreviewForRun } from "./stage-wing-preview.js";
 import { identityForClub } from "../content/character-identities.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
 
@@ -21,6 +22,7 @@ export class GameShell {
   private readonly art: StageArt;
   private readonly subsceneConcept: SubsceneConcept;
   private readonly stageStatePreview: boolean;
+  private readonly stageWingPreview: boolean;
   private readonly config: GameConfig;
   private stageNodeId: string | null = null;
 
@@ -48,6 +50,8 @@ export class GameShell {
     this.subsceneConcept = new URLSearchParams(window.location.search).get("experimentalSubscene") === "annex" ? "annex" : "local";
     this.stageStatePreview = new URLSearchParams(window.location.search).get("experimentalStageState") === "on";
     this.main.dataset.stageStatePreview = this.stageStatePreview ? "on" : "off";
+    this.stageWingPreview = new URLSearchParams(window.location.search).get("experimentalStageWing") === "on";
+    this.main.dataset.stageWingPreview = this.stageWingPreview ? "on" : "off";
     this.config = config;
     this.overlay.className = "game-shell-overlay";
     this.stage.append(this.overlay);
@@ -66,7 +70,7 @@ export class GameShell {
 
   private syncStage(run: RunState): void {
     if (this.stageNodeId === run.map.currentNodeId) return;
-    const selection = subscenePreviewForRun(this.art, run, this.subsceneConcept);
+    const selection = stageWingPreviewForRun(subscenePreviewForRun(this.art, run, this.subsceneConcept), run, this.stageWingPreview);
     this.stage.style.backgroundImage = `url("${selection.stageUrl}")`;
     this.stage.dataset.act = String(run.map.nodes.find((node) => node.id === run.map.currentNodeId)?.act ?? run.act);
     this.stage.dataset.stagePlace = selection.placeId ?? "";

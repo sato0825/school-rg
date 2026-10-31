@@ -1180,6 +1180,186 @@
       "generator": "built-in imagegen; model version not exposed",
       "editableSource": null,
       "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act3-paper-stage-wing-candidate-v1",
+      "file": "src/assets/stages/act3-paper-stage-wing-candidate-v1.png",
+      "sha256": "6edd6c9e2a17a1ae89eb05bc18e9f8e20b23a5e46e6281be41c5c349e5a7df44",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "rejected",
+      "role": "environment-plate",
+      "act": 3,
+      "referenceId": "act3-paper-backstage-candidate-v1",
+      "promptFile": "docs/art/prompts/issue340-stage-wing-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": "docs/art/sources/issue340-stage-wing-v1.ora",
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act3-paper-stage-wing-candidate-v2",
+      "file": "src/assets/stages/act3-paper-stage-wing-candidate-v2.png",
+      "sha256": "e9aeceda1894ba57e758bd23259fe1e68837b841b355f209f5cf7921026970a8",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 3,
+      "referenceId": "act3-paper-stage-wing-candidate-v1",
+      "promptFile": "docs/art/prompts/issue340-stage-wing-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": "docs/art/sources/issue340-stage-wing-v2.ora",
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "issue304-archive-locker-source-v1",
+      "file": "docs/art/sources/issue304/archive-locker-source-v1.png",
+      "sha256": "1de8ba03398462a76e2428a2dadca1a1c2c5b63a364f22838e4724fb8ef9375b",
+      "width": 1086,
+      "height": 1448,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "reference",
+      "rights": "original AI-generated school-rg candidate; source review and human adoption pending"
+    },
+    {
+      "id": "archive-locker-candidate-v1",
+      "file": "src/assets/locations/issue304/archive-locker-candidate-v1.png",
+      "sha256": "1de8ba03398462a76e2428a2dadca1a1c2c5b63a364f22838e4724fb8ef9375b",
+      "width": 1086,
+      "height": 1448,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "location-prop",
+      "place": "archive",
+      "sourceId": "issue304-archive-locker-source-v1",
+      "focalPoint": [
+        0.56,
+        0.43
+      ],
+      "contactPoint": [
+        0.49,
+        0.95
+      ],
+      "referenceId": "act1-paper-atrium-candidate-v1",
+      "promptFile": "docs/art/prompts/issue304-location-props-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "derivation": "identity copy of source PNG; no retouch",
+      "editableSource": null,
+      "rights": "original AI-generated school-rg candidate; source review and human adoption pending"
+    },
+    {
+      "id": "issue304-school-shop-source-v1",
+      "file": "docs/art/sources/issue304/school-shop-source-v1.png",
+      "sha256": "e8fe838d7d8600ea36a896adb6367a20b3b8a51966e5363b74d1e92aacb92c61",
+      "width": 1254,
+      "height": 1254,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "reference",
+      "rights": "original AI-generated school-rg candidate; source review and human adoption pending"
+    },
+    {
+      "id": "school-shop-candidate-v1",
+      "file": "src/assets/locations/issue304/school-shop-candidate-v1.png",
+      "sha256": "e8fe838d7d8600ea36a896adb6367a20b3b8a51966e5363b74d1e92aacb92c61",
+      "width": 1254,
+      "height": 1254,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "location-prop",
+      "place": "shop",
+      "sourceId": "issue304-school-shop-source-v1",
+      "focalPoint": [
+        0.53,
+        0.5
+      ],
+      "contactPoint": [
+        0.5,
+        0.95
+      ],
+      "referenceId": "act1-paper-atrium-candidate-v1",
+      "promptFile": "docs/art/prompts/issue304-location-props-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "derivation": "identity copy of source PNG; no retouch",
+      "editableSource": null,
+      "rights": "original AI-generated school-rg candidate; source review and human adoption pending"
+    },
+    {
+      "id": "issue304-rest-bench-source-v1",
+      "file": "docs/art/sources/issue304/rest-bench-source-v1.png",
+      "sha256": "53c819425751ea2858a53a0cb80d54d314245e137b8f6f177d12fb9de256c7b7",
+      "width": 1536,
+      "height": 1024,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "reference",
+      "rights": "original AI-generated school-rg candidate; source review and human adoption pending"
+    },
+    {
+      "id": "rest-bench-candidate-v1",
+      "file": "src/assets/locations/issue304/rest-bench-candidate-v1.png",
+      "sha256": "53c819425751ea2858a53a0cb80d54d314245e137b8f6f177d12fb9de256c7b7",
+      "width": 1536,
+      "height": 1024,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "location-prop",
+      "place": "rest",
+      "sourceId": "issue304-rest-bench-source-v1",
+      "focalPoint": [
+        0.51,
+        0.49
+      ],
+      "contactPoint": [
+        0.5,
+        0.88
+      ],
+      "referenceId": "act1-paper-atrium-candidate-v1",
+      "promptFile": "docs/art/prompts/issue304-location-props-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "derivation": "identity copy of source PNG; no retouch",
+      "editableSource": null,
+      "rights": "original AI-generated school-rg candidate; source review and human adoption pending"
+    },
+    {
+      "id": "issue304-event-board-source-v1",
+      "file": "docs/art/sources/issue304/event-board-source-v1.png",
+      "sha256": "df1b905d6a1ed50a80954955a59fe253d8f993d738199b1379c08237be3f7415",
+      "width": 1220,
+      "height": 1289,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "reference",
+      "rights": "original AI-generated school-rg candidate; source review and human adoption pending"
+    },
+    {
+      "id": "event-board-candidate-v1",
+      "file": "src/assets/locations/issue304/event-board-candidate-v1.png",
+      "sha256": "df1b905d6a1ed50a80954955a59fe253d8f993d738199b1379c08237be3f7415",
+      "width": 1220,
+      "height": 1289,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "location-prop",
+      "place": "event",
+      "sourceId": "issue304-event-board-source-v1",
+      "focalPoint": [
+        0.52,
+        0.43
+      ],
+      "contactPoint": [
+        0.5,
+        0.96
+      ],
+      "referenceId": "act1-paper-atrium-candidate-v1",
+      "promptFile": "docs/art/prompts/issue304-location-props-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "derivation": "identity copy of source PNG; no retouch",
+      "editableSource": null,
+      "rights": "original AI-generated school-rg candidate; source review and human adoption pending"
     }
   ]
 }
