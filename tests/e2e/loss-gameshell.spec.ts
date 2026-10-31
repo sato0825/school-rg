@@ -143,9 +143,9 @@ test("quiet loss shows a still pose and reachable result", async ({ page }) => {
 });
 
 for (const { quiet, soundOff, expected } of [
-  { quiet: true, soundOff: false, expected: [230, 260] },
+  { quiet: true, soundOff: false, expected: [260, 110, 310, 220] },
   { quiet: true, soundOff: true, expected: [] },
-  { quiet: false, soundOff: false, expected: [230, 170, 260] },
+  { quiet: false, soundOff: false, expected: [260, 110, 145, 470, 310, 220] },
 ]) {
   test(`${quiet ? "quiet" : "standard"} final hit with sound ${soundOff ? "off" : "on"} has distinct audio cues`, async ({ page }) => {
     await page.clock.install();
@@ -178,6 +178,9 @@ for (const { quiet, soundOff, expected } of [
       } });
     }, { value: saved, quietMode: quiet, mute: soundOff });
     await page.goto("/");
+    // Real input unlocks browser audio; restoring a saved combat alone stays silent.
+    expect(await page.evaluate(() => (window as typeof window & { __audioStarts: number[] }).__audioStarts)).toEqual([]);
+    await page.keyboard.press("x");
     const remaining = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.clock.remainingMs as number);
     await page.clock.runFor(remaining + 100);
     await page.clock.runFor(MOTION_MS.enemyPhase);

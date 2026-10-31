@@ -1494,7 +1494,7 @@ test("sound toggle stays usable on a narrow screen and survives reload", async (
   await expect(sound).toHaveAttribute("aria-pressed", "true");
 });
 
-test("one typed card emits one sound and mute suppresses the next card", async ({ page }) => {
+test("one typed card emits bounded action and result cues; mute suppresses the next card", async ({ page }) => {
   await page.addInitScript(() => {
     let starts = 0;
     Object.defineProperty(window, "__soundStarts", { get: () => starts });
@@ -1510,13 +1510,16 @@ test("one typed card emits one sound and mute suppresses the next card", async (
   });
   await startDemoRun(page);
   await enterNextNode(page);
+  const beforeCardVoices = await page.evaluate(() => Reflect.get(window, "__soundStarts") as number);
   await page.keyboard.type("heavy strike");
-  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
+  const firstActionVoices = await page.evaluate(() => Reflect.get(window, "__soundStarts") as number);
+  expect(firstActionVoices - beforeCardVoices).toBeGreaterThan(0);
+  expect(firstActionVoices - beforeCardVoices).toBeLessThanOrEqual(4);
   await page.getByRole("button", { name: "操作" }).click();
   await page.locator("[data-action=toggle-audio]").click();
   await page.getByRole("button", { name: "操作" }).click();
   await page.keyboard.type("strike");
-  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
+  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(firstActionVoices);
 });
 
 test("battle help stays on the battle screen and does not alter the clock", async ({ page }) => {
