@@ -10,9 +10,9 @@
 | 行動の種類 | 記号と短い種別名 |
 | 行動・状態の意味 | フォーカス時の詳細札、スクリーンリーダー名 |
 
-![390px・5体編成](previews/issue170-five-enemies-v3-390.png)
+![390px・5体編成](previews/issue170-five-enemies-v4-390.png)
 
-![1440px・5体編成](previews/issue170-five-enemies-v3-1440.png)
+![1440px・5体編成](previews/issue170-five-enemies-v4-1440.png)
 
 検証: `npm run lint`、`npm run typecheck`、`npx vitest run tests/integration/multi-enemy-ui.test.ts`（3件）、`SCHOOL_RG_E2E_PORT=4186 npx playwright test tests/e2e/multi-enemy-ui.spec.ts`（4件）。390pxでは3/4/5体、1440pxでは5体を確認。5体編成で敵を選んで `strike` を入力し、対象のHP減少も確認した。全体検証は親Issueへの統合後に実施する。
 
