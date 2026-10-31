@@ -19,6 +19,8 @@ test("Japanese IME composition explains the pause and English typing resumes", a
   const timeBefore = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
 
   await input.dispatchEvent("compositionstart", { data: "にほんご" });
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
+  await input.evaluate((element) => element.dispatchEvent(new KeyboardEvent("keydown", { key: "あ", code: "KeyA", isComposing: true, bubbles: true, cancelable: true })));
   await expect(page.locator("#battle-ime-notice")).toContainText("日本語入力中");
   await input.evaluate((element) => element.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", isComposing: true, bubbles: true, cancelable: true })));
   await page.clock.runFor(150);

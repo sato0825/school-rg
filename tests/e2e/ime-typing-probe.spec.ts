@@ -14,6 +14,7 @@ test("Latin key values during IME composition activate an English card", async (
   const beforeHp = Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"));
   await page.locator(".typing-input").focus();
   await page.locator(".typing-input").dispatchEvent("compositionstart");
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
   for (const key of ["z", "Enter", " "]) {
     await page.locator(".typing-input").evaluate((input, value) => input.dispatchEvent(new KeyboardEvent("keydown", {
       key: value, code: value === " " ? "Space" : value === "Enter" ? "Enter" : "KeyZ",
@@ -21,6 +22,7 @@ test("Latin key values during IME composition activate an English card", async (
     })), key);
   }
   await expect(page.locator(".typing-input")).toHaveValue("");
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
   await page.locator(".typing-input").evaluate((input) => input.dispatchEvent(new KeyboardEvent("keydown", {
     key: "s", code: "KeyS", isComposing: true, repeat: true, bubbles: true, cancelable: true,
   })));
@@ -31,9 +33,11 @@ test("Latin key values during IME composition activate an English card", async (
     })), letter);
   }
   await expect(page.locator(".battle-message")).toContainText("strike を発動");
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
   expect(Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"))).toBeLessThan(beforeHp);
   await expect(page.locator(".typing-input")).toBeFocused();
   await page.locator(".typing-input").dispatchEvent("compositionend", { data: "strike" });
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
   await page.locator(".typing-input").evaluate((input) => input.dispatchEvent(new InputEvent("beforeinput", {
     inputType: "insertFromComposition", data: "strike", bubbles: true, cancelable: true,
   })));
@@ -52,8 +56,27 @@ test("Process key uses the layout map and ignores IME Enter", async ({ page }) =
     key: "Process", code: "KeyQ", isComposing: true, bubbles: true, cancelable: true,
   })));
   await expect(page.locator(".typing-input")).toHaveValue("o");
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
   await page.locator(".typing-input").evaluate((input) => input.dispatchEvent(new KeyboardEvent("keydown", {
     key: "Enter", code: "Enter", isComposing: true, bubbles: true, cancelable: true,
   })));
   await expect(page.locator(".typing-input")).toHaveValue("o");
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
+});
+
+test("unresolved IME text explains recovery and the next Latin key clears it", async ({ page }) => {
+  await startBattle(page);
+  const input = page.locator(".typing-input");
+  await input.focus();
+  await input.dispatchEvent("compositionstart");
+  await input.evaluate((element) => element.dispatchEvent(new KeyboardEvent("keydown", {
+    key: "あ", code: "KeyA", isComposing: true, bubbles: true, cancelable: true,
+  })));
+  await expect(page.locator("#battle-ime-notice")).toContainText("英数入力に切り替える");
+  await input.evaluate((element) => element.dispatchEvent(new KeyboardEvent("keydown", {
+    key: "s", code: "KeyS", isComposing: true, bubbles: true, cancelable: true,
+  })));
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
+  await input.dispatchEvent("compositionend", { data: "あ" });
+  await expect(page.locator("#battle-ime-notice")).toBeEmpty();
 });
