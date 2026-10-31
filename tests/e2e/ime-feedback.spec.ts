@@ -30,7 +30,7 @@ test("Japanese IME composition explains the pause and English typing resumes", a
   await expect(input).toBeFocused();
   await input.evaluate((element) => element.dispatchEvent(new InputEvent("beforeinput", { inputType: "insertText", data: "あ", bubbles: true, cancelable: true })));
   await expect(input).toHaveValue("");
-  if (process.env.SCHOOL_RG_CAPTURE_IME === "1") await page.screenshot({ path: "docs/art/previews/issue176-ime-feedback-v2-390.png" });
+  if (process.env.SCHOOL_RG_CAPTURE_IME === "1") await page.screenshot({ path: "docs/art/previews/issue176-ime-feedback-v3-390.png" });
   await input.press(firstLetter);
   await expect(input).toHaveValue(firstLetter.toLowerCase());
   await expect(page.locator("#battle-ime-notice")).toBeEmpty();
