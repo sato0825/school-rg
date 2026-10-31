@@ -12,7 +12,7 @@ async function startDemoRun(page: import("@playwright/test").Page): Promise<void
 }
 
 /** Isolate a feature flow from the provisional seeded route topology. */
-async function startScriptedRoute(page: import("@playwright/test").Page, kinds: MapNode["kind"][]): Promise<void> {
+async function startScriptedRoute(page: import("@playwright/test").Page, kinds: MapNode["kind"][], playtest = false): Promise<void> {
   const start = createRunSession(42, "literature-demo", demoContent);
   const nodes: MapNode[] = [
     { id: "script-start", act: 1, floor: 0, kind: "start", nextIds: ["script-1"] },
@@ -25,8 +25,37 @@ async function startScriptedRoute(page: import("@playwright/test").Page, kinds: 
   await page.addInitScript((value) => {
     if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", value);
   }, saved);
-  await page.goto("/");
+  await page.goto(playtest ? "/?playtest=1" : "/");
 }
+
+test("opt-in content report tracks shown shop and treasure choices across reload", async ({ page }) => {
+  await startScriptedRoute(page, ["shop", "treasure"], true);
+  const readMetrics = () => page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-playtest-v1")!));
+  await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
+  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
+  let record = await readMetrics();
+  expect(record.formatVersion).toBe(2);
+  const shopOffers = record.contentEvents.filter((item: { source: string; action: string }) => item.source === "shop" && item.action === "offered");
+  expect(shopOffers.length).toBeGreaterThanOrEqual(3);
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
+  record = await readMetrics();
+  expect(record.contentEvents.filter((item: { source: string; action: string }) => item.source === "shop" && item.action === "offered")).toHaveLength(shopOffers.length);
+  await page.locator("[data-action=buy-offer]").first().click();
+  record = await readMetrics();
+  expect(record.contentEvents).toEqual(expect.arrayContaining([
+    expect.objectContaining({ source: "shop", kind: "card", action: "selected" }),
+    expect.objectContaining({ source: "shop", kind: "card", action: "acquired" }),
+  ]));
+  await page.getByRole("button", { name: "購買を出る" }).click();
+  await page.locator(".map-node.available").filter({ hasText: "宝箱" }).click();
+  await expect(page.locator(".treasure-panel")).toBeVisible();
+  record = await readMetrics();
+  expect(record.contentEvents.some((item: { source: string; action: string }) => item.source === "treasure" && item.action === "offered")).toBe(true);
+  await page.locator("[data-action=treasure-offer]").first().click();
+  record = await readMetrics();
+  expect(record.contentEvents).toEqual(expect.arrayContaining([expect.objectContaining({ source: "treasure", action: "selected" })]));
+});
 
 test("map routes match the saved seed and remain keyboard operable on narrow screens", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
