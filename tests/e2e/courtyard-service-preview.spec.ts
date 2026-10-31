@@ -41,6 +41,9 @@ for (const sample of samples) test(`#356 ${sample.name} compares the courtyard a
     await page.reload();
     await expect(stage).toHaveAttribute("data-stage-art", artId);
     await expect(stage).toHaveAttribute("data-stage-place", placeId);
+    if (sample.prop) {
+      await page.locator(`.location-prop-art[data-asset-id="${sample.prop}"]`).evaluate((image: HTMLImageElement) => image.decode());
+    }
     await stage.evaluate(async (node) => {
       const url = (node as HTMLElement).style.backgroundImage.slice(5, -2);
       const image = new Image(); image.src = url; await image.decode();
