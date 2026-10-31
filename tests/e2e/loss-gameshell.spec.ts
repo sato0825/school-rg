@@ -35,6 +35,8 @@ test("last enemy action reaches HP zero without replacing the stage or actor", a
   await expect(page.locator(".loss-note-subtitle")).toHaveText("今日はここまで");
   await expect(page.getByRole("button", { name: "効果音をオンにする" })).toBeVisible();
   await expect(page.locator(".game-shell .hero-art")).toHaveAttribute("src", /literature-defeat-candidate-v1/);
+  await expect(page.locator('.game-shell[data-screen="lost"] .ally-slot')).not.toHaveAttribute("data-actor-rig", /literature/);
+  await expect(page.locator('.game-shell[data-screen="lost"] .hero-rig')).toHaveCount(0);
   await expect(page.locator(".game-shell .typing-input")).toBeDisabled();
   await expect(page.locator(".loss-note-damage-label")).toHaveText("最後の被弾");
   await expect(page.locator(".loss-note-damage-value")).toContainText(/♥ −\d+/);
@@ -50,6 +52,7 @@ test("last enemy action reaches HP zero without replacing the stage or actor", a
   await page.clock.runFor(5_000);
   const after = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.clock.remainingMs as number);
   expect(after).toBe(before);
+  await expect(page.locator(".hero-art.loss-pose")).toHaveCSS("opacity", "1");
   if (process.env.SCHOOL_RG_CAPTURE_LOSS === "1") {
     await page.locator(".hero-art").evaluate((image: HTMLImageElement) => image.decode());
     await expect(page.locator(".hero-art")).toHaveCSS("opacity", "1");
@@ -61,6 +64,11 @@ test("last enemy action reaches HP zero without replacing the stage or actor", a
   await page.getByRole("button", { name: "新しいランを始める" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "放課後を、打ち抜く。" })).toBeVisible();
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
+  await expect(page.locator('.game-shell[data-screen="combat"] .ally-slot')).toHaveAttribute("data-actor-rig", "literature-v1");
+  await expect(page.locator('.game-shell[data-screen="combat"] .hero-rig')).toHaveCount(1);
 });
 
 test("final enemy intent shows the local hit before the loss note", async ({ page }) => {
@@ -78,10 +86,11 @@ test("final enemy intent shows the local hit before the loss note", async ({ pag
   });
   await page.reload();
   await page.getByRole("button", { name: "再開" }).click();
+  await expect(page.locator('.ally-slot[data-actor-rig="literature-v1"]')).toHaveAttribute("data-rig-ready", "true");
   const remaining = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.clock.remainingMs as number);
   await page.clock.runFor(remaining + 100);
   await page.clock.runFor(MOTION_MS.enemyPhase);
-  await expect(page.locator(".hero-art.react")).toBeVisible();
+  await expect(page.locator('.ally-slot[data-actor-motion="hit"] .hero-rig [data-part="head-hit"]')).toBeVisible();
   await expect(page.locator(".player-health")).toContainText("0/");
   if (process.env.SCHOOL_RG_CAPTURE_LOSS === "1") {
     for (const [width, height] of [[1440, 900], [1024, 768]] as const) {

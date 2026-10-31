@@ -218,6 +218,7 @@ export class GameShell {
     this.input.value = "";
     this.control.inert = true;
     this.control.setAttribute("aria-hidden", "true");
+    this.releaseBattleRig();
     this.hero.className = "hero-art victory-pose";
     this.hero.style.removeProperty("animation-delay");
     this.hero.src = victoryCandidateByClubId[run.clubId] ?? this.hero.src;
@@ -246,6 +247,7 @@ export class GameShell {
     this.input.value = "";
     this.control.inert = true;
     this.control.setAttribute("aria-hidden", "true");
+    this.releaseBattleRig();
     this.hero.className = "hero-art loss-pose";
     this.hero.style.removeProperty("animation-delay");
     this.hero.src = defeatCandidateByClubId[run.clubId] ?? this.hero.src;
@@ -261,5 +263,13 @@ export class GameShell {
     const note = createLossNote(session, this.content, options);
     this.overlay.replaceChildren(note);
     if (!wasLoss) note.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
+  }
+
+  private releaseBattleRig(): void {
+    delete this.actor.dataset.actorMotion;
+    delete this.actor.dataset.actorRig;
+    delete this.actor.dataset.rigReady;
+    this.actor.querySelector(".hero-rig")?.remove();
+    this.actor.querySelector(".hero-motion-frame")?.remove();
   }
 }

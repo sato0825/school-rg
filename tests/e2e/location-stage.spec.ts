@@ -73,6 +73,27 @@ for (const width of [1440, 1024]) {
   }
 }
 
+for (const place of ["treasure", "shop", "rest", "event"] as const) {
+  test(`${place} keeps quiet effects through location, reload, and return to route`, async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("school-rg-low-stimulus-v1", "1"));
+    await openLocation(page, place, 1024);
+    await expect(page.locator(".game-shell")).toHaveAttribute("data-effects", "quiet");
+    await page.reload();
+    await expect(page.locator(`.location-scene[data-location="${place}"]`)).toBeVisible();
+    await expect(page.locator(".game-shell")).toHaveAttribute("data-effects", "quiet");
+    if (place === "treasure") {
+      await page.clock.install();
+      await page.locator('[data-action="treasure-offer"]:not(:disabled)').first().click();
+      await page.clock.runFor(350);
+    }
+    if (place === "shop") await page.locator('[data-action="leave-shop"]').click();
+    if (place === "rest") await page.locator('[data-action="rest-heal"]').click();
+    if (place === "event") await page.locator('[data-action="event-choice"][data-id="help"]').click();
+    await expect(page.locator(".map-panel")).toBeVisible();
+    await expect(page.locator(".game-shell")).toHaveAttribute("data-effects", "quiet");
+  });
+}
+
 test("shop purchase keeps focus in the choices and leaves combat clock absent", async ({ page }) => {
   await openLocation(page, "shop", 1024);
   await page.locator('[data-action="buy-offer"]').first().focus();

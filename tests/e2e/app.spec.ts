@@ -1024,6 +1024,8 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
   if (reloadAtActTwo) expect(reloadedAtActTwo).toBe(true);
   await expect(page.locator(".run-header")).toContainText("全Act完走");
   await expect(page.locator('.game-shell[data-screen="won"]')).toHaveAttribute("data-terminal-transition", "live");
+  await expect(page.locator('.game-shell[data-screen="won"] .hero-rig')).toHaveCount(0);
+  await expect(page.locator('.game-shell[data-screen="won"] .ally-slot')).not.toHaveAttribute("data-actor-rig", /literature/);
   const phases = await page.evaluate(() => {
     const animation = (selector: string) => {
       const css = getComputedStyle(document.querySelector(selector)!);
