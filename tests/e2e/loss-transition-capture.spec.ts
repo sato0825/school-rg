@@ -37,7 +37,7 @@ for (const { width, height, quiet } of [
     if (!quiet) {
       await expect(page.locator(".hero-art.react")).toBeVisible();
       await delay(150);
-      await page.screenshot({ path: `docs/art/previews/issue268-transition-hit-${width}-v3.png`, fullPage: true });
+      await page.screenshot({ path: `docs/art/previews/issue268-transition-hit-${width}-v4.png`, fullPage: true });
       await page.clock.runFor(MOTION_MS.hit);
     }
     await expect(page.locator('.game-shell[data-screen="lost"]')).toBeVisible();
@@ -51,9 +51,9 @@ for (const { width, height, quiet } of [
       await expect(page.locator(".control-deck")).toHaveCSS("opacity", "0");
     }
     await delay(400);
-    await page.screenshot({ path: `docs/art/previews/issue268-transition-result-${quiet ? "quiet-" : ""}${width}-v3.png`, fullPage: true });
+    await page.screenshot({ path: `docs/art/previews/issue268-transition-result-${quiet ? "quiet-" : ""}${width}-v4.png`, fullPage: true });
     const video = page.video();
     await page.close();
-    if (video) await video.saveAs(`docs/art/previews/issue268-transition-${quiet ? "quiet-" : ""}${width}-v3.webm`);
+    if (video) await video.saveAs(`docs/art/previews/issue268-transition-${quiet ? "quiet-" : ""}${width}-v4.webm`);
   });
 }

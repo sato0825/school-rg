@@ -17,11 +17,11 @@ const clubs = [
 test("last enemy action reaches HP zero without replacing the stage or actor", async ({ page }) => {
   test.setTimeout(70_000);
   await page.clock.install();
+  await page.addInitScript(() => localStorage.setItem("school-rg-audio-v1", "off"));
   await page.goto("/?shortRun=1&seed=42");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /文芸部/ }).click();
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
-  await page.getByRole("button", { name: "効果音をオフにする" }).click();
   await page.evaluate(() => {
     const local = window as typeof window & { __lossStage?: Element | null; __lossActor?: Element | null; __lossInput?: Element | null; __lossStageRect?: DOMRect; __lossActorRect?: DOMRect };
     local.__lossStage = document.querySelector(".game-shell .stage");
@@ -53,7 +53,7 @@ test("last enemy action reaches HP zero without replacing the stage or actor", a
     await expect(page.locator(".hero-art")).toHaveCSS("opacity", "1");
     for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
       await page.setViewportSize({ width, height });
-      await page.screenshot({ path: `docs/art/previews/issue268-loss-real-${width}-v7.png`, fullPage: true });
+      await page.screenshot({ path: `docs/art/previews/issue268-loss-real-${width}-v8.png`, fullPage: true });
     }
   }
   await page.getByRole("button", { name: "新しいランを始める" }).focus();
@@ -114,7 +114,7 @@ for (const [clubId, filename, club] of clubs) {
         expect(hero && note && stage).toBeTruthy();
         expect(hero!.x + hero!.width).toBeLessThan(note!.x);
         expect(hero!.y + hero!.height).toBeLessThanOrEqual(stage!.y + stage!.height + 2);
-        await page.screenshot({ path: `docs/art/previews/issue268-loss-${clubId}-${width}-v7.png`, fullPage: true });
+        await page.screenshot({ path: `docs/art/previews/issue268-loss-${clubId}-${width}-v8.png`, fullPage: true });
       }
     }
     await page.reload();
