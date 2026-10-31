@@ -179,6 +179,9 @@ test("a defeated run reaches its result and returns to the title by keyboard", a
   await enterNextNode(page);
   for (let turn = 0; turn < 30 && !(await page.locator(".run-result").count()); turn++) await page.clock.runFor(11_000);
   await expect(page.getByRole("heading", { name: "敗北" })).toBeVisible();
+  await page.getByRole("button", { name: "最後の戦闘ログ" }).click();
+  await expect(page.locator('.combat-log-entry[data-kind="result"]')).toContainText("敗北確定");
+  await page.getByRole("button", { name: "前の画面に戻る" }).click();
   const lostHistory = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-history-v1")!));
   expect(lostHistory.entries).toHaveLength(1);
   expect(lostHistory.entries[0]).toMatchObject({ runId: expect.any(String), clubId: "literature-demo", result: "lost", hp: 0 });
@@ -804,6 +807,9 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await page.clock.install();
   await startDemoRun(page);
   await clearThreeActs(page);
+  await page.getByRole("button", { name: "最後の戦闘ログ" }).click();
+  await expect(page.locator('.combat-log-entry[data-kind="result"]').first()).toContainText("勝利確定");
+  await page.getByRole("button", { name: "前の画面に戻る" }).click();
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["literature-demo"])).toBe(1);
   const wonHistory = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-history-v1")!));
   expect(wonHistory.entries).toHaveLength(1);

@@ -1,4 +1,5 @@
 import { createEventQueue, enqueueEvent, takeNextDueEvent } from "./event-queue.js";
+import { recordCombatAction } from "./combat-action-log.js";
 import type { ContentRegistry, RunState } from "./schema.js";
 
 export type RelicEventKind = "acquired" | "combat_start" | "card_used" | "hit_taken" | "turn_start" | "turn_end" | "combat_end";
@@ -86,7 +87,15 @@ export function resolveRelicHooks(
         if (current.relicHookHistory?.includes(historyKey)) continue;
         if (rule.condition && !rule.condition(current, event)) continue;
         const marked: RunState = { ...current, relicHookHistory: [...(current.relicHookHistory ?? []), historyKey] };
-        current = rule.apply(marked, event, rule.stackMode === "aggregate" ? job.group.count : 1);
+        const stacks = rule.stackMode === "aggregate" ? job.group.count : 1;
+        const applied = rule.apply(marked, event, stacks);
+        current = marked.combat && applied.combat && marked.combat.turn === applied.combat.turn
+          ? recordCombatAction(marked, applied, {
+            kind: "relic", actionId: job.group.relicId, actorEnemyInstanceId: null, targetEnemyInstanceId: null,
+            relicTrigger: event.kind, relicRuleId: rule.id, relicStacks: stacks,
+            ...(event.cardInstanceId ? { sourceCardInstanceId: event.cardInstanceId } : {}),
+            ...(event.hpLost !== undefined ? { triggerHpLost: event.hpLost } : {}),
+          }) : applied;
         if (!current.relicHookHistory?.includes(historyKey)) throw new Error(`relic rule lost event history: ${rule.id}`);
         trace.push({ eventId: event.id, relicId: job.group.relicId, ruleId: rule.id, stacks: rule.stackMode === "aggregate" ? job.group.count : 1 });
       }

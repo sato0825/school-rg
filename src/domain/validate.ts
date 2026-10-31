@@ -2,6 +2,7 @@ import {
   ContentRegistrySchema,
   RunStateSchema,
   type ContentRegistry,
+  type CombatActionLogEntry,
   type RunState,
 } from "./schema.js";
 import { assertAscensionLevel } from "./ascension.js";
@@ -111,6 +112,36 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
   const potions = new Set(content.potions.map(({ id }) => id));
   const intents = new Set(content.intents.map(({ id }) => id));
   const enemies = new Map(content.enemies.map((enemy) => [enemy.id, enemy]));
+  const validateActionEntries = (entries: CombatActionLogEntry[], enemyInstanceIds: Set<string>, cardInstanceIds: Set<string>, maxTurn: number, prefix: string) => {
+    let previousTurn = 0;
+    entries.forEach((entry, i) => {
+      const path = `${prefix}.${i}`;
+      if (entry.sequence !== i + 1 || entry.turn < previousTurn || entry.turn > maxTurn) issues.push({ code: "INVALID_STATE", path, message: "Combat action log order is invalid" });
+      previousTurn = entry.turn;
+      const actionIds = entry.kind === "card" ? cards : entry.kind === "potion" ? potions : entry.kind === "enemy" ? intents
+        : entry.kind === "turn" ? new Set<string>(TURN_BOUNDARIES) : entry.kind === "relic" ? relics : new Set(["won", "lost", "reward"]);
+      known(entry.actionId, actionIds, `${path}.actionId`, issues);
+      if ((entry.kind === "enemy" && !entry.actorEnemyInstanceId) || (entry.kind !== "enemy" && entry.actorEnemyInstanceId)) issues.push({ code: "INVALID_STATE", path: `${path}.actorEnemyInstanceId`, message: "Combat log actor does not match its action kind" });
+      if ((entry.kind === "turn" || entry.kind === "relic" || entry.kind === "result") && entry.targetEnemyInstanceId) issues.push({ code: "INVALID_STATE", path: `${path}.targetEnemyInstanceId`, message: "Action cannot target an enemy" });
+      if (entry.kind === "turn" && (entry.timeDeltaMs !== 0 || (entry.turnClockMs !== undefined && entry.actionId !== "player-start"))) issues.push({ code: "INVALID_STATE", path, message: "Turn boundary clock is invalid" });
+      if (entry.kind === "relic") {
+        const definition = content.relics.find((item) => item.id === entry.actionId);
+        if (!entry.relicTrigger || !entry.relicRuleId || !entry.relicStacks || !definition?.triggerIds.includes(entry.relicRuleId)) issues.push({ code: "INVALID_STATE", path, message: "Relic action source is invalid" });
+        if (entry.sourceCardInstanceId) known(entry.sourceCardInstanceId, cardInstanceIds, `${path}.sourceCardInstanceId`, issues);
+        if (entry.sourceCardInstanceId && entry.relicTrigger !== "card_used" || entry.triggerHpLost !== undefined && entry.relicTrigger !== "hit_taken") issues.push({ code: "INVALID_STATE", path, message: "Relic trigger detail is invalid" });
+      } else if (entry.relicTrigger || entry.relicRuleId || entry.relicStacks || entry.sourceCardInstanceId || entry.triggerHpLost !== undefined) {
+        issues.push({ code: "INVALID_STATE", path, message: "Non-relic action has relic metadata" });
+      }
+      if (entry.actorEnemyInstanceId) known(entry.actorEnemyInstanceId, enemyInstanceIds, `${path}.actorEnemyInstanceId`, issues);
+      if (entry.targetEnemyInstanceId) known(entry.targetEnemyInstanceId, enemyInstanceIds, `${path}.targetEnemyInstanceId`, issues);
+      entry.enemyDeltas.forEach((delta, j) => known(delta.instanceId, enemyInstanceIds, `${path}.enemyDeltas.${j}.instanceId`, issues));
+      entry.summonedEnemyIds.forEach((instanceId, j) => known(instanceId, enemyInstanceIds, `${path}.summonedEnemyIds.${j}`, issues));
+      entry.statusDeltas.forEach((delta, j) => {
+        if ((delta.side === "enemy" && !delta.enemyInstanceId) || (delta.side === "player" && delta.enemyInstanceId)) issues.push({ code: "INVALID_STATE", path: `${path}.statusDeltas.${j}`, message: "Combat log status target is invalid" });
+        if (delta.enemyInstanceId) known(delta.enemyInstanceId, enemyInstanceIds, `${path}.statusDeltas.${j}.enemyInstanceId`, issues);
+      });
+    });
+  };
   known(run.clubId, clubs, "clubId", issues);
   run.relicIds.forEach((id, i) => known(id, relics, `relicIds.${i}`, issues));
   run.potionIds.forEach((id, i) => known(id, potions, `potionIds.${i}`, issues));
@@ -208,24 +239,17 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
     });
     if (combat.typing.targetEnemyInstanceId) known(combat.typing.targetEnemyInstanceId, enemyInstanceIds, "combat.typing.targetEnemyInstanceId", issues);
     Object.keys(combat.statuses.enemies).forEach((instanceId) => known(instanceId, enemyInstanceIds, `combat.statuses.enemies.${instanceId}`, issues));
-    let previousTurn = 0;
-    combat.actionLog?.forEach((entry, i) => {
-      const path = `combat.actionLog.${i}`;
-      if (entry.sequence !== i + 1 || entry.turn < previousTurn || entry.turn > combat.turn) issues.push({ code: "INVALID_STATE", path, message: "Combat action log order is invalid" });
-      previousTurn = entry.turn;
-      known(entry.actionId, entry.kind === "card" ? cards : entry.kind === "potion" ? potions : entry.kind === "enemy" ? intents : new Set(TURN_BOUNDARIES), `${path}.actionId`, issues);
-      if ((entry.kind === "enemy" && !entry.actorEnemyInstanceId) || (entry.kind !== "enemy" && entry.actorEnemyInstanceId)) issues.push({ code: "INVALID_STATE", path: `${path}.actorEnemyInstanceId`, message: "Combat log actor does not match its action kind" });
-      if (entry.kind === "turn" && entry.targetEnemyInstanceId) issues.push({ code: "INVALID_STATE", path: `${path}.targetEnemyInstanceId`, message: "Turn boundary cannot target an enemy" });
-      if (entry.kind === "turn" && (entry.timeDeltaMs !== 0 || (entry.turnClockMs !== undefined && entry.actionId !== "player-start"))) issues.push({ code: "INVALID_STATE", path, message: "Turn boundary clock is invalid" });
-      if (entry.actorEnemyInstanceId) known(entry.actorEnemyInstanceId, enemyInstanceIds, `${path}.actorEnemyInstanceId`, issues);
-      if (entry.targetEnemyInstanceId) known(entry.targetEnemyInstanceId, enemyInstanceIds, `${path}.targetEnemyInstanceId`, issues);
-      entry.enemyDeltas.forEach((delta, j) => known(delta.instanceId, enemyInstanceIds, `${path}.enemyDeltas.${j}.instanceId`, issues));
-      entry.summonedEnemyIds.forEach((instanceId, j) => known(instanceId, enemyInstanceIds, `${path}.summonedEnemyIds.${j}`, issues));
-      entry.statusDeltas.forEach((delta, j) => {
-        if (delta.side === "enemy" && !delta.enemyInstanceId || delta.side === "player" && delta.enemyInstanceId) issues.push({ code: "INVALID_STATE", path: `${path}.statusDeltas.${j}`, message: "Combat log status target is invalid" });
-        if (delta.enemyInstanceId) known(delta.enemyInstanceId, enemyInstanceIds, `${path}.statusDeltas.${j}.enemyInstanceId`, issues);
-      });
-    });
+    validateActionEntries(combat.actionLog ?? [], enemyInstanceIds, new Set(combat.cards.map((card) => card.instanceId)), combat.turn, "combat.actionLog");
+  }
+  if (run.lastCombatLog) {
+    const snapshot = run.lastCombatLog;
+    const enemyInstanceIds = new Set(snapshot.enemies.map((enemy) => enemy.instanceId));
+    if (enemyInstanceIds.size !== snapshot.enemies.length) issues.push({ code: "DUPLICATE_ID", path: "lastCombatLog.enemies", message: "Duplicate enemy in combat snapshot" });
+    snapshot.enemies.forEach((enemy, i) => known(enemy.enemyId, new Set(enemies.keys()), `lastCombatLog.enemies.${i}.enemyId`, issues));
+    const cardInstanceIds = new Set(snapshot.cards.map((card) => card.instanceId));
+    if (cardInstanceIds.size !== snapshot.cards.length) issues.push({ code: "DUPLICATE_ID", path: "lastCombatLog.cards", message: "Duplicate card in combat snapshot" });
+    snapshot.cards.forEach((card, i) => known(card.cardId, cards, `lastCombatLog.cards.${i}.cardId`, issues));
+    validateActionEntries(snapshot.entries, enemyInstanceIds, cardInstanceIds, snapshot.turn, "lastCombatLog.entries");
   }
   if (issues.length) throw new DomainValidationError(issues);
   return run;

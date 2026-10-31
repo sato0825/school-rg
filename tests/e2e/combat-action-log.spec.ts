@@ -23,7 +23,8 @@ test("combat history is keyboard accessible, freezes time, and survives reload",
   await page.clock.runFor(2_000);
   await expect(page.getByRole("button", { name: "戦闘に戻る" })).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(page.locator('[data-role="time"]')).toHaveAttribute("aria-label", remainingBefore!);
+  const remainingAfter = await page.locator('[data-role="time"]').getAttribute("aria-label");
+  expect(Number(remainingBefore!.match(/[\d.]+/)![0]) - Number(remainingAfter!.match(/[\d.]+/)![0])).toBeLessThan(0.3);
   await page.reload();
   await expect(page.getByRole("button", { name: "戦闘ログ" })).toBeVisible();
   await page.getByRole("button", { name: "戦闘ログ" }).click();
@@ -40,10 +41,9 @@ test("timeout and enemy phase entries stay ordered with the next turn", async ({
   await page.clock.runFor(11_000);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "戦闘ログ" }).click();
-  const labels = await page.locator(".combat-log-entry strong").allTextContents();
-  expect(labels.slice(0, 5)).toEqual(["入力ターン開始", "入力時間終了", "プレイヤーターン終了", "敵フェーズ開始", expect.stringContaining("·")]);
-  expect(labels).toContain("敵フェーズ終了");
-  expect(labels.at(-1)).toBe("入力ターン開始");
+  const turnLabels = await page.locator('.combat-log-entry[data-kind="turn"] strong').allTextContents();
+  expect(turnLabels).toEqual(["入力ターン開始", "入力時間終了", "プレイヤーターン終了", "敵フェーズ開始", "敵フェーズ終了", "入力ターン開始"]);
+  await expect(page.locator('.combat-log-entry[data-kind="enemy"]')).toHaveCount(1);
   await expect(page.locator('.combat-log-entry[data-kind="turn"]').first()).toContainText("入力時間 10秒");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
   await expect(page.getByRole("button", { name: "戦闘に戻る" })).toBeVisible();

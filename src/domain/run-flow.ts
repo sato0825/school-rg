@@ -10,6 +10,7 @@ import { parseRunState } from "./validate.js";
 import { claimTreasure, leaveTreasure, openTreasure, type TreasureOptions, DEFAULT_TREASURE_OPTIONS } from "./treasure.js";
 import { ascensionEnemyHp, ascensionStartingHp, assertAscensionLevel } from "./ascension.js";
 import { generateCardRewards, type RewardGenerator } from "./card-rewards.js";
+import { recordCombatAction, recordCombatResult } from "./combat-action-log.js";
 
 export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "treasure" | "won" | "lost";
 export type EncounterCandidate = string | { readonly id: string; readonly enemyIds: readonly string[] };
@@ -138,18 +139,26 @@ export function chooseRunTreasure(session: RunSession, offerId: string | null, c
 
 export function settleRunCombat(session: RunSession, content: ContentRegistry, economy: EconomyOptions = DEFAULT_ECONOMY_OPTIONS, rewardGenerator: RewardGenerator = generateCardRewards): RunSession {
   if (session.screen !== "combat" || !session.run.combat) throw new Error("expected active combat");
-  if (session.run.combat.phase === "LOST") return { ...session, screen: "lost" };
-  if (session.run.combat.phase !== "WON") throw new Error("combat has not ended");
-  const node = currentNode(session.run);
-  if (session.run.event?.pendingCombat) {
-    return { ...session, run: { ...session.run, combat: null, event: null }, screen: "map", completedNodeIds: [...session.completedNodeIds, node.id] };
+  if (session.run.combat.phase !== "WON" && session.run.combat.phase !== "LOST") throw new Error("combat has not ended");
+  const terminal = recordCombatResult(session.run);
+  const combat = terminal.combat!;
+  const completedRun: RunState = { ...terminal, lastCombatLog: { turn: combat.turn, entries: combat.actionLog ?? [], cards: combat.cards, enemies: combat.enemies.map(({ instanceId, enemyId }) => ({ instanceId, enemyId })) } };
+  const completedSession = { ...session, run: completedRun };
+  if (combat.phase === "LOST") return { ...completedSession, screen: "lost" };
+  const node = currentNode(completedRun);
+  if (completedRun.event?.pendingCombat) {
+    return { ...completedSession, run: { ...completedRun, combat: null, event: null }, screen: "map", completedNodeIds: [...session.completedNodeIds, node.id] };
   }
   if (node.kind !== "combat" && node.kind !== "elite" && node.kind !== "boss") throw new Error("combat ended at a non-combat node");
-  const rewardedRun = awardEncounterGold(session.run, node.kind, economy);
-  const club = content.clubs.find((item) => item.id === session.run.clubId);
-  if (!club) throw new RangeError(`unknown club: ${session.run.clubId}`);
+  const awarded = awardEncounterGold(completedRun, node.kind, economy);
+  const withReward = awarded.gold === completedRun.gold ? awarded : recordCombatAction(completedRun, awarded, {
+    kind: "result", actionId: "reward", actorEnemyInstanceId: null, targetEnemyInstanceId: null,
+  });
+  const rewardedRun: RunState = { ...withReward, lastCombatLog: { ...completedRun.lastCombatLog!, entries: withReward.combat!.actionLog ?? [] } };
+  const club = content.clubs.find((item) => item.id === completedRun.clubId);
+  if (!club) throw new RangeError(`unknown club: ${completedRun.clubId}`);
   if (node.kind === "boss" && node.act === 3) {
-    return { ...session, run: { ...rewardedRun, combat: null }, screen: "won", completedNodeIds: [...session.completedNodeIds, node.id], rewardCardIds: [] };
+    return { ...completedSession, run: { ...rewardedRun, combat: null }, screen: "won", completedNodeIds: [...session.completedNodeIds, node.id], rewardCardIds: [] };
   }
   const offered = rewardGenerator(rewardedRun.rngState, club);
   if (offered.cardIds.length === 0) throw new RangeError("empty reward card pool");
@@ -157,7 +166,7 @@ export function settleRunCombat(session: RunSession, content: ContentRegistry, e
   if (new Set(offered.cardIds).size !== offered.cardIds.length || offered.cardIds.some((cardId) => !club.cardPoolIds.includes(cardId))) {
     throw new RangeError("reward generator returned duplicate or out-of-pool cards");
   }
-  return { ...session, run: { ...rewardedRun, rngState: offered.state }, screen: "reward", rewardCardIds: offered.cardIds };
+  return { ...completedSession, run: { ...rewardedRun, rngState: offered.state }, screen: "reward", rewardCardIds: offered.cardIds };
 }
 
 export function chooseRunEventChoice(session: RunSession, choiceId: string, content: ContentRegistry, ai: EnemyAiRegistry, config: GameConfig = DEFAULT_GAME_CONFIG, targetCardInstanceId?: string): RunSession {
