@@ -67,6 +67,10 @@ test("quiet victory retains actions with no pose animation", async ({ page }) =>
   await expect(page.locator('.game-shell[data-effects="quiet"][data-screen="won"]')).toBeVisible();
   expect(await page.locator(".victory-pose").evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
   expect(await page.locator(".victory-note").evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
+  await page.getByRole("button", { name: "効果音をオフにする" }).click();
+  await expect(page.getByRole("button", { name: "効果音をオンにする" })).toHaveAttribute("aria-pressed", "false");
+  await page.reload();
+  await expect(page.getByRole("button", { name: "効果音をオンにする" })).toHaveAttribute("aria-pressed", "false");
   await page.getByRole("button", { name: "ラン履歴を見る" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".history-entry")).toHaveCount(1);
