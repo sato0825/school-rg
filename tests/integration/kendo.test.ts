@@ -72,7 +72,7 @@ describe("kendo guard and counter", () => {
   it("makes guard or attack meaningful against the advertised enemy Intent", () => {
     const afterIntent = (cardId: string, intentId: "paper-intent-hit" | "paper-intent-guard") => {
       const typed = typedKendoCard(cardId);
-      const staged: RunState = { ...typed, combat: { ...typed.combat!, phase: "ENEMY_PHASE", enemies: typed.combat!.enemies.map((enemy) => ({ ...enemy, intentId })) } };
+      const staged: RunState = { ...typed, combat: { ...typed.combat!, phase: "ENEMY_PHASE", enemies: typed.combat!.enemies.map((enemy) => ({ ...enemy, enemyId: "paper-heap", maxHp: 26, intentId })) } };
       return resolveEnemyIntents(staged, demoEnemyAi, demoContent, (run, enemyId, intent) =>
         executeEnemyIntentEffects(run, enemyId, intent, demoEnemyAi, demoContent, DEFAULT_GAME_CONFIG));
     };
