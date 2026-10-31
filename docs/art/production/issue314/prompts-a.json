@@ -1,0 +1,32 @@
+[
+  {
+    "id": "LIT-007",
+    "slug": "card-lit-aside-v1",
+    "meaning": "attack one enemy and draw two",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for ASIDE, a Japanese middle-school literature-club typing game. A navy-edged manuscript page has one sharply FOLDED SIDE MARGIN projecting outward like a small paper jab toward a plain padded teal target; exactly TWO small blank note slips lift from behind the page. The folded side margin is the clear main action and differs from Verse's open written book and Anthology's many-page spread. Keep page, margin and two slips in central 52% width and 55% height for 112x57 hand crop, strong silhouette at 48px. Youthful 2D storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender and a tiny coral contact mark. No letters, handwriting, people, desk, window, photorealism, 3D, text, rarity, frame, logo or imitation of another game."
+  },
+  {
+    "id": "SCI-008",
+    "slug": "card-sci-assay-v1",
+    "meaning": "attack more strongly if target is weak and draw one",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for ASSAY, a Japanese middle-school science-club typing game. One bold WHITE TEST STRIP held over a small navy lab tray has a clearly visible lavender weak-sample spot; beside it a single blank observation card rises. A small coral pinpoint appears where the strip touches the target sample, suggesting a conditional attack. Test strip and tray must dominate, distinct from Formula's triangle ruler, Observe's magnifier and Culture's petri dish. Keep all objects in central 52% width and 55% height for 112x57 hand crop, identifiable at 48px. Youthful 2D storybook gouache on matte pale blue-gray paper, thin dark-navy ink contours, restrained watercolor texture, cool navy teal lavender, tiny coral accent. No people, text, chemical symbols, room, photorealism, 3D, rarity, frame, logo or imitation of another game."
+  },
+  {
+    "id": "KEN-007",
+    "slug": "card-ken-sweep-v1",
+    "meaning": "hit all enemies and gain block",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for SWEEP, a Japanese middle-school kendo-club typing game. A single bamboo practice SHINAI makes ONE broad HORIZONTAL arc across exactly THREE simple padded dojo targets, with a small folded navy guard cloth near its hilt. The arc clearly crosses all three targets; no person or injury. This must differ radically from the shared BASE-011 Sweep art, which is swirling school papers, and from Thrust's single straight strike. Keep shinai, 3 targets and guard cloth in central 60% width and 55% height for 112x57 hand crop; bold silhouette at 48px. Youthful 2D storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender with tiny coral contact sparks. No text, people, gore, room perspective, photorealism, 3D, rarity, frame, logo or imitation of another game."
+  },
+  {
+    "id": "MUS-007",
+    "slug": "card-mus-bridge-v1",
+    "meaning": "add time, draw two and gain block",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for BRIDGE, a Japanese middle-school music-club typing game. TWO short blank music score strips are joined by ONE arched navy musical-bridge ribbon, with two small pale-teal pulse circles travelling across the arch and a slim translucent square guard wash beneath. The arch is the central recognizable action of connecting song sections, distinct from Sync's two tuning forks, Crescendo's three keyboard pulses and Refrain's repeating rings. Keep arch, two strips and guard in central 52% width and 55% height for 112x57 hand crop, readable at 48px. Youthful 2D storybook gouache on matte pale blue-gray paper, thin dark-navy ink contour, restrained watercolor texture, cool navy teal lavender and one tiny coral accent. No musical notes, actual score text, people, stage, photorealism, 3D, rarity, frame, logo or imitation of another game."
+  },
+  {
+    "id": "ART-007",
+    "slug": "card-art-wash-v1",
+    "meaning": "hit all enemies and draw one",
+    "prompt": "Original 3:2 landscape CARD ILLUSTRATION for WASH, a Japanese middle-school art-club typing game. ONE wide flat watercolor WASH BRUSH makes a single broad horizontal teal sweep across exactly THREE small upright blank canvas tiles, with one separate blank sketch slip lifting from the brush tail. The brush stroke should visibly reach all three tiles and the extra slip suggests drawing a card. Distinct from Paint's palette, Mural's one wall panel and Layer's transparent sheets. Keep brush, three tiles and slip in central 60% width and 55% height for 112x57 hand crop, strong silhouette at 48px. Youthful 2D storybook gouache on matte pale blue-gray paper, thin confident dark-navy contours, restrained watercolor texture, cool navy teal lavender and tiny coral accent. No people, text, room perspective, photorealism, 3D, rarity, frame, logo or imitation of another game."
+  }
+]
