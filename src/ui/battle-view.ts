@@ -39,8 +39,8 @@ export type BattleView = {
   helpOpen?: boolean;
   layoutPreviewAllies?: number;
   selectedRelicId?: string | null;
-  relicCue?: { relicId: string; startedAtMs: number } | null;
-  potionCue?: { potionId: string; startedAtMs: number } | null;
+  relicCue?: { relicIds: readonly string[]; outcome: string; startedAtMs: number } | null;
+  potionCue?: { potionId: string; outcome: string; startedAtMs: number } | null;
 };
 
 function html(value: string): string {
@@ -162,9 +162,9 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     : loopDelayMs(view.animationNowMs, MOTION_MS.enemyIdle);
   const selectedRelic = view.selectedRelicId && run.relicIds.includes(view.selectedRelicId)
     ? content.relics.find((item) => item.id === view.selectedRelicId) : null;
-  const cue = view.relicCue && view.animationNowMs - view.relicCue.startedAtMs < 700 && run.relicIds.includes(view.relicCue.relicId)
+  const cue = view.relicCue && view.animationNowMs - view.relicCue.startedAtMs < 1200 && view.relicCue.relicIds.some((id) => run.relicIds.includes(id))
     ? view.relicCue : null;
-  const potionCue = view.potionCue && view.animationNowMs - view.potionCue.startedAtMs < 700 ? view.potionCue : null;
+  const potionCue = view.potionCue && view.animationNowMs - view.potionCue.startedAtMs < 1200 ? view.potionCue : null;
   const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
   const stageSelection = stageSelectionForRun(view.art, run);
   const nodeKindLabel: Record<string, string> = { combat: "戦闘", elite: "強敵", boss: "ボス" };
@@ -218,7 +218,7 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
   const potionMarkup = `<div class="potion-row ${potionActive ? "active" : ""}" aria-label="ポーション"><button type="button" class="potion-mode ${potionActive ? "active" : ""}" data-action="potion-mode" aria-pressed="${potionActive}">ポーション ${run.potionIds.length}/${view.potionSlotLimit} · 入力 ${html(view.potionModeKey)}</button><span class="potion-buffer" role="status">${potionTargetHint ?? (potionActive ? html(potionControl!.typing.buffer) || "入力待ち" : "")}</span><div class="potion-slots">${potions}</div></div>`;
   const handMarkup = `<div class="hand-guide" aria-hidden="true">${hand.length > 3 ? `手札 ${hand.length}枚 <span>← 横に送って確認 →</span>` : ""}</div><div class="hand" aria-label="手札">${cards || `<p class="empty-hand">手札なし</p>`}</div>`;
   const terminal = (combat.phase === "WON" || combat.phase === "LOST") && view.motion !== "hero" && view.motion !== "hit";
-  const itemOverlayMarkup = `${selectedRelic ? relicDetailMarkup(selectedRelic.id, content) : ""}${cue ? `<span class="relic-activation" data-relic-id="${html(cue.relicId)}" data-art-id="${html(relicArtForId(cue.relicId).artId)}" aria-label="${html(content.relics.find((item) => item.id === cue.relicId)?.name ?? cue.relicId)}が発動" role="status">${relicObjectMarkup(cue.relicId, "relic-activation-art")}</span>` : ""}${potionCue ? `<span class="potion-activation" data-potion-id="${html(potionCue.potionId)}" data-art-id="${html(potionArtForId(potionCue.potionId).artId)}" aria-label="${html(content.potions.find((item) => item.id === potionCue.potionId)?.name ?? potionCue.potionId)}を使用" role="status">${potionObjectMarkup(potionCue.potionId, "potion-activation-art")}</span>` : ""}`;
+  const itemOverlayMarkup = `${selectedRelic ? relicDetailMarkup(selectedRelic.id, content) : ""}${cue ? `<span class="relic-activation" role="status" aria-label="${html(`レリック発動。${cue.outcome}`)}"><span class="item-activation-arts">${cue.relicIds.map((id) => `<span data-art-id="${html(relicArtForId(id).artId)}">${relicObjectMarkup(id, "relic-activation-art")}</span>`).join("")}</span><strong>${html(cue.outcome)}</strong></span>` : ""}${potionCue ? `<span class="potion-activation" data-potion-id="${html(potionCue.potionId)}" data-art-id="${html(potionArtForId(potionCue.potionId).artId)}" aria-label="${html(`${content.potions.find((item) => item.id === potionCue.potionId)?.name ?? potionCue.potionId}を使用。${potionCue.outcome}`)}" role="status">${potionObjectMarkup(potionCue.potionId, "potion-activation-art")}<strong>${html(potionCue.outcome)}</strong></span>` : ""}`;
   root.innerHTML = `<main class="game" data-club="${html(run.clubId)}" data-effects="${view.lowStimulus ? "quiet" : "standard"}" aria-label="学園タイピングローグライク戦闘">
     <header class="topbar" aria-label="戦闘情報"><div class="run-meta" data-kind="${html(node?.kind ?? "combat")}"><span>ACT ${run.act} · ${node?.floor ?? 0}F · ${nodeKindLabel[node?.kind ?? "combat"] ?? "戦闘"}</span><span>TURN ${combat.turn}</span></div><div class="player-hud" aria-label="${html(clubName)}の状態"><span class="player-health"><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><span class="player-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span class="player-health-fill" style="width:${playerHpRatio}%"></span></span></span><b>◇ ${run.player.block}</b><div class="status-row">${statusMarkup(combat.statuses.player)}</div>${relicInventoryMarkup(run.relicIds, content, view.selectedRelicId)}</div><button type="button" class="pause-button" data-action="pause" ${combat.phase !== "PLAYER_INPUT" ? "disabled" : ""}>${combat.clock.paused ? "再開" : "一時停止"}</button><button type="button" class="battle-guide" data-action="toggle-battle-help" aria-label="操作" aria-controls="battle-help" aria-expanded="${Boolean(view.helpOpen)}" ${combat.phase !== "PLAYER_INPUT" ? "disabled" : ""}>操作</button></header>
     <aside id="battle-help" class="battle-help" role="region" aria-label="戦闘の操作方法" ${view.helpOpen ? "" : "hidden"}><strong>戦闘の操作</strong><ol><li>手札の英単語をタイプして発動</li><li>対象が必要なら敵や手札を選択</li><li>敵の予告を見て、時間内に行動</li></ol><p>誤キーは無視 · Escで入力取消 · ${html(view.potionModeKey)}でポーション</p><button type="button" data-action="toggle-battle-help">閉じる</button></aside>

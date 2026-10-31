@@ -310,6 +310,8 @@ test("science club starts with a distinct deck and types a preparation card", as
   await expect(page.locator(".map-stats")).toContainText("38/38");
   await enterNextNode(page);
   await expect(page.locator('.relic-row [data-art-id="relic.lab-glasses"]')).toBeVisible();
+  await expect(page.locator('.relic-activation [data-art-id="relic.lab-glasses"]')).toBeVisible();
+  await expect(page.locator('.relic-activation')).toContainText('力 +1');
   const words = await page.locator(".card-word").allTextContents();
   const unique = ["sample", "observe", "reaction", "formula"].find((word) => words.includes(word));
   expect(unique).toBeDefined();
@@ -709,6 +711,7 @@ test("a potion is typed in its own mode and consumed after extending the active 
   await expect(page.locator(".potion-mode")).toHaveAttribute("aria-pressed", "true");
   await page.keyboard.type("clock");
   await expect(page.locator(".potion-mode")).toHaveAttribute("aria-pressed", "false");
+  await expect(page.locator('.potion-activation[data-art-id="potion.potion-time"]')).toContainText('入力時間 +3秒');
   await expect(page.locator(".potion-slot")).toHaveCount(1);
   await expect(page.locator(".potion-row")).not.toContainText("clock");
   const after = Number.parseFloat(await page.locator("[data-role=time]").innerText());

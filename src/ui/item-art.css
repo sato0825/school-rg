@@ -16,16 +16,18 @@
 .game-shell .relic-inspect-art { display: grid; flex: none; place-items: center; width: 74px; height: 74px; }
 .game-shell .relic-inspect strong { font-size: 14px; }
 .game-shell .relic-inspect p { margin: 4px 0 0; font-size: 11px; line-height: 1.4; }
-.game-shell .relic-activation { position: absolute; z-index: 29; top: 50%; left: 23%; display: grid; place-items: center; width: 66px; height: 66px; border: 2px solid #bfd6c8; border-radius: 50%; background: #edf5e9de; box-shadow: 0 0 0 8px #b0d7cc44; pointer-events: none; animation: relic-appear .62s ease-out both; }
-.game-shell .relic-activation-art { display: grid; place-items: center; width: 58px; height: 58px; }
+.game-shell .relic-activation { position: absolute; z-index: 29; top: 38%; left: 25%; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 120px; max-width: 250px; padding: 7px 11px; border: 2px solid #bfd6c8; border-radius: 9px; background: #edf5e9f2; box-shadow: 0 0 0 8px #b0d7cc44; color: #21485a; pointer-events: none; animation: relic-appear 1.2s ease-out both; }
+.game-shell .item-activation-arts { display: flex; align-items: center; justify-content: center; gap: 3px; }
+.game-shell .relic-activation-art { display: grid; place-items: center; width: 80px; height: 80px; }
+.game-shell .relic-activation strong, .game-shell .potion-activation strong { max-width: 230px; font-size: 13px; line-height: 1.25; text-align: center; }
 .game-shell .potion { display: flex; flex-direction: row; align-items: center; gap: 4px; min-width: 96px; height: 34px; padding: 2px 4px; }
 .game-shell .potion-object { display: grid; flex: none; place-items: center; width: 29px; height: 29px; color: #627f88; font-size: 17px; }
 .game-shell .potion-object img, .game-shell .potion-activation-art img { width: 100%; height: 100%; object-fit: contain; }
 .game-shell .potion-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; min-width: 0; }
 .game-shell .potion-copy strong { overflow: hidden; max-width: 100%; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
 .game-shell .potion-copy > span { font-size: 10px; line-height: 1; }
-.game-shell .potion-activation { position: absolute; z-index: 29; top: 51%; left: 23%; display: grid; place-items: center; width: 66px; height: 66px; border: 2px solid #a9c9d1; border-radius: 50%; background: #e6f1f4e0; box-shadow: 0 0 0 8px #a9d2df44; pointer-events: none; animation: relic-appear .62s ease-out both; }
-.game-shell .potion-activation-art { display: grid; place-items: center; width: 58px; height: 58px; }
+.game-shell .potion-activation { position: absolute; z-index: 29; top: 38%; left: 25%; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 120px; max-width: 250px; padding: 7px 11px; border: 2px solid #a9c9d1; border-radius: 9px; background: #e6f1f4f2; box-shadow: 0 0 0 8px #a9d2df44; color: #21485a; pointer-events: none; animation: relic-appear 1.2s ease-out both; }
+.game-shell .potion-activation-art { display: grid; place-items: center; width: 80px; height: 80px; }
 .game-shell .location-choice:has(.relic-object), .game-shell .location-choice:has(.potion-object) { min-height: 88px; }
 .game-shell .location-choice-icon .relic-object, .game-shell .location-choice-icon .potion-object { width: 100%; height: 100%; }
 .game-shell .location-choice-icon .relic-object img, .game-shell .location-choice-icon .potion-object img,
@@ -40,7 +42,7 @@
 .game-shell .location-result-toast img, .game-shell .location-item-result img { width: 100%; height: 100%; object-fit: contain; }
 .game-shell .location-item-result { position: absolute; z-index: 7; left: 8%; bottom: 9%; display: flex; align-items: center; gap: 9px; min-height: 68px; max-width: 80%; padding: 7px 13px; border: 2px solid #bdd4c8; border-radius: 7px; background: #f3f7eaf0; color: #214e59; font-size: 13px; font-weight: 800; box-shadow: 2px 4px 0 #31536777; pointer-events: none; }
 .game-shell .location-item-result .relic-object, .game-shell .location-item-result .potion-object { display: grid; flex: none; place-items: center; width: 48px; height: 48px; }
-@keyframes relic-appear { from { opacity: 0; transform: translateY(12px) scale(.8); } 25% { opacity: 1; } to { opacity: 0; transform: translateY(-20px) scale(1); } }
+@keyframes relic-appear { from { opacity: 0; transform: translateY(12px) scale(.92); } 15%, 74% { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-10px) scale(1); } }
 @media (max-width: 1100px) {
   .game-shell .topbar .relic-row { max-width: 170px; }
   .game-shell .relic-item { width: 34px; height: 34px; }

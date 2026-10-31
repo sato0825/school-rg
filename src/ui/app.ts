@@ -137,11 +137,29 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     toast.append(label);
     scene.append(toast);
   };
+  const itemOutcome = (before: RunState, after: RunState): string => {
+    const changes: string[] = [];
+    const statusName: Record<string, string> = { strength: "力", dexterity: "敏捷", focus: "集中", thorns: "反撃", barrier: "結界", weak: "弱体", vulnerable: "脆弱", frail: "虚弱", poison: "毒" };
+    if (after.player.hp !== before.player.hp) changes.push(`HP ${after.player.hp > before.player.hp ? "+" : ""}${after.player.hp - before.player.hp}`);
+    if (after.player.block !== before.player.block) changes.push(`ブロック ${after.player.block > before.player.block ? "+" : ""}${after.player.block - before.player.block}`);
+    if (after.gold !== before.gold) changes.push(`${after.gold > before.gold ? "+" : ""}${after.gold - before.gold}G`);
+    const timeDelta = (after.combat?.clock.remainingMs ?? 0) - (before.combat?.clock.remainingMs ?? 0);
+    if (timeDelta > 0) changes.push(`入力時間 +${timeDelta / 1_000}秒`);
+    for (const [status, count] of Object.entries(after.combat?.statuses.player ?? {})) {
+      const delta = count - (before.combat?.statuses.player[status] ?? 0);
+      if (delta > 0) changes.push(`${statusName[status] ?? status} +${delta}`);
+    }
+    for (const enemy of before.combat?.enemies ?? []) {
+      const next = after.combat?.enemies.find((item) => item.instanceId === enemy.instanceId);
+      if (next && next.hp < enemy.hp) changes.push(`${demoContent.enemies.find((item) => item.id === enemy.enemyId)?.name ?? "敵"} −${enemy.hp - next.hp}HP`);
+    }
+    return changes.join(" · ") || "数値変化なし";
+  };
   const setMotion = (motion: BattleView["motion"]) => { view.motion = motion; view.motionStartedAtMs = motion ? clock.nowMs() : null; };
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState => {
     const result = emitRelicEvent(state, kind, demoRelicRules, demoContent, detail);
     if (state.combat && result.trace.length) {
-      const cue = { relicId: result.trace[0]!.relicId, startedAtMs: clock.nowMs() };
+      const cue = { relicIds: [...new Set(result.trace.map((item) => item.relicId))], outcome: itemOutcome(state, result.run), startedAtMs: clock.nowMs() };
       view.relicCue = cue;
       const currentGeneration = generation;
       window.setTimeout(() => {
@@ -149,7 +167,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
           view.relicCue = null;
           if (session.screen === "combat") render();
         }
-      }, 700);
+      }, 1200);
     }
     return result.run;
   };
@@ -158,7 +176,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const id = before.potionIds.find((candidate) =>
       before.potionIds.filter((item) => item === candidate).length > after.potionIds.filter((item) => item === candidate).length);
     if (!id) return;
-    const cue = { potionId: id, startedAtMs: clock.nowMs() };
+    const cue = { potionId: id, outcome: itemOutcome(before, after), startedAtMs: clock.nowMs() };
     view.potionCue = cue;
     const resultCue = resultFxForTransition(before, after, view.layoutPreviewAllies ?? 1, clock.nowMs());
     view.resultFx = resultCue;
@@ -170,7 +188,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         if (view.resultFx === resultCue) view.resultFx = null;
         if (session.screen === "combat") render();
       }
-    }, 700);
+    }, 1200);
   };
   const metricsActive = () => frontScreen === null && !restoreError && session.screen !== "won" && session.screen !== "lost"
     && document.visibilityState === "visible" && !(run.combat?.clock.paused ?? false);
