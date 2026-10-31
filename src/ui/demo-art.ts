@@ -3,9 +3,6 @@ import { clubPresentation } from "./club-presentation.js";
 import { enemyCandidateUrlById } from "./enemy-presentation.js";
 import { stageCandidateUrlByAct } from "./stage-presentation.js";
 
-/** Remaining enemies use this placeholder until #29/#68 supply distinct reviewed art. */
-const placeholderEnemyUrl = new URL("../assets/enemy-paper-v1.png", import.meta.url).href;
-
 /** Demo presentation is kept outside battle logic so later club and enemy art can replace it. */
 export const demoBattleArt: BattleArt = {
   stageUrl: new URL("../assets/stage-hallway-v1.png", import.meta.url).href,
@@ -20,33 +17,7 @@ export const demoBattleArt: BattleArt = {
     "music-demo": ["#9b62e2", "#e7d3ff"],
     "art-demo": ["#30a994", "#c5f0de"],
   },
-  enemyUrlById: {
-    "paper-heap": placeholderEnemyUrl,
-    "paper-scrap": placeholderEnemyUrl,
-    "hall-monitor": placeholderEnemyUrl,
-    "final-exam": enemyCandidateUrlById["final-exam"],
-    "chalk-cloud": enemyCandidateUrlById["chalk-cloud"],
-    "library-cart": enemyCandidateUrlById["library-cart"],
-    "club-auditor": enemyCandidateUrlById["club-auditor"],
-    "night-announcement": placeholderEnemyUrl,
-    "lost-and-found": placeholderEnemyUrl,
-    "closing-bell": enemyCandidateUrlById["closing-bell"],
-    "late-pass": placeholderEnemyUrl,
-    "notice-board": enemyCandidateUrlById["notice-board"],
-    "safety-sign": placeholderEnemyUrl,
-    "stairwell-echo": placeholderEnemyUrl,
-    "window-shadow": enemyCandidateUrlById["window-shadow"],
-    "night-locker": enemyCandidateUrlById["night-locker"],
-    "lost-homework": placeholderEnemyUrl,
-    "school-gate": placeholderEnemyUrl,
-    "lab-magnet": enemyCandidateUrlById["lab-magnet"],
-    "library-index": placeholderEnemyUrl,
-    "empty-desk": placeholderEnemyUrl,
-    "last-bus": placeholderEnemyUrl,
-    "gym-scoreboard": placeholderEnemyUrl,
-    "lab-ventilation": placeholderEnemyUrl,
-    "graduation-curtain": enemyCandidateUrlById["graduation-curtain"],
-  },
+  enemyUrlById: enemyCandidateUrlById,
 };
 
 /** #84/#96/#112 development preview only. These candidate images are not approved runtime art. */

@@ -1,5 +1,8 @@
 /** Enemy candidate art is presentation data. Replacing an image does not change an encounter. */
 export const enemyCandidateUrlById = {
+  "paper-heap": new URL("../assets/enemies/paper-heap-candidate-v1.png", import.meta.url).href,
+  "paper-scrap": new URL("../assets/enemies/paper-scrap-candidate-v1.png", import.meta.url).href,
+  "hall-monitor": new URL("../assets/enemies/hall-monitor-candidate-v1.png", import.meta.url).href,
   "chalk-cloud": new URL("../assets/enemies/chalk-cloud-candidate-v1.png", import.meta.url).href,
   "library-cart": new URL("../assets/enemies/library-cart-candidate-v1.png", import.meta.url).href,
   "final-exam": new URL("../assets/enemies/final-exam-candidate-v1.png", import.meta.url).href,
@@ -10,4 +13,16 @@ export const enemyCandidateUrlById = {
   "night-locker": new URL("../assets/enemies/night-locker-candidate-v1.png", import.meta.url).href,
   "graduation-curtain": new URL("../assets/enemies/graduation-curtain-candidate-v1.png", import.meta.url).href,
   "notice-board": new URL("../assets/enemies/notice-board-candidate-v1.png", import.meta.url).href,
+  "night-announcement": new URL("../assets/enemies/night-announcement-candidate-v1.png", import.meta.url).href,
+  "lost-and-found": new URL("../assets/enemies/lost-and-found-candidate-v1.png", import.meta.url).href,
+  "late-pass": new URL("../assets/enemies/late-pass-candidate-v1.png", import.meta.url).href,
+  "safety-sign": new URL("../assets/enemies/safety-sign-candidate-v1.png", import.meta.url).href,
+  "stairwell-echo": new URL("../assets/enemies/stairwell-echo-candidate-v1.png", import.meta.url).href,
+  "lost-homework": new URL("../assets/enemies/lost-homework-candidate-v1.png", import.meta.url).href,
+  "school-gate": new URL("../assets/enemies/school-gate-candidate-v1.png", import.meta.url).href,
+  "library-index": new URL("../assets/enemies/library-index-candidate-v1.png", import.meta.url).href,
+  "empty-desk": new URL("../assets/enemies/empty-desk-candidate-v1.png", import.meta.url).href,
+  "last-bus": new URL("../assets/enemies/last-bus-candidate-v1.png", import.meta.url).href,
+  "gym-scoreboard": new URL("../assets/enemies/gym-scoreboard-candidate-v1.png", import.meta.url).href,
+  "lab-ventilation": new URL("../assets/enemies/lab-ventilation-candidate-v1.png", import.meta.url).href,
 } as const;
