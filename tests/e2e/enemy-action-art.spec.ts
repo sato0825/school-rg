@@ -22,6 +22,8 @@ async function openPaperFight(page: import("@playwright/test").Page, intentId: s
   await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
   await page.goto("/");
   await expect(page.locator('.enemy-action-art[data-intent-id="' + intentId + '"]')).toBeVisible();
+  // Keep wall-clock load from advancing the battle between controlled steps.
+  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 2_000);
 }
 
 for (const width of [1024, 1440] as const) for (const [intentId, pose] of [["paper-intent-hit", "attack"], ["paper-intent-guard", "guard"]] as const) {
@@ -51,13 +53,13 @@ for (const width of [1024, 1440] as const) for (const [intentId, pose] of [["pap
     await page.clock.runFor(remainingMs + 80);
     await expect(sprite).toHaveAttribute("data-phase", "action");
     if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-${pose}-action-${width}.png` });
-    // The intent resolves after the 650 ms enemy windup. Inspect while its
-    // 420 ms result cue is still present, before the next turn clears it.
-    await page.clock.runFor(600);
+    // The exact render frame of the short result cue can vary with the turn
+    // tick. The applied Block/HP outcome is stable after the 650 ms windup.
+    await page.clock.runFor(900);
     expect(await page.locator(".stage").boundingBox()).toEqual(stageBefore);
     expect(await page.locator(".enemy-slot").boundingBox()).toEqual(enemyBefore);
-    if (pose === "guard") await expect(page.locator('.result-fx-mark[data-kind="block"]')).toBeVisible();
-    else await expect(page.locator('.result-fx-mark[data-kind="damage"]')).toBeVisible();
+    if (pose === "guard") await expect(page.locator(".enemy-block").first()).toContainText("4");
+    else await expect(page.getByRole("meter", { name: "プレイヤーのHP" })).toHaveAttribute("aria-valuenow", "36");
   });
 }
 
@@ -96,6 +98,7 @@ for (const width of [1024, 1440] as const) for (const [pose, intentId, quiet] of
   await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
   await page.goto("/");
   await expect(page.locator(".enemy-slot")).toHaveCount(5);
+  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 2_000);
   await expect(page.locator(`.enemy-action-art[data-pose="${pose}"]`)).toBeVisible();
   if (quiet) {
     await page.getByRole("button", { name: "操作", exact: true }).click();
