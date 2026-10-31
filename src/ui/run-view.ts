@@ -6,6 +6,7 @@ import type { BattleArt } from "./battle-view.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
 import { ASCENSION_RULES, unlockedLevel, type Progression } from "../domain/ascension.js";
 import { presentationForClub } from "./club-presentation.js";
+import { identityForClub } from "../content/character-identities.js";
 import { MAP_ROW_HEIGHT, mapRouteSegments } from "./map-layout.js";
 import { mapKindIcons as kindIcons, mapKindNames as kindNames } from "./map-symbols.js";
 import { stageUrlForAct, stageUrlForRun } from "./stage-presentation.js";
@@ -82,9 +83,13 @@ export function renderRunHistory(root: HTMLElement, history: RunHistory, content
 export function renderClubSelect(root: HTMLElement, content: ContentRegistry, art: BattleArt, progression: Progression, selectedLevels: Readonly<Record<string, number>>, loadError: boolean): void {
   const clubs = content.clubs.map((item) => {
     const visual = presentationForClub(item.id);
+    const identity = identityForClub(item.id);
+    const displayName = identity?.fullName ?? item.name;
+    const spokenName = identity?.reading ?? displayName;
+    const nameStatus = identity?.status === "provisional" ? "人物名は仮称" : "";
     const unlocked = unlockedLevel(progression, item.id);
     const levels = [0, ...ASCENSION_RULES.map((rule) => rule.level)].map((level) => `<button type="button" class="ascension-choice" data-action="ascension-level" data-id="${html(item.id)}:${level}" aria-pressed="${(selectedLevels[item.id] ?? 0) === level}" ${level > unlocked || loadError ? "disabled" : ""}>難度 ${level}${level === 0 ? " · 通常" : ` · ${html(ASCENSION_RULES[level - 1]!.label)}`}</button>`).join("");
-    return `<div class="club-option" style="--club-accent:${visual.accent}"><button type="button" class="club-choice" data-action="choose-club" data-id="${html(item.id)}"><span class="club-art"><small>${visual.number} / 05</small><img src="${html(visual.idle)}" alt="" loading="eager" decoding="async" /></span><span class="club-copy"><small>CLUB · 制作候補</small><strong>${html(item.name)}</strong><em>${html(visual.style)}</em><span class="club-strategy">${html(visual.strategy)}</span><span class="club-stats">HP ${item.startingHp} · DECK ${item.starterCardIds.length} · 難度 ${unlocked}</span></span></button><div class="ascension-choices" aria-label="${html(item.name)}の難度選択">${levels}</div></div>`;
+    return `<div class="club-option" style="--club-accent:${visual.accent}"><button type="button" class="club-choice" data-action="choose-club" data-id="${html(item.id)}" aria-label="${html(spokenName)}、${html(item.name)}、${html(visual.style)}${nameStatus ? `。${html(nameStatus)}` : ""}"><span class="club-art"><small>${visual.number} / 05</small><img src="${html(visual.idle)}" alt="" loading="eager" decoding="async" /></span><span class="club-copy"><small>${html(item.name)}${nameStatus ? ` · ${html(nameStatus)}` : ""}</small><strong>${html(displayName)}</strong><em>${html(visual.style)}</em><span class="club-strategy">${html(visual.strategy)}</span><span class="club-stats">HP ${item.startingHp} · DECK ${item.starterCardIds.length} · 難度 ${unlocked}</span></span></button><div class="ascension-choices" aria-label="${html(item.name)}の難度選択">${levels}</div></div>`;
   }).join("");
   root.innerHTML = shell("部活を選ぶ", `<section class="front-panel club-panel"><span class="eyebrow">CHOOSE YOUR CLUB</span><h2>所属する部活を選ぶ</h2><p>部活ごとに初期デッキとカードプールが変わります。</p><p>${loadError ? "解放状態を読めません。保存データを確認してください。" : "3 Actを完走すると、その部活の次の難度が解放されます。"}</p><div class="club-choices">${clubs}</div><button type="button" class="front-back" data-action="front-back">タイトルへ戻る</button></section>`, art);
 }
