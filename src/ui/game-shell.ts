@@ -1,7 +1,7 @@
 import type { RunState } from "../domain/schema.js";
 import type { ContentRegistry } from "../domain/schema.js";
 import type { BattleView } from "./battle-view.js";
-import { stageUrlForRun } from "./stage-presentation.js";
+import { stageSelectionForRun, type StageArt } from "./stage-presentation.js";
 import { identityForClub } from "../content/character-identities.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
 
@@ -16,7 +16,7 @@ export class GameShell {
   private readonly header: HTMLElement;
   private readonly overlay: HTMLElement;
   private readonly content: ContentRegistry;
-  private readonly art: BattleView["art"];
+  private readonly art: StageArt;
   private readonly config: GameConfig;
   private stageNodeId: string | null = null;
 
@@ -44,8 +44,7 @@ export class GameShell {
     this.config = config;
     this.overlay.className = "game-shell-overlay";
     this.stage.append(this.overlay);
-    this.stage.style.backgroundImage = `url("${stageUrlForRun(view.art, run)}")`;
-    this.stageNodeId = run.map.currentNodeId;
+    this.syncStage(run);
     this.actor.style.setProperty("--slot-x", "22%");
     this.hero.src = view.art.heroPosesByClubId?.[run.clubId]?.idle ?? view.art.heroUrlByClubId?.[run.clubId] ?? view.art.heroUrl;
     const clubName = content.clubs.find((club) => club.id === run.clubId)?.name ?? "主人公";
@@ -58,6 +57,17 @@ export class GameShell {
   get element(): HTMLElement { return this.main; }
   get typingInput(): HTMLInputElement { return this.input; }
 
+  private syncStage(run: RunState): void {
+    if (this.stageNodeId === run.map.currentNodeId) return;
+    const selection = stageSelectionForRun(this.art, run);
+    this.stage.style.backgroundImage = `url("${selection.stageUrl}")`;
+    this.stage.dataset.act = String(run.map.nodes.find((node) => node.id === run.map.currentNodeId)?.act ?? run.act);
+    this.stage.dataset.stagePlace = selection.placeId ?? "";
+    this.stage.dataset.stageArt = selection.artId ?? "";
+    this.stage.dataset.stageBand = selection.band === null ? "" : String(selection.band);
+    this.stageNodeId = run.map.currentNodeId;
+  }
+
   showBattle(run: RunState, previous: HTMLElement): void {
     const next = previous.querySelector<HTMLElement>(".game");
     const stage = next?.querySelector<HTMLElement>(".stage");
@@ -67,12 +77,8 @@ export class GameShell {
     const control = next?.querySelector<HTMLElement>(".control-deck");
     const header = next?.querySelector<HTMLElement>(".topbar");
     if (!next || !stage || !slot || !hero || !input || !control || !header) throw new Error("Incomplete battle render");
-    const nodeId = run.map.currentNodeId;
-    if (this.stageNodeId !== nodeId) {
-      this.stage.style.backgroundImage = stage.style.backgroundImage;
-      this.stageNodeId = nodeId;
-    }
-    for (const name of ["data-act", "data-stage-phase", "data-ally-count", "data-enemy-count"]) {
+    this.syncStage(run);
+    for (const name of ["data-stage-phase", "data-ally-count", "data-enemy-count"]) {
       const value = stage.getAttribute(name);
       if (value === null) this.stage.removeAttribute(name);
       else this.stage.setAttribute(name, value);
@@ -110,12 +116,9 @@ export class GameShell {
   }
 
   showOverlay(screen: "reward" | "map" | "treasure" | "shop" | "rest" | "event", run: RunState, rendered: HTMLElement): void {
+    this.syncStage(run);
     const panel = rendered.querySelector<HTMLElement>(screen === "reward" ? ".reward-panel" : screen === "map" ? ".map-panel" : ".location-scene");
     if (!panel) throw new Error(`Missing ${screen} panel`);
-    if (this.stageNodeId !== run.map.currentNodeId) {
-      this.stage.style.backgroundImage = `url("${stageUrlForRun(this.art, run)}")`;
-      this.stageNodeId = run.map.currentNodeId;
-    }
     this.overlay.replaceChildren(panel);
     this.main.dataset.screen = screen;
     this.input.disabled = true;
