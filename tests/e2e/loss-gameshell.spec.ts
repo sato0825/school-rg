@@ -56,6 +56,19 @@ for (const [clubId, filename, club] of clubs) {
     await expect(page.locator(".hero-art")).toHaveAttribute("alt", new RegExp(club));
     await expect(page.getByRole("region", { name: "ランの結果" })).toContainText(club);
     await expect(page.getByRole("button", { name: "新しいランを始める" })).toBeVisible();
+    if (process.env.SCHOOL_RG_CAPTURE_LOSS === "1") {
+      await page.locator(".hero-art").evaluate((image: HTMLImageElement) => image.decode());
+      for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
+        await page.setViewportSize({ width, height });
+        const hero = await page.locator(".hero-art").boundingBox();
+        const note = await page.locator(".loss-note").boundingBox();
+        const stage = await page.locator(".stage").boundingBox();
+        expect(hero && note && stage).toBeTruthy();
+        expect(hero!.x + hero!.width).toBeLessThan(note!.x);
+        expect(hero!.y + hero!.height).toBeLessThanOrEqual(stage!.y + stage!.height + 2);
+        await page.screenshot({ path: `docs/art/previews/issue268-loss-${clubId}-${width}.png`, fullPage: true });
+      }
+    }
     await page.reload();
     await expect(page.locator(".hero-art")).toHaveAttribute("src", new RegExp(filename));
     await page.getByRole("button", { name: "新しいランを始める" }).tap();
