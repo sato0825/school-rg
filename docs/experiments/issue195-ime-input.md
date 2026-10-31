@@ -22,3 +22,5 @@
 #182と#196を含むmainで、IME・カード束・戦闘ヘルプの対象E2EをPC 1440×900、iPad相当 1024×768、390×844で再確認した。IME入力時のカード発動・HP変化・フォーカスとヘルプ開閉、束表示が成立し、1024/1440の画像は `docs/art/previews/issue195-ime-typing-v1-1024.png` と `issue195-ime-typing-v1-1440.png` に保存した。12件中10件が初回成功、2件は#176の案内テストが `Process/KeyA` を解決不可と仮定していたため失敗した。試作ではLayout Mapにより解決可能なので、テスト入力を実際に解決不可のかな `あ/KeyA` に変更して2/2成功。戦闘ヘルプの対象E2Eも3/3成功。さらに#209はテストと文書のみの差分として最新mainへ取り込んだ。
 
 実機iPadソフトキーボードと外付けキーボード、Safari、非QWERTY物理配列は未検証。特にiPad Safariでは [Keyboard Layout Map](https://developer.mozilla.org/en-US/docs/Web/API/Keyboard/getLayoutMap) の対応が限定されるため、`key=Process` しか届かない場合は入力できない。日本語かなキーボードから英語カード名へ変換する仕様も未決定。[W3C UI Events](https://www.w3.org/TR/uievents/) のcompositionイベント順序と、[MDN KeyboardEvent](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent) の`key`/`code`の区別を前提に、対象環境の実測を継続する。
+
+#198透過マップ統合後のmainでは、IME変換中にマップを開くと時計が停止し、マップ内の入力をカードへ送らず、閉じた後にtextboxへフォーカスが戻ることを確認した。未解決のかなキーを入力した案内から、マップを閉じた後に英字 `strike` を発動すると案内が消え、敵HPが減る。対象E2E15/15、戦闘ヘルプ3/3、単体5/5、lint、型検査が成功。PC/iPad相当の画像は `issue195-ime-typing-v2-1440.png` と `issue195-ime-typing-v2-1024.png` に再撮影し、旧v1画像は#198統合前の記録として残した。

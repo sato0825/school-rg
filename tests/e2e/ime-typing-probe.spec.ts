@@ -102,6 +102,6 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     await expect(input).toBeFocused();
     expect(Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"))).toBeLessThan(beforeHp);
     await expect(page.locator(".pile-counts")).toBeVisible();
-    if (process.env.SCHOOL_RG_CAPTURE_IME_PROBE === "1") await page.screenshot({ path: `docs/art/previews/issue195-ime-typing-v1-${viewport.width}.png` });
+    if (process.env.SCHOOL_RG_CAPTURE_IME_PROBE === "1") await page.screenshot({ path: `docs/art/previews/issue195-ime-typing-v2-${viewport.width}.png` });
   });
 }
