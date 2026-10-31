@@ -52,14 +52,12 @@ export function recordCombatAction(before: RunState, after: RunState, action: Ac
     summonedEnemyIds: resolved.enemies.filter((enemy) => !knownEnemies.has(enemy.instanceId)).map((enemy) => enemy.instanceId),
     statusDeltas: statusDeltas(previous, resolved),
     handAddedCount: resolved.hand.filter((id) => !previous.hand.includes(id)).length,
+    discardedCount: resolved.discardPile.filter((id) => !previous.discardPile.includes(id)).length,
+    exhaustedCount: resolved.exhaustPile.filter((id) => !previous.exhaustPile.includes(id)).length,
     // A turn reset and time spent typing are not time-granting card effects.
     timeDeltaMs: action.kind === "turn" ? 0 : resolved.clock.remainingMs - previous.clock.remainingMs,
     goldDelta: after.gold - before.gold,
-    ...(action.kind === "turn" ? {
-      discardedCount: resolved.discardPile.filter((id) => !previous.discardPile.includes(id)).length,
-      exhaustedCount: resolved.exhaustPile.filter((id) => !previous.exhaustPile.includes(id)).length,
-      ...(action.actionId === "player-start" && resolved.phase === "PLAYER_INPUT" ? { turnClockMs: resolved.clock.remainingMs } : {}),
-    } : {}),
+    ...(action.kind === "turn" && action.actionId === "player-start" && resolved.phase === "PLAYER_INPUT" ? { turnClockMs: resolved.clock.remainingMs } : {}),
   };
   return { ...after, combat: { ...resolved, actionLog: [...entries, entry] } };
 }
@@ -86,7 +84,9 @@ function subtractNested(total: CombatActionLogEntry, nested: CombatActionLogEntr
     return { ...sample, delta: (total.statusDeltas.find(same)?.delta ?? 0) - sum((entry) => entry.statusDeltas.find(same)?.delta ?? 0) };
   }).filter((delta) => delta.delta !== 0);
   const handAddedCount = total.handAddedCount - sum((entry) => entry.handAddedCount);
-  if (handAddedCount < 0) throw new Error("nested relic history exceeds enemy action draw count");
+  const discardedCount = (total.discardedCount ?? 0) - sum((entry) => entry.discardedCount ?? 0);
+  const exhaustedCount = (total.exhaustedCount ?? 0) - sum((entry) => entry.exhaustedCount ?? 0);
+  if (handAddedCount < 0 || discardedCount < 0 || exhaustedCount < 0) throw new Error("nested relic history exceeds enemy action pile change");
   return {
     ...total,
     playerHpDelta: total.playerHpDelta - sum((entry) => entry.playerHpDelta),
@@ -95,6 +95,8 @@ function subtractNested(total: CombatActionLogEntry, nested: CombatActionLogEntr
     statusDeltas,
     summonedEnemyIds: total.summonedEnemyIds.filter((id) => !nested.some((entry) => entry.summonedEnemyIds.includes(id))),
     handAddedCount,
+    discardedCount,
+    exhaustedCount,
     timeDeltaMs: total.timeDeltaMs - sum((entry) => entry.timeDeltaMs),
     goldDelta: (total.goldDelta ?? 0) - sum((entry) => entry.goldDelta ?? 0),
   };

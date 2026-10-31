@@ -22,7 +22,7 @@ describe("resolved combat action history", () => {
     expect(run.combat!.enemies[0]).toMatchObject({ hp: 17, block: 0 });
     expect(run.combat!.actionLog?.[0]).toMatchObject({
       sequence: 1, turn: 1, kind: "card", actionId: "card-strike", targetEnemyInstanceId: "enemy-1",
-      enemyDeltas: [{ instanceId: "enemy-1", hpDelta: -3, blockDelta: -3 }],
+      enemyDeltas: [{ instanceId: "enemy-1", hpDelta: -3, blockDelta: -3 }], discardedCount: 1,
     });
     run = setPotionInputActive(run, true, { nowMs: () => 3_000 }, content, disposition);
     for (const key of "heal") run = submitPotionKey(run, { key }, { nowMs: () => 3_000 }, DEFAULT_GAME_CONFIG, content, disposition);
