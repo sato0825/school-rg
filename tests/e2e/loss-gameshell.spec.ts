@@ -55,7 +55,7 @@ test("last enemy action reaches HP zero without replacing the stage or actor", a
     await expect(page.locator(".hero-art")).toHaveCSS("opacity", "1");
     for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
       await page.setViewportSize({ width, height });
-      await page.screenshot({ path: `docs/art/previews/issue268-loss-real-${width}-v10.png`, fullPage: true });
+      await page.screenshot({ path: `docs/art/previews/issue268-loss-real-${width}-v11.png`, fullPage: true });
     }
   }
   await page.getByRole("button", { name: "新しいランを始める" }).focus();
@@ -116,7 +116,7 @@ for (const [clubId, filename, club] of clubs) {
         expect(hero && note && stage).toBeTruthy();
         expect(hero!.x + hero!.width).toBeLessThan(note!.x);
         expect(hero!.y + hero!.height).toBeLessThanOrEqual(stage!.y + stage!.height + 2);
-        await page.screenshot({ path: `docs/art/previews/issue268-loss-${clubId}-${width}-v10.png`, fullPage: true });
+        await page.screenshot({ path: `docs/art/previews/issue268-loss-${clubId}-${width}-v11.png`, fullPage: true });
       }
     }
     await page.reload();
