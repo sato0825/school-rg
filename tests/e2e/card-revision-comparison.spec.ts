@@ -32,7 +32,7 @@ function combatSave(club: string, ids: readonly string[]) {
   let combat = active.combat!;
   const hand: string[] = [];
   for (const cardId of ids) {
-    const result = createCombatCard(combat, demoContent, cardId, false, "hand", { maxHandSize: 10 });
+    const result = createCombatCard(combat, demoContent, cardId, false, "hand", { maxHandSize: null });
     combat = result.combat;
     hand.push(result.instanceId);
   }

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "cardId": "BASE-017",
+      "version": "issue343-v3",
+      "runtimePath": "src/assets/cards/issue352/base-boost-candidate-v3.png",
+      "originalPath": "docs/art/production/issue343/assets/base-boost-candidate-v3.png",
+      "sourceIssue": 343,
+      "sourceCommit": "ef5215f",
+      "sha256": "9e93d0710b5af1597dd3a9788108341fe8328ecb3533f94fa7dae6ea77ab47cf",
+      "priorRuntimePath": "src/assets/cards/issue261/base-boost-candidate-v2.png",
+      "priorSha256": "3f8d888dec4bad26b5382af2cacae64866f66f37bd508824d25142249f950f77",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-023",
+      "version": "issue343-v2",
+      "runtimePath": "src/assets/cards/issue352/base-delay-candidate-v2.png",
+      "originalPath": "docs/art/production/issue343/assets/base-delay-candidate-v2.png",
+      "sourceIssue": 343,
+      "sourceCommit": "ef5215f",
+      "sha256": "d655291feeda347ee5f52a1c714760bb8fc29ffce2cb293afbd04de6bed3a80b",
+      "priorRuntimePath": "src/assets/cards/issue329/base-delay-candidate-v1.png",
+      "priorSha256": "acb8ee03f0de8080301a81686d277bca5643cced676aa055dd14ab27d91c494c",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "KEN-002",
+      "version": "issue343-v2",
+      "runtimePath": "src/assets/cards/issue352/ken-stance-candidate-v2.png",
+      "originalPath": "docs/art/production/issue343/assets/ken-stance-candidate-v2.png",
+      "sourceIssue": 343,
+      "sourceCommit": "ef5215f",
+      "sha256": "fe4ede082ceccd9e2d92ab01afd7ff11186c8c33b7436ad9f8ed321f5c446783",
+      "priorRuntimePath": "src/assets/cards/issue261/ken-stance-candidate-v1.png",
+      "priorSha256": "b22f44344bd4fd706c0e90844677ca4ae7427f92a437c0a2d1088c80c2cf98f6",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "KEN-004",
+      "version": "issue343-v2",
+      "runtimePath": "src/assets/cards/issue352/ken-riposte-candidate-v2.png",
+      "originalPath": "docs/art/production/issue343/assets/ken-riposte-candidate-v2.png",
+      "sourceIssue": 343,
+      "sourceCommit": "ef5215f",
+      "sha256": "8f0995bfd0e6db5f79455816bd0ebb5881c6a250cb087e0a4f78ee7131c9fd6c",
+      "priorRuntimePath": "src/assets/cards/issue261/ken-riposte-candidate-v1.png",
+      "priorSha256": "01bcd635c7600269b8fcf678571a768a1a404941a77277dfb326f0aac07aea16",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "KEN-009",
+      "version": "issue343-v2",
+      "runtimePath": "src/assets/cards/issue352/ken-guard-step-candidate-v2.png",
+      "originalPath": "docs/art/production/issue343/assets/ken-guard-step-candidate-v2.png",
+      "sourceIssue": 343,
+      "sourceCommit": "ef5215f",
+      "sha256": "dc2101f9207d3b2070b4b09c99fe1407131b7558d8cdb1aa5adab81e90e160de",
+      "priorRuntimePath": "src/assets/cards/issue261/ken-guard-step-candidate-v1.png",
+      "priorSha256": "7eedd19866f241fd6e21ee56eb7799f60e971a2f3d915805cd992a314d1ee5c6",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "KEN-011",
+      "version": "issue343-v4",
+      "runtimePath": "src/assets/cards/issue352/ken-hasso-candidate-v4.png",
+      "originalPath": "docs/art/production/issue343/assets/ken-hasso-candidate-v4.png",
+      "sourceIssue": 343,
+      "sourceCommit": "ef5215f",
+      "sha256": "3056b605087b526c62deda23477885548fb1d03751cc9998a301bda4ca76a28b",
+      "priorRuntimePath": "src/assets/cards/issue261/ken-hasso-candidate-v2.png",
+      "priorSha256": "7302b9a1c031de1de9dd436339e444df5ddc2f3f5d421b908b4f4e5bdbdad45b",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    }
+  ]
+}
