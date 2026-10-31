@@ -1,6 +1,6 @@
 import { availableRunNodes, type RunSession } from "../domain/run-flow.js";
-import { activeEvent, availableEventChoices, eventChoiceTargets } from "../domain/events.js";
-import type { ContentRegistry } from "../domain/schema.js";
+import { activeEvent, availableEventChoices, eventChoiceTargets, eventConditionMet } from "../domain/events.js";
+import type { ContentRegistry, EventChoice, EventEffect, RunState } from "../domain/schema.js";
 import { describeCard } from "./battle-view.js";
 import type { BattleArt } from "./battle-view.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
@@ -11,9 +11,52 @@ import { mapKindIcons as kindIcons, mapKindNames as kindNames } from "./map-symb
 import { stageUrlForAct } from "./stage-presentation.js";
 import { formatPlaytestTime, type PlaytestRecord } from "./playtest-metrics.js";
 import { historyCounts, type RunHistory } from "../domain/run-history.js";
+import { DEFAULT_ECONOMY_OPTIONS } from "../domain/economy.js";
 
 function html(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
+}
+
+const cardKindNames: Record<string, string> = { attack: "攻撃", skill: "技能", power: "能力", status: "状態", curse: "呪い" };
+
+function offerSymbol(kind: "card" | "relic" | "potion"): string {
+  return `<span class="offer-symbol" data-symbol-kind="${kind}" aria-hidden="true">${kind === "card" ? "" : kind === "relic" ? "✦" : "✚"}</span>`;
+}
+
+function eventEffectMarkup(effect: EventEffect, content: ContentRegistry): string {
+  const positive = effect.kind === "gold" || effect.kind === "hp" ? effect.amount >= 0 : true;
+  const tone = effect.kind === "battle" || !positive ? "cost" : "gain";
+  let symbol = "✦";
+  let label = "";
+  switch (effect.kind) {
+    case "gold": symbol = "◉"; label = `${effect.amount > 0 ? "+" : ""}${effect.amount}G`; break;
+    case "hp": symbol = "♥"; label = `HP ${effect.amount > 0 ? "+" : ""}${effect.amount}`; break;
+    case "add_card": symbol = "▣"; label = `カード追加 · ${content.cards.find((card) => card.id === effect.cardId)?.input.text ?? effect.cardId}`; break;
+    case "upgrade_card": symbol = "↑"; label = "カードを強化"; break;
+    case "remove_card": symbol = "−"; label = "カードを削除"; break;
+    case "add_relic": symbol = "✦"; label = `レリック · ${content.relics.find((relic) => relic.id === effect.relicId)?.name ?? effect.relicId}`; break;
+    case "add_potion": symbol = "✚"; label = `ポーション · ${content.potions.find((potion) => potion.id === effect.potionId)?.name ?? effect.potionId}`; break;
+    case "battle": symbol = "⚔"; label = "戦闘へ"; break;
+  }
+  return `<span class="choice-effect" data-tone="${tone}"><span class="choice-effect-icon" aria-hidden="true">${symbol}</span>${html(label)}</span>`;
+}
+
+function eventUnavailableReason(run: RunState, choice: EventChoice): string {
+  const failed = choice.requires.find((condition) => !eventConditionMet(run, condition));
+  if (failed) {
+    switch (failed.kind) {
+      case "gold_at_least": return `${failed.amount}G必要`;
+      case "hp_at_least": return `HP ${failed.amount}以上必要`;
+      case "hp_at_most_percent": return `HP ${failed.percent}%以下で選択可能`;
+      case "has_card": return "必要なカードなし";
+      case "potion_slot_available": return "ポーション枠が満杯";
+    }
+  }
+  return eventChoiceTargets(run, choice)?.length === 0 ? "対象カードなし" : "条件未達";
+}
+
+function eventActionTitle(label: string): string {
+  return label.split(" · ")[0]!.replace(/^\d+Gで/, "");
 }
 
 function shell(title: string, body: string, art: BattleArt, act = 1): string {
@@ -82,9 +125,9 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
   const signature = new Set(content.clubs.find((club) => club.id === session.run.clubId)?.signatureCardIds ?? []);
   const cards = session.rewardCardIds.map((cardId) => {
     const card = content.cards.find((item) => item.id === cardId)!;
-    return `<button type="button" class="reward-card ${signature.has(card.id) ? "signature" : ""}" data-card-kind="${card.type}" data-action="reward-card" data-id="${card.id}"><small>${signature.has(card.id) ? "部活固有 · " : ""}${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span></button>`;
+    return `<button type="button" class="reward-card ${signature.has(card.id) ? "signature" : ""}" data-card-kind="${card.type}" data-action="reward-card" data-id="${card.id}"><span class="offer-heading">${offerSymbol("card")}<small>${signature.has(card.id) ? "部活固有 · " : ""}${cardKindNames[card.type] ?? html(card.type)}</small></span><strong>${html(card.input.text)}</strong><span class="offer-description">${html(describeCard(card, content))}</span><span class="offer-outcome"><span aria-hidden="true">＋</span> デッキに追加</span></button>`;
   }).join("");
-  root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><p>選んだカードはこのランのデッキへ加わります。</p><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
+  root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
 }
 
 export function renderRunTreasure(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, config: GameConfig = DEFAULT_GAME_CONFIG): void {
@@ -95,7 +138,7 @@ export function renderRunTreasure(root: HTMLElement, session: RunSession, conten
     const definition = offer.kind === "relic" ? content.relics.find((item) => item.id === offer.contentId) : content.potions.find((item) => item.id === offer.contentId);
     if (!definition) throw new RangeError(`unknown treasure content: ${offer.contentId}`);
     const disabled = offer.kind === "potion" && full;
-    return `<button type="button" class="reward-card treasure-offer" data-action="treasure-offer" data-id="${html(offer.offerId)}" ${disabled ? "disabled" : ""}><small>${offer.kind === "relic" ? "RELIC" : "POTION"}</small><strong>${html(definition.name)}</strong><span>${offer.kind === "potion" ? `入力語 ${html(content.potions.find((item) => item.id === offer.contentId)!.input.text)}` : "ラン中に効果を発揮"}</span>${disabled ? "<b>所持枠が満杯</b>" : ""}</button>`;
+    return `<button type="button" class="reward-card treasure-offer" data-action="treasure-offer" data-id="${html(offer.offerId)}" ${disabled ? "disabled" : ""}><span class="offer-heading">${offerSymbol(offer.kind)}<small>${offer.kind === "relic" ? "レリック" : "ポーション"}</small></span><strong>${html(definition.name)}</strong><span class="offer-description">${offer.kind === "potion" ? `入力語 ${html(content.potions.find((item) => item.id === offer.contentId)!.input.text)}` : "ラン中に効果を発揮"}</span><span class="offer-outcome">${disabled ? "所持枠が満杯" : "＋ 受け取る"}</span></button>`;
   }).join("");
   root.innerHTML = shell("宝箱", `<section class="reward-panel treasure-panel"><span class="eyebrow">FOUND ITEM</span><h2>宝箱から1つ選ぶ</h2><p>ポーション ${session.run.potionIds.length}/${requireSetting(config.potionSlots)} · レリック ${session.run.relicIds.length}個</p><div class="reward-options">${offers}</div><button type="button" class="skip-reward" data-action="skip-treasure">何も取らず進む</button></section>`, art, session.run.act);
 }
@@ -108,23 +151,24 @@ export function renderRunShop(root: HTMLElement, session: RunSession, content: C
   const offers = shop.offers.map((offer) => {
     const card = content.cards.find((item) => item.id === offer.cardId)!;
     const reason = offer.purchased ? "購入済み" : gold < offer.price ? "所持金不足" : "";
-    return `<button type="button" class="reward-card" data-card-kind="${card.type}" data-action="buy-offer" data-id="${offer.offerId}" ${reason ? "disabled" : ""}><small>${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span><b>${offer.price}G${reason ? ` · ${reason}` : ""}</b></button>`;
+    return `<button type="button" class="reward-card" data-card-kind="${card.type}" data-action="buy-offer" data-id="${offer.offerId}" ${reason ? "disabled" : ""}><span class="offer-heading">${offerSymbol("card")}<small>${cardKindNames[card.type] ?? html(card.type)}</small></span><strong>${html(card.input.text)}</strong><span class="offer-description">${html(describeCard(card, content))}</span><b class="offer-price"><span aria-hidden="true">◉ </span>${offer.price}G${reason ? ` · ${reason}` : ""}</b></button>`;
   }).join("");
   const relicOffers = shop.relicOffers.map((offer) => {
     const relic = content.relics.find((item) => item.id === offer.contentId)!;
     const reason = offer.purchased ? "購入済み" : gold < offer.price ? "所持金不足" : session.run.relicIds.includes(offer.contentId) ? "所持済み" : "";
-    return `<button type="button" class="reward-card shop-relic-offer" data-action="buy-relic" data-id="${html(offer.offerId)}" ${reason ? "disabled" : ""}><small>RELIC</small><strong>${html(relic.name)}</strong><span>ラン中に効果を発揮</span><b>${offer.price}G${reason ? ` · ${reason}` : ""}</b></button>`;
+    return `<button type="button" class="reward-card shop-relic-offer" data-action="buy-relic" data-id="${html(offer.offerId)}" ${reason ? "disabled" : ""}><span class="offer-heading">${offerSymbol("relic")}<small>レリック</small></span><strong>${html(relic.name)}</strong><span class="offer-description">ラン中に効果を発揮</span><b class="offer-price"><span aria-hidden="true">◉ </span>${offer.price}G${reason ? ` · ${reason}` : ""}</b></button>`;
   }).join("");
   const potionOffers = shop.potionOffers.map((offer) => {
     const potion = content.potions.find((item) => item.id === offer.contentId)!;
     const reason = offer.purchased ? "購入済み" : full ? "所持枠が満杯" : gold < offer.price ? "所持金不足" : "";
-    return `<button type="button" class="reward-card shop-potion-offer" data-action="buy-potion" data-id="${html(offer.offerId)}" ${reason ? "disabled" : ""}><small>POTION</small><strong>${html(potion.name)}</strong><span>入力語 ${html(potion.input.text)}</span><b>${offer.price}G${reason ? ` · ${reason}` : ""}</b></button>`;
+    return `<button type="button" class="reward-card shop-potion-offer" data-action="buy-potion" data-id="${html(offer.offerId)}" ${reason ? "disabled" : ""}><span class="offer-heading">${offerSymbol("potion")}<small>ポーション</small></span><strong>${html(potion.name)}</strong><span class="offer-description">入力語 ${html(potion.input.text)}</span><b class="offer-price"><span aria-hidden="true">◉ </span>${offer.price}G${reason ? ` · ${reason}` : ""}</b></button>`;
   }).join("");
   const removal = session.run.deck.map((instance) => {
     const card = content.cards.find((item) => item.id === instance.cardId)!;
     return `<button type="button" class="mini-choice" data-action="remove-shop-card" data-id="${instance.instanceId}" ${shop.removalUsed || gold < shop.removalPrice || session.run.deck.length <= 1 ? "disabled" : ""}>${html(card.input.text)}${instance.upgraded ? "+" : ""}</button>`;
   }).join("");
-  root.innerHTML = shell("購買", `<section class="reward-panel economy-panel"><span class="eyebrow">SCHOOL SHOP</span><h2>購買</h2><p>所持金 ${gold}G · ポーション ${session.run.potionIds.length}/${requireSetting(config.potionSlots)}。商品は一度ずつ購入できます。</p><div class="economy-section"><h3>カード</h3><div class="reward-options">${offers}</div></div><div class="economy-section"><h3>レリック</h3><div class="reward-options">${relicOffers || "売り切れ"}</div></div><div class="economy-section"><h3>ポーション</h3><div class="reward-options">${potionOffers || "売り切れ"}</div></div><div class="economy-section"><h3>カード削除 · ${shop.removalPrice}G</h3><div class="choice-list">${removal}</div></div><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button><p class="economy-message" role="status">${html(message)}</p></section>`, art, session.run.act);
+  const removalReason = shop.removalUsed ? "この購買では削除済み" : session.run.deck.length <= 1 ? "最後の1枚は削除不可" : gold < shop.removalPrice ? "所持金不足" : "";
+  root.innerHTML = shell("購買", `<section class="reward-panel economy-panel"><h2>購買</h2><p class="choice-balance"><span><span aria-hidden="true">◉</span> 所持金 <strong>${gold}G</strong></span><span>ポーション ${session.run.potionIds.length}/${requireSetting(config.potionSlots)}</span></p><div class="economy-section"><h3>カード</h3><div class="reward-options">${offers}</div></div><div class="economy-section"><h3>レリック</h3><div class="reward-options">${relicOffers || "売り切れ"}</div></div><div class="economy-section"><h3>ポーション</h3><div class="reward-options">${potionOffers || "売り切れ"}</div></div><div class="economy-section"><h3>カードを1枚削除 <span class="section-price">◉ ${shop.removalPrice}G${removalReason ? ` · ${removalReason}` : ""}</span></h3><div class="choice-list">${removal}</div></div><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button><p class="economy-message" role="status">${html(message)}</p></section>`, art, session.run.act);
 }
 
 export function renderRunRest(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
@@ -132,20 +176,23 @@ export function renderRunRest(root: HTMLElement, session: RunSession, content: C
     const card = content.cards.find((item) => item.id === instance.cardId)!;
     return `<button type="button" class="mini-choice" data-action="rest-upgrade" data-id="${instance.instanceId}">${html(card.input.text)}</button>`;
   }).join("");
-  root.innerHTML = shell("休憩", `<section class="reward-panel economy-panel"><span class="eyebrow">REST STOP</span><h2>休憩</h2><p>回復するか、デッキのカードを1枚強化します。</p><div class="rest-actions"><button type="button" class="skip-reward" data-action="rest-heal">休んで回復 · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</button><div class="economy-section"><h3>強化するカード</h3><div class="choice-list">${choices || "強化可能なカードなし"}</div></div></div></section>`, art, session.run.act);
+  const { hp, maxHp } = session.run.player;
+  const healed = Math.min(maxHp - hp, Math.ceil(maxHp * DEFAULT_ECONOMY_OPTIONS.restHealPercent / 100));
+  root.innerHTML = shell("休憩", `<section class="reward-panel economy-panel rest-panel"><h2>休憩</h2><div class="rest-actions"><button type="button" class="skip-reward rest-heal" data-action="rest-heal"><span class="rest-action-icon" aria-hidden="true">♥</span><span class="rest-action-text"><strong>休んで回復</strong><span>HP ${hp}/${maxHp} → ${hp + healed}/${maxHp}</span></span><b>${healed === 0 ? "HPは満タン" : `＋${healed} HP`}</b></button><div class="economy-section rest-upgrade"><h3><span class="rest-action-icon" aria-hidden="true">↑</span> カードを1枚強化</h3><div class="choice-list">${choices || "強化可能なカードなし"}</div></div></div></section>`, art, session.run.act);
 }
 
 export function renderRunEvent(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
   const event = activeEvent(session.run, content);
   const choices = availableEventChoices(session.run, content).map(({ choice, available }) => {
     const targets = eventChoiceTargets(session.run, choice);
-    if (!targets || !available) return `<button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}" ${available ? "" : "disabled"}>${html(choice.label)}${available ? "" : " · 条件未達"}</button>`;
+    const effects = `<span class="event-choice-effects">${choice.effects.map((effect) => eventEffectMarkup(effect, content)).join("")}</span>`;
+    if (!targets || !available) return `<button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}" ${available ? "" : "disabled"}><strong>${html(eventActionTitle(choice.label))}</strong>${effects}${available ? "" : `<span class="choice-unavailable">選択不可 · ${html(eventUnavailableReason(session.run, choice))}</span>`}</button>`;
     const options = targets.map((instance) => {
       const card = content.cards.find((item) => item.id === instance.cardId)!;
       const deckIndex = session.run.deck.findIndex((item) => item.instanceId === instance.instanceId) + 1;
       return `<option value="${html(instance.instanceId)}">${html(card.input.text)}${instance.upgraded ? " +" : ""} · ${String(deckIndex).padStart(2, "0")}</option>`;
     }).join("");
-    return `<div class="event-target-choice"><label>${html(choice.label)}<select data-event-target="${html(choice.id)}" aria-label="${html(choice.label)}の対象カード">${options}</select></label><button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}">このカードで決定</button></div>`;
+    return `<div class="event-target-choice"><strong>${html(eventActionTitle(choice.label))}</strong>${effects}<label>対象カードを選ぶ<select data-event-target="${html(choice.id)}" aria-label="${html(choice.label)}の対象カード">${options}</select></label><button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}">このカードで決定</button></div>`;
   }).join("");
   root.innerHTML = shell("校内イベント", `<section class="reward-panel event-panel"><span class="eyebrow">AFTER SCHOOL</span><h2>${html(event.title)}</h2><p>${html(event.description)}</p><div class="event-choices">${choices}</div><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
 }
