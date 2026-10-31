@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import console from 'node:console';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 import { chromium } from '@playwright/test';
@@ -12,22 +13,22 @@ try {
       const page = await browser.newPage({ viewport: { width, height } });
       await page.goto(`${mock}?state=${state}`);
       const evidence = await page.evaluate(() => {
-        const actor = document.querySelector('.actor.defeat');
-        const enemy = document.querySelector('.enemy');
-        const notebook = document.querySelector('.notebook');
+        const actor = globalThis.document.querySelector('.actor.defeat');
+        const enemy = globalThis.document.querySelector('.enemy');
+        const notebook = globalThis.document.querySelector('.notebook');
         const box = (node) => {
           const { x, y, width, height } = node.getBoundingClientRect();
           return { x, y, width, height };
         };
         return {
-          imagesReady: [...document.images].every((image) => image.complete && image.naturalWidth > 0),
-          noOverflow: document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight,
+          imagesReady: [...globalThis.document.images].every((image) => image.complete && image.naturalWidth > 0),
+          noOverflow: globalThis.document.documentElement.scrollWidth <= globalThis.innerWidth && globalThis.document.documentElement.scrollHeight <= globalThis.innerHeight,
           actor: box(actor),
           enemy: box(enemy),
           notebook: box(notebook),
-          actorVisible: getComputedStyle(actor).display !== 'none',
-          notebookVisible: getComputedStyle(notebook).display !== 'none',
-          hp: document.querySelector('.hp')?.textContent?.trim(),
+          actorVisible: globalThis.getComputedStyle(actor).display !== 'none',
+          notebookVisible: globalThis.getComputedStyle(notebook).display !== 'none',
+          hp: globalThis.document.querySelector('.hp')?.textContent?.trim(),
         };
       });
       assert(evidence.imagesReady, `${width}×${height} ${state}: all images load`);

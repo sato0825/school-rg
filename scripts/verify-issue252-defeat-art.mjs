@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import console from 'node:console';
 import { createHash } from 'node:crypto';
 import { readFile, access } from 'node:fs/promises';
 import { resolve } from 'node:path';
