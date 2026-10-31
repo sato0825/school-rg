@@ -37,7 +37,7 @@ async function expectLocationStage(page: Page, kind: "treasure" | "shop" | "rest
   expect(geometry.background).toContain("url(");
   expect(geometry.heroRight).toBeLessThanOrEqual(geometry.panelLeft + 8);
   expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewportWidth);
-  if (process.env.SCHOOL_RG_CAPTURE_LOCATION_SCENE === "1") await page.screenshot({ path: `docs/art/previews/issue227-${kind}-${width}.png` });
+  if (process.env.SCHOOL_RG_CAPTURE_LOCATION_SCENE === "1") await page.screenshot({ path: `docs/art/previews/issue227-${kind}-v2-${width}.png` });
 }
 
 for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900 }]) {
@@ -79,7 +79,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     });
     await page.reload();
     await expectLocationStage(page, "event", viewport.width);
-    await page.locator('[data-action="event-choice"][data-id="leave"]').focus();
+    await page.locator('[data-action="event-choice"][data-id="help"]').focus();
     await page.keyboard.press("Enter");
     await expect(page.locator(".route-scene")).toBeVisible();
   });

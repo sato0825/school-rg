@@ -57,8 +57,8 @@
 }
 
 /* Treasure: a small choice of found objects on a translucent display shelf. */
-.treasure-panel { width: min(610px, 63vw); margin-top: clamp(52px, 11vh, 104px); }
-.treasure-panel .reward-options { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 510px; }
+.treasure-panel { width: min(660px, 68vw); margin-top: clamp(70px, 15vh, 130px); }
+.treasure-panel .reward-options { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 600px; }
 .treasure-panel .treasure-offer { border-color: #b7b6cd; }
 .treasure-panel .skip-reward { margin-top: 5px; }
 
@@ -100,7 +100,7 @@
   padding-top: 10px;
   border-top: 1px solid #bfd5d64f;
 }
-.shop-panel .economy-message { color: #e9f2ed; }
+.shop-panel .economy-message { color: #e9f2ed !important; }
 
 /* Rest: the two distinct actions remain visible at the same time. */
 .rest-panel { width: min(600px, 62vw); margin-top: clamp(58px, 12vh, 115px); }
@@ -148,6 +148,7 @@
   .location-scene-resources span:last-child { display: none; }
   .shop-panel .shop-side { grid-template-columns: 1fr; }
   .shop-panel .shop-cards .reward-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .treasure-panel .reward-options { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
   .location-panel { backdrop-filter: none; -webkit-backdrop-filter: none; }

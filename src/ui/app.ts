@@ -166,8 +166,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt, lowStimulus);
     else if (session.screen === "treasure") renderRunTreasure(root, session, demoContent, demoBattleArt, config, lowStimulus);
     else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message, config, lowStimulus);
-    else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt, lowStimulus);
-    else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt, lowStimulus);
+    else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt, config, lowStimulus);
+    else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt, config, lowStimulus);
     else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError);
     else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
     const handElement = root.querySelector<HTMLElement>(".hand");

@@ -78,7 +78,8 @@ function stageScene(
 ): string {
   const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
   const hero = art.heroUrlByClubId?.[run.clubId] ?? art.heroUrl;
-  return `<main class="run-screen reward-scene ${options.scene}-scene" data-effects="${options.lowStimulus ? "quiet" : "standard"}" aria-label="${html(options.label)}" style="background-image:url('${html(stageUrlForRun(art, run))}')">
+  const locationClass = options.scene === "reward" || options.scene === "route" ? "" : " location-scene";
+  return `<main class="run-screen reward-scene ${options.scene}-scene${locationClass}" data-effects="${options.lowStimulus ? "quiet" : "standard"}" aria-label="${html(options.label)}" style="background-image:url('${html(stageUrlForRun(art, run))}')">
     <div class="reward-scene-actors" aria-hidden="true"><img class="reward-scene-hero" src="${html(hero)}" alt="" decoding="async" />${options.enemyUrl ? `<img class="reward-scene-enemy" src="${html(options.enemyUrl)}" alt="" decoding="async" />` : ""}</div>
     <div class="reward-scene-shade" aria-hidden="true"></div>
     <header class="run-header reward-scene-header" aria-label="ラン情報"><span class="reward-scene-location">ACT ${run.act} · ${node?.floor ?? 0}F ${options.location ? `<span>${html(options.location)}</span>` : ""}</span>${options.headerDetails}</header>
@@ -220,17 +221,17 @@ export function renderRunShop(root: HTMLElement, session: RunSession, content: C
   locationScene(root, session.run, art, "shop", "購買", `<section class="reward-panel economy-panel location-panel shop-panel" aria-label="購買の選択"><div class="location-panel-heading"><span class="eyebrow">SCHOOL STORE</span><h2>購買</h2></div><div class="location-scroll"><div class="economy-section shop-cards"><h3>カード</h3><div class="reward-options">${offers}</div></div><div class="shop-side"><div class="economy-section"><h3>レリック</h3><div class="reward-options">${relicOffers || "売り切れ"}</div></div><div class="economy-section"><h3>ポーション</h3><div class="reward-options">${potionOffers || "売り切れ"}</div></div></div><details class="economy-section shop-removal"><summary>カードを1枚削除 <span class="section-price">◉ ${shop.removalPrice}G${removalReason ? ` · ${removalReason}` : ""}</span></summary><div class="choice-list">${removal}</div></details></div><div class="location-panel-footer"><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button><p class="economy-message" role="status">${html(message)}</p></div></section>`, requireSetting(config.potionSlots), lowStimulus);
 }
 
-export function renderRunRest(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, lowStimulus = false): void {
+export function renderRunRest(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, config: GameConfig = DEFAULT_GAME_CONFIG, lowStimulus = false): void {
   const choices = session.run.deck.filter((instance) => !instance.upgraded).map((instance) => {
     const card = content.cards.find((item) => item.id === instance.cardId)!;
     return `<button type="button" class="mini-choice" data-action="rest-upgrade" data-id="${instance.instanceId}">${html(card.input.text)}</button>`;
   }).join("");
   const { hp, maxHp } = session.run.player;
   const healed = Math.min(maxHp - hp, Math.ceil(maxHp * DEFAULT_ECONOMY_OPTIONS.restHealPercent / 100));
-  locationScene(root, session.run, art, "rest", "休憩", `<section class="reward-panel economy-panel rest-panel location-panel" aria-label="休憩の選択"><span class="eyebrow">QUIET ROOM</span><h2>休憩</h2><div class="rest-actions"><button type="button" class="skip-reward rest-heal" data-action="rest-heal"><span class="rest-action-icon" aria-hidden="true">♥</span><span class="rest-action-text"><strong>休んで回復</strong><span>HP ${hp}/${maxHp} → ${hp + healed}/${maxHp}</span></span><b>${healed === 0 ? "HPは満タン" : `＋${healed} HP`}</b></button><div class="economy-section rest-upgrade"><h3><span class="rest-action-icon" aria-hidden="true">↑</span> カードを1枚強化</h3><div class="choice-list">${choices || "強化可能なカードなし"}</div></div></div></section>`, requireSetting(DEFAULT_GAME_CONFIG.potionSlots), lowStimulus);
+  locationScene(root, session.run, art, "rest", "休憩", `<section class="reward-panel economy-panel rest-panel location-panel" aria-label="休憩の選択"><span class="eyebrow">QUIET ROOM</span><h2>休憩</h2><div class="rest-actions"><button type="button" class="skip-reward rest-heal" data-action="rest-heal"><span class="rest-action-icon" aria-hidden="true">♥</span><span class="rest-action-text"><strong>休んで回復</strong><span>HP ${hp}/${maxHp} → ${hp + healed}/${maxHp}</span></span><b>${healed === 0 ? "HPは満タン" : `＋${healed} HP`}</b></button><div class="economy-section rest-upgrade"><h3><span class="rest-action-icon" aria-hidden="true">↑</span> カードを1枚強化</h3><div class="choice-list">${choices || "強化可能なカードなし"}</div></div></div></section>`, requireSetting(config.potionSlots), lowStimulus);
 }
 
-export function renderRunEvent(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, lowStimulus = false): void {
+export function renderRunEvent(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, config: GameConfig = DEFAULT_GAME_CONFIG, lowStimulus = false): void {
   const event = activeEvent(session.run, content);
   const choices = availableEventChoices(session.run, content).map(({ choice, available }) => {
     const targets = eventChoiceTargets(session.run, choice);
@@ -243,7 +244,7 @@ export function renderRunEvent(root: HTMLElement, session: RunSession, content: 
     }).join("");
     return `<div class="event-target-choice"><strong>${html(eventActionTitle(choice.label))}</strong>${effects}<label>対象カードを選ぶ<select data-event-target="${html(choice.id)}" aria-label="${html(choice.label)}の対象カード">${options}</select></label><button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}">このカードで決定</button></div>`;
   }).join("");
-  locationScene(root, session.run, art, "event", "校内イベント", `<section class="reward-panel event-panel location-panel" aria-label="校内イベントの選択"><span class="eyebrow">AFTER SCHOOL</span><h2>${html(event.title)}</h2><p class="event-story">${html(event.description)}</p><div class="event-choices">${choices}</div></section>`, requireSetting(DEFAULT_GAME_CONFIG.potionSlots), lowStimulus);
+  locationScene(root, session.run, art, "event", "校内イベント", `<section class="reward-panel event-panel location-panel" aria-label="校内イベントの選択"><span class="eyebrow">AFTER SCHOOL</span><h2>${html(event.title)}</h2><p class="event-story">${html(event.description)}</p><div class="event-choices">${choices}</div></section>`, requireSetting(config.potionSlots), lowStimulus);
 }
 
 export function renderRunResult(root: HTMLElement, session: RunSession, art: BattleArt, playtest: PlaytestRecord | null = null, playtestError = false, historyError = false): void {
