@@ -20,7 +20,6 @@
 .reward-scene-resources { display: flex; gap: 12px; font-size: 12px; font-weight: 800; }
 .reward-scene-header .audio-toggle { margin-left: auto; }
 .reward-scene-overlay { z-index: 3; width: min(720px, calc(100% - 40px)); margin: clamp(42px, 10vh, 104px) auto 40px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-.reward-scene-overlay .eyebrow { display: inline-block; padding: 6px 12px; border: 1px solid #a9bdc8a0; border-radius: 3px; background: #1b3549bf; color: #f6c3cd; }
 .reward-scene-overlay h2 { margin: 10px 0 18px; color: #fffdf8; font-size: clamp(24px, 2.7vw, 33px); text-shadow: 0 2px 12px #0d2739, 0 1px 1px #0d2739; }
 .reward-scene-overlay .reward-options { max-width: 660px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
 .reward-scene-overlay .reward-card { min-height: 204px; border: 2px solid #afc2c8; border-radius: 4px 14px 4px 14px; background: #fffefaee; box-shadow: 0 6px 0 #43677a9c, 0 16px 28px #0d273b99; backdrop-filter: blur(5px); }

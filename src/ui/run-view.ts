@@ -137,7 +137,7 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
     <div class="reward-scene-actors" aria-hidden="true"><img class="reward-scene-hero" src="${html(hero)}" alt="" decoding="async" />${enemy ? `<img class="reward-scene-enemy" src="${html(enemy)}" alt="" decoding="async" />` : ""}</div>
     <div class="reward-scene-shade" aria-hidden="true"></div>
     <header class="run-header reward-scene-header" aria-label="報酬を選ぶ時のラン情報"><span class="reward-scene-location">ACT ${run.act} · ${node?.floor ?? 0}F <span>戦闘終了</span></span><span class="reward-scene-health"><strong>♥ ${run.player.hp}/${run.player.maxHp}</strong><span class="reward-scene-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span style="width:${hpRatio}%"></span></span></span><span class="reward-scene-resources"><span>◉ ${run.gold}G</span><span>▤ ${run.deck.length}枚</span></span></header>
-    <section class="reward-panel reward-scene-overlay" aria-label="カード報酬の選択"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button></section>
+    <section class="reward-panel reward-scene-overlay" aria-label="カード報酬の選択"><h2>カードを1枚選ぶ</h2><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button></section>
   </main>`;
 }
 
