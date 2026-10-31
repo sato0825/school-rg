@@ -33,10 +33,18 @@ for (const width of [1024, 1440] as const) for (const [intentId, pose] of [["pap
     await page.clock.runFor(1_600);
     if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-${pose}-preview-${width}.png` });
     if (captureDir) {
-      const labelsHidden = await page.addStyleTag({ content: ".enemy-hud,.intent-body-cue,.intent-trajectory{visibility:hidden!important}" });
+      const labelsHidden = await page.addStyleTag({ content: ".enemy-hud,.enemy-roster,.enemy-art-number,.intent-body-cue,.intent-trajectory{visibility:hidden!important}" });
       await page.screenshot({ path: `${captureDir}/paper-heap-${pose}-visual-only-${width}.png` });
-      await labelsHidden.evaluate((element) => element.remove());
+      await labelsHidden.evaluate((element) => element.parentNode?.removeChild(element));
     }
+    await page.getByRole("button", { name: "操作", exact: true }).click();
+    await page.locator("[data-action=toggle-stimulus]").click();
+    await page.keyboard.press("Escape");
+    await expect(page.locator(".game-shell")).toHaveAttribute("data-effects", "quiet");
+    if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-${pose}-quiet-${width}.png` });
+    await page.getByRole("button", { name: "操作", exact: true }).click();
+    await page.locator("[data-action=toggle-stimulus]").click();
+    await page.keyboard.press("Escape");
     const stageBefore = await page.locator(".stage").boundingBox();
     const enemyBefore = await page.locator(".enemy-slot").boundingBox();
     const remainingMs = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
@@ -69,7 +77,7 @@ test("card damage shows the enemy's hit reaction and quiet mode keeps the action
   if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-hit-quiet-1440.png` });
 });
 
-test("the paper action silhouette fits a five-enemy formation without moving the stage", async ({ page }) => {
+for (const [pose, intentId, quiet] of [["attack", "paper-intent-hit", false], ["guard", "paper-intent-guard", false], ["guard", "paper-intent-guard", true]] as const) test(`${pose} silhouette fits five enemies at 1024px${quiet ? " in quiet mode" : ""}`, async ({ page }) => {
   await page.clock.install();
   await page.setViewportSize({ width: 1024, height: 768 });
   const base = createRunSession(97, "science-demo", demoContent);
@@ -82,16 +90,27 @@ test("the paper action silhouette fits a five-enemy formation without moving the
   const ids = ["paper-heap", "paper-scrap", "hall-mop", "folded-school-map", "archive-clock"];
   const enemies = ids.map((id, index) => {
     const definition = demoContent.enemies.find((enemy) => enemy.id === id)!;
-    return { ...first, instanceId: `five-${index}`, enemyId: id, hp: definition.maxHp, maxHp: definition.maxHp, intentId: definition.intentIds[0]! };
+    return { ...first, instanceId: `five-${index}`, enemyId: id, hp: definition.maxHp, maxHp: definition.maxHp, intentId: index === 0 ? intentId : definition.intentIds[0]! };
   });
   const prepared = { ...entered, run: { ...entered.run, combat: { ...combat, enemies } } };
   await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
   await page.goto("/");
   await expect(page.locator(".enemy-slot")).toHaveCount(5);
-  await expect(page.locator('.enemy-action-art[data-pose="attack"]')).toBeVisible();
+  await expect(page.locator(`.enemy-action-art[data-pose="${pose}"]`)).toBeVisible();
+  if (quiet) {
+    await page.getByRole("button", { name: "操作", exact: true }).click();
+    await page.locator("[data-action=toggle-stimulus]").click();
+    await page.keyboard.press("Escape");
+    await expect(page.locator(".game-shell")).toHaveAttribute("data-effects", "quiet");
+    expect(await page.locator(".enemy-action-art").evaluate((node) => [node, ...node.querySelectorAll("img")].every((item) => item.getAnimations().length === 0))).toBe(true);
+  }
   const [stage, hero, paper] = await Promise.all([page.locator(".stage").boundingBox(), page.locator(".ally-slot").boundingBox(), page.locator(".enemy-action-art").boundingBox()]);
   expect(stage && hero && paper).toBeTruthy();
   expect(paper!.x).toBeGreaterThan(hero!.x + hero!.width);
   expect(paper!.x + paper!.width).toBeLessThanOrEqual(stage!.x + stage!.width);
-  if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-1024.png` });
+  if (captureDir) {
+    await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-${pose}${quiet ? "-quiet" : ""}-1024.png` });
+    await page.addStyleTag({ content: ".enemy-hud,.enemy-roster,.enemy-art-number,.intent-body-cue,.intent-trajectory{visibility:hidden!important}" });
+    await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-${pose}${quiet ? "-quiet" : ""}-visual-only-1024.png` });
+  }
 });
