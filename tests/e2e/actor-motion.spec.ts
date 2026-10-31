@@ -69,3 +69,23 @@ test("the enemy hit changes the same body parts without moving the stage", async
   expect(await actor.boundingBox()).toEqual(before);
   await expect(page.locator(".player-health strong")).not.toContainText("40/40");
 });
+
+test("quiet effects preserve a readable hit expression without character motion", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("school-rg-low-stimulus-v1", "1"));
+  await page.clock.install();
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
+  await expect(page.locator('.game')).toHaveAttribute("data-effects", "quiet");
+  await page.keyboard.type("outline");
+  await page.clock.runFor(500);
+  const remainingMs = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.clock.remainingMs as number);
+  await page.clock.runFor(remainingMs + 1);
+  await page.clock.runFor(650);
+  const actor = page.locator(".game-shell .ally-slot").first();
+  await expect(actor).toHaveAttribute("data-actor-motion", "hit");
+  expect(await actor.locator('[data-part="head-hit"]').evaluate((node) => getComputedStyle(node).visibility)).toBe("visible");
+  expect(await actor.locator('[data-part="head-hit"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+});
