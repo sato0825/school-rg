@@ -47,6 +47,10 @@ try {
     await low.goto(`${mock}?state=impact&low=1`);
     assert(await low.locator('.screen.summary.low-stimulus').count(), `${width}×${height}: low-stimulus skips impact`);
     await low.close();
+    const atrium = await browser.newPage({ viewport: { width, height } });
+    await atrium.goto(`${mock}?state=summary&stage=atrium`);
+    assert(await atrium.locator('.stage-bg').evaluate((image) => image.complete && image.naturalWidth > 0), `${width}×${height}: atrium comparison loads`);
+    await atrium.close();
   }
   console.log('Defeat mock: image loading, layout, stage presence, low-stimulus states passed at PC/iPad sizes.');
 } finally {

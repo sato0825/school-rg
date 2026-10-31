@@ -91,6 +91,7 @@
   const state = query.get('state');
   const displayState = query.has('low') ? 'summary' : (['impact','settled','summary'].includes(state) ? state : 'settled');
   screen.className = `screen ${displayState}${query.has('low') ? ' low-stimulus' : ''}${query.has('controls') ? ' show-controls' : ''}`;
+  if (query.get('stage') === 'atrium') document.querySelector('.stage-bg').src = 'issue252-assets/paper-atrium-issue249-candidate-v1.png';
   if (query.get('club') === 'science') {
     document.querySelector('.actor.hit').src = '../art/candidates/serious-student-hit-candidate-v2.png';
     document.querySelector('.actor.defeat').src = '../art/candidates/serious-student-defeat-candidate-v1.png';
