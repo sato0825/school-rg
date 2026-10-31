@@ -1,0 +1,50 @@
+/* Dense formations use a single ordered list of targets. Their stage artwork stays
+   clickable by pointer; the roster is the keyboard and screen-reader target. */
+.enemy-order,.enemy-detail{display:none}
+.stage:is([data-enemy-count="3"],[data-enemy-count="4"],[data-enemy-count="5"]) .enemy-slot .intent-ticket,
+.stage:is([data-enemy-count="3"],[data-enemy-count="4"],[data-enemy-count="5"]) .enemy-slot .enemy-hud,
+.stage:is([data-enemy-count="3"],[data-enemy-count="4"],[data-enemy-count="5"]) .enemy-slot .enemy-status{display:none}
+.stage:is([data-enemy-count="3"],[data-enemy-count="4"],[data-enemy-count="5"]) .enemy-slot{bottom:52px;pointer-events:none;cursor:default}
+.stage:is([data-enemy-count="3"],[data-enemy-count="4"],[data-enemy-count="5"]) .enemy-slot.targeted:after{inset:12% -3% 4%;border-width:2px;box-shadow:0 0 0 2px #fff8}
+.enemy-art-number{position:absolute;z-index:5;top:17%;left:50%;display:grid;place-items:center;width:23px;height:23px;transform:translateX(-50%);border:2px solid #fff;border-radius:50%;background:#17354c;color:#fff;box-shadow:0 2px 7px #152b42b5;font:900 12px/1 ui-monospace,monospace}
+.enemy-roster{position:absolute;z-index:8;right:16px;bottom:10px;left:43%;display:grid;grid-template-columns:repeat(var(--enemy-count),minmax(0,1fr));gap:6px;pointer-events:auto}
+.enemy-roster-button{position:relative;display:grid;gap:5px;min-width:0;min-height:47px;padding:5px 7px;border:1px solid #d1e0e6;border-top:3px solid #e47786;border-radius:5px;background:#142d41f2;box-shadow:0 4px 9px #12273d70;color:#f3f8f5;cursor:pointer;text-align:left}
+.enemy-roster-button.targeted{outline:3px solid #f4f6ea;outline-offset:2px;border-color:#d0445e}
+.enemy-roster-button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.enemy-roster-head{display:flex;align-items:center;gap:5px;min-width:0}
+.enemy-roster-order{display:grid;flex:none;place-items:center;width:18px;height:18px;border:1px solid #c9e0e8;border-radius:50%;font:900 10px/1 ui-monospace,monospace}
+.enemy-roster-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;font-weight:800}
+.enemy-roster-value{flex:none;font-size:13px;font-weight:900;font-variant-numeric:tabular-nums}
+.enemy-roster-value small{font-size:9px;color:#dce7e9}
+.enemy-roster-bar{display:block;height:9px;overflow:hidden;border:1px solid #e5d6d3;border-radius:2px;background:repeating-linear-gradient(90deg,#293a47 0,#293a47 calc(25% - 1px),#d1dad8 calc(25% - 1px),#d1dad8 25%)}
+.enemy-roster-bar>span{display:block;height:100%;border-right:2px solid #fff;background:#e87583}
+.enemy-roster-button .enemy-detail{position:absolute;right:0;bottom:calc(100% + 7px);z-index:9;width:min(230px,65vw);min-height:94px;gap:5px;padding:8px;border:2px solid #e7eff1;border-left:4px solid #c9536c;border-radius:6px;background:#fdfbf5f7;box-shadow:0 8px 18px #132c426b;color:#263e50;text-align:left;pointer-events:none}
+.enemy-roster-button:nth-child(-n+2) .enemy-detail{left:0;right:auto}
+.enemy-roster-button:is(:hover,:focus,.targeted) .enemy-detail{display:grid}
+.enemy-roster:has(.enemy-roster-button:is(:hover,:focus)) .enemy-roster-button.targeted:not(:hover):not(:focus) .enemy-detail{display:none}
+@media(max-width:760px){
+  .enemy-roster{left:8px;right:8px;bottom:6px;gap:4px}
+  .enemy-roster-button{min-height:45px;padding:4px 3px;gap:3px}
+  .enemy-roster-head{gap:2px}
+  .enemy-roster-name{font-size:8px}
+  .stage:is([data-enemy-count="4"],[data-enemy-count="5"]) .enemy-roster-name{display:none}
+  .enemy-roster-value{margin-left:auto;font-size:11px}
+  .enemy-roster-value small{font-size:8px}
+  .enemy-roster-bar{height:8px}
+  .enemy-roster-button .enemy-detail{width:min(230px,62vw)}
+  .enemy-art-number{top:22%;width:21px;height:21px;font-size:11px}
+  .enemy-detail-heading{display:flex;align-items:baseline;gap:6px;min-width:0}
+  .enemy-detail-heading>span{flex:none;color:#a43c56;font-size:10px;font-weight:900}
+  .enemy-detail-heading strong{min-width:0;overflow-wrap:anywhere;font-size:13px;line-height:1.1}
+  .enemy-detail-intent{display:flex;align-items:center;gap:6px;padding:5px;border:1px solid #d8d6cc;border-radius:4px;background:#fff}
+  .enemy-detail-icon{display:grid;flex:none;place-items:center;width:23px;height:23px;border:1px solid #aa4a60;border-radius:50%;color:#a43c56;font-size:15px;font-weight:900}
+  .enemy-detail-intent>span:nth-child(2){display:grid;flex:1;min-width:0;gap:2px}
+  .enemy-detail-intent small{color:#5b6972;font-size:9px;font-weight:800;line-height:1.15}
+  .enemy-detail-intent strong{font-size:11px;line-height:1.15;overflow-wrap:anywhere}
+  .enemy-detail-intent b{flex:none;color:#9b304a;font-size:17px;font-variant-numeric:tabular-nums}
+  .enemy-detail-values,.enemy-detail-status{font-size:10px;font-weight:800;line-height:1.2}
+  .enemy-detail-status{color:#675374}
+}
+@media(max-width:760px) and (min-height:800px){
+  .enemy-roster-button .enemy-detail{bottom:calc(100% + clamp(90px, calc(100dvh - 675px), 170px));max-height:150px;overflow-y:auto;pointer-events:auto}
+}

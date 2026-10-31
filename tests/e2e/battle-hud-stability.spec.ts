@@ -27,6 +27,15 @@ for (const width of [1440, 390]) {
     await expect(page.locator(".topbar .player-hud")).toContainText("科学部");
     await expect(page.locator(".topbar .battle-guide")).toHaveCount(2);
     await expect(page.locator(".typing-row .battle-guide")).toHaveCount(0);
+    await expect(page.locator(".intent-copy small")).toContainText("次の行動");
+    await expect(page.locator(".enemy-health-track")).toHaveAttribute("role", "meter");
+    await expect(page.locator(".enemy-health-track")).toHaveAttribute("aria-valuenow", /\d+/);
+    await expect(page.locator(".player-health-track")).toHaveAttribute("role", "meter");
+    await expect(page.locator(".typing-caption")).toContainText("カード名をタイプ");
+    await page.locator("[data-action=toggle-stimulus]").click();
+    await expect(page.locator(".game")).toHaveAttribute("data-effects", "quiet");
+    expect(await page.locator(".enemy-art").evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+    await page.locator("[data-action=toggle-stimulus]").click();
     expect(before.player.y + before.player.height).toBeLessThanOrEqual(before.stage.y + 1);
     expect(before.message.y + before.message.height).toBeLessThanOrEqual(before.controls.y + before.controls.height + 1);
     expect(before.scrollWidth).toBe(width);

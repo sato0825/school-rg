@@ -50,6 +50,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (savedHistory) history = parseRunHistory(JSON.parse(savedHistory));
   } catch { historyLoadError = true; }
   const selectedAscensionLevels: Record<string, number> = {};
+  let lowStimulus = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+  try {
+    const savedDisplay = localStorage.getItem("school-rg-low-stimulus-v1");
+    if (savedDisplay !== null) lowStimulus = savedDisplay === "1";
+  } catch { /* Keep the device preference when storage is unavailable. */ }
   let session = createRunSession(0, "literature-demo", demoContent, mapOptions);
   let frontScreen: "title" | "clubs" | "compendium" | "combat-log" | "history" | null = "title";
   let frontReturn: "title" | null = "title";
@@ -79,7 +84,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   const artPreloads: HTMLImageElement[] = [];
   let preloadedClubId: string | null = null;
   const preloadClubArt = (clubId: string) => {
@@ -128,6 +133,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   };
   const render = () => {
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
+    const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
     const restoreCombatLogFocus = frontScreen === "combat-log" && root.querySelector('[data-action="front-back"]') === document.activeElement;
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
     else if (frontScreen === "title") renderRunTitle(root, demoBattleArt, history);
@@ -145,9 +151,20 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
+    if (restoreTypingFocus && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
     if (restoreCombatLogFocus) root.querySelector<HTMLButtonElement>('[data-action="front-back"]')?.focus();
     const header = root.querySelector(".topbar, .run-header");
     if (header) {
+      if (session.screen === "combat" && frontScreen === null) {
+        const displayToggle = document.createElement("button");
+        displayToggle.type = "button";
+        displayToggle.className = "stimulus-toggle";
+        displayToggle.dataset.action = "toggle-stimulus";
+        displayToggle.setAttribute("aria-pressed", String(lowStimulus));
+        displayToggle.setAttribute("aria-label", lowStimulus ? "低刺激表示を解除する" : "低刺激表示にする");
+        displayToggle.textContent = lowStimulus ? "演出 控えめ" : "演出 標準";
+        header.append(displayToggle);
+      }
       const toggle = document.createElement("button");
       toggle.type = "button";
       toggle.className = "audio-toggle";
@@ -269,19 +286,37 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     render();
   }
 
-  function onKeyDown(event: KeyboardEvent): void {
-    if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
-    if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
-    if (event.target instanceof HTMLButtonElement && event.key.length === 1) event.target.blur();
-    if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey)) event.preventDefault();
+  function submitInputKey(key: string, repeat: boolean, isComposing: boolean): void {
     try {
-      if (event.key === requireSetting(config.potionModeKey)) run = setPotionInputActive(run, !run.combat.potionControl?.active, clock, demoContent, disposition);
-      else if (run.combat.potionControl?.active) run = submitPotionKey(run, { key: event.key, repeat: event.repeat, isComposing: event.isComposing }, clock, config, demoContent, disposition);
-      else run = submitPlayerKey(run, { key: event.key, repeat: event.repeat, isComposing: event.isComposing }, clock, config, demoContent, useCard, disposition);
+      if (key === requireSetting(config.potionModeKey)) run = setPotionInputActive(run, !run.combat!.potionControl?.active, clock, demoContent, disposition);
+      else if (run.combat!.potionControl?.active) run = submitPotionKey(run, { key, repeat, isComposing }, clock, config, demoContent, disposition);
+      else run = submitPlayerKey(run, { key, repeat, isComposing }, clock, config, demoContent, useCard, disposition);
       settleIfFinished();
       render();
       enemyPhase();
     } catch (error) { handleError(error); }
+  }
+
+  function onKeyDown(event: KeyboardEvent): void {
+    if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
+    if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
+    const focusTypingInput = event.target instanceof HTMLButtonElement && event.key.length === 1;
+    if (event.target instanceof HTMLButtonElement && event.key.length === 1) event.target.blur();
+    if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (event.key === "Backspace" || event.key === "Delete"))) event.preventDefault();
+    submitInputKey(event.key, event.repeat, event.isComposing);
+    if (focusTypingInput && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
+  }
+
+  function onBeforeInput(event: InputEvent): void {
+    if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
+    event.preventDefault();
+    if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused || event.inputType !== "insertText" || !event.data || [...event.data].length !== 1 || event.isComposing) return;
+    submitInputKey(event.data, false, false);
+  }
+
+  function onTypingInput(event: Event): void {
+    if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
+    event.target.value = run.combat?.potionControl?.active ? run.combat.potionControl.typing.buffer : run.combat?.typing.buffer ?? "";
   }
 
   function onClick(event: MouseEvent): void {
@@ -348,6 +383,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (frontScreen !== null || restoreError) return;
       if (restoreError) return;
+      if (action === "toggle-stimulus" && session.screen === "combat") {
+        lowStimulus = !lowStimulus;
+        view.lowStimulus = lowStimulus;
+        try { localStorage.setItem("school-rg-low-stimulus-v1", lowStimulus ? "1" : "0"); } catch { /* Setting still applies in this session. */ }
+        render();
+        root.querySelector<HTMLButtonElement>("[data-action=toggle-stimulus]")?.focus();
+        return;
+      }
       if (action === "export-playtest" && metrics) {
         persist();
         const blob = new Blob([JSON.stringify(metrics.record, null, 2)], { type: "application/json" });
@@ -456,6 +499,10 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       settleIfFinished();
       render();
+      if (action === "enemy") {
+        const targetButtons = root.querySelectorAll<HTMLButtonElement>(".enemy-roster-button[data-action='enemy'], .enemy-slot[data-action='enemy']");
+        Array.from(targetButtons).find((enemyButton) => enemyButton.dataset.id === id && !enemyButton.hasAttribute("aria-hidden"))?.focus();
+      }
       enemyPhase();
     } catch (error) { handleError(error); }
   }
@@ -475,16 +522,20 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   function refreshTime(): void {
     const remainingMs = run.combat!.clock.remainingMs;
     const time = root.querySelector<HTMLElement>("[data-role=time]");
+    const timeTrack = root.querySelector<HTMLElement>(".time-track");
     const fill = root.querySelector<HTMLElement>("[data-role=time-fill]");
     if (time) {
       const seconds = (remainingMs / 1_000).toFixed(1);
-      time.innerHTML = `${seconds}<small> sec</small>`;
+      time.innerHTML = `${seconds}<small> 秒</small>`;
       time.setAttribute("aria-label", `残り時間 ${seconds}秒`);
     }
+    timeTrack?.setAttribute("aria-valuenow", String(remainingMs));
     if (fill) fill.style.width = `${Math.max(0, Math.min(100, remainingMs / view.baseTurnMs * 100))}%`;
   }
 
   root.addEventListener("click", onClick);
+  root.addEventListener("beforeinput", onBeforeInput);
+  root.addEventListener("input", onTypingInput);
   window.addEventListener("keydown", onKeyDown);
   document.addEventListener("visibilitychange", onVisibility);
   window.addEventListener("pagehide", onPageHide);
@@ -509,6 +560,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     window.clearInterval(timer);
     window.clearInterval(saveTimer);
     root.removeEventListener("click", onClick);
+    root.removeEventListener("beforeinput", onBeforeInput);
+    root.removeEventListener("input", onTypingInput);
     window.removeEventListener("keydown", onKeyDown);
     document.removeEventListener("visibilitychange", onVisibility);
     window.removeEventListener("pagehide", onPageHide);
