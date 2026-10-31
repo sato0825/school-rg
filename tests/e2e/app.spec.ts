@@ -888,7 +888,7 @@ test("one to three ally slots fit a shared stage at desktop and narrow widths", 
     await page.getByRole("button", { name: /文芸部/ }).click();
     await enterNextNode(page);
     await page.locator(".hero-art").evaluate(async (image) => (image as HTMLImageElement).decode());
-    await page.locator(".enemy-art").evaluate(async (image) => (image as HTMLImageElement).decode());
+    await page.locator(".enemy-slot img.enemy-art, .enemy-slot .enemy-action-art .enemy-pose-idle").first().evaluate(async (image) => (image as HTMLImageElement).decode());
     for (const width of [1440, 390]) {
       await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
       const boxes = await page.evaluate(() => {
@@ -900,8 +900,9 @@ test("one to three ally slots fit a shared stage at desktop and narrow widths", 
         return { stage: { left: stage.left, right: stage.right, bottom: stage.bottom },
           allies: rect(".ally-slot").map((box) => ({ left: box.left, right: box.right, bottom: box.bottom })),
           enemies: rect(".enemy-slot").map((box) => ({ left: box.left, right: box.right, bottom: box.bottom })),
-          label: previewLabel && { left: previewLabel.left, right: previewLabel.right },
-          hudRight: playerHud.right, hudBottom: playerHud.bottom, stageTop: stage.top, intentLeft: intent.left };
+          label: previewLabel && { left: previewLabel.left, right: previewLabel.right, top: previewLabel.top, bottom: previewLabel.bottom },
+          hudRight: playerHud.right, hudBottom: playerHud.bottom, stageTop: stage.top,
+          intent: { left: intent.left, right: intent.right, top: intent.top, bottom: intent.bottom } };
       });
       expect(boxes.allies).toHaveLength(count);
       for (const box of [...boxes.allies, ...boxes.enemies]) {
@@ -914,7 +915,11 @@ test("one to three ally slots fit a shared stage at desktop and narrow widths", 
       if (count > 1) {
         expect(boxes.hudBottom).toBeLessThanOrEqual(boxes.stageTop + 1);
         expect(boxes.label!.left).toBeGreaterThanOrEqual(boxes.stage.left - 1);
-        expect(boxes.label!.right).toBeLessThanOrEqual(boxes.intentLeft + 1);
+        expect(boxes.label!.right).toBeLessThanOrEqual(boxes.stage.right + 1);
+        const label = boxes.label!;
+        const intent = boxes.intent;
+        const intersects = label.left < intent.right && label.right > intent.left && label.top < intent.bottom && label.bottom > intent.top;
+        expect(intersects).toBe(false);
       }
       await expect(page.locator(".control-deck")).toBeVisible();
     }
