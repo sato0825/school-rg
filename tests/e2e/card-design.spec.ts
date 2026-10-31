@@ -15,6 +15,7 @@ for (const [clubId, clubName] of clubs) {
     await page.getByRole("button", { name: clubName }).click();
     await page.locator(".map-node.available").filter({ hasText: "戦闘" }).first().click();
     await expect(page.locator(".card")).toHaveCount(5);
+    await expect(page.locator('.hand .card-art[data-art-state="missing"]')).toHaveCount(0);
     await expect(page.locator(".card-sigil")).toHaveCount(5);
     await expect(page.locator(".intent-ticket")).toBeInViewport();
     await expect(page.locator(".typing-buffer")).toBeInViewport();

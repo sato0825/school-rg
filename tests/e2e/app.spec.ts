@@ -449,6 +449,21 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
     };
   });
   await expectIntentMatchesSavedBattle(page);
+  expect(await page.locator('.enemy-hud .intent-copy strong').first().evaluate((node) => Number.parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThanOrEqual(13);
+  if (process.env.SCHOOL_RG_CAPTURE_261 === "1") {
+    const original = page.viewportSize()!;
+    for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
+      await page.setViewportSize(viewport);
+      await page.locator(".hero-art,.enemy-art,.card-art img").evaluateAll(async (images) => Promise.all(images.map((image) => (image as HTMLImageElement).decode())));
+      const longWordFits = await page.locator('.hand .card[data-long-word="true"]').evaluateAll((cards) => cards.every((card) => {
+        const effect = card.querySelector('.card-effect');
+        return effect !== null && effect.getBoundingClientRect().bottom <= card.getBoundingClientRect().bottom - 4;
+      }));
+      expect(longWordFits).toBe(true);
+      await page.screenshot({ path: `docs/art/previews/issue261-combat-${viewport.width}-candidate-v3.png` });
+    }
+    await page.setViewportSize(original);
+  }
   const initialHp = Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"));
   await page.keyboard.type("heavy strike");
   await page.keyboard.type("strike");
@@ -480,10 +495,19 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
         && Math.abs(saved.stageRect.top - stageRect.top) < 1 && Math.abs(saved.stageRect.height - stageRect.height) < 1
         && Math.abs(saved.actorRect.left - actorRect.left) < 1 && Math.abs(saved.actorRect.bottom - actorRect.bottom) < 1;
     })).toBe(true);
+    if (process.env.SCHOOL_RG_CAPTURE_261 === "1") {
+      const original = page.viewportSize()!;
+      for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
+        await page.setViewportSize(viewport);
+        await page.locator(".hero-art,.reward-card .card-art img").evaluateAll(async (images) => Promise.all(images.map((image) => (image as HTMLImageElement).decode())));
+        await page.screenshot({ path: `docs/art/previews/issue261-${screen}-${viewport.width}-candidate-v3.png` });
+      }
+      await page.setViewportSize(original);
+    }
   }
   await page.reload();
   expect(await page.locator('.game-shell[data-screen="map"] .map-node.available').count()).toBeGreaterThan(0);
-  await expect(page.locator('.game-shell .hero-art')).toHaveAttribute("alt", "文芸部の生徒");
+  await expect(page.locator('.game-shell .hero-art')).toHaveAttribute("alt", "吉野 こはる、文芸部");
 });
 
 test("an elite formation accepts a typed single target and an all-enemy attack", async ({ page }) => {
@@ -1404,6 +1428,7 @@ test("sound toggle stays usable on a narrow screen and survives reload", async (
   await expect(sound).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: /文芸部/ }).click();
   await enterNextNode(page);
+  await page.getByRole("button", { name: "操作" }).click();
   await expect(sound).toBeVisible();
   await expect(sound).toHaveAttribute("aria-pressed", "true");
 });
@@ -1426,7 +1451,9 @@ test("one typed card emits one sound and mute suppresses the next card", async (
   await enterNextNode(page);
   await page.keyboard.type("heavy strike");
   expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
+  await page.getByRole("button", { name: "操作" }).click();
   await page.locator("[data-action=toggle-audio]").click();
+  await page.getByRole("button", { name: "操作" }).click();
   await page.keyboard.type("strike");
   expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
 });

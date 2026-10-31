@@ -9,6 +9,7 @@ import { presentationForClub } from "./club-presentation.js";
 import { MAP_ROW_HEIGHT, mapRouteSegments } from "./map-layout.js";
 import { mapKindIcons as kindIcons, mapKindNames as kindNames } from "./map-symbols.js";
 import { stageUrlForAct, stageUrlForRun } from "./stage-presentation.js";
+import { cardArtForId } from "./card-art.js";
 import { formatPlaytestTime, type PlaytestRecord } from "./playtest-metrics.js";
 import { historyCounts, type RunHistory } from "../domain/run-history.js";
 import { DEFAULT_ECONOMY_OPTIONS } from "../domain/economy.js";
@@ -125,7 +126,8 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
   const signature = new Set(content.clubs.find((club) => club.id === session.run.clubId)?.signatureCardIds ?? []);
   const cards = session.rewardCardIds.map((cardId) => {
     const card = content.cards.find((item) => item.id === cardId)!;
-    return `<button type="button" class="reward-card ${signature.has(card.id) ? "signature" : ""}" data-card-kind="${card.type}" data-action="reward-card" data-id="${card.id}"><span class="offer-heading">${offerSymbol("card")}<small>${signature.has(card.id) ? "部活固有 · " : ""}${cardKindNames[card.type] ?? html(card.type)}</small></span><strong>${html(card.input.text)}</strong><span class="offer-description">${html(describeCard(card, content))}</span><span class="offer-outcome"><span aria-hidden="true">＋</span> デッキに追加</span></button>`;
+    const cardArt = cardArtForId(card.id);
+    return `<button type="button" class="reward-card ${signature.has(card.id) ? "signature" : ""}" data-card-kind="${card.type}" data-art-id="${html(cardArt.artId)}" data-art-version="${html(cardArt.version)}" data-action="reward-card" data-id="${card.id}" aria-label="${html(card.input.text)}。${html(describeCard(card, content))}。デッキに追加"><span class="offer-heading">${offerSymbol("card")}<small>${signature.has(card.id) ? "部活固有 · " : ""}${cardKindNames[card.type] ?? html(card.type)}</small></span><span class="card-art" data-art-state="${cardArt.state}" aria-hidden="true">${cardArt.url ? `<img src="${html(cardArt.url)}" alt="" />` : ""}</span><strong>${html(card.input.text)}</strong><span class="offer-description">${html(describeCard(card, content))}</span><span class="offer-outcome"><span aria-hidden="true">＋</span> デッキに追加</span></button>`;
   }).join("");
   root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
 }

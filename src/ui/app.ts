@@ -89,7 +89,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, resultFx: null, dyingEnemyInstanceIds: [], animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, resultFx: null, dyingEnemyInstanceIds: [], animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   let imeComposing = false;
   let imeNeedsRecovery = false;
   let keyboardLayoutMap: ReadonlyMap<string, string> | null = null;
@@ -173,7 +173,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         gameShell.showOverlay("reward", run, rendered);
       } else {
         view.animationNowMs = clock.nowMs();
-        renderBattle(rendered, run, demoContent, view);
+        renderBattle(rendered, run, demoContent, view, config);
         gameShell.showBattle(run, rendered);
       }
     }
@@ -182,7 +182,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (session.screen === "rest") { gameShell = null; renderRunRest(root, session, demoContent, demoBattleArt); }
     else if (session.screen === "event") { gameShell = null; renderRunEvent(root, session, demoContent, demoBattleArt); }
     else if (session.screen === "won" || session.screen === "lost") { gameShell = null; renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError); }
-    else { gameShell = null; view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
+    else { gameShell = null; view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view, config); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
     const mapScroll = root.querySelector<HTMLElement>(".map-scroll");
@@ -211,7 +211,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         displayToggle.setAttribute("aria-pressed", String(lowStimulus));
         displayToggle.setAttribute("aria-label", lowStimulus ? "低刺激表示を解除する" : "低刺激表示にする");
         displayToggle.textContent = lowStimulus ? "演出 控えめ" : "演出 標準";
-        header.append(displayToggle);
+        (root.querySelector("#battle-help") ?? header).append(displayToggle);
       }
       const toggle = document.createElement("button");
       toggle.type = "button";
@@ -220,7 +220,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       toggle.setAttribute("aria-pressed", String(audio.enabled));
       toggle.setAttribute("aria-label", audio.enabled ? "効果音をオフにする" : "効果音をオンにする");
       toggle.textContent = audio.enabled ? "音 ON" : "音 OFF";
-      header.append(toggle);
+      (session.screen === "combat" && frontScreen === null ? root.querySelector("#battle-help") ?? header : header).append(toggle);
       if (metrics && frontScreen === null && session.screen !== "won" && session.screen !== "lost") {
         const exportButton = document.createElement("button");
         exportButton.type = "button";
@@ -352,7 +352,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     resumeAfterBattleMap = false;
     view.helpOpen = false;
     restoreError = false;
-    view.message = "カード名をタイプして発動。誤入力は無視されます。";
+    view.message = "";
     render();
   }
 
@@ -551,7 +551,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         run = session.run;
         if (metrics) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === id)!);
         if (session.screen === "combat") startCombat();
-        view.message = session.screen === "shop" ? "購入するカードを選んでください。" : "カード名をタイプして発動。誤入力は無視されます。";
+        view.message = session.screen === "shop" ? "購入するカードを選んでください。" : "";
         render();
         return;
       }
@@ -576,7 +576,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         run = session.run;
         for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
         if (session.screen === "combat") startCombat();
-        view.message = "カード名をタイプして発動。誤入力は無視されます。";
+        view.message = "";
         render();
         return;
       }

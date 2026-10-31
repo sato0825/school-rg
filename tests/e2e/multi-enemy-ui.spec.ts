@@ -82,3 +82,65 @@ for (const [count, width, height] of [[3, 390, 844], [4, 390, 844], [5, 390, 800
     }
   });
 }
+
+for (const width of [1024, 1440] as const) test(`five different enemies show every ordered Intent step at ${width}px`, async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
+  const base = createRunSession(42, "science-demo", demoContent);
+  const start: MapNode = { id: "five-start", act: 1, floor: 0, kind: "start", nextIds: ["five-fight"] };
+  const fight: MapNode = { id: "five-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+  const entered = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
+    demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
+  const selected = [
+    ["hall-mop", "mop-intent-sweep"],
+    ["archive-clock", "clock-intent-prepare"],
+    ["stage-spotlight", "spotlight-intent-glare"],
+    ["folded-school-map", "map-intent-call"],
+    ["paper-scrap", "scrap-intent-hit"],
+  ] as const;
+  const enemies = selected.map(([enemyId, intentId], index) => {
+    const definition = demoContent.enemies.find((item) => item.id === enemyId)!;
+    return { ...entered.run.combat!.enemies[0]!, instanceId: `five-enemy-${index}`, enemyId, intentId, hp: definition.maxHp, maxHp: definition.maxHp };
+  });
+  const session = { ...entered, run: { ...entered.run, combat: { ...entered.run.combat!, enemies } } };
+  const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
+  await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+  await page.goto("/");
+  const roster = page.locator(".enemy-roster-button");
+  await expect(roster).toHaveCount(5);
+  await expect(roster.nth(0).locator(":scope > .intent-steps > .intent-step")).toHaveCount(2);
+  await expect(roster.nth(0)).toHaveAttribute("aria-label", /1番目.*攻撃.*2番目.*ブロック/);
+  await expect(roster.nth(1).locator(":scope > .intent-steps > .intent-step")).toHaveCount(2);
+  await expect(roster.nth(1)).toHaveAttribute("aria-label", /1番目.*力.*2番目.*ブロック/);
+  await expect(roster.nth(2)).toHaveAttribute("aria-label", /脆弱/);
+  await expect(roster.nth(3)).toHaveAttribute("aria-label", /召喚/);
+  const effectTokensFit = await roster.evaluateAll((buttons) => buttons.every((button) => {
+    const band = button.querySelector('.intent-steps');
+    if (!band || band.scrollWidth > band.clientWidth + 1) return false;
+    return [...band.querySelectorAll('.intent-step')].every((token) => {
+      const bounds = token.getBoundingClientRect();
+      return bounds.right <= band.getBoundingClientRect().right + 1 && Number.parseFloat(getComputedStyle(token).fontSize) >= 13;
+    });
+  }));
+  expect(effectTokensFit).toBe(true);
+  await page.locator(".enemy-art").evaluateAll(async (images) => Promise.all(images.map((image) => (image as HTMLImageElement).decode())));
+  if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1") await page.screenshot({ path: `docs/art/previews/issue261-five-enemies-${width}-candidate-v3.png` });
+  await roster.nth(0).click();
+  await expect(roster.nth(0)).toHaveAttribute("aria-pressed", "true");
+  await expect(roster.nth(0).locator(".enemy-detail")).toBeVisible();
+  const detailOrigin = await roster.nth(0).locator(".enemy-detail").boundingBox();
+  expect(detailOrigin).not.toBeNull();
+  expect(detailOrigin!.y).toBeLessThan(90);
+  for (let index = 1; index < 5; index += 1) {
+    await roster.nth(index).click();
+    await expect(roster.nth(index)).toHaveAttribute("aria-pressed", "true");
+    const detail = roster.nth(index).locator(".enemy-detail");
+    await expect(detail).toBeVisible();
+    const box = await detail.boundingBox();
+    expect(box).not.toBeNull();
+    expect(Math.abs(box!.x - detailOrigin!.x)).toBeLessThan(1);
+    expect(Math.abs(box!.y - detailOrigin!.y)).toBeLessThan(1);
+  }
+  await roster.nth(0).click();
+  if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1") await page.screenshot({ path: `docs/art/previews/issue261-five-enemies-selected-${width}-candidate-v3.png` });
+});
