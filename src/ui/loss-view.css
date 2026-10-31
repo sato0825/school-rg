@@ -1,12 +1,12 @@
 .game-shell[data-screen="lost"] .control-deck{visibility:hidden;opacity:0;pointer-events:none;transition:opacity .25s ease-out,visibility 0s linear .25s}
 .game-shell[data-screen="lost"] .topbar{height:62px;min-height:62px}
-.game-shell[data-screen="lost"] .loss-header-facts{display:flex;align-items:center;gap:30px;font-size:12px;font-weight:850;letter-spacing:.04em;color:#dce9ef}
-.game-shell[data-screen="lost"] .loss-header-place{color:#d7e6ed}
-.game-shell[data-screen="lost"] .loss-header-health{display:flex;align-items:baseline;gap:3px;color:#f09bb2}
+.game-shell[data-screen="lost"] .loss-header-facts{display:flex;align-items:center;gap:30px;font-size:12px;font-weight:850;letter-spacing:.04em;color:#274b59}
+.game-shell[data-screen="lost"] .loss-header-place{color:#274b59}
+.game-shell[data-screen="lost"] .loss-header-health{display:flex;align-items:baseline;gap:3px;color:#a94762}
 .game-shell[data-screen="lost"] .loss-header-health>span{margin-right:4px;font-size:25px}
 .game-shell[data-screen="lost"] .loss-header-health strong{font-size:22px}
-.game-shell[data-screen="lost"] .loss-header-health small{font-size:11px;color:#d5dfe4}
-.game-shell[data-screen="lost"] .loss-header-health i{align-self:center;width:90px;height:4px;margin-left:8px;border-radius:5px;background:#b5c3c557}
+.game-shell[data-screen="lost"] .loss-header-health small{font-size:11px;color:#506a75}
+.game-shell[data-screen="lost"] .loss-header-health i{align-self:center;width:90px;height:4px;margin-left:8px;border-radius:5px;background:#7999a576}
 .game-shell[data-screen="lost"] .enemy-group,.game-shell[data-screen="lost"] .enemy-roster{opacity:.22;filter:saturate(.45);pointer-events:none}
 .game-shell[data-screen="lost"] .intent-ticket,.game-shell[data-screen="lost"] .enemy-hud,.game-shell[data-screen="lost"] .enemy-status{display:none}
 .game-shell[data-screen="lost"] .hero-art.loss-pose{height:min(46vw,98%);max-width:min(36vw,430px);object-fit:contain;object-position:center bottom;animation:loss-pose-settle .3s ease-out both;filter:drop-shadow(0 9px 8px #23405755)}
