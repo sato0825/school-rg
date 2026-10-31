@@ -90,8 +90,10 @@ function cardFxMarkup(fx: CardFx | null, clubId: string, nowMs: number, palette:
 function resultFxMarkup(fx: ResultFx | null, nowMs: number): string {
   if (!fx) return "";
   const delay = actionDelayMs(nowMs, fx.startedAtMs, MOTION_MS.hit);
-  return `<div class="result-fx-layer" aria-hidden="true">${fx.marks.map((mark, index) =>
-    `<span class="result-fx-mark" data-kind="${mark.kind}" style="left:${mark.xPercent}%;--fx-stack:${index % 2};animation-delay:${delay}ms">${html(mark.label)}</span>`).join("")}</div>`;
+  return `<div class="result-fx-layer" aria-hidden="true">${fx.marks.map((mark, index) => {
+    const stack = fx.marks.slice(0, index).filter((previous) => previous.xPercent === mark.xPercent).length;
+    return `<span class="result-fx-mark" data-kind="${mark.kind}" style="left:${mark.xPercent}%;--fx-offset:${stack * 36}px;animation-delay:${delay}ms">${html(mark.label)}</span>`;
+  }).join("")}</div>`;
 }
 
 export function renderBattle(root: HTMLElement, run: RunState, content: ContentRegistry, view: BattleView): void {

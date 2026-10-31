@@ -1,10 +1,21 @@
 /* Resolved values float over actors. Nothing changes the stage, header, or input geometry. */
 .result-fx-layer{position:absolute;inset:0;z-index:7;overflow:hidden;contain:paint;pointer-events:none}
-.result-fx-mark{position:absolute;top:calc(45% + var(--fx-stack)*34px);display:block;min-width:48px;padding:5px 9px;transform:translate(-50%,0);border:2px solid #fff;border-radius:4px;background:#912f4a;color:#fff;box-shadow:0 3px 0 #4b2039,0 4px 14px #112b45b0;font:900 clamp(15px,2vw,26px)/1 ui-monospace,Menlo,monospace;text-align:center;white-space:nowrap;animation:result-pop .42s ease-out both}
+.result-fx-mark{position:absolute;top:calc(38% + var(--fx-offset,0px));display:block;min-width:48px;padding:5px 9px;transform:translate(-50%,0);border:2px solid #fff;border-radius:4px;background:#912f4a;color:#fff;box-shadow:0 3px 0 #4b2039,0 4px 14px #112b45b0;font:900 clamp(15px,2vw,26px)/1 ui-monospace,Menlo,monospace;text-align:center;white-space:nowrap;animation:result-pop .42s ease-out both}
 .result-fx-mark[data-kind="heal"]{background:#247c6e;box-shadow:0 3px 0 #175247,0 4px 14px #112b45b0}
 .result-fx-mark[data-kind="block"]{background:#38698f;box-shadow:0 3px 0 #254865,0 4px 14px #112b45b0}
 .result-fx-mark[data-kind="block-loss"]{background:#52677d;box-shadow:0 3px 0 #304252,0 4px 14px #112b45b0}
+.result-fx-mark[data-kind="buff"]{background:#397258;box-shadow:0 3px 0 #264a3c,0 4px 14px #112b45b0}
+.result-fx-mark[data-kind="debuff"]{background:#715093;box-shadow:0 3px 0 #43315c,0 4px 14px #112b45b0}
+.result-fx-mark[data-kind="damage"]::before{content:"";position:absolute;z-index:-1;inset:-13px;border:2px solid #f39bac;border-radius:50%;animation:impact-ring .42s ease-out both}
 @keyframes result-pop{0%{opacity:0;transform:translate(-50%,8px) scale(.8)}35%{opacity:1;transform:translate(-50%,-13px) scale(1.08)}100%{opacity:1;transform:translate(-50%,-19px) scale(1)}}
+@keyframes impact-ring{from{opacity:.9;transform:scale(.55)}to{opacity:0;transform:scale(1.65)}}
 .game[data-effects="quiet"] .result-fx-mark{animation:none;transform:translate(-50%,0);box-shadow:none}
-@media(prefers-reduced-motion:reduce){.result-fx-mark{animation:none;transform:translate(-50%,0)!important;box-shadow:none}}
+.game[data-effects="quiet"] .result-fx-mark[data-kind="damage"]::before{display:none}
+@media(prefers-reduced-motion:reduce){.result-fx-mark{animation:none;transform:translate(-50%,0)!important;box-shadow:none}.result-fx-mark[data-kind="damage"]::before{display:none}}
 @media(max-width:760px){.result-fx-mark{top:43%;padding:3px 6px;min-width:34px;font-size:15px}}
+/* Pose images must not size the actor slot when idle/attack/hit sources change. */
+.stage .ally-slot{width:min(32vw,440px)}
+.stage .hero-art{width:100%;max-width:100%;object-position:center bottom}
+.stage[data-ally-count="2"] .ally-slot{width:min(23vw,320px)}
+.stage[data-ally-count="3"] .ally-slot{width:min(17vw,240px)}
+@media(max-width:760px){.stage .ally-slot{width:43vw}.stage[data-ally-count="2"] .ally-slot{width:30vw}.stage[data-ally-count="3"] .ally-slot{width:22vw}}

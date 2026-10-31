@@ -29,4 +29,17 @@ describe("resolved combat feedback", () => {
     ]);
     expect(resultFxForTransition(before, before, 1, 5)).toBeNull();
   });
+
+  it("shows resolved buffs and debuffs at their targets without showing expiring turns as attacks", () => {
+    const before = structuredClone(validRun);
+    before.combat!.statuses.player.weak = 2;
+    const after = structuredClone(before);
+    after.combat!.statuses.player.weak = 1;
+    after.combat!.statuses.player.strength = 3;
+    after.combat!.statuses.enemies["enemy-1"] = { poison: 2 };
+    expect(resultFxForTransition(before, after, 1, 7)?.marks).toEqual([
+      { xPercent: 22, kind: "buff", label: "↑ 力 +3" },
+      { xPercent: 76, kind: "debuff", label: "↓ 毒 +2" },
+    ]);
+  });
 });

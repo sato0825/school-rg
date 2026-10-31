@@ -21,7 +21,8 @@ for (const width of [1440, 390]) {
         const rect = document.querySelector(selector)!.getBoundingClientRect();
         return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
       };
-      return { header: box(".topbar"), stage: box(".stage"), controls: box(".control-deck"), player: box(".player-hud"), message: box(".battle-message"), scrollWidth: document.documentElement.scrollWidth };
+      const actor = document.querySelector<HTMLElement>(".ally-slot")!;
+      return { header: box(".topbar"), stage: box(".stage"), controls: box(".control-deck"), player: box(".player-hud"), message: box(".battle-message"), actorSlot: { x: actor.offsetLeft, width: actor.offsetWidth, height: actor.offsetHeight }, scrollWidth: document.documentElement.scrollWidth };
     });
     const before = await geometry();
     await expect(page.locator(".topbar .player-hud")).toContainText("科学部");
@@ -55,6 +56,7 @@ for (const width of [1440, 390]) {
       expect(current.header).toEqual(before.header);
       expect(current.stage).toEqual(before.stage);
       expect(current.controls).toEqual(before.controls);
+      expect(current.actorSlot).toEqual(before.actorSlot);
       expect(current.scrollWidth).toBe(width);
     }
     await expect(page.locator(".intent-ticket")).toBeInViewport();
