@@ -1,0 +1,14 @@
+[
+  {
+    "id": "BASE-017",
+    "slug": "card-base-boost-v2",
+    "reason": "v1 looks like a round clock or relic at 48px",
+    "prompt": "Original landscape card art for BOOST, a Japanese middle-school typing game. Flat school stopwatch TIMER with a very obvious square navy body, oversized teal winding knob at top, and ONE large bold lavender arrow curling out from the right side; clear extra-time action, not a circular clock face. In the card-sized center, object occupies most of the frame and has a clean uninterrupted contour. Quiet nearly blank pale blue-gray background, no classroom scene, no smaller props or decorative marks. Youthful anime storybook watercolor gouache consistent with school card art: thin navy ink contour, moderate painterly paper texture, cool navy teal lavender, tiny coral accent. Need clear silhouette at 48px and crop-safe central 52% for a 112x57 window. No numbers, text, logos, people, rarity, card border, photorealism, realistic rendering or imitation of another game."
+  },
+  {
+    "id": "ART-006",
+    "slug": "card-art-mural-v2",
+    "reason": "v1 reduces to generic scenery at 48px and loses mural object",
+    "prompt": "Original landscape card art for MURAL, a Japanese middle-school art club card. A boldly outlined rectangular SCHOOL WALL PANEL on two simple feet stands upright in the center, with one broad sweeping teal brushstroke crossing its blank lavender surface; one small square translucent teal shield wash appears IN FRONT of the lower edge. The wall panel must read as a physical art object, not scenery or a landscape. Very quiet nearly blank pale blue-gray background with no hallway, window, clouds, mountains or distant view. Youthful anime storybook watercolor gouache consistent with school card art: thin navy ink contour, moderate painterly paper texture, cool navy teal lavender, tiny coral accent. Strong recognizable central silhouette at 48px, all important objects within central 52% for 112x57 crop. No people, text, logos, rarity, card border, photorealism, realistic rendering or imitation of another game."
+  }
+]

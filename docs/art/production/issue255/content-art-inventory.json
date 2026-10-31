@@ -582,10 +582,18 @@
       "rarity": null,
       "meaning": "手札複製",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 284,
+            "version": "v1",
+            "source": "docs/art/production/issue284/assets/card-base-duplicate-v1.png",
+            "state": "preferred-draft",
+            "sha256": "0db9815ba8d814348c6ba59be9361245d241cd50255f019344d09004f8ecc9f1"
+          }
+        ]
       }
     },
     {
@@ -607,10 +615,25 @@
       "rarity": null,
       "meaning": "残り時間増加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 284,
+            "version": "v1",
+            "source": "docs/art/production/issue284/assets/card-base-boost-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "18549421881ebd3f009a451b311c737ed6bf38e961a776ef3bea4a91ee842074"
+          },
+          {
+            "issue": 284,
+            "version": "v2",
+            "source": "docs/art/production/issue284/assets/card-base-boost-v2.png",
+            "state": "preferred-draft",
+            "sha256": "3f8d888dec4bad26b5382af2cacae64866f66f37bd508824d25142249f950f77"
+          }
+        ]
       }
     },
     {
@@ -1024,10 +1047,18 @@
       "rarity": null,
       "meaning": "攻撃 + 防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 284,
+            "version": "v1",
+            "source": "docs/art/production/issue284/assets/card-lit-proof-v1.png",
+            "state": "preferred-draft",
+            "sha256": "eaff598aabed4144d0a25411a277b8cbab14a9bd6ecf3a840176d89173ec1beb"
+          }
+        ]
       }
     },
     {
@@ -1394,10 +1425,18 @@
       "rarity": null,
       "meaning": "毒付与 + 回復",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 284,
+            "version": "v1",
+            "source": "docs/art/production/issue284/assets/card-sci-distill-v1.png",
+            "state": "preferred-draft",
+            "sha256": "b1e54b5e2aa9c25d9f8eb6579a340923616af98c91c7346da899f5a13c4dcd95"
+          }
+        ]
       }
     },
     {
@@ -1423,10 +1462,18 @@
       "rarity": null,
       "meaning": "防御 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 284,
+            "version": "v1",
+            "source": "docs/art/production/issue284/assets/card-sci-quarantine-v1.png",
+            "state": "preferred-draft",
+            "sha256": "249a79310e5fa2676b684089aeb7fb959601a9c38678424af9222b8f45f9f03f"
+          }
+        ]
       }
     },
     {
@@ -1775,10 +1822,18 @@
       "rarity": null,
       "meaning": "連続攻撃",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 284,
+            "version": "v1",
+            "source": "docs/art/production/issue284/assets/card-ken-riposte-v1.png",
+            "state": "preferred-draft",
+            "sha256": "01bcd635c7600269b8fcf678571a768a1a404941a77277dfb326f0aac07aea16"
+          }
+        ]
       }
     },
     {
@@ -2184,10 +2239,18 @@
       "rarity": null,
       "meaning": "ドロー + 残り時間増加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 284,
+            "version": "v1",
+            "source": "docs/art/production/issue284/assets/card-mus-sync-v1.png",
+            "state": "preferred-draft",
+            "sha256": "844280279c0aaca14a4657a2156c5922f0eebbae500dd125d00d0c600ae6d369"
+          }
+        ]
       }
     },
     {
@@ -2251,10 +2314,18 @@
       "rarity": null,
       "meaning": "連続攻撃 + 残り時間増加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 284,
+            "version": "v1",
+            "source": "docs/art/production/issue284/assets/card-mus-crescendo-v1.png",
+            "state": "preferred-draft",
+            "sha256": "7ce18e2e8a92ab45c892e1d620ee3a4d6658c8f8298120ff19921f0998185b09"
+          }
+        ]
       }
     },
     {
@@ -2670,10 +2741,25 @@
       "rarity": null,
       "meaning": "全体攻撃 + 毎ターン防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 284,
+            "version": "v1",
+            "source": "docs/art/production/issue284/assets/card-art-mural-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "b0a4d4e0dfed0e07950d154c78843d07f42a097ed916c6c4f0dbb97961b946df"
+          },
+          {
+            "issue": 284,
+            "version": "v2",
+            "source": "docs/art/production/issue284/assets/card-art-mural-v2.png",
+            "state": "preferred-draft",
+            "sha256": "6ecf896fdbe02361ca05f6c9e1230c615fe97ef70a39e71e74d8690aa2ad8463"
+          }
+        ]
       }
     },
     {
@@ -2728,10 +2814,18 @@
       "rarity": null,
       "meaning": "防御 + 毎ターン防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 284,
+            "version": "v1",
+            "source": "docs/art/production/issue284/assets/card-art-layer-v1.png",
+            "state": "preferred-draft",
+            "sha256": "9a88b02e47684915323f917bd7ac901f9bdc702293414b4feb8f0422530232ae"
+          }
+        ]
       }
     },
     {

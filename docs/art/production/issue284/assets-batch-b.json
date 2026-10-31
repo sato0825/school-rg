@@ -6,7 +6,7 @@
     "sha256": "eaff598aabed4144d0a25411a277b8cbab14a9bd6ecf3a840176d89173ec1beb",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-aebd702e-bdbf-4605-9f64-cccc6a4216e0.png",
     "promptRef": "prompts.json#LIT-006",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -17,8 +17,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending crop QA"
+    "visualReview": "static-board-reviewed",
+    "selectionDecision": "main object legible in 112x57 hand art and 48px center crop; no formal runtime adoption"
   },
   {
     "id": "SCI-005",
@@ -27,7 +27,7 @@
     "sha256": "b1e54b5e2aa9c25d9f8eb6579a340923616af98c91c7346da899f5a13c4dcd95",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-85c38c93-46ab-4f86-8558-8982abb245d5.png",
     "promptRef": "prompts.json#SCI-005",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -38,8 +38,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending crop QA"
+    "visualReview": "static-board-reviewed",
+    "selectionDecision": "main object legible in 112x57 hand art and 48px center crop; no formal runtime adoption"
   },
   {
     "id": "SCI-006",
@@ -48,7 +48,7 @@
     "sha256": "249a79310e5fa2676b684089aeb7fb959601a9c38678424af9222b8f45f9f03f",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-1dd75a8e-36d7-4757-a495-6f254501cdac.png",
     "promptRef": "prompts.json#SCI-006",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -59,8 +59,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending crop QA"
+    "visualReview": "static-board-reviewed",
+    "selectionDecision": "main object legible in 112x57 hand art and 48px center crop; no formal runtime adoption"
   },
   {
     "id": "MUS-006",
@@ -69,7 +69,7 @@
     "sha256": "7ce18e2e8a92ab45c892e1d620ee3a4d6658c8f8298120ff19921f0998185b09",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-57765410-d63e-4faf-91d0-226dd6f2f704.png",
     "promptRef": "prompts.json#MUS-006",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -80,8 +80,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending crop QA"
+    "visualReview": "static-board-reviewed",
+    "selectionDecision": "main object legible in 112x57 hand art and 48px center crop; no formal runtime adoption"
   },
   {
     "id": "ART-008",
@@ -90,7 +90,7 @@
     "sha256": "9a88b02e47684915323f917bd7ac901f9bdc702293414b4feb8f0422530232ae",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-9f57928e-a4bf-4643-b324-0e6d2f39a718.png",
     "promptRef": "prompts.json#ART-008",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -101,7 +101,7 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending crop QA"
+    "visualReview": "static-board-reviewed",
+    "selectionDecision": "main object legible in 112x57 hand art and 48px center crop; no formal runtime adoption"
   }
 ]
