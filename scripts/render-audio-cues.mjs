@@ -1,6 +1,8 @@
 import { chromium } from "@playwright/test";
+import { Buffer } from "node:buffer";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
+import process from "node:process";
 
 const url = process.argv[2];
 const output = process.argv[3];
@@ -13,7 +15,7 @@ try {
   const samples = await page.evaluate(async () => {
     const { createAudioFeedback } = await import("/src/ui/audio.ts");
     const sampleRate = 44100;
-    const context = new OfflineAudioContext(1, sampleRate * 4.4, sampleRate);
+    const context = new globalThis.OfflineAudioContext(1, sampleRate * 4.4, sampleRate);
     const feedback = createAudioFeedback({ read: () => null, write: () => undefined }, () => context);
     const cues = ["card", "enemy", "hit", "block", "status", "win", "lose"];
     cues.forEach((cue, index) => feedback.play(cue, index * 0.58));
