@@ -8,6 +8,7 @@ test("compare the existing hallway with the paper atrium under identical combat 
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /文芸部/ }).click();
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
+  await page.getByRole("button", { name: "一時停止" }).click();
   for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
     await page.setViewportSize({ width, height });
     const stage = page.locator(".stage");
