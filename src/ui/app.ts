@@ -339,7 +339,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
             })), config);
         view.resultFx = resultFxForTransition(beforeEnemyAction, run, view.layoutPreviewAllies ?? 1, clock.nowMs());
         enemyPending = false;
-        if (receivedHit) audio.play("hit");
+        // Quiet defeat settles immediately; avoid stacking hit and loss cues.
+        if (receivedHit && !(lowStimulus && run.combat?.phase === "LOST")) audio.play("hit");
         setMotion(receivedHit && !(lowStimulus && run.combat?.phase === "LOST") ? "hit" : null);
         if (run.combat?.phase === "PLAYER_START") {
           run = beginPlayerTurn(run, clock, config, demoContent);

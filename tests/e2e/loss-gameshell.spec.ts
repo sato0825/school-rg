@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
-import { demoContent } from "../../src/content/demo-battle.js";
-import { createRunSession } from "../../src/domain/run-flow.js";
+import { demoContent, demoEnemyAi, demoRunContentTables } from "../../src/content/demo-battle.js";
+import { availableRunNodes, createRunSession, enterRunNode } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
 import { MOTION_MS } from "../../src/ui/motion-timing.js";
 
@@ -140,3 +140,48 @@ test("quiet loss shows a still pose and reachable result", async ({ page }) => {
   await page.keyboard.press("Tab");
   await expect(page.getByRole("button", { name: "新しいランを始める" })).toBeFocused();
 });
+
+for (const { quiet, soundOff, expected } of [
+  { quiet: true, soundOff: false, expected: [230, 260] },
+  { quiet: true, soundOff: true, expected: [] },
+  { quiet: false, soundOff: false, expected: [230, 170, 260] },
+]) {
+  test(`${quiet ? "quiet" : "standard"} final hit with sound ${soundOff ? "off" : "on"} has distinct audio cues`, async ({ page }) => {
+    await page.clock.install();
+    const initial = createRunSession(42, "literature-demo", demoContent, { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 2, treasure: 2 } });
+    const node = availableRunNodes(initial).find((item) => item.kind === "combat");
+    expect(node).toBeDefined();
+    const entered = enterRunNode(initial, node!.id, demoContent, demoEnemyAi, demoRunContentTables);
+    const prepared = { ...entered, run: { ...entered.run, player: { ...entered.run.player, hp: 1, block: 0 } } };
+    const saved = serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard");
+    await page.addInitScript(({ value, quietMode, mute }) => {
+      const local = window as typeof window & { __audioStarts: number[] };
+      local.__audioStarts = [];
+      localStorage.setItem("school-rg-run-v1", value);
+      localStorage.setItem("school-rg-low-stimulus-v1", quietMode ? "1" : "0");
+      localStorage.setItem("school-rg-audio-v1", mute ? "off" : "on");
+      Object.defineProperty(window, "AudioContext", { configurable: true, value: class {
+        currentTime = 0;
+        state = "running";
+        destination = {};
+        createOscillator() {
+          let started = false;
+          return { type: "sine", frequency: {
+            setValueAtTime(value: number) { if (!started) { local.__audioStarts.push(value); started = true; } },
+            exponentialRampToValueAtTime() {},
+          }, connect() {}, start() {}, stop() {} };
+        }
+        createGain() { return { gain: { setValueAtTime() {}, exponentialRampToValueAtTime() {} }, connect() {} }; }
+        resume() { return Promise.resolve(); }
+        close() { return Promise.resolve(); }
+      } });
+    }, { value: saved, quietMode: quiet, mute: soundOff });
+    await page.goto("/");
+    const remaining = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.clock.remainingMs as number);
+    await page.clock.runFor(remaining + 100);
+    await page.clock.runFor(MOTION_MS.enemyPhase);
+    if (!quiet) await page.clock.runFor(MOTION_MS.hit);
+    await expect(page.locator('.game-shell[data-screen="lost"]')).toBeVisible();
+    expect(await page.evaluate(() => (window as typeof window & { __audioStarts: number[] }).__audioStarts)).toEqual(expected);
+  });
+}
