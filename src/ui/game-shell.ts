@@ -3,6 +3,7 @@ import type { ContentRegistry } from "../domain/schema.js";
 import type { BattleView } from "./battle-view.js";
 import type { StageArt } from "./stage-presentation.js";
 import { subscenePreviewForRun, type SubsceneConcept } from "./stage-subscene-experiment.js";
+import { stageStatePreviewForRun } from "./stage-state-preview.js";
 import { identityForClub } from "../content/character-identities.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
 
@@ -19,12 +20,13 @@ export class GameShell {
   private readonly content: ContentRegistry;
   private readonly art: StageArt;
   private readonly subsceneConcept: SubsceneConcept;
+  private readonly stageStatePreview: boolean;
   private readonly config: GameConfig;
   private stageNodeId: string | null = null;
 
   constructor(root: HTMLElement, run: RunState, view: BattleView, content: ContentRegistry, config: GameConfig = DEFAULT_GAME_CONFIG) {
     const initial = document.createElement("div");
-    initial.innerHTML = `<main class="game game-shell" aria-label="学園タイピングローグライク"><header class="topbar"></header><section class="stage" aria-label="ゲームの舞台"><div class="stage-vignette"></div><div class="ally-group"><div class="ally-slot"><img class="hero-art" alt="主人公" /><div class="hero-shadow"></div><span class="hero-nameplate"></span></div></div></section><section class="control-deck"><input id="battle-typing-input" class="typing-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="カード名を入力" /></section></main>`;
+    initial.innerHTML = `<main class="game game-shell" aria-label="学園タイピングローグライク"><header class="topbar"></header><section class="stage" aria-label="ゲームの舞台"><div class="stage-vignette"></div><div class="stage-state-layer" aria-hidden="true"></div><div class="ally-group"><div class="ally-slot"><img class="hero-art" alt="主人公" /><div class="hero-shadow"></div><span class="hero-nameplate"></span></div></div></section><section class="control-deck"><input id="battle-typing-input" class="typing-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="カード名を入力" /></section></main>`;
     const main = initial.querySelector<HTMLElement>(".game");
     const stage = main?.querySelector<HTMLElement>(".stage");
     const actor = stage?.querySelector<HTMLElement>(".ally-slot");
@@ -44,6 +46,8 @@ export class GameShell {
     this.content = content;
     this.art = view.art;
     this.subsceneConcept = new URLSearchParams(window.location.search).get("experimentalSubscene") === "annex" ? "annex" : "local";
+    this.stageStatePreview = new URLSearchParams(window.location.search).get("experimentalStageState") === "on";
+    this.main.dataset.stageStatePreview = this.stageStatePreview ? "on" : "off";
     this.config = config;
     this.overlay.className = "game-shell-overlay";
     this.stage.append(this.overlay);
@@ -71,6 +75,10 @@ export class GameShell {
     this.stage.dataset.stageSubscene = selection.subsceneId ?? "";
     this.stage.dataset.stageConcept = this.subsceneConcept;
     this.stage.dataset.stageProxy = String(selection.proxy);
+    const state = stageStatePreviewForRun(run);
+    this.stage.dataset.stageLight = state?.light ?? "";
+    this.stage.dataset.stageActivity = state?.activity ?? "";
+    this.stage.dataset.stageBossApproach = String(state?.bossApproach ?? false);
     this.stageNodeId = run.map.currentNodeId;
   }
 
@@ -131,7 +139,7 @@ export class GameShell {
     this.control.inert = true;
     this.control.setAttribute("aria-hidden", "true");
     for (const child of [...this.stage.children]) {
-      if (child !== this.overlay && !child.classList.contains("stage-vignette") && !child.classList.contains("ally-group")) child.remove();
+      if (child !== this.overlay && !child.classList.contains("stage-vignette") && !child.classList.contains("stage-state-layer") && !child.classList.contains("ally-group")) child.remove();
     }
     this.header.replaceChildren();
     this.header.classList.add("run-header");
