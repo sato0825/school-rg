@@ -1,0 +1,107 @@
+[
+  {
+    "id": "LIT-007",
+    "version": "v1",
+    "path": "docs/art/production/issue314/assets/card-lit-aside-v1.png",
+    "sha256": "d16c07e64117088931e844d94b17a311b1c71f17b0971e6eeb481303b9d1678f",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-cc44e1d2-4a19-445f-be69-e7ed7d25f9a5.png",
+    "promptRef": "prompts-a.json#LIT-007",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "pending action-semantic small-size QA"
+  },
+  {
+    "id": "SCI-008",
+    "version": "v1",
+    "path": "docs/art/production/issue314/assets/card-sci-assay-v1.png",
+    "sha256": "6acb4efc9bc1fad487cf4138e5740f162332f7814564ced15b2e7cbe6c881afa",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-d5012c2d-a95b-4e0f-a39d-d67664587ad6.png",
+    "promptRef": "prompts-a.json#SCI-008",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "pending action-semantic small-size QA"
+  },
+  {
+    "id": "KEN-007",
+    "version": "v1",
+    "path": "docs/art/production/issue314/assets/card-ken-sweep-v1.png",
+    "sha256": "c3cb69f72bb83db20b633f5e74c806bad62fe489c9af8f5907fb24954b762e19",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-a318b249-4b8e-4125-838b-a3f738240453.png",
+    "promptRef": "prompts-a.json#KEN-007",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "pending action-semantic small-size QA"
+  },
+  {
+    "id": "MUS-007",
+    "version": "v1",
+    "path": "docs/art/production/issue314/assets/card-mus-bridge-v1.png",
+    "sha256": "62f552dc2dbcce4f8c3fcf04bfccfd9409a71663cacca7f2ea025a94ef57d9fe",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-3517cb9e-65f2-4f2a-bab9-ec9c52500b46.png",
+    "promptRef": "prompts-a.json#MUS-007",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "pending action-semantic small-size QA"
+  },
+  {
+    "id": "ART-007",
+    "version": "v1",
+    "path": "docs/art/production/issue314/assets/card-art-wash-v1.png",
+    "sha256": "ce998c9b5e88bcc9d2c89a1044b3ddc743710ed3e39cd2af51a3ba5c1065cd59",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-e8749b36-f765-42b7-9b2e-f0a9717e9aca.png",
+    "promptRef": "prompts-a.json#ART-007",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "pending action-semantic small-size QA"
+  }
+]
