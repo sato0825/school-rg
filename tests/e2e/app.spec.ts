@@ -164,7 +164,7 @@ test("run choices show outcomes and unavailable reasons at phone and desktop wid
   await page.setViewportSize({ width: 390, height: 844 });
   await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
-  await expect(page.locator(".choice-balance")).toContainText("所持金");
+  await expect(page.getByLabel(/所持金 \d+G/)).toBeVisible();
   await expect(page.locator(".shop-relic-offer .offer-price")).toContainText("所持金不足");
   await expect(page.locator(".shop-relic-offer")).toBeDisabled();
   await expect(page.locator(".reward-card .offer-symbol").first()).toBeVisible();
@@ -224,7 +224,7 @@ test("shop relic, potion and card purchases persist and respect one-time stock",
   await page.keyboard.press("Enter");
   await expect(potion).toBeDisabled();
   await expect(potion).toContainText("購入済み");
-  await expect(page.locator(".economy-panel")).toContainText("ポーション 3/3");
+  await expect(page.getByLabel("ポーション 3/3")).toBeVisible();
   await page.locator("[data-action=buy-offer]").first().focus();
   await page.keyboard.press("Enter");
   await page.reload();
@@ -1206,7 +1206,7 @@ test("a route can upgrade at rest and buy once at the shop", async ({ page }) =>
   await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
   await expect(page.locator("[data-action=buy-offer]")).toHaveCount(3);
   await page.locator(".reward-card").first().click();
-  await expect(page.locator(".reward-panel")).toContainText("所持金 10G");
+  await expect(page.getByLabel("所持金 10G")).toBeVisible();
   await expect(page.locator(".reward-card").first()).toBeDisabled();
   await expect(page.locator("[data-action=buy-offer]").nth(1)).toBeDisabled();
   await expect(page.locator("[data-action=buy-offer]").nth(1)).toContainText("所持金不足");
@@ -1341,7 +1341,7 @@ test("reload preserves a shop purchase and an unfinished typed card", async ({ p
   await page.locator(".reward-card").first().click();
   await page.reload();
   await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
-  await expect(page.locator(".reward-panel")).toContainText("所持金 10G");
+  await expect(page.getByLabel("所持金 10G")).toBeVisible();
   await expect(page.locator(".reward-card").first()).toBeDisabled();
   await page.getByRole("button", { name: "購買を出る" }).click();
   await page.locator(".map-node.available").click();

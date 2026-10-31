@@ -153,6 +153,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT") view.helpOpen = false;
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
     const battleMapScrollTop = root.querySelector<HTMLElement>(".battle-map-scroll")?.scrollTop;
+    const locationScrollTop = root.querySelector<HTMLElement>(".location-scroll")?.scrollTop ?? 0;
+    const shopRemovalOpen = root.querySelector<HTMLDetailsElement>(".shop-removal")?.open ?? false;
     const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
     const restoreBattleMapFocus = root.querySelector(".battle-map-close") === document.activeElement;
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
@@ -162,14 +164,17 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (frontScreen === "history") renderRunHistory(root, history, demoContent, demoBattleArt, historyLoadError, historySaveError);
     else if (session.screen === "map") renderRunMap(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, lowStimulus);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt, lowStimulus);
-    else if (session.screen === "treasure") renderRunTreasure(root, session, demoContent, demoBattleArt, config);
-    else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message);
-    else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt);
-    else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt);
+    else if (session.screen === "treasure") renderRunTreasure(root, session, demoContent, demoBattleArt, config, lowStimulus);
+    else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message, config, lowStimulus);
+    else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt, config, lowStimulus);
+    else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt, config, lowStimulus);
     else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError);
     else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
+    const locationScroll = root.querySelector<HTMLElement>(".location-scroll");
+    if (locationScroll) locationScroll.scrollTop = locationScrollTop;
+    if (shopRemovalOpen) root.querySelector<HTMLDetailsElement>(".shop-removal")?.setAttribute("open", "");
     const mapScroll = root.querySelector<HTMLElement>(".map-scroll");
     const currentFloor = root.querySelector<HTMLElement>(".map-node.current")?.closest<HTMLElement>(".map-floor");
     if (mapScroll && currentFloor) {
