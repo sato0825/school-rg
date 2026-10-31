@@ -523,8 +523,14 @@ test("three new potions can be typed in combat with visible block, damage and he
   await expect(page.locator(".potion-slot")).toHaveCount(3);
   await expect(page.locator(".potion-mode")).toBeInViewport();
   for (const potion of await page.locator(".potion-slot").all()) await expect(potion).toBeInViewport();
+  const potionBoxes = await page.locator(".potion-slot").evaluateAll((slots) => slots.map((slot) => {
+    const { left, right } = slot.getBoundingClientRect();
+    return { left, right };
+  }));
+  expect(potionBoxes[0]!.right).toBeLessThanOrEqual(potionBoxes[1]!.left + 1);
+  expect(potionBoxes[1]!.right).toBeLessThanOrEqual(potionBoxes[2]!.left + 1);
   if (process.env.SCHOOL_RG_CAPTURE_POTIONS === "1") {
-    await page.screenshot({ path: "docs/content/previews/issue118-potions-narrow-v2-20261031.png", fullPage: true });
+    await page.screenshot({ path: "docs/art/previews/issue166-three-potions-v5-390.png" });
   }
   await page.keyboard.press("F2");
   await page.keyboard.type("splash");
@@ -697,7 +703,7 @@ test("one to three ally slots fit a shared stage at desktop and narrow widths", 
           allies: rect(".ally-slot").map((box) => ({ left: box.left, right: box.right, bottom: box.bottom })),
           enemies: rect(".enemy-slot").map((box) => ({ left: box.left, right: box.right, bottom: box.bottom })),
           label: previewLabel && { left: previewLabel.left, right: previewLabel.right },
-          hudRight: playerHud.right, intentLeft: intent.left };
+          hudRight: playerHud.right, hudBottom: playerHud.bottom, stageTop: stage.top, intentLeft: intent.left };
       });
       expect(boxes.allies).toHaveLength(count);
       for (const box of [...boxes.allies, ...boxes.enemies]) {
@@ -708,7 +714,8 @@ test("one to three ally slots fit a shared stage at desktop and narrow widths", 
       for (let index = 1; index < boxes.allies.length; index++) expect(boxes.allies[index - 1]!.right).toBeLessThanOrEqual(boxes.allies[index]!.left + 1);
       expect(boxes.allies.at(-1)!.right).toBeLessThanOrEqual(boxes.enemies[0]!.left + 1);
       if (count > 1) {
-        expect(boxes.label!.left).toBeGreaterThanOrEqual(boxes.hudRight - 1);
+        expect(boxes.hudBottom).toBeLessThanOrEqual(boxes.stageTop + 1);
+        expect(boxes.label!.left).toBeGreaterThanOrEqual(boxes.stage.left - 1);
         expect(boxes.label!.right).toBeLessThanOrEqual(boxes.intentLeft + 1);
       }
       await expect(page.locator(".control-deck")).toBeVisible();
@@ -785,7 +792,7 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
         await page.keyboard.press("F2");
         await page.keyboard.type("bandage");
       }
-      if ((await page.locator(".run-meta").innerText()).includes("boss")) {
+      if (await page.locator(".run-meta").getAttribute("data-kind") === "boss") {
         await expect(page.locator(".enemy-hud")).toContainText(bossNames[bosses]!);
         bosses++;
       }
