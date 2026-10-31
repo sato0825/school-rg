@@ -27,7 +27,7 @@
     "sha256": "a7f7761106c3ae340d81c4b47d1e4a91595a6b2187e7a728daa900032ec7b39e",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-88675071-5723-4cac-b260-18311a898fac.png",
     "promptRef": "prompts.json#ART-001",
-    "state": "draft-candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -38,7 +38,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending"
+    "visualReview": "pending",
+    "selectionDecision": "main object identifiable at 112x57 and 48px; not accepted for runtime"
   },
   {
     "id": "ART-003",
@@ -68,7 +69,7 @@
     "sha256": "223e8a685a8b7e7778addfff038067a9c0d8e6db10b18caafda26d3bd4e16724",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-950065ac-e38c-4bda-8073-95c57970e089.png",
     "promptRef": "prompts.json#ART-004",
-    "state": "draft-candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -79,6 +80,7 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending"
+    "visualReview": "pending",
+    "selectionDecision": "main object identifiable at 112x57 and 48px; not accepted for runtime"
   }
 ]

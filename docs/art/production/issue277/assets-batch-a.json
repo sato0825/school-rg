@@ -6,7 +6,7 @@
     "sha256": "54831573b4c56c261ff6d64e88c78ee5096bfdb8b788d2eada9883f12c811fb0",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-5d761d93-3b6b-4a29-a43e-a09090a786c5.png",
     "promptRef": "prompts.json#BASE-002",
-    "state": "draft-candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -17,7 +17,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending"
+    "visualReview": "pending",
+    "selectionDecision": "main object identifiable at 112x57 and 48px; not accepted for runtime"
   },
   {
     "id": "SCI-004",
@@ -47,7 +48,7 @@
     "sha256": "b22f44344bd4fd706c0e90844677ca4ae7427f92a437c0a2d1088c80c2cf98f6",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-e22562d1-3fae-4dcb-84b3-99fe85b5ae44.png",
     "promptRef": "prompts.json#KEN-002",
-    "state": "draft-candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -58,7 +59,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending"
+    "visualReview": "pending",
+    "selectionDecision": "main object identifiable at 112x57 and 48px; not accepted for runtime"
   },
   {
     "id": "KEN-003",
@@ -67,7 +69,7 @@
     "sha256": "36e1e62c24059ed03f44795ad00d97264f01a2b67d37588fed1388c13a22413e",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-2282b88a-4ada-46e4-a2a1-b23a7cf40591.png",
     "promptRef": "prompts.json#KEN-003",
-    "state": "draft-candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -78,7 +80,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending"
+    "visualReview": "pending",
+    "selectionDecision": "main object identifiable at 112x57 and 48px; not accepted for runtime"
   },
   {
     "id": "MUS-002",
@@ -87,7 +90,7 @@
     "sha256": "c70a4759a77f68abf0a3c7dff20b43e84fb7f860327c449f24bbfbe71aed4834",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-7e3708eb-8c00-4284-b8e5-e89e0d5e474c.png",
     "promptRef": "prompts.json#MUS-002",
-    "state": "draft-candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -98,6 +101,7 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending"
+    "visualReview": "pending",
+    "selectionDecision": "main object identifiable at 112x57 and 48px; not accepted for runtime"
   }
 ]
