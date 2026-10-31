@@ -1,7 +1,8 @@
 import type { BattleArt } from "./battle-view.js";
 import { clubPresentation } from "./club-presentation.js";
+import { enemyCandidateUrlById } from "./enemy-presentation.js";
 
-/** Shared placeholder until #29/#68 supply distinct approved enemy art. */
+/** Remaining enemies use this placeholder until #29/#68 supply distinct reviewed art. */
 const placeholderEnemyUrl = new URL("../assets/enemy-paper-v1.png", import.meta.url).href;
 
 /** Demo presentation is kept outside battle logic so later club and enemy art can replace it. */
@@ -21,28 +22,28 @@ export const demoBattleArt: BattleArt = {
     "paper-heap": placeholderEnemyUrl,
     "paper-scrap": placeholderEnemyUrl,
     "hall-monitor": placeholderEnemyUrl,
-    "final-exam": placeholderEnemyUrl,
-    "chalk-cloud": placeholderEnemyUrl,
-    "library-cart": placeholderEnemyUrl,
-    "club-auditor": placeholderEnemyUrl,
+    "final-exam": enemyCandidateUrlById["final-exam"],
+    "chalk-cloud": enemyCandidateUrlById["chalk-cloud"],
+    "library-cart": enemyCandidateUrlById["library-cart"],
+    "club-auditor": enemyCandidateUrlById["club-auditor"],
     "night-announcement": placeholderEnemyUrl,
     "lost-and-found": placeholderEnemyUrl,
-    "closing-bell": placeholderEnemyUrl,
+    "closing-bell": enemyCandidateUrlById["closing-bell"],
     "late-pass": placeholderEnemyUrl,
-    "notice-board": placeholderEnemyUrl,
+    "notice-board": enemyCandidateUrlById["notice-board"],
     "safety-sign": placeholderEnemyUrl,
     "stairwell-echo": placeholderEnemyUrl,
-    "window-shadow": placeholderEnemyUrl,
-    "night-locker": placeholderEnemyUrl,
+    "window-shadow": enemyCandidateUrlById["window-shadow"],
+    "night-locker": enemyCandidateUrlById["night-locker"],
     "lost-homework": placeholderEnemyUrl,
     "school-gate": placeholderEnemyUrl,
-    "lab-magnet": placeholderEnemyUrl,
+    "lab-magnet": enemyCandidateUrlById["lab-magnet"],
     "library-index": placeholderEnemyUrl,
     "empty-desk": placeholderEnemyUrl,
     "last-bus": placeholderEnemyUrl,
     "gym-scoreboard": placeholderEnemyUrl,
     "lab-ventilation": placeholderEnemyUrl,
-    "graduation-curtain": placeholderEnemyUrl,
+    "graduation-curtain": enemyCandidateUrlById["graduation-curtain"],
   },
 };
 
