@@ -475,6 +475,12 @@ for (const [act, kind, enemyId, name] of [
   [2, "elite", "library-index", "動く書架の索引"],
   [3, "combat", "empty-desk", "誰もいない机"],
   [3, "elite", "last-bus", "最終便の影"],
+  [1, "combat", "hall-mop", "廊下のモップ"],
+  [1, "combat", "folded-school-map", "折れた校内図"],
+  [2, "combat", "beaker-mist", "試験管の蒸気"],
+  [2, "combat", "lab-coil", "実験台のコイル"],
+  [3, "combat", "stage-spotlight", "舞台の追光"],
+  [3, "combat", "archive-clock", "閉鎖時刻の時計"],
 ] as const) {
   test(`Act ${act} ${kind} ${name} shows its Intent and can be defeated by typing`, async ({ page }) => {
     await page.clock.install();
@@ -491,6 +497,11 @@ for (const [act, kind, enemyId, name] of [
     const intentId = entered.run.combat!.enemies[0]!.intentId;
     const label = demoContent.intents.find((item) => item.id === intentId)!.label;
     await expect(page.locator(".intent-ticket")).toContainText(label);
+    if (["hall-mop", "folded-school-map", "beaker-mist", "lab-coil", "stage-spotlight", "archive-clock"].includes(enemyId)) {
+      await page.setViewportSize({ width: 1024, height: 768 });
+      await expect(page.locator(".intent-ticket")).toBeInViewport();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    }
     if (["school-gate", "library-index", "last-bus"].includes(enemyId)) {
       await page.setViewportSize({ width: 390, height: 844 });
       await expect(page.locator(".intent-ticket")).toBeInViewport();
