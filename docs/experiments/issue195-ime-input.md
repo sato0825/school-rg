@@ -24,3 +24,9 @@
 実機iPadソフトキーボードと外付けキーボード、Safari、非QWERTY物理配列は未検証。特にiPad Safariでは [Keyboard Layout Map](https://developer.mozilla.org/en-US/docs/Web/API/Keyboard/getLayoutMap) の対応が限定されるため、`key=Process` しか届かない場合は入力できない。日本語かなキーボードから英語カード名へ変換する仕様も未決定。[W3C UI Events](https://www.w3.org/TR/uievents/) のcompositionイベント順序と、[MDN KeyboardEvent](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent) の`key`/`code`の区別を前提に、対象環境の実測を継続する。
 
 #198透過マップ統合後のmainでは、IME変換中にマップを開くと時計が停止し、マップ内の入力をカードへ送らず、閉じた後にtextboxへフォーカスが戻ることを確認した。未解決のかなキーを入力した案内から、マップを閉じた後に英字 `strike` を発動すると案内が消え、敵HPが減る。対象E2E15/15、戦闘ヘルプ3/3、単体5/5、lint、型検査が成功。PC/iPad相当の画像は `issue195-ime-typing-v2-1440.png` と `issue195-ime-typing-v2-1024.png` に再撮影し、旧v1画像は#198統合前の記録として残した。
+
+## Mac Safari と WebKit の追加調査（#229）
+
+Macの選択入力源が日本語RomajiTypingの状態でSafariの実測ページを開いた。SafariではKeyboard Layout Mapが利用できず、ページは `Layout Map: unavailable` と表示した。computer-useのネイティブキー送出で `strike` と `ka` を入力すると、各 `keydown` は英字の `key` と `code=Key*`、`isComposing=false`、`beforeinput=insertText` で、compositionイベントは発生しなかった。入力源を一度US Extendedへ切り替え、日本語へ戻しても同じだった。この送出経路はSafariの日本語IME変換状態を再現できていない可能性があるため、SafariでIMEオンの発動成功とは扱わない。ゲーム本体の10秒ターン中の長語送出も時間切れと交錯し、発動確認には使えなかった。
+
+別の自動回帰として、Playwright WebKitエンジンに合成中のキーイベントを模擬し、Layout Mapがない場合の未解決 `Process`、長めのカード名 `outline`、ポーション名 `clock`、確定文字の二重入力防止、フォーカスと時間経過を確認した。通常の英字キーイベントでも長語カードとポーションを連続発動した。対象E2E 3/3、lint、型検査が成功。これはWebKitのコード経路の検査であり、macOS Safariの実IMEやiPad実機の受入証拠ではない。
