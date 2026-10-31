@@ -58,7 +58,6 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let session = createRunSession(0, "literature-demo", demoContent, mapOptions);
   let frontScreen: "title" | "clubs" | "compendium" | "history" | null = "title";
   let frontReturn: "title" | null = "title";
-  let resumeAfterOverlay = false;
   let restoreError = false;
   try {
     const saved = store.read();
@@ -277,9 +276,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     metrics = null;
     frontScreen = "title";
     frontReturn = "title";
-    resumeAfterOverlay = false;
     view.helpOpen = false;
-    restoreError = false;
     restoreError = false;
     view.message = "カード名をタイプして発動。誤入力は無視されます。";
     render();
@@ -375,8 +372,6 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (action === "front-back" && frontScreen) {
         frontScreen = frontScreen === "clubs" ? "title" : frontReturn;
-        if (resumeAfterOverlay && run.combat?.phase === "PLAYER_INPUT" && run.combat.clock.paused) run = resumePlayerTurn(run, clock);
-        resumeAfterOverlay = false;
         render();
         enemyPhase();
         return;
@@ -499,6 +494,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       settleIfFinished();
       render();
+      if (action === "pause") root.querySelector<HTMLButtonElement>('[data-action="pause"]')?.focus();
       if (action === "enemy") {
         const targetButtons = root.querySelectorAll<HTMLButtonElement>(".enemy-roster-button[data-action='enemy'], .enemy-slot[data-action='enemy']");
         Array.from(targetButtons).find((enemyButton) => enemyButton.dataset.id === id && !enemyButton.hasAttribute("aria-hidden"))?.focus();

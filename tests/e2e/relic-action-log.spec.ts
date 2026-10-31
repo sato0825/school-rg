@@ -23,7 +23,7 @@ test("a typed victory keeps its result and reward history visible after reload",
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByRole("button", { name: /戦闘ログ/ })).toHaveCount(0);
   const before = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.lastCombatLog);
-  expect(before.entries.some((entry: { kind: string; actionId: string }) => entry.kind === "card" && entry.actionId === "strike")).toBe(true);
+  expect(before.entries.some((entry: { kind: string; actionId: string }) => entry.kind === "card" && entry.actionId === "BASE-001")).toBe(true);
   expect(before.entries.filter((entry: { kind: string }) => entry.kind === "result")).toHaveLength(2);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
   await page.reload();

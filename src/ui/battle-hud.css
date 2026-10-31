@@ -1,5 +1,5 @@
 /* Battle HUD: the scene and the input deck keep their geometry across turn phases. */
-.game{grid-template-rows:72px minmax(0,1fr) 326px}
+.game{position:relative;grid-template-rows:72px minmax(0,1fr) 326px}
 .topbar{gap:12px;padding:7px 16px;min-width:0}
 .topbar .brand{flex:none;margin-right:0;gap:7px;white-space:nowrap}
 .topbar .brand-mark{width:28px;height:28px;font-size:16px;border-radius:6px}
