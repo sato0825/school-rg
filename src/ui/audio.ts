@@ -79,6 +79,7 @@ export function createAudioFeedback(
   let enabled = true;
   try { enabled = store.read() !== "off"; } catch { /* Storage may be disabled. */ }
   let context: AudioContext | null = null;
+  let output: GainNode | null = null;
   const textureBuffers = new Map<SoundCue, AudioBuffer>();
   let quiet = false;
   return {
@@ -86,6 +87,7 @@ export function createAudioFeedback(
     setQuiet(value: boolean) { quiet = value; },
     toggle() {
       enabled = !enabled;
+      if (context && output) output.gain.setValueAtTime(enabled ? 1 : 0, context.currentTime);
       try { store.write(enabled ? "on" : "off"); } catch { /* Keep the in-memory choice. */ }
       return enabled;
     },
@@ -95,6 +97,11 @@ export function createAudioFeedback(
         context ??= createContext();
         if (!context) return;
         if (context.state === "suspended") void context.resume().catch(() => undefined);
+        if (!output) {
+          output = context.createGain();
+          output.gain.setValueAtTime(1, context.currentTime);
+          output.connect(context.destination);
+        }
         const now = context.currentTime + Math.max(0, delaySeconds);
         for (const voice of cueVoices[cue]) {
           const start = now + voice.delay;
@@ -108,7 +115,7 @@ export function createAudioFeedback(
           gain.gain.exponentialRampToValueAtTime(voice.peak * (quiet ? 0.4 : 1), start + Math.min(0.012, voice.seconds / 3));
           gain.gain.exponentialRampToValueAtTime(0.0001, end);
           oscillator.connect(gain);
-          gain.connect(context.destination);
+          gain.connect(output);
           oscillator.start(start);
           oscillator.stop(end);
         }
@@ -137,7 +144,7 @@ export function createAudioFeedback(
           gain.gain.exponentialRampToValueAtTime(0.0001, now + texture.seconds);
           source.connect(filter);
           filter.connect(gain);
-          gain.connect(context.destination);
+          gain.connect(output);
           source.start(now);
           source.stop(now + texture.seconds);
         } catch { /* The pitched cue still works when buffer audio is unavailable. */ }

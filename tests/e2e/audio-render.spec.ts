@@ -27,7 +27,13 @@ test("every battle cue renders at a restrained peak and quiet mode remains audib
     feedback.play("hit", 0.07);
     const combinedSamples = (await context.startRendering()).getChannelData(0);
     const combinedPeak = combinedSamples.reduce((peak: number, sample: number) => Math.max(peak, Math.abs(sample)), 0);
-    return { result, combinedPeak };
+    const mutedContext = new OfflineAudioContext(1, 44100 * 0.35, 44100);
+    const mutedFeedback = createAudioFeedback({ read: () => null, write: () => undefined }, () => mutedContext as unknown as AudioContext);
+    mutedFeedback.play("win");
+    mutedFeedback.toggle();
+    const mutedSamples = (await mutedContext.startRendering()).getChannelData(0);
+    const mutedPeak = mutedSamples.reduce((peak: number, sample: number) => Math.max(peak, Math.abs(sample)), 0);
+    return { result, combinedPeak, mutedPeak };
   });
   for (const { normal, quiet } of Object.values(measurements.result)) {
     expect(normal.rms).toBeGreaterThan(0.001);
@@ -36,4 +42,5 @@ test("every battle cue renders at a restrained peak and quiet mode remains audib
     expect(quiet.rms / normal.rms).toBeLessThan(0.5);
   }
   expect(measurements.combinedPeak).toBeLessThan(0.15);
+  expect(measurements.mutedPeak).toBeLessThan(0.00001);
 });
