@@ -12,4 +12,8 @@
   .game-shell[data-stage-wing-preview="on"] .stage[data-stage-place="auditorium-stage-wing"] .location-scene[data-location="rest"] .location-prop {
     top: 45%; left: 48%; width: 29%; height: 18%;
   }
+  .game-shell[data-stage-wing-preview="on"] .stage[data-stage-place="auditorium-stage-wing"] .ally-slot,
+  .game-shell[data-stage-wing-preview="on"] .stage[data-stage-place="auditorium-stage-wing"] .enemy-slot {
+    bottom: -10%;
+  }
 }
