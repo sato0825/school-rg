@@ -1054,6 +1054,57 @@
       "generator": "built-in imagegen; model version not exposed",
       "editableSource": null,
       "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "chalk-cloud-attack-candidate-v1",
+      "file": "src/assets/enemies/actions/chalk-cloud-attack-candidate-v1.png",
+      "sha256": "51684ca7207c0413d970a7247815a027d1dae006d96724eca75ef631c5464d23",
+      "width": 1312,
+      "height": 1199,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "enemy-action-pose",
+      "enemyId": "chalk-cloud",
+      "pose": "attack-windup",
+      "referenceId": "chalk-cloud-candidate-v1",
+      "promptFile": "docs/art/issue379-chalk-cloud-action-sources.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "chalk-cloud-weak-candidate-v1",
+      "file": "src/assets/enemies/actions/chalk-cloud-weak-candidate-v1.png",
+      "sha256": "e89fc9894ff1a7a37d31f91e9567429f421e1ced0f1935b54283e559a75738ba",
+      "width": 1312,
+      "height": 1199,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "enemy-action-pose",
+      "enemyId": "chalk-cloud",
+      "pose": "status-windup",
+      "referenceId": "chalk-cloud-candidate-v1",
+      "promptFile": "docs/art/issue379-chalk-cloud-action-sources.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "chalk-cloud-hit-candidate-v1",
+      "file": "src/assets/enemies/actions/chalk-cloud-hit-candidate-v1.png",
+      "sha256": "10a4426f10528ba24c9b9af10db808aec113f8547836a68574b9314dcd4c64c5",
+      "width": 1312,
+      "height": 1199,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "enemy-action-pose",
+      "enemyId": "chalk-cloud",
+      "pose": "hit",
+      "referenceId": "chalk-cloud-candidate-v1",
+      "promptFile": "docs/art/issue379-chalk-cloud-action-sources.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
     }
   ]
 }
