@@ -575,6 +575,10 @@ for (const [act, kind, enemyId, name] of [
       })).toBeGreaterThan(1_000);
       await expect(page.locator(".intent-ticket")).toBeInViewport();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await expect(art).toBeInViewport();
+      await expect(page.locator(".intent-ticket")).toBeInViewport();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     }
     if (["school-gate", "library-index", "last-bus"].includes(enemyId)) {
       await page.setViewportSize({ width: 390, height: 844 });
