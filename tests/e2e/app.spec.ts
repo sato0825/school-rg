@@ -579,13 +579,12 @@ test("candidate pose preview follows enemy damage and typed activation", async (
   for (let step = 0; step < 110; step++) {
     await page.clock.runFor(200);
     if ((await hero.getAttribute("src"))?.includes("serious-student-hit-candidate-v2")) {
+      expect(await decoded()).toBeGreaterThan(0);
       hitObserved = true;
       break;
     }
   }
   expect(hitObserved).toBe(true);
-  await expect(hero).toHaveAttribute("src", /serious-student-hit-candidate-v2/);
-  await expect.poll(decoded).toBeGreaterThan(0);
   await page.clock.runFor(420);
   await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v2/);
   await page.clock.runFor(730);
