@@ -11,10 +11,12 @@
 <h1>IME key event probe</h1>
 <p>実験用。入力欄でキーを押し、キー値・物理位置・composition・確定文字を記録します。</p>
 <label>実OSで入力する欄<input id="probe" autocomplete="off" spellcheck="false"></label>
+<label><input id="prevent" type="checkbox"> 英字のkeydownをpreventDefaultする</label>
 <p id="layout" role="status">Keyboard Layout Map を確認中…</p>
 <pre id="events" aria-live="polite"></pre>
 <script type="module">
   const field = document.querySelector('#probe');
+  const prevent = document.querySelector('#prevent');
   const events = document.querySelector('#events');
   const layout = document.querySelector('#layout');
   let map = null;
@@ -27,8 +29,11 @@
     layout.textContent = `Layout Map: ${error?.name ?? 'error'}`;
   }
   const print = (event) => {
-    const line = JSON.stringify({ type:event.type, key:event.key, code:event.code, map:map?.get(event.code), composing:event.isComposing, inputType:event.inputType, data:event.data, value:field.value });
-    events.textContent += `${line}\n`;
+    if (event.type === 'keydown' && prevent.checked && /^[a-z]$/i.test(event.key)) event.preventDefault();
+    const line = JSON.stringify({ type:event.type, key:event.key, code:event.code, map:map?.get(event.code), composing:event.isComposing, prevented:event.defaultPrevented, inputType:event.inputType, data:event.data, value:field.value });
+    const row = document.createElement('div');
+    row.textContent = line;
+    events.append(row);
     events.scrollTop = events.scrollHeight;
   };
   for (const type of ['keydown','keyup','beforeinput','input','compositionstart','compositionupdate','compositionend']) field.addEventListener(type, print);
