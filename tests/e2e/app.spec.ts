@@ -1256,13 +1256,14 @@ test("battle help stays on the battle screen and does not alter the clock", asyn
   await expect(page.locator("#battle-help")).toBeHidden();
   await expect(page.getByRole("button", { name: "操作" })).toBeFocused();
   await page.getByRole("button", { name: "一時停止" }).click();
+  await expect(page.getByRole("button", { name: "再開" })).toBeFocused();
   const pausedAt = await time.innerText();
   await page.getByRole("button", { name: "操作" }).click();
   await page.clock.runFor(1_000);
   expect(await time.innerText()).toBe(pausedAt);
   await page.getByRole("button", { name: "閉じる" }).click();
   await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "再開" })).toBeFocused();
+  await expect(page.getByRole("button", { name: "操作" })).toBeFocused();
   await page.getByRole("button", { name: "再開" }).click();
   await page.getByRole("button", { name: "操作" }).click();
   await page.keyboard.press("s");
