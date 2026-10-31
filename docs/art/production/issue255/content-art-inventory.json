@@ -154,7 +154,7 @@
       "source": "src/content/base-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -306,7 +306,7 @@
       "source": "src/content/base-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -409,7 +409,7 @@
       "source": "src/content/base-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -464,7 +464,7 @@
       "source": "src/content/base-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -715,7 +715,7 @@
       "source": "src/content/base-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -774,7 +774,7 @@
       "source": "src/content/literature-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -815,10 +815,18 @@
       "source": "src/content/literature-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 255,
+            "version": "v1",
+            "source": "docs/art/production/issue255/assets/card-lit-leaf-v1.png",
+            "state": "draft-candidate",
+            "sha256": "0eff5aafe9744f416157a313496364dc17d6aff0d735e6b8ec25651feaee64fa"
+          }
+        ]
       }
     },
     {
@@ -843,7 +851,7 @@
       "source": "src/content/literature-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -878,7 +886,7 @@
       "source": "src/content/literature-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -1137,10 +1145,18 @@
       "source": "src/content/science-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 255,
+            "version": "v1",
+            "source": "docs/art/production/issue255/assets/card-sci-sample-v1.png",
+            "state": "draft-candidate",
+            "sha256": "bab11abcf1682029e7f040f5dc226fa42ed4e3b98145dd939f28237821122d8b"
+          }
+        ]
       }
     },
     {
@@ -1191,7 +1207,7 @@
       "source": "src/content/science-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -1486,10 +1502,25 @@
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 255,
+            "version": "v1",
+            "source": "docs/art/production/issue255/assets/card-ken-parry-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "e3e82a2ce6a73f5228c0884bf887a5960d19eb1adbc795ef1630417c4257d0ff"
+          },
+          {
+            "issue": 255,
+            "version": "v2",
+            "source": "docs/art/production/issue255/assets/card-ken-parry-v2.png",
+            "state": "draft-candidate",
+            "sha256": "1ae1a5421852652f8f05fef3dd574debd28e3cafa8aa636adcc9fbd4478ff9bf"
+          }
+        ]
       }
     },
     {
@@ -1618,7 +1649,7 @@
       "source": "src/content/kendo-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -1825,10 +1856,18 @@
       "source": "src/content/music-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 255,
+            "version": "v1",
+            "source": "docs/art/production/issue255/assets/card-mus-tempo-v1.png",
+            "state": "draft-candidate",
+            "sha256": "eaa2da40fdd6ae2b6e47fcfd7e95bd20bd0023e02d8ce9206d3fbed4cfdef555"
+          }
+        ]
       }
     },
     {
@@ -2188,10 +2227,18 @@
       "source": "src/content/art-cards.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 255,
+            "version": "v1",
+            "source": "docs/art/production/issue255/assets/card-art-frame-v1.png",
+            "state": "draft-candidate",
+            "sha256": "346067c76847ee07a4fd2634dad0976baf61c603cf3ecbb46f7153d5c65c8d68"
+          }
+        ]
       }
     },
     {
@@ -2489,7 +2536,7 @@
       "source": "src/content/demo-battle.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -2514,7 +2561,7 @@
       "source": "src/content/demo-battle.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -2557,7 +2604,7 @@
       "source": "src/content/demo-battle.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [
@@ -2748,7 +2795,7 @@
       "source": "src/content/demo-battle.ts",
       "rarity": null,
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
         "candidateRefs": [

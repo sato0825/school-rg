@@ -87,8 +87,32 @@ const potions = [...getObjectArray(demo, "potions"), ...getArray(extra, "extraPo
   id: item.id, kind: "potion", club: "shared", name: item.name, input: item.input?.text,
   target: item.target, effectKinds: item.effectIds, source: item.id?.startsWith("potion-") && ["potion-guard", "potion-splash", "potion-tea"].includes(item.id) ? "src/content/extra-consumables.ts" : "src/content/demo-battle.ts", rarity: null,
 }));
+const effectLabel = {
+  add_time: "残り時間増加", apply_poison: "毒付与", apply_strength: "筋力上昇", apply_weak: "弱体付与", block: "防御", conditional_damage: "条件付き攻撃",
+  copy_card: "手札複製", damage: "攻撃", damage_all: "全体攻撃", damage_if_status: "状態条件攻撃", damage_multi: "連続攻撃", damage_pierce: "貫通攻撃",
+  draw: "ドロー", exhaust_card: "除外", heal: "回復", pay_hp_draw: "HP消費とドロー", persistent_block: "毎ターン防御", persistent_strength: "毎ターン筋力",
+  remove_block: "敵防御解除", remove_debuff: "弱体解除", retrieve_discard: "捨て札回収", thorns: "反撃", transform_card: "手札変化",
+};
+const relicMeaning = {
+  "library-bookmark": "獲得時ゴールド、ターン開始と技能使用で防御",
+  "lab-glasses": "戦闘開始時に筋力",
+  "bamboo-grip": "ターン開始時に反撃",
+  metronome: "ターン開始時に入力時間を追加",
+  sketchbook: "美術部カード使用時に防御",
+  "spare-shoes": "ターン開始時に防御",
+  "hallway-clock": "ターン開始時に入力時間を追加",
+  "attendance-stamp": "獲得時と戦闘終了時にゴールド",
+  "lunch-coupon": "戦闘終了時に回復",
+  "pocket-bandage": "HPダメージを受けた時に回復",
+  "practice-timer": "カード使用時に入力時間を追加",
+};
+const potionMeaning = {
+  "potion-time": "入力時間を追加", "potion-heal": "HP回復", "potion-ink": "単体攻撃", "potion-guard": "防御", "potion-splash": "全体攻撃", "potion-tea": "回復と入力時間追加",
+};
 const items = [...cards, ...relics, ...potions].map((entry) => ({
-  ...entry, art: { state: candidates[entry.id]?.length ? "candidate" : "missing", acceptedVersion: null, editableSource: null, candidateRefs: candidates[entry.id] ?? [] },
+  ...entry,
+  meaning: entry.kind === "card" ? entry.effectKinds.map((kind) => effectLabel[kind] ?? kind).join(" + ") : entry.kind === "relic" ? relicMeaning[entry.id] : potionMeaning[entry.id],
+  art: { state: candidates[entry.id]?.length ? "candidate" : "missing", acceptedVersion: null, editableSource: null, candidateRefs: candidates[entry.id] ?? [] },
 }));
 const counts = { cards: cards.length, relics: relics.length, potions: potions.length, total: items.length };
 if (counts.cards !== 84 || counts.relics !== 11 || counts.potions !== 6) throw new Error(`content counts changed: ${JSON.stringify(counts)}`);
