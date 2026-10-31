@@ -21,7 +21,7 @@ test("five provisional names identify distinct clubs without changing run IDs", 
   }
 
   await page.getByRole("button", { name: /みずの さき、科学部/ }).click();
-  await page.locator(".map-node.available").first().click();
+  await page.locator(".map-node.available").filter({ hasText: "戦闘" }).first().click();
   await expect(page.locator(".hero-nameplate")).toHaveText("さき");
   await expect(page.locator(".hero-nameplate")).toHaveAttribute("data-name-status", "provisional");
   await expect(page.getByRole("img", { name: "みずの さき（科学部）" })).toBeVisible();
@@ -31,4 +31,21 @@ test("five provisional names identify distinct clubs without changing run IDs", 
   await page.reload();
   await expect(page.locator(".hero-nameplate")).toHaveText("さき");
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.clubId)).toBe("science-demo");
+});
+
+test("a character name stays beside its portrait at iPad width", async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /もりした いろは、美術部/ }).click();
+  await page.locator(".map-node.available").filter({ hasText: "戦闘" }).first().click();
+
+  await expect(page.locator(".hero-nameplate")).toHaveText("いろは");
+  const placement = await page.evaluate(() => {
+    const stage = document.querySelector(".stage")!.getBoundingClientRect();
+    const name = document.querySelector(".hero-nameplate")!.getBoundingClientRect();
+    return { insideStage: name.left >= stage.left && name.right <= stage.right && name.bottom <= stage.bottom,
+      overflow: document.documentElement.scrollWidth > window.innerWidth };
+  });
+  expect(placement).toEqual({ insideStage: true, overflow: false });
 });
