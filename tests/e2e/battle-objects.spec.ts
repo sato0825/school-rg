@@ -51,6 +51,8 @@ for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, he
     await page.locator(".battle-map-trigger").click();
     await expect(page.locator("#battle-pile-tray")).toBeHidden();
     await expect(page.locator(".battle-map-overlay")).toBeVisible();
+    await page.locator('.pile-token[data-pile="discard"]').evaluate((button: HTMLElement) => button.click());
+    await expect(page.locator("#battle-pile-tray")).toBeHidden();
     const pausedTime = await page.locator("[data-role=time]").innerText();
     await page.clock.runFor(400);
     await expect(page.locator("[data-role=time]")).toHaveText(pausedTime);
