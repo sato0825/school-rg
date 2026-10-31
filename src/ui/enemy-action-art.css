@@ -19,6 +19,8 @@
 .game-shell .stage[data-enemy-count="5"] .enemy-slot:has(.enemy-action-art) .enemy-action-art{scale:1;transform-origin:center bottom;transition:scale .18s ease-out}
 .game-shell .stage[data-enemy-count="5"] .enemy-slot.targeted:has(.enemy-action-art) .enemy-action-art{scale:1.35}
 .game-shell .stage[data-enemy-count="5"] .enemy-slot.targeted:has(.enemy-action-art) .intent-body-cue{scale:1.2;transform-origin:center bottom}
+.game-shell .stage[data-enemy-count="5"] .enemy-slot.targeted:has(.enemy-action-art) .enemy-pose-idle{animation:none;opacity:0}
+.game-shell .stage[data-enemy-count="5"] .enemy-slot.targeted:has(.enemy-action-art) .enemy-pose-action{animation:none;opacity:1}
 @keyframes paper-pose-idle{0%,70%,100%{opacity:0}80%,94%{opacity:1}}
 @keyframes paper-pose-windup{0%,70%,100%{opacity:1}80%,94%{opacity:0}}
 @keyframes paper-guard-brace{0%{transform:scale(.96)}65%{transform:scale(1.02)}100%{transform:scale(1)}}

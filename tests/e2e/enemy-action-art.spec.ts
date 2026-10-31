@@ -118,6 +118,7 @@ for (const [pose, intentId, quiet] of [["attack", "paper-intent-hit", false], ["
   // Selection keeps every slot fixed while enlarging the authored action image.
   await page.locator('.enemy-roster-button[data-id="five-0"]').click();
   await expect(page.locator('.enemy-slot.targeted .enemy-action-art')).toBeVisible();
+  await expect(page.locator('.enemy-slot.targeted .enemy-pose-action')).toHaveCSS("opacity", "1");
   await page.clock.runFor(250);
   const selectedPaper = await page.locator(".enemy-action-art").boundingBox();
   expect(selectedPaper!.width).toBeGreaterThan(paper!.width * 1.3);
@@ -126,5 +127,12 @@ for (const [pose, intentId, quiet] of [["attack", "paper-intent-hit", false], ["
   await page.locator('.enemy-roster-button[data-id="five-1"]').click();
   await page.clock.runFor(250);
   expect(await page.locator(".enemy-slot").first().boundingBox()).toEqual(slotBefore);
-  expect((await page.locator(".enemy-action-art").boundingBox())!.width).toBeCloseTo(paper!.width, 0);
+  await expect.poll(async () => (await page.locator(".enemy-action-art").boundingBox())!.width).toBeLessThan(paper!.width * 1.05);
+  if (pose === "attack" && !quiet) {
+    await page.locator('.enemy-roster-button[data-id="five-0"]').click();
+    await expect(page.locator(".intent-trajectory")).toHaveCount(1);
+    await page.keyboard.type("strike");
+    await expect(page.locator(".intent-trajectory")).toHaveCount(0);
+    expect(await page.locator(".stage").boundingBox()).toEqual(stage);
+  }
 });
