@@ -13,3 +13,11 @@ it("captures the selected enemy or all enemy positions before a card resolves", 
   expect(cardFxForUse(sweep, run, null, 1, 123).targetXPercents).toEqual([62, 88]);
   expect(cardFxForUse(block, run, null, 3, 123)).toEqual({ kind: "support", sourceXPercent: 10, targetXPercents: [10], startedAtMs: 123 });
 });
+
+it("derives the art prop cue from card effects instead of localized card text", () => {
+  const run = createDemoBattle();
+  for (const [cardId, cue] of [["ART-002", "retain"], ["ART-003", "copy"], ["ART-005", "transform"]] as const) {
+    const card = demoContent.cards.find((item) => item.id === cardId)!;
+    expect(cardFxForUse(card, run, null, 1, 123, demoContent.effects).visualAction).toBe(cue);
+  }
+});
