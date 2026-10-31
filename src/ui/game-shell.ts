@@ -88,6 +88,8 @@ export class GameShell {
     else delete this.actor.dataset.actorMotion;
     if (slot.dataset.actorRig) this.actor.dataset.actorRig = slot.dataset.actorRig;
     else delete this.actor.dataset.actorRig;
+    if (slot.dataset.artAction) this.actor.dataset.artAction = slot.dataset.artAction;
+    else delete this.actor.dataset.artAction;
     const currentAllyGroup = this.actor.parentElement;
     const nextAllyGroup = slot.parentElement;
     if (!currentAllyGroup?.classList.contains("ally-group") || !nextAllyGroup?.classList.contains("ally-group")) throw new Error("Missing persistent ally group");

@@ -18,7 +18,7 @@
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
     "test:e2e": "playwright test",
-    "check:art": "node scripts/validate-art.mjs && node scripts/validate-literature-rig.mjs",
+    "check:art": "node scripts/validate-art.mjs && node scripts/validate-literature-rig.mjs && node scripts/validate-art-rig.mjs v2 && node scripts/validate-art-rig.mjs v3",
     "art:review-board": "node scripts/art-review-board.mjs",
     "check": "npm run lint && npm run typecheck && npm run test:unit && npm run test:integration && npm run check:art && npm run build && npm run test:e2e"
   },
