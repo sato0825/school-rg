@@ -16,7 +16,9 @@ Sacrifice: a small coral ribbon tied to a navy personal notebook is deliberately
 
 ## BASE-022
 
-Finish: one short white chalk draws a final diagonal line across one navy practice target, ending in a small coral star. Below is a nearly empty fan of paper cards with one remaining card. Different from two-hit quick attack and ordinary strike.
+Finish v1 (不採用): one short white chalk draws a final diagonal line across one navy practice target; below is a nearly empty fan of paper cards with one remaining card. This wrongly suggested a hand condition.
+
+Finish v2: one navy padded school target has a visibly worn lower half, while its upper half remains intact; one short white chalk lands a decisive coral impact on the worn half. The actual rule is stronger damage when the **enemy's HP is at or below 50%**. Remove the fan of cards. No numerical health bar in the art; exact threshold and damage remain in text.
 
 ## BASE-024
 
