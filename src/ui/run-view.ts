@@ -81,7 +81,7 @@ function stageScene(
   return `<main class="run-screen reward-scene ${options.scene}-scene" data-effects="${options.lowStimulus ? "quiet" : "standard"}" aria-label="${html(options.label)}" style="background-image:url('${html(stageUrlForRun(art, run))}')">
     <div class="reward-scene-actors" aria-hidden="true"><img class="reward-scene-hero" src="${html(hero)}" alt="" decoding="async" />${options.enemyUrl ? `<img class="reward-scene-enemy" src="${html(options.enemyUrl)}" alt="" decoding="async" />` : ""}</div>
     <div class="reward-scene-shade" aria-hidden="true"></div>
-    <header class="run-header reward-scene-header" aria-label="ラン情報"><span class="reward-scene-location">ACT ${run.act} · ${node?.floor ?? 0}F <span>${html(options.location)}</span></span>${options.headerDetails}</header>
+    <header class="run-header reward-scene-header" aria-label="ラン情報"><span class="reward-scene-location">ACT ${run.act} · ${node?.floor ?? 0}F ${options.location ? `<span>${html(options.location)}</span>` : ""}</span>${options.headerDetails}</header>
     ${options.body}
   </main>`;
 }
@@ -143,7 +143,7 @@ export function renderRunMap(root: HTMLElement, session: RunSession, art: Battle
   const stats = `<div class="map-stats" aria-label="ランの状態"><span class="map-health"><span class="map-health-value">♥ ${run.player.hp}/${run.player.maxHp}</span><span class="map-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span style="width:${hpRatio}%"></span></span></span><span class="map-stat"><b aria-hidden="true">◉</b>${run.gold}G<small>所持金</small></span><span class="map-stat"><b aria-hidden="true">▤</b>デッキ ${run.deck.length}枚</span><span class="map-secondary">難度 ${run.ascensionLevel} · シード ${run.seed}</span></div>`;
   const record = playtest ? `<details class="route-run-record"><summary>ラン記録</summary><p class="playtest-stats">実操作 ${formatPlaytestTime(playtest.activeMs)} · 訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</p></details>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : "";
   const body = `<section class="map-panel route-scene-overlay" aria-label="次の行き先の選択"><div class="map-intro"><div class="map-copy"><h2>次の行き先を選ぶ</h2><p class="map-progress">現在地 <strong>${html(kindNames[current.kind])} · ${current.floor}F</strong><span aria-hidden="true">→</span> <strong>進める場所 ${available.size}</strong></p></div><button type="button" class="map-compendium" data-action="open-compendium">図鑑</button></div><div class="map-scroll" aria-label="Act ${run.act} マップ"><div class="map-route-track">${routeLines}${rows}</div></div>${record}</section>`;
-  root.innerHTML = stageScene(run, art, { scene: "route", label: "校内経路", location: "行き先を選ぶ", headerDetails: stats, body, lowStimulus });
+  root.innerHTML = stageScene(run, art, { scene: "route", label: "校内経路", location: "", headerDetails: stats, body, lowStimulus });
 }
 
 export function renderRunReward(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, lowStimulus = false): void {

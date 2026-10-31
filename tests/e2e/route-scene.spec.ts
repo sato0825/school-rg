@@ -35,8 +35,13 @@ for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
     const available = route.locator(".map-node.available");
     const availableCount = availableRunNodes(chooseRunReward(reward, reward.rewardCardIds[0]!)).length;
     await expect(available).toHaveCount(availableCount);
-    const alpha = await route.locator(".route-scene-overlay").evaluate((element) => Number(getComputedStyle(element).backgroundColor.match(/rgba?\([^,]+,[^,]+,[^,]+,\s*([\d.]+)/)?.[1] ?? 1));
+    const alpha = await route.locator(".map-scroll").evaluate((element) => Number(getComputedStyle(element).backgroundColor.match(/rgba?\([^,]+,[^,]+,[^,]+,\s*([\d.]+)/)?.[1] ?? 1));
     expect(alpha).toBeLessThan(1);
+    const positions = await route.evaluate((element) => ({
+      heroRight: element.querySelector(".reward-scene-hero")!.getBoundingClientRect().right,
+      routeLeft: element.querySelector(".map-scroll")!.getBoundingClientRect().left,
+    }));
+    expect(positions.heroRight).toBeLessThan(positions.routeLeft);
     if (process.env.SCHOOL_RG_CAPTURE_ROUTE === "1") await page.screenshot({ path: `docs/art/previews/issue230-route-${width}.png` });
 
     await page.reload();
