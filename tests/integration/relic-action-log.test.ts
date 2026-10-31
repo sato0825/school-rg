@@ -22,9 +22,10 @@ describe("relic reactions in combat history", () => {
     run.player.hp = 35;
     run.player.block = 0;
     run.combat!.phase = "ENEMY_PHASE";
-    const resolved = resolveEnemyIntents(run, ai, content, (state, actor, intent) =>
+    const resolve = (initial: typeof run) => resolveEnemyIntents(initial, ai, content, (state, actor, intent) =>
       executeEnemyIntentEffects(state, actor, intent, ai, content, DEFAULT_GAME_CONFIG,
         (hitState, hpLost) => emitRelicEvent(hitState, "hit_taken", [rule], content, { hpLost }).run));
+    const resolved = resolve(run);
     const entries = resolved.combat!.actionLog!;
     expect(entries.map((entry) => [entry.sequence, entry.kind, entry.actionId])).toEqual([
       [1, "enemy", "intent-hit"], [2, "relic", "relic-sample"], [3, "relic", "relic-sample"],
@@ -33,6 +34,7 @@ describe("relic reactions in combat history", () => {
     expect(entries.slice(1).map((entry) => entry.triggerHpLost)).toEqual([2, 2]);
     expect(entries[1]).toMatchObject({ relicTrigger: "hit_taken", relicRuleId: "on-hit", relicStacks: 1 });
     expect(resolved.player.hp).toBe(33);
+    expect(resolve(structuredClone(run)).combat!.actionLog).toEqual(entries);
     expect(parseRunState(JSON.parse(JSON.stringify(resolved)), content)).toEqual(resolved);
   });
 
