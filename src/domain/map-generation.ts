@@ -23,6 +23,8 @@ export const DEFAULT_MAP_OPTIONS: MapGenerationOptions = {
 };
 
 const ENCOUNTER_KINDS: EncounterKind[] = ["combat", "elite", "event", "shop", "rest", "treasure"];
+/** Provisional route density for #181: one adjacent branch between ordinary floors. */
+const BRANCHES_PER_FLOOR = 1;
 
 function validateOptions(options: MapGenerationOptions): number {
   if (!Number.isSafeInteger(options.floorsPerAct) || options.floorsPerAct < 1 || options.floorsPerAct > 100) {
@@ -64,6 +66,7 @@ export function generateRunMap(seed: number, options: MapGenerationOptions = DEF
     const start: MapNode = { id: id(act, 0, 0), act, floor: 0, kind: "start", nextIds: [] };
     nodes.push(start);
     let previous: MapNode[] = [start];
+    let branchOffset: number | null = null;
     for (let floor = 1; floor <= options.floorsPerAct; floor++) {
       const current: MapNode[] = [];
       for (let lane = 0; lane < options.lanes; lane++) {
@@ -74,14 +77,26 @@ export function generateRunMap(seed: number, options: MapGenerationOptions = DEF
       nodes.push(...current);
       if (previous.length === 1) previous[0]!.nextIds = current.map((node) => node.id);
       else {
-        const permutation = shuffle(state, current.map((_, lane) => lane));
-        state = permutation.state;
+        // A same-lane spine keeps each node live. A single local fork gives a
+        // real choice without the crossing, almost-complete mesh of old maps.
+        // Keep the old entropy draw count so a seed retains its encounter kinds,
+        // enemy rotation and post-map RNG state when only its routes change.
+        const routeOrder = shuffle(state, current.map((_, lane) => lane));
+        state = routeOrder.state;
+        branchOffset ??= routeOrder.items[0]!;
+        let direction = 0;
         for (let lane = 0; lane < previous.length; lane++) {
-          const primary = permutation.items[lane]!;
-          const secondDraw = randomInt(state, current.length - 1);
-          state = secondDraw.state;
-          const secondary = secondDraw.value >= primary ? secondDraw.value + 1 : secondDraw.value;
-          previous[lane]!.nextIds = [current[primary]!.id, current[secondary]!.id];
+          const routeDraw = randomInt(state, current.length - 1);
+          state = routeDraw.state;
+          if (lane === 0) direction = routeDraw.value % 2;
+          previous[lane]!.nextIds = [current[lane]!.id];
+        }
+        for (let branch = 0; branch < BRANCHES_PER_FLOOR; branch++) {
+          // Cycle the source lane so every default lane offers several real
+          // forks per Act, even when the player stays in one column.
+          const source = (branchOffset + floor - 2 + branch) % current.length;
+          const target = source + (source === 0 ? 1 : source === current.length - 1 ? -1 : direction === 0 ? -1 : 1);
+          previous[source]!.nextIds.push(current[target]!.id);
         }
       }
       previous = current;

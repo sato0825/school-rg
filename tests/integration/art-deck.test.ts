@@ -8,7 +8,7 @@ import { DEFAULT_GAME_CONFIG } from "../../src/domain/config.js";
 import { availableRunNodes, createRunSession, enterRunNode } from "../../src/domain/run-flow.js";
 import { deserializeRunSession, serializeRunSession } from "../../src/domain/save.js";
 import type { RunState } from "../../src/domain/schema.js";
-import { selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../../src/domain/turn-state.js";
+import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, selectTypedHandTarget, submitPlayerKey, tickPlayerTurn } from "../../src/domain/turn-state.js";
 import { parseRunState } from "../../src/domain/validate.js";
 
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, DEFAULT_GAME_CONFIG, instanceId);
@@ -44,6 +44,16 @@ function typeAndChoose(run: RunState, word: string, targetId: string): RunState 
   return selectTypedHandTarget(current, targetId, { nowMs: () => now + 10 }, DEFAULT_GAME_CONFIG, demoContent, use, disposition);
 }
 
+function typeWord(run: RunState, word: string): RunState {
+  let current = run;
+  const startedAt = run.combat!.clock.lastEventAtMs;
+  for (const [index, key] of [...word].entries()) {
+    current = submitPlayerKey(current, { key }, { nowMs: () => startedAt + (index + 1) * 10 }, DEFAULT_GAME_CONFIG, demoContent,
+      (state, instanceId, targetEnemyInstanceId) => useCardEffects(state, instanceId, { targetEnemyInstanceId }, DEFAULT_GAME_CONFIG, demoContent), disposition);
+  }
+  return current;
+}
+
 describe("art deck card operations", () => {
   it("has distinct starter, pool and equipment; retained frame survives a timeout", () => {
     const club = demoContent.clubs.find((item) => item.id === "art-demo")!;
@@ -75,5 +85,50 @@ describe("art deck card operations", () => {
     expect(parseRunState(transformed, demoContent)).toEqual(transformed);
     const saved = serializeRunSession({ ...createRunSession(42, "art-demo", demoContent, mapOptions), screen: "combat", run: transformed }, demoContent, { nowMs: () => 100 }, disposition);
     expect(deserializeRunSession(saved, demoContent, { nowMs: () => 1_000 }).run.combat!.cards.find((card) => card.instanceId === redrawn.targetId)?.cardId).toBe("ART-006");
+  });
+
+  it("keeps generated retained copies distinct across timeout, save and the next draw", () => {
+    const staged = artHand("ART-003");
+    const upgraded: RunState = { ...staged.run, combat: { ...staged.run.combat!, cards: staged.run.combat!.cards.map((card) =>
+      card.instanceId === staged.targetId ? { ...card, upgraded: true } : card) } };
+    const copied = typeAndChoose(upgraded, "paint", staged.targetId);
+    const duplicate = copied.combat!.cards.find((card) => card.instanceId === "created-1")!;
+    expect(duplicate).toMatchObject({ cardId: "ART-002", upgraded: true });
+    expect(copied.combat!.hand).toEqual([staged.targetId, duplicate.instanceId]);
+
+    const expired = tickPlayerTurn(copied, { nowMs: () => 10_000 }, disposition);
+    expect(expired.combat!.hand).toEqual([staged.targetId, duplicate.instanceId]);
+    expect(expired.combat!.discardPile).toContain(staged.usedId);
+    const session = { ...createRunSession(42, "art-demo", demoContent, mapOptions), screen: "combat" as const, run: expired };
+    const restored = deserializeRunSession(serializeRunSession(session, demoContent, { nowMs: () => 10_000 }, disposition),
+      demoContent, { nowMs: () => 11_000 });
+    expect(restored.run.combat!.hand).toEqual([staged.targetId, duplicate.instanceId]);
+    const enemyTurn = completeEnemyPhase(beginEnemyPhase(restored.run, DEFAULT_GAME_CONFIG), (state) => state, DEFAULT_GAME_CONFIG);
+    const nextTurn = beginPlayerTurn(enemyTurn, { nowMs: () => 11_000 }, DEFAULT_GAME_CONFIG, demoContent);
+    const zones = [nextTurn.combat!.drawPile, nextTurn.combat!.hand, nextTurn.combat!.discardPile,
+      nextTurn.combat!.exhaustPile, nextTurn.combat!.resolvingPile].flat();
+    expect(zones).toHaveLength(nextTurn.combat!.cards.length);
+    expect(new Set(zones).size).toBe(zones.length);
+    expect(nextTurn.combat!.hand).toEqual(expect.arrayContaining([staged.targetId, duplicate.instanceId]));
+    expect(parseRunState(nextTurn, demoContent)).toEqual(nextTurn);
+  });
+
+  it("redraws a held card into an all-enemy mural, then gains persistent block next turn", () => {
+    const staged = artHand("ART-005");
+    const transformed = typeAndChoose(staged.run, "redraw", staged.targetId);
+    const firstEnemy = transformed.combat!.enemies[0]!;
+    const secondEnemy = { ...firstEnemy, instanceId: "art-second-enemy" };
+    const multi: RunState = { ...transformed, combat: { ...transformed.combat!, enemies: [firstEnemy, secondEnemy],
+      statuses: { ...transformed.combat!.statuses, enemies: { ...transformed.combat!.statuses.enemies, [secondEnemy.instanceId]: {} } } } };
+    const used = typeWord(multi, "mural");
+    expect(used.combat!.enemies.map((enemy) => enemy.hp)).toEqual([firstEnemy.hp - 6, secondEnemy.hp - 6]);
+    expect(used.combat!.statuses.player.barrier).toBe(2);
+    expect(used.combat!.exhaustPile).toContain(staged.targetId);
+    const expired = tickPlayerTurn(used, { nowMs: () => 10_000 }, disposition);
+    const nextTurn = beginPlayerTurn(completeEnemyPhase(beginEnemyPhase(expired, DEFAULT_GAME_CONFIG), (state) => state, DEFAULT_GAME_CONFIG),
+      { nowMs: () => 10_000 }, DEFAULT_GAME_CONFIG, demoContent);
+    expect(nextTurn.player.block).toBe(2);
+    expect(nextTurn.combat!.statuses.player.barrier).toBe(2);
+    expect(parseRunState(nextTurn, demoContent)).toEqual(nextTurn);
   });
 });

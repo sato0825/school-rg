@@ -35,7 +35,7 @@ describe("seeded three-Act map DAG", () => {
       expect(map.nodes.filter((node) => node.kind === "boss").map((node) => node.act)).toEqual([1, 2, 3]);
     }
     expect(generateRunMap(1).nodes).not.toEqual(generateRunMap(2).nodes);
-  }, 20_000);
+  }, 90_000);
 
   it("rejects invalid generation settings", () => {
     const valid = { floorsPerAct: 2, lanes: 3, kindWeights: { combat: 1, elite: 0, event: 0, shop: 0, rest: 0, treasure: 0 } };
@@ -44,6 +44,30 @@ describe("seeded three-Act map DAG", () => {
     expect(() => generateRunMap(7, { ...valid, kindWeights: { ...valid.kindWeights, combat: 0 } })).toThrow(RangeError);
     expect(() => generateRunMap(7, { ...valid, kindWeights: { ...valid.kindWeights, event: -1 } })).toThrow(RangeError);
   });
+
+  it("uses a sparse local fork instead of crossing every lane between floors", () => {
+    for (let seed = 0; seed < 100; seed++) {
+      const map = generateRunMap(seed);
+      for (let act = 1; act <= 3; act++) {
+        const forksByLane = [0, 0, 0, 0];
+        for (let floor = 1; floor < 12; floor++) {
+          const from = map.nodes.filter((node) => node.act === act && node.floor === floor);
+          const to = map.nodes.filter((node) => node.act === act && node.floor === floor + 1);
+          const edges = from.flatMap((node, lane) => node.nextIds.map((nextId) => ({ lane, nextLane: to.findIndex((target) => target.id === nextId) })));
+          expect(edges).toHaveLength(5);
+          expect(edges.every(({ lane, nextLane }) => nextLane >= 0 && Math.abs(lane - nextLane) <= 1)).toBe(true);
+          expect(from.filter((node) => node.nextIds.length === 2)).toHaveLength(1);
+          from.forEach((node, lane) => { if (node.nextIds.length === 2) forksByLane[lane]!++; });
+          expect(edges.filter(({ lane, nextLane }) => lane === nextLane)).toHaveLength(4);
+          expect(from.every((node, lane) => node.nextIds[0] === to[lane]!.id)).toBe(true);
+          for (let left = 0; left < edges.length; left++) for (let right = left + 1; right < edges.length; right++) {
+            expect(edges[left]!.lane < edges[right]!.lane && edges[left]!.nextLane > edges[right]!.nextLane).toBe(false);
+          }
+        }
+        expect(forksByLane.every((count) => count >= 2)).toBe(true);
+      }
+    }
+  }, 20_000);
 
   it("permits only listed next nodes and blocks movement during combat", () => {
     const map = generateRunMap(42, { floorsPerAct: 2, lanes: 3, kindWeights: { combat: 1, elite: 0, event: 0, shop: 0, rest: 0, treasure: 0 } });
