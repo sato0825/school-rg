@@ -70,7 +70,7 @@ async function scriptActiveEvent(page: import("@playwright/test").Page, eventId:
   await expect(page.locator('.location-scene[data-location="event"]')).toBeVisible();
 }
 
-async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
+async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel", fixedInputMsPerKey = 0): Promise<void> {
   const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "thrust", "riposte", "final cut", "beat", "chorus", "crescendo", "mural", "sketch", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "parry", "stance", "kata", "tempo", "sync", "rest", "frame", "outline", "defend", "counter", "draw", "boost", "delay"];
   const artPriorities = ["frame", "defend", ...priorities.filter((word) => word !== "frame" && word !== "defend")];
   const isArt = (await page.locator(".player-hud").innerText()).includes("美術部");
@@ -80,6 +80,7 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
       const words = await page.locator(".card-word").allInnerTexts();
       const word = (isArt ? artPriorities : priorities).find((item) => words.includes(item));
       if (!word) break;
+      if (fixedInputMsPerKey) await page.clock.runFor(word.length * fixedInputMsPerKey);
       // Keep the long-run bot independent of CI host key-dispatch latency.
       await page.evaluate((value) => {
         for (const key of value) window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
@@ -971,7 +972,7 @@ async function readRunDiagnostic(page: import("@playwright/test").Page, phase: s
   }, phase);
 }
 
-async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 36, reloadAtActTwo = false, onTrace?: (phase: string) => Promise<void>): Promise<{ battles: number; bosses: number }> {
+async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 36, reloadAtActTwo = false, onTrace?: (phase: string) => Promise<void>, fixedInputMsPerKey = 0): Promise<{ battles: number; bosses: number }> {
   let battles = 0;
   let bosses = 0;
   let reloadedAtActTwo = false;
@@ -1026,7 +1027,7 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
         bosses++;
       }
       battles++;
-      try { await typeThroughBattle(page, ".reward-panel, .run-result"); }
+      try { await typeThroughBattle(page, ".reward-panel, .run-result", fixedInputMsPerKey); }
       finally { if (onTrace) await onTrace(`battle-${battles}-end`); }
     } else throw new Error(`unexpected run screen at step ${step}`);
   }
@@ -1086,9 +1087,10 @@ for (const [clubLabel, clubId] of [
     await page.goto("/?seed=42");
     await page.getByRole("button", { name: "ランを始める" }).click();
     await page.getByRole("button", { name: new RegExp(clubLabel) }).click();
+    await page.clock.pauseAt(await page.evaluate(() => Date.now()));
     const diagnostics: unknown[] = [];
     const onTrace = async (phase: string) => { diagnostics.push(await readRunDiagnostic(page, phase)); };
-    try { await clearThreeActs(page, 130, true, onTrace); }
+    try { await clearThreeActs(page, 130, true, onTrace, 50); }
     finally {
       await onTrace("final").catch(() => undefined);
       const diagnosticPath = testInfo.outputPath("normal-run-diagnostic.json");
