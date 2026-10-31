@@ -100,12 +100,15 @@ function shopChoices(session: RunSession, content: ContentRegistry, config: Game
 function restChoices(session: RunSession, content: ContentRegistry): string {
   const { hp, maxHp } = session.run.player;
   const healed = Math.min(maxHp - hp, Math.ceil(maxHp * DEFAULT_ECONOMY_OPTIONS.restHealPercent / 100));
-  const cards = session.run.deck.filter((instance) => !instance.upgraded).map((instance) => {
+  const upgradeable = session.run.deck.filter((instance) => !instance.upgraded);
+  const cards = upgradeable.map((instance) => {
     const card = content.cards.find((item) => item.id === instance.cardId);
     if (!card) throw new Error(`unknown deck card: ${instance.cardId}`);
     return choiceButton("rest-upgrade", instance.instanceId, "↑", "強化対象", card.input.text, describeCard(card, content), "強化する", "", cardThumbnail(card.id));
   }).join("");
-  return `${choiceButton("rest-heal", "", "♥", "回復", "ひと休み", `HP ${hp} → ${hp + healed} / ${maxHp}`, `+${healed} HP`)}<details class="location-drawer"><summary>ノートを手直し <b>↑ カードを1枚強化</b></summary><div class="location-deck-choices">${cards || `<p>強化可能なカードなし</p>`}</div></details>`;
+  const full = healed === 0;
+  const heal = choiceButton("rest-heal", "", "♥", "回復", full && !upgradeable.length ? "休んで進む" : "ひと休み", full ? `HP ${hp}/${maxHp}` : `HP ${hp} → ${hp + healed} / ${maxHp}`, full ? "効果なしで進む" : `+${healed} HP`, full && upgradeable.length ? "HPは満タン" : "");
+  return `${heal}<details class="location-drawer"><summary>ノートを手直し <b>↑ カードを1枚強化</b></summary><div class="location-deck-choices">${cards || `<p>強化可能なカードなし</p>`}</div></details>`;
 }
 
 function eventChoices(session: RunSession, content: ContentRegistry, config: GameConfig): string {

@@ -982,7 +982,11 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
       await page.keyboard.press("Enter");
     } else if (await page.locator('.location-scene[data-location="shop"], .location-scene[data-location="rest"]').count()) {
       if (await page.getByRole("button", { name: /購買を出る/ }).count()) await page.getByRole("button", { name: /購買を出る/ }).click();
-      else await page.locator("[data-action=rest-heal]").click();
+      else if (await page.locator("[data-action=rest-heal]:not(:disabled)").count()) await page.locator("[data-action=rest-heal]").click();
+      else {
+        await page.locator(".location-drawer summary").click();
+        await page.locator('[data-action="rest-upgrade"]').first().click();
+      }
     } else if (await page.locator('.location-scene[data-location="event"]').count()) {
       const choices = page.locator('[data-action="event-choice"]:not(:disabled)').filter({ hasNotText: "戦闘へ" });
       const heal = choices.filter({ hasText: /回復|手当て|深呼吸/ });
