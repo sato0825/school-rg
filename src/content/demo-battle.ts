@@ -18,6 +18,7 @@ import { variantEnemies, variantEnemyAi, variantEnemyEffects, variantEnemyIntent
 import { extraConsumableEffects, extraPotions, extraRelicRules, extraRelics } from "./extra-consumables.js";
 import { extraEvents } from "./extra-events.js";
 import { extraEnemies, extraEnemyAi, extraEnemyEffects, extraEnemyIntents } from "./extra-enemies.js";
+import { extraBosses, extraBossAi, extraBossEffects, extraBossIntents } from "./extra-bosses.js";
 
 /** One complete combat encounter for #14. Full run content belongs to #15–#24. */
 export const demoContent: ContentRegistry = parseContentRegistry({
@@ -54,6 +55,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     ...extraConsumableEffects,
     ...variantEnemyEffects,
     ...extraEnemyEffects,
+    ...extraBossEffects,
   ],
   cards: [...baseCardDefinitions, ...literatureCardDefinitions, ...scienceCardDefinitions, ...kendoCardDefinitions, ...musicCardDefinitions, ...artCardDefinitions],
   intents: [
@@ -78,6 +80,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "bell-intent-guard", label: "時を止める", category: "defend", effectIds: ["bell-guard"] },
     ...variantEnemyIntents,
     ...extraEnemyIntents,
+    ...extraBossIntents,
   ],
   enemies: [
     { id: "paper-heap", name: "答案のかたまり", maxHp: 26, intentIds: ["paper-intent-hit", "paper-intent-guard"] },
@@ -92,6 +95,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     { id: "closing-bell", name: "終業の鐘", maxHp: 40, intentIds: ["bell-intent-hit", "bell-intent-guard"] },
     ...variantEnemies,
     ...extraEnemies,
+    ...extraBosses,
   ],
   relics: [
     { id: "library-bookmark", name: "図書室のしおり", triggerIds: ["bookmark-acquired", "bookmark-turn", "bookmark-skill"], effectIds: [] },
@@ -214,6 +218,7 @@ export const demoEnemyAi: EnemyAiRegistry = {
   "closing-bell": { kind: "sequence", intentIds: ["bell-intent-guard", "bell-intent-hit"] },
   ...variantEnemyAi,
   ...extraEnemyAi,
+  ...extraBossAi,
 };
 
 /** Provisional content values; the reusable hook dispatcher lives in the domain. */
@@ -245,9 +250,9 @@ export const demoRelicRules: RelicRule[] = [
 
 export const demoEncounterTable: EncounterTable = {
   byAct: {
-    1: { combat: ["paper-heap", "late-pass", "lost-homework"], elite: [{ id: "hall-and-scrap", enemyIds: ["hall-monitor", "paper-scrap"] }, "notice-board", "school-gate"], boss: ["final-exam"] },
-    2: { combat: ["chalk-cloud", "safety-sign", "lab-magnet"], elite: ["library-cart", "stairwell-echo", "library-index"], boss: ["club-auditor"] },
-    3: { combat: ["night-announcement", "window-shadow", "empty-desk"], elite: ["lost-and-found", "night-locker", "last-bus"], boss: ["closing-bell"] },
+    1: { combat: ["paper-heap", "late-pass", "lost-homework"], elite: [{ id: "hall-and-scrap", enemyIds: ["hall-monitor", "paper-scrap"] }, "notice-board", "school-gate"], boss: ["final-exam", "gym-scoreboard"] },
+    2: { combat: ["chalk-cloud", "safety-sign", "lab-magnet"], elite: ["library-cart", "stairwell-echo", "library-index"], boss: ["club-auditor", "lab-ventilation"] },
+    3: { combat: ["night-announcement", "window-shadow", "empty-desk"], elite: ["lost-and-found", "night-locker", "last-bus"], boss: ["closing-bell", "graduation-curtain"] },
   },
 };
 

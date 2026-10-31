@@ -6,8 +6,6 @@ import { createRunSession, enterRunNode, type EncounterPool } from "../../src/do
 import type { MapNode } from "../../src/domain/schema.js";
 
 describe("Act-specific encounters", () => {
-  const bosses = { 1: "final-exam", 2: "club-auditor", 3: "closing-bell" } as const;
-
   for (const act of [1, 2, 3] as const) {
     for (const kind of ["combat", "elite", "boss"] as const) {
       it(`selects Act ${act} ${kind} with a registered visible Intent`, () => {
@@ -19,7 +17,6 @@ describe("Act-specific encounters", () => {
         const enemy = entered.run.combat?.enemies[0];
         const pool = ("byAct" in demoEncounterTable ? demoEncounterTable.byAct[act] : demoEncounterTable)[kind];
         expect(pool.some((item) => typeof item === "string" ? item === enemy?.enemyId : item.enemyIds[0] === enemy?.enemyId)).toBe(true);
-        if (kind === "boss") expect(enemy?.enemyId).toBe(bosses[act]);
         if (act === 1 && kind === "elite" && enemy?.enemyId === "hall-monitor") expect(entered.run.combat?.enemies.map((item) => item.enemyId)).toEqual(["hall-monitor", "paper-scrap"]);
         expect(demoContent.enemies.find((item) => item.id === enemy?.enemyId)?.intentIds).toContain(enemy?.intentId);
         expect(demoContent.intents.find((item) => item.id === enemy?.intentId)).toBeDefined();

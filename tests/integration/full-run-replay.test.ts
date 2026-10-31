@@ -41,11 +41,11 @@ function replay(seed: number, reloadAtActTwo: boolean, ascensionLevel = 0, clubI
 describe("seeded full-run replay", () => {
   it("reproduces all three Acts, including a save/load boundary", () => {
     const original = replay(142, false);
-    expect(original.trace.filter((line) => line.includes(":boss:"))).toEqual(expect.arrayContaining([
-      expect.stringContaining(":final-exam:"),
-      expect.stringContaining(":club-auditor:"),
-      expect.stringContaining(":closing-bell:"),
-    ]));
+    const bosses = original.trace.filter((line) => line.includes(":boss:"));
+    expect(bosses).toHaveLength(3);
+    expect(bosses[0]).toMatch(/:(final-exam|gym-scoreboard):/);
+    expect(bosses[1]).toMatch(/:(club-auditor|lab-ventilation):/);
+    expect(bosses[2]).toMatch(/:(closing-bell|graduation-curtain):/);
     expect(replay(142, false)).toEqual(original);
     expect(replay(142, true)).toEqual(original);
     expect(replay(143, false).trace).not.toEqual(original.trace);

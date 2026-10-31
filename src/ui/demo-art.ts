@@ -37,6 +37,9 @@ export const demoBattleArt: BattleArt = {
     "library-index": placeholderEnemyUrl,
     "empty-desk": placeholderEnemyUrl,
     "last-bus": placeholderEnemyUrl,
+    "gym-scoreboard": placeholderEnemyUrl,
+    "lab-ventilation": placeholderEnemyUrl,
+    "graduation-curtain": placeholderEnemyUrl,
   },
 };
 
