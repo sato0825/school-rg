@@ -1,12 +1,13 @@
 import type { BattleArt } from "./battle-view.js";
 import { clubPresentation } from "./club-presentation.js";
 import { enemyCandidateUrlById } from "./enemy-presentation.js";
-import { stageCandidateUrlByAct } from "./stage-presentation.js";
+import { stageCandidateUrlByAct, stageCandidateUrlByActPhase } from "./stage-presentation.js";
 
 /** Demo presentation is kept outside battle logic so later club and enemy art can replace it. */
 export const demoBattleArt: BattleArt = {
   stageUrl: new URL("../assets/stage-hallway-v1.png", import.meta.url).href,
   stageUrlByAct: stageCandidateUrlByAct,
+  stageUrlByActPhase: stageCandidateUrlByActPhase,
   heroUrl: clubPresentation["literature-demo"].idle,
   heroUrlByClubId: Object.fromEntries(Object.entries(clubPresentation).map(([id, art]) => [id, art.idle])),
   heroPosesByClubId: Object.fromEntries(Object.entries(clubPresentation).map(([id, art]) => [id, { idle: art.idle, activate: art.activate, hit: art.hit }])),
