@@ -7,7 +7,7 @@ const placeholderEnemyUrl = new URL("../assets/enemy-paper-v1.png", import.meta.
 /** Demo presentation is kept outside battle logic so later club and enemy art can replace it. */
 export const demoBattleArt: BattleArt = {
   stageUrl: new URL("../assets/stage-hallway-v1.png", import.meta.url).href,
-  heroUrl: new URL("../assets/girl-notebook-v1.png", import.meta.url).href,
+  heroUrl: clubPresentation["literature-demo"].idle,
   heroUrlByClubId: Object.fromEntries(Object.entries(clubPresentation).map(([id, art]) => [id, art.idle])),
   heroPosesByClubId: Object.fromEntries(Object.entries(clubPresentation).map(([id, art]) => [id, { idle: art.idle, activate: art.activate, hit: art.hit }])),
   fxPaletteByClubId: {
