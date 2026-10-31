@@ -1,5 +1,5 @@
 /* Battle HUD: the scene and the input deck keep their geometry across turn phases. */
-.game{grid-template-rows:72px minmax(0,1fr) 326px}
+.game{position:relative;grid-template-rows:72px minmax(0,1fr) 326px}
 .topbar{gap:12px;padding:7px 16px;min-width:0}
 .topbar .brand{flex:none;margin-right:0;gap:7px;white-space:nowrap}
 .topbar .brand-mark{width:28px;height:28px;font-size:16px;border-radius:6px}
@@ -26,7 +26,7 @@
 
 @media(max-width:760px){
   .game{grid-template-rows:96px minmax(0,1fr) 350px}
-  .topbar{display:grid;grid-template-columns:minmax(0,1fr) repeat(4,auto);grid-template-rows:30px 42px;gap:5px;padding:5px 8px}
+  .topbar{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,auto);grid-template-rows:30px 42px;gap:5px;padding:5px 8px}
   .topbar .brand{display:none}
   .topbar .brand-mark{display:none}
   .topbar .brand h1{font-size:11px}
@@ -35,8 +35,7 @@
   .topbar .pause-button{grid-column:2;grid-row:1;padding:4px;font-size:9px}
   .topbar .audio-toggle{grid-column:3;grid-row:1;padding:4px;font-size:9px}
   .topbar .battle-guide{grid-row:1;padding:4px;font-size:9px}
-  .topbar .battle-guide[data-action="open-combat-log"]{grid-column:4}
-  .topbar .battle-guide[data-action="open-compendium"]{grid-column:5}
+  .topbar .battle-guide{grid-column:4}
   .topbar .player-hud{grid-column:1/-1;grid-row:2;width:100%;max-width:none;height:42px;padding:4px 7px;gap:6px;border-bottom:1px solid #738d9d}
   .topbar .hud-name{font-size:9px}
   .topbar .player-hud strong{font-size:16px}
@@ -108,8 +107,7 @@
   .topbar .audio-toggle{grid-column:3;grid-row:1}
   .topbar .stimulus-toggle{grid-column:4;grid-row:1;padding:3px;font-size:9px}
   .topbar .player-hud{grid-column:1/-1;grid-row:2}
-  .topbar .battle-guide[data-action="open-combat-log"]{grid-column:3;grid-row:3}
-  .topbar .battle-guide[data-action="open-compendium"]{grid-column:4;grid-row:3}
+  .topbar .battle-guide{grid-column:3;grid-row:3}
   .topbar .battle-guide{padding:2px 6px;font-size:9px}
   .intent-ticket{min-height:42px;padding:3px 5px;gap:4px}
   .intent-icon{width:22px;height:22px;font-size:14px;border-width:1px}
@@ -133,3 +131,11 @@
   .topbar .playtest-export{grid-row:4}
   .layout-preview-label{left:2%;transform:none;max-width:40%;font-size:8px}
 }
+
+.battle-help[hidden]{display:none}
+.battle-help{position:absolute;z-index:9;left:clamp(8px,2vw,22px);top:76px;width:min(360px,calc(100% - 16px));padding:13px 16px;border:1px solid #8ea7b8;border-radius:7px;background:#f7faf9da;backdrop-filter:blur(5px);box-shadow:0 9px 22px #20374b35;color:#29465b;font-size:12px}
+.battle-help strong{font-size:14px}
+.battle-help ol{margin:8px 0;padding-left:20px;line-height:1.55}
+.battle-help p{margin:7px 0;font-size:11px}
+.battle-help button{padding:5px 12px;border:1px solid #7898ab;border-radius:4px;background:#fff;color:#274e64;font-weight:800;cursor:pointer}
+@media(max-width:760px){.battle-help{top:100px;width:min(320px,calc(100% - 16px));padding:10px 12px}}
