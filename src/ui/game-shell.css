@@ -1,0 +1,26 @@
+/* The run uses one stage. Rewards and the route are layers over that stage. */
+.game-shell[data-screen="reward"],.game-shell[data-screen="map"]{grid-template-rows:64px minmax(0,1fr)}
+.game-shell[data-screen="reward"] .control-deck,.game-shell[data-screen="map"] .control-deck{display:none}
+.game-shell .game-shell-overlay{position:absolute;z-index:8;inset:0;pointer-events:none}
+.game-shell .game-shell-overlay>*{pointer-events:auto}
+.game-shell[data-screen="reward"] .game-shell-overlay{display:flex;align-items:end;justify-content:center;padding:20px 28px 24px;background:linear-gradient(180deg,transparent 0%,#102b4270 75%,#102b4299 100%)}
+.game-shell[data-screen="reward"] .reward-panel{width:min(870px,100%);max-width:none;margin:0;padding:15px 22px 17px;border:1px solid #acc5d1;border-radius:12px;background:#e7eff3e8;backdrop-filter:blur(12px);box-shadow:0 16px 36px #0e233b55}
+.game-shell[data-screen="reward"] .reward-panel h2{font-size:17px;margin:2px 0 5px}
+.game-shell[data-screen="reward"] .reward-options{margin:10px auto 12px;gap:13px}
+.game-shell[data-screen="reward"] .reward-card{min-height:148px;width:190px;padding:12px}
+.game-shell[data-screen="reward"] .reward-panel .map-stats{display:none}
+.game-shell[data-screen="map"] .game-shell-overlay{display:flex;align-items:center;justify-content:flex-end;padding:16px clamp(18px,5vw,84px);background:#15324b3d}
+.game-shell[data-screen="map"] .map-panel{width:min(570px,65%);height:min(86%,700px);margin:0;display:flex;flex-direction:column;overflow:hidden;border:1px solid #a9c5d1;border-radius:8px;background:#e8f1f2d9;backdrop-filter:blur(15px);box-shadow:0 16px 34px #0d2a4460}
+.game-shell[data-screen="map"] .map-intro{flex:none;padding:12px 20px 8px}
+.game-shell[data-screen="map"] .map-intro h2{font-size:19px;margin:2px 0}
+.game-shell[data-screen="map"] .map-intro>p,.game-shell[data-screen="map"] .map-hero,.game-shell[data-screen="map"] .map-secondary,.game-shell[data-screen="map"] .playtest-stats{display:none}
+.game-shell[data-screen="map"] .map-scroll{flex:1;max-height:none;min-height:0;padding:5px 18px 18px}
+.game-shell[data-screen="map"] .map-floor{min-height:44px}
+.game-shell[data-screen="map"] .map-node{padding:4px 3px}
+.game-shell[data-screen="map"] .map-node small{font-size:9px}
+.game-shell[data-screen="map"] .map-compendium{display:none}
+.game-shell[data-screen="map"] .map-stats{margin-top:5px}
+.game-shell[data-screen="map"] .map-intro .map-copy{width:100%}
+.game-shell[data-screen="map"] .ally-slot{opacity:.9}
+@media(max-width:1100px){.game-shell[data-screen="map"] .map-panel{width:min(590px,71%)}.game-shell[data-screen="reward"] .reward-panel{padding:12px}.game-shell[data-screen="reward"] .reward-card{min-height:130px}}
+@media(prefers-reduced-motion:reduce){.game-shell .game-shell-overlay{backdrop-filter:none}}

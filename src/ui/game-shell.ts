@@ -1,8 +1,6 @@
 import type { RunState } from "../domain/schema.js";
-import type { RunSession } from "../domain/run-flow.js";
-import type { ContentTables } from "../domain/schema.js";
-import { renderBattle, type BattleView } from "./battle-view.js";
-import { renderRunMap, renderRunReward } from "./run-view.js";
+import type { BattleView } from "./battle-view.js";
+import { stageUrlForRun } from "./stage-presentation.js";
 
 /** The stage and actor belong to the run, rather than to an individual screen. */
 export class GameShell {
@@ -16,8 +14,10 @@ export class GameShell {
   private readonly overlay: HTMLElement;
   private stageNodeId: string | null = null;
 
-  constructor(private readonly root: HTMLElement, initialBattle: HTMLElement) {
-    const main = initialBattle.querySelector<HTMLElement>(".game");
+  constructor(root: HTMLElement, run: RunState, view: BattleView) {
+    const initial = document.createElement("div");
+    initial.innerHTML = `<main class="game game-shell" aria-label="学園タイピングローグライク"><header class="topbar"></header><section class="stage" aria-label="ゲームの舞台"><div class="stage-vignette"></div><div class="ally-group"><div class="ally-slot"><img class="hero-art" alt="主人公" /><div class="hero-shadow"></div><span class="hero-nameplate"></span></div></div></section><section class="control-deck"><input id="battle-typing-input" class="typing-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="カード名を入力" /></section></main>`;
+    const main = initial.querySelector<HTMLElement>(".game");
     const stage = main?.querySelector<HTMLElement>(".stage");
     const actor = stage?.querySelector<HTMLElement>(".ally-slot");
     const hero = actor?.querySelector<HTMLImageElement>(".hero-art");
@@ -35,13 +35,17 @@ export class GameShell {
     this.overlay = document.createElement("div");
     this.overlay.className = "game-shell-overlay";
     this.stage.append(this.overlay);
+    this.stage.style.backgroundImage = `url("${stageUrlForRun(view.art, run)}")`;
+    this.stageNodeId = run.map.currentNodeId;
+    this.actor.style.setProperty("--slot-x", "22%");
+    this.hero.src = view.art.heroPosesByClubId?.[run.clubId]?.idle ?? view.art.heroUrlByClubId?.[run.clubId] ?? view.art.heroUrl;
     root.replaceChildren(main);
   }
 
   get element(): HTMLElement { return this.main; }
   get typingInput(): HTMLInputElement { return this.input; }
 
-  showBattle(run: RunState, content: ContentTables, view: BattleView, previous: HTMLElement): void {
+  showBattle(run: RunState, previous: HTMLElement): void {
     const next = previous.querySelector<HTMLElement>(".game");
     const stage = next?.querySelector<HTMLElement>(".stage");
     const slot = stage?.querySelector<HTMLElement>(".ally-slot");
@@ -62,6 +66,7 @@ export class GameShell {
     }
     this.main.dataset.club = next.dataset.club;
     this.main.dataset.effects = next.dataset.effects;
+    this.header.classList.remove("run-header");
     this.header.replaceChildren(...header.childNodes);
     this.hero.className = hero.className;
     this.hero.src = hero.src;
@@ -73,18 +78,37 @@ export class GameShell {
     this.overlay.remove();
     this.stage.replaceChildren(...stage.childNodes, this.overlay);
     input.replaceWith(this.input);
+    this.input.removeAttribute("aria-label");
+    this.input.setAttribute("aria-describedby", input.getAttribute("aria-describedby") ?? "");
     this.input.value = input.value;
     this.input.disabled = input.disabled;
     this.control.replaceChildren(...control.childNodes);
+    this.main.querySelector("#battle-help")?.remove();
+    this.main.querySelector(".result-backdrop")?.remove();
+    this.main.querySelector(".battle-map-overlay")?.remove();
+    for (const selector of ["#battle-help", ".result-backdrop"]) {
+      const extra = next.querySelector(selector);
+      if (extra) this.main.append(extra);
+    }
     this.main.dataset.screen = "combat";
     this.overlay.replaceChildren();
   }
 
-  showOverlay(screen: "reward" | "map", rendered: HTMLElement): void {
+  showOverlay(screen: "reward" | "map", run: RunState, rendered: HTMLElement): void {
     const panel = rendered.querySelector<HTMLElement>(screen === "reward" ? ".reward-panel" : ".map-panel");
     if (!panel) throw new Error(`Missing ${screen} panel`);
     this.overlay.replaceChildren(panel);
     this.main.dataset.screen = screen;
     this.input.disabled = true;
+    for (const child of [...this.stage.children]) {
+      if (child !== this.overlay && !child.classList.contains("stage-vignette") && !child.classList.contains("ally-group")) child.remove();
+    }
+    this.header.replaceChildren();
+    this.header.classList.add("run-header");
+    const meta = document.createElement("div");
+    meta.className = "run-meta";
+    const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
+    meta.textContent = `ACT ${run.act} · ${node?.floor ?? 0}F · ${screen === "reward" ? "戦闘報酬" : "経路選択"}`;
+    this.header.append(meta);
   }
 }

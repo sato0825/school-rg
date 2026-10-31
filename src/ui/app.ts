@@ -27,6 +27,7 @@ import { browserRandomUint32, newRunSeed } from "./run-seed.js";
 import { createAudioFeedback } from "./audio.js";
 import { imeLatinKey } from "./ime-key.js";
 import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
+import { GameShell } from "./game-shell.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
@@ -112,6 +113,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     }
   };
   let enemyPending = false;
+  let gameShell: GameShell | null = null;
   let generation = 0;
   const setMotion = (motion: BattleView["motion"]) => { view.motion = motion; view.motionStartedAtMs = motion ? clock.nowMs() : null; };
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
@@ -155,19 +157,32 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const battleMapScrollTop = root.querySelector<HTMLElement>(".battle-map-scroll")?.scrollTop;
     const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
     const restoreBattleMapFocus = root.querySelector(".battle-map-close") === document.activeElement;
-    if (restoreError) renderSaveRecovery(root, demoBattleArt);
-    else if (frontScreen === "title") renderRunTitle(root, demoBattleArt, history);
-    else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError);
-    else if (frontScreen === "compendium") renderCompendium(root, demoContent, demoBattleArt);
-    else if (frontScreen === "history") renderRunHistory(root, history, demoContent, demoBattleArt, historyLoadError, historySaveError);
-    else if (session.screen === "map") renderRunMap(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);
-    else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
-    else if (session.screen === "treasure") renderRunTreasure(root, session, demoContent, demoBattleArt, config);
-    else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message);
-    else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt);
-    else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt);
-    else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError);
-    else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
+    if (restoreError) { gameShell = null; renderSaveRecovery(root, demoBattleArt); }
+    else if (frontScreen === "title") { gameShell = null; renderRunTitle(root, demoBattleArt, history); }
+    else if (frontScreen === "clubs") { gameShell = null; renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError); }
+    else if (frontScreen === "compendium") { gameShell = null; renderCompendium(root, demoContent, demoBattleArt); }
+    else if (frontScreen === "history") { gameShell = null; renderRunHistory(root, history, demoContent, demoBattleArt, historyLoadError, historySaveError); }
+    else if (session.screen === "map" || session.screen === "reward" || session.screen === "combat") {
+      if (!gameShell) gameShell = new GameShell(root, run, view);
+      const rendered = document.createElement("div");
+      if (session.screen === "map") {
+        renderRunMap(rendered, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);
+        gameShell.showOverlay("map", run, rendered);
+      } else if (session.screen === "reward") {
+        renderRunReward(rendered, session, demoContent, demoBattleArt);
+        gameShell.showOverlay("reward", run, rendered);
+      } else {
+        view.animationNowMs = clock.nowMs();
+        renderBattle(rendered, run, demoContent, view);
+        gameShell.showBattle(run, rendered);
+      }
+    }
+    else if (session.screen === "treasure") { gameShell = null; renderRunTreasure(root, session, demoContent, demoBattleArt, config); }
+    else if (session.screen === "shop") { gameShell = null; renderRunShop(root, session, demoContent, demoBattleArt, view.message); }
+    else if (session.screen === "rest") { gameShell = null; renderRunRest(root, session, demoContent, demoBattleArt); }
+    else if (session.screen === "event") { gameShell = null; renderRunEvent(root, session, demoContent, demoBattleArt); }
+    else if (session.screen === "won" || session.screen === "lost") { gameShell = null; renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError); }
+    else { gameShell = null; view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
     const mapScroll = root.querySelector<HTMLElement>(".map-scroll");

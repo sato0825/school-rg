@@ -437,6 +437,14 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await page.clock.install();
   await startDemoRun(page);
   await enterNextNode(page);
+  await page.evaluate(() => {
+    const state = window as typeof window & { gameShellAnchors?: { stage: Element; actor: Element; input: Element; background: string } };
+    state.gameShellAnchors = {
+      stage: document.querySelector(".stage")!, actor: document.querySelector(".ally-slot")!,
+      input: document.querySelector(".typing-input")!,
+      background: (document.querySelector(".stage") as HTMLElement).style.backgroundImage,
+    };
+  });
   await expectIntentMatchesSavedBattle(page);
   const initialHp = Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"));
   await page.keyboard.type("heavy strike");
@@ -456,6 +464,16 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await expectIntentMatchesSavedBattle(page);
   await typeThroughBattle(page);
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
+  for (const screen of ["reward", "map"] as const) {
+    if (screen === "map") await page.getByRole("button", { name: "報酬を受け取らず進む" }).click();
+    await expect(page.locator(`.game-shell[data-screen="${screen}"]`)).toBeVisible();
+    expect(await page.evaluate(() => {
+      const saved = (window as typeof window & { gameShellAnchors: { stage: Element; actor: Element; input: Element; background: string } }).gameShellAnchors;
+      return saved.stage === document.querySelector(".stage") && saved.actor === document.querySelector(".ally-slot")
+        && saved.input === document.querySelector(".typing-input")
+        && saved.background === (document.querySelector(".stage") as HTMLElement).style.backgroundImage;
+    })).toBe(true);
+  }
 });
 
 test("an elite formation accepts a typed single target and an all-enemy attack", async ({ page }) => {
