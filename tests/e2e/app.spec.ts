@@ -454,6 +454,11 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
     for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
       await page.setViewportSize(viewport);
       await page.locator(".hero-art,.enemy-art,.card-art img").evaluateAll(async (images) => Promise.all(images.map((image) => (image as HTMLImageElement).decode())));
+      const longWordFits = await page.locator('.hand .card[data-long-word="true"]').evaluateAll((cards) => cards.every((card) => {
+        const effect = card.querySelector('.card-effect');
+        return effect !== null && effect.getBoundingClientRect().bottom <= card.getBoundingClientRect().bottom - 4;
+      }));
+      expect(longWordFits).toBe(true);
       await page.screenshot({ path: `docs/art/previews/issue261-combat-${viewport.width}-candidate-v3.png` });
     }
     await page.setViewportSize(original);
