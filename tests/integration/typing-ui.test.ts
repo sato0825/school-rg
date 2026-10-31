@@ -67,6 +67,11 @@ describe("typing selection in the battle view", () => {
     expect(root.querySelector(".player-health-track")?.getAttribute("aria-valuenow")).toBe(String(run.player.hp));
     expect(root.querySelector(".intent-copy small")?.textContent).toContain("次の行動");
     expect(root.querySelector(".typing-caption")?.textContent).toBe("カード名をタイプ");
+    const input = root.querySelector<HTMLInputElement>(".typing-input")!;
+    expect(input.type).toBe("text");
+    expect(input.value).toBe(run.combat!.typing.buffer);
+    expect(input.labels?.[0]?.textContent).toBe("カード名をタイプ");
+    expect(root.querySelector(input.getAttribute("aria-describedby") ? `#${input.getAttribute("aria-describedby")}` : "missing")?.textContent).toContain("Escape");
     const typing = root.querySelector(".typing-row")!;
     const hand = root.querySelector(".hand")!;
     const potions = root.querySelector(".potion-row")!;

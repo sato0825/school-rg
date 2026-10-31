@@ -63,6 +63,29 @@ describe("run and typing combat HUD", () => {
     window.localStorage.removeItem("school-rg-low-stimulus-v1");
   });
 
+  it("keeps focus and the accessible value through typing, cancellation, and potion mode", () => {
+    const root = document.querySelector<HTMLElement>("#app")!;
+    const unmount = mountApp(root, { read: () => null, write: () => undefined });
+    root.querySelector<HTMLButtonElement>("[data-action=open-clubs]")?.click();
+    root.querySelector<HTMLButtonElement>("[data-action=choose-club]")?.click();
+    root.querySelector<HTMLButtonElement>(".map-node.available[aria-label*='戦闘']")?.click();
+    const firstWord = root.querySelector(".card-word")!.textContent!.trim();
+    const original = root.querySelector<HTMLInputElement>(".typing-input")!;
+    original.focus();
+    original.dispatchEvent(new KeyboardEvent("keydown", { key: "z", bubbles: true, cancelable: true }));
+    expect(root.querySelector<HTMLInputElement>(".typing-input")!.value).toBe("");
+    root.querySelector<HTMLInputElement>(".typing-input")!.dispatchEvent(new KeyboardEvent("keydown", { key: firstWord[0], bubbles: true, cancelable: true }));
+    expect(root.querySelector<HTMLInputElement>(".typing-input")!.value).toBe(firstWord[0]);
+    expect(document.activeElement).toBe(root.querySelector(".typing-input"));
+    root.querySelector<HTMLInputElement>(".typing-input")!.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+    expect(root.querySelector<HTMLInputElement>(".typing-input")!.value).toBe("");
+    root.querySelector<HTMLInputElement>(".typing-input")!.dispatchEvent(new KeyboardEvent("keydown", { key: "F2", bubbles: true, cancelable: true }));
+    expect(root.querySelector(".potion-mode")?.getAttribute("aria-pressed")).toBe("true");
+    expect(root.querySelector<HTMLInputElement>(".typing-input")!.labels?.[0]?.textContent).toBe("ポーション名をタイプ");
+    expect(document.activeElement).toBe(root.querySelector(".typing-input"));
+    unmount();
+  });
+
   it("reports a failed history write without changing the saved run", () => {
     const root = document.querySelector<HTMLElement>("#app")!;
     const start = createRunSession(42, "literature-demo", demoContent);
