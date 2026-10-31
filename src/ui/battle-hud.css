@@ -1,0 +1,56 @@
+/* Battle HUD: the scene and the input deck keep their geometry across turn phases. */
+.game{grid-template-rows:72px minmax(0,1fr) 326px}
+.topbar{gap:12px;padding:7px 16px;min-width:0}
+.topbar .brand{flex:none;margin-right:0;gap:7px;white-space:nowrap}
+.topbar .brand-mark{width:28px;height:28px;font-size:16px;border-radius:6px}
+.topbar .brand h1{font-size:13px;white-space:nowrap}
+.topbar .run-meta{flex:none;gap:4px;white-space:nowrap}
+.topbar .run-meta span{padding:5px 6px;font-size:10px}
+.topbar .player-hud{position:static;z-index:auto;display:flex;align-items:center;flex:0 1 auto;min-width:0;max-width:54%;height:48px;padding:5px 4px;gap:8px;overflow:hidden;border:0;background:transparent;box-shadow:none;white-space:nowrap}
+.topbar .hud-name{flex:none;font-size:10px}
+.topbar .player-hud strong{flex:none;font-size:18px}
+.topbar .player-hud strong span{font-size:11px}
+.topbar .player-hud b{flex:none;align-self:center;font-size:14px}
+.topbar .status-row,.topbar .relic-row{display:flex;flex:none;flex-wrap:nowrap;grid-column:auto;min-width:0;max-width:25%;overflow-x:auto;scrollbar-width:thin}
+.topbar .status-row:empty,.topbar .relic-row:empty{display:none}
+.topbar .relic-chip,.topbar .status-chip{flex:none}
+.control-deck{height:326px;min-height:0;overflow-y:auto;scrollbar-gutter:stable;scrollbar-width:thin}
+.typing-caption{display:none}
+.typing-hint:empty,.potion-row:not(.active) .potion-buffer{display:none}
+.potion-row{height:38px;min-height:0}
+.hand-guide{display:none}
+.hand{height:139px;min-height:0}
+.selection-shelf{min-height:0;margin-top:2px}
+.battle-message{min-height:15px}
+
+@media(max-width:760px){
+  .game{grid-template-rows:96px minmax(0,1fr) 350px}
+  .topbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-rows:30px 42px;gap:5px;padding:5px 8px}
+  .topbar .brand{grid-column:1;grid-row:1}
+  .topbar .brand-mark{display:none}
+  .topbar .brand h1{font-size:11px}
+  .topbar .run-meta{grid-column:2;grid-row:1;min-width:0;overflow:hidden}
+  .topbar .run-meta span{display:inline-block;padding:3px;font-size:8px;overflow:hidden;text-overflow:ellipsis}
+  .topbar .pause-button{grid-column:3;grid-row:1;padding:4px;font-size:9px}
+  .topbar .audio-toggle{grid-column:4;grid-row:1;padding:4px;font-size:9px}
+  .topbar .player-hud{grid-column:1/-1;grid-row:2;width:100%;max-width:none;height:42px;padding:4px 7px;gap:6px;border-bottom:1px solid #738d9d}
+  .topbar .hud-name{font-size:9px}
+  .topbar .player-hud strong{font-size:16px}
+  .topbar .player-hud b{font-size:12px}
+  .topbar .status-row,.topbar .relic-row{max-width:22%;font-size:9px}
+  .topbar .status-chip,.topbar .relic-chip{font-size:8px;padding:2px 3px}
+  .control-deck{height:350px;min-height:0;padding:8px;overflow-y:auto}
+  .potion-row{display:flex;height:42px;min-height:0;align-content:center;justify-content:flex-start;overflow:hidden}
+  .potion-row.active{height:64px;flex-wrap:wrap}
+  .potion-row .potion-mode{flex:none}
+  .potion-row .potion-buffer{flex:1;order:3;min-width:100%;height:17px}
+  .potion-slots{display:flex;flex:1;grid-column:auto;min-width:0;min-height:30px;overflow-x:auto}
+  .potion-slot{flex:none;height:31px}
+  .potion{flex-direction:row;align-items:center;gap:4px;height:31px;padding:3px 5px}
+  .potion strong{max-width:75px}
+  .hand-guide{display:flex;min-height:14px;align-items:center}
+  .hand{height:122px;min-height:0}
+  .game:has(.playtest-export){grid-template-rows:116px minmax(0,1fr) 350px}
+  .topbar:has(.playtest-export){grid-template-rows:30px 42px 16px}
+  .topbar .playtest-export{grid-column:1/-1;grid-row:3;justify-self:end;padding:1px 4px;font-size:8px}
+}

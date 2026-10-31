@@ -21,18 +21,22 @@ for (const width of [1440, 390]) {
         const rect = document.querySelector(selector)!.getBoundingClientRect();
         return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
       };
-      return { header: box(".topbar"), stage: box(".stage"), controls: box(".control-deck"), player: box(".player-hud"), scrollWidth: document.documentElement.scrollWidth };
+      return { header: box(".topbar"), stage: box(".stage"), controls: box(".control-deck"), player: box(".player-hud"), message: box(".battle-message"), scrollWidth: document.documentElement.scrollWidth };
     });
     const before = await geometry();
     await expect(page.locator(".topbar .player-hud")).toContainText("科学部");
     expect(before.player.y + before.player.height).toBeLessThanOrEqual(before.stage.y + 1);
+    expect(before.message.y + before.message.height).toBeLessThanOrEqual(before.controls.y + before.controls.height + 1);
     expect(before.scrollWidth).toBe(width);
+    if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-battle-hud-${width}.png` });
     await page.clock.runFor(30_100);
     await expect(page.locator(".phase-banner")).toBeVisible();
     const during = await geometry();
+    if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-enemy-phase-${width}.png` });
     await page.clock.runFor(650);
     await expect(page.locator(".phase-banner")).toHaveCount(0);
     const after = await geometry();
+    if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-next-turn-${width}.png` });
     for (const current of [during, after]) {
       expect(current.header).toEqual(before.header);
       expect(current.stage).toEqual(before.stage);
