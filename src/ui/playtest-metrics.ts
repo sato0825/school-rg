@@ -97,7 +97,8 @@ export function recordPlaytestContent(tracker: PlaytestTracker, event: Omit<Play
   const parsed = ContentEventSchema.parse({ ...event, atActiveMs: tracker.record.activeMs });
   const existing = tracker.record.contentEvents.find((item) => item.eventId === event.eventId);
   if (existing) {
-    const { atActiveMs: _atActiveMs, ...prior } = existing;
+    const { atActiveMs, ...prior } = existing;
+    void atActiveMs;
     if (JSON.stringify(prior) !== JSON.stringify(event)) throw new RangeError(`conflicting playtest content event: ${event.eventId}`);
     return tracker;
   }

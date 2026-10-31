@@ -73,4 +73,35 @@ describe("local playtest summary", () => {
       fullRunsWithVisits: 4, visitKinds: { start: 10, combat: 1, shop: 1 },
     });
   });
+
+  it("summarizes complete v2 exposure by Act and source while excluding old, partial, and malformed samples", () => {
+    const base = makeRecord("content", "science-demo", "won", 5_000);
+    const event = (eventId, nodeId, act, source, kind, action, contentId, atActiveMs) => ({ eventId, nodeId, act,
+      source, kind, action, contentId, offerId: contentId, available: true, atActiveMs });
+    const complete = { ...base, formatVersion: 2, contentPartial: false, visits: [
+      { nodeId: "r1", act: 1, kind: "combat", atActiveMs: 100 },
+      { nodeId: "r2", act: 1, kind: "combat", atActiveMs: 200 },
+      { nodeId: "s1", act: 2, kind: "shop", atActiveMs: 1_000 },
+    ], contentEvents: [
+      event("1", "r1", 1, "reward", "card", "offered", "card-a", 100),
+      event("2", "r1", 1, "reward", "card", "selected", "card-a", 101),
+      event("3", "r1", 1, "reward", "card", "acquired", "card-a", 102),
+      event("4", "r2", 1, "reward", "card", "offered", "card-a", 200),
+      event("5", "s1", 2, "shop", "potion", "offered", "potion-a", 1_000),
+      event("6", "s1", 2, "shop", "potion", "skipped", "potion-a", 1_200),
+    ] };
+    const report = summarizePlaytests([complete,
+      { ...makeRecord("legacy", "science-demo", "won", 1_000) },
+      { ...complete, runId: "partial", contentPartial: true },
+      { ...complete, runId: "unfinished", result: null },
+      { ...complete, runId: "broken", contentEvents: [complete.contentEvents[0], complete.contentEvents[0]] },
+    ]);
+    const exposure = report.clubs["science-demo"].contentExposure;
+    expect(exposure.runsWithUsableContentRecords).toBe(1);
+    expect(exposure.byAct[0]).toMatchObject({ offered: 2, selected: 1, acquired: 1, repeatedOffers: 1, selectionRate: 0.5,
+      bySource: { reward: { offered: 2, selected: 1, acquired: 1, repeatedOffers: 1, selectionRate: 0.5 } } });
+    expect(exposure.byAct[1]).toMatchObject({ offered: 1, skipped: 1, selectionRate: 0,
+      bySource: { shop: { offered: 1, skipped: 1, selectionRate: 0 } } });
+    expect(exposure.byAct[2].selectionRate).toBeNull();
+  });
 });

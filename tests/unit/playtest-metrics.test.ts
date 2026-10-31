@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createDemoBattle, demoContent } from "../../src/content/demo-battle.js";
 import { createRunSession } from "../../src/domain/run-flow.js";
-import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode } from "../../src/ui/playtest-metrics.js";
+import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, recordPlaytestContent, resumePlaytest, startPlaytest, visitPlaytestNode } from "../../src/ui/playtest-metrics.js";
 
 const run = createRunSession(42, "science-demo", demoContent).run;
 const startNode = run.map.nodes.find((node) => node.id === run.map.currentNodeId)!;
@@ -45,11 +45,30 @@ describe("opt-in playtest metrics", () => {
   it("loads legacy records and labels a resumed battle's missing start as partial", () => {
     const combat = createDemoBattle();
     const old = startPlaytest(combat, "old", 0).record;
-    const { battles: _omitted, ...legacy } = old;
+    const { battles: _omitted, contentPartial: _contentPartial, contentEvents: _contentEvents, ...legacyFields } = old;
+    const legacy = { ...legacyFields, formatVersion: 1 };
     expect(_omitted).toEqual([]);
-    let tracker = resumePlaytest(parsePlaytestRecord(legacy), combat, "old", 1_000);
+    expect(_contentPartial).toBe(false);
+    expect(_contentEvents).toEqual([]);
+    const migrated = parsePlaytestRecord(legacy);
+    expect(migrated).toMatchObject({ formatVersion: 2, contentPartial: true, contentEvents: [] });
+    let tracker = resumePlaytest(migrated, combat, "old", 1_000);
     tracker = recordPlaytestBattle(tracker, combat, true);
     tracker = finishPlaytestBattle(tracker, combat, "lost");
     expect(tracker.record.battles[0]).toMatchObject({ partial: true, result: "lost" });
+  });
+
+  it("preserves content events across save and resume and rejects conflicting duplicate IDs", () => {
+    const input = { eventId: "offer-1", nodeId: startNode.id, act: startNode.act, source: "reward" as const,
+      kind: "card" as const, action: "offered" as const, contentId: "card-a", offerId: "card-a", available: true };
+    let tracker = startPlaytest(run, "content", 0);
+    tracker = recordPlaytestContent(tracker, input);
+    const first = tracker;
+    tracker = observePlaytest(tracker, 1_000, true);
+    expect(recordPlaytestContent(tracker, input).record.contentEvents).toEqual(first.record.contentEvents);
+    expect(() => recordPlaytestContent(tracker, { ...input, contentId: "card-b" })).toThrow(/conflicting/);
+    const saved = parsePlaytestRecord(JSON.parse(JSON.stringify(tracker.record)));
+    expect(resumePlaytest(saved, run, "content", 2_000).record.contentEvents).toEqual(first.record.contentEvents);
+    expect(() => parsePlaytestRecord({ ...saved, contentEvents: [{ ...saved.contentEvents[0], contentId: "" }] })).toThrow();
   });
 });

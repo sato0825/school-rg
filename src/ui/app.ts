@@ -534,8 +534,10 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         observeMetrics();
         metrics = recordCombatPotionUses(metrics!, beforeCombatAction, run);
         if (action === "discard-potion" && run.potionIds.length < beforeCombatAction.potionIds.length) {
+          const discardOrdinal = metrics.record.contentEvents.filter((item) => item.nodeId === beforeCombatAction.map.currentNodeId
+            && item.source === "combat" && item.action === "discarded").length;
           metrics = recordContentChoice(metrics, beforeCombatAction, { source: "combat", kind: "potion", action: "discarded",
-            offerId: null, contentId: beforeCombatAction.potionIds[Number(id)] ?? null, available: null }, beforeCombatAction.potionIds.length);
+            offerId: null, contentId: beforeCombatAction.potionIds[Number(id)] ?? null, available: null }, discardOrdinal);
         }
       }
       settleIfFinished();
