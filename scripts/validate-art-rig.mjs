@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { Buffer } from "node:buffer";
 import console from "node:console";
+import process from "node:process";
 import { inflateRawSync } from "node:zlib";
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
@@ -8,7 +9,9 @@ import { fileURLToPath } from "node:url";
 import { pngInfo } from "./art-asset-checks.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const manifest = JSON.parse(await readFile(resolve(root, "docs/art/rigs/art-rig-candidate-v2.json"), "utf8"));
+const variant = process.argv[2] ?? "v2";
+if (variant !== "v2" && variant !== "v3") throw new Error(`unknown art rig variant: ${variant}`);
+const manifest = JSON.parse(await readFile(resolve(root, `docs/art/rigs/art-rig-candidate-${variant}.json`), "utf8"));
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
@@ -62,6 +65,7 @@ for (const part of [...manifest.parts, ...manifest.expressionLayers]) {
   assert(info.width === part.width && info.height === part.height && info.minAlpha === 0 && info.maxAlpha >= 240, `${part.id} geometry/alpha invalid`);
   assert(part.x >= 0 && part.y >= 0 && part.x + part.width <= manifest.canvas.width && part.y + part.height <= manifest.canvas.height, `${part.id} outside canvas`);
   assert(part.pivotX > 0 && part.pivotX < part.width && part.pivotY > 0 && part.pivotY < part.height, `${part.id} joint outside layer`);
+  if ("renderScale" in part) assert(part.renderScale >= 0.8 && part.renderScale <= 1.2, `${part.id} runtime scale outside review bounds`);
   assert(ora.get(`data/${part.id}.png`)?.equals(bytes), `${part.id} ORA layer differs from source part`);
   assert(xml.includes(`name="${part.id}" src="data/${part.id}.png" x="${part.x}" y="${part.y}"`), `${part.id} ORA position differs`);
   if (part.id === "head-hit") assert(xml.includes('name="head-hit" src="data/head-hit.png" x="305" y="110" opacity="1.0" visibility="hidden"'), "hit expression must be hidden in idle source");
