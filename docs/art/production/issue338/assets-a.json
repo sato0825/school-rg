@@ -1,0 +1,107 @@
+[
+  {
+    "id": "BASE-019",
+    "version": "v1",
+    "path": "docs/art/production/issue338/assets/card-base-barrier-v1.png",
+    "sha256": "c99447c8725f13f23db403824240b109508de54853ffc75e863649520800886f",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-fe0ffa90-37ad-4c17-aa6f-4ff25745826a.png",
+    "promptRef": "prompts-a.md#BASE-019",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "pending two-stage meaning QA"
+  },
+  {
+    "id": "BASE-020",
+    "version": "v1",
+    "path": "docs/art/production/issue338/assets/card-base-focus-v1.png",
+    "sha256": "f238d6bd6e1dd9030e4c3d286b57788033ee22b7bb6c98468e575d0f5bb4ea9c",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-da28e973-6279-4316-bf82-ebb0bd7f5198.png",
+    "promptRef": "prompts-a.md#BASE-020",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "pending two-stage meaning QA"
+  },
+  {
+    "id": "BASE-021",
+    "version": "v1",
+    "path": "docs/art/production/issue338/assets/card-base-sacrifice-v1.png",
+    "sha256": "844e95429388e7bc670779bb90bd4c054794ea10cc15952679b50ff94ab1681e",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-66cb5b8f-e95a-47c5-be01-3ed143ceb9ba.png",
+    "promptRef": "prompts-a.md#BASE-021",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "pending two-stage meaning QA"
+  },
+  {
+    "id": "BASE-022",
+    "version": "v1",
+    "path": "docs/art/production/issue338/assets/card-base-finish-v1.png",
+    "sha256": "7014b85952c41c4baac712818134725f364ab84756406c71c435f92fb7dd3cde",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-4fbd5900-aa49-4493-af38-31af51bdb45b.png",
+    "promptRef": "prompts-a.md#BASE-022",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "pending two-stage meaning QA"
+  },
+  {
+    "id": "BASE-024",
+    "version": "v1",
+    "path": "docs/art/production/issue338/assets/card-base-shield-break-v1.png",
+    "sha256": "c1b45d8cab20876041fbfff018517bde1e685067a8fb9bacf63b646f0f380217",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-8d6db8eb-4aa2-43b9-bf10-03fc40f6595d.png",
+    "promptRef": "prompts-a.md#BASE-024",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "pending two-stage meaning QA"
+  }
+]
