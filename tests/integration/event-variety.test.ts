@@ -121,4 +121,22 @@ describe("expanded Act events", () => {
     ] });
     expect(() => parseContentRegistry(invalid)).toThrow(/only one deck card/);
   });
+
+  it("carries an event-edited deck into the next typed combat", () => {
+    for (const item of [
+      { eventId: "classroom-proofreading", choiceId: "upgrade", upgraded: true },
+      { eventId: "archive-return-slip", choiceId: "remove", upgraded: false },
+    ]) {
+      const opened = eventSession(item.upgraded ? 1 : 2, item.eventId);
+      const target = opened.run.deck[0]!;
+      const edited = chooseRunEventChoice(opened, item.choiceId, demoContent, demoEnemyAi, undefined, target.instanceId);
+      const current = edited.run.map.nodes.find((node) => node.id === edited.run.map.currentNodeId)!;
+      const combatNode: MapNode = { id: "next-combat", act: edited.run.act, floor: 2, kind: "combat", nextIds: [] };
+      const connected = { ...edited, run: { ...edited.run, map: { ...edited.run.map, nodes: edited.run.map.nodes.map((node) => node.id === current.id ? { ...node, nextIds: [combatNode.id] } : node).concat(combatNode) } } };
+      const battle = enterRunNode(connected, combatNode.id, demoContent, demoEnemyAi, demoRunContentTables);
+      const copies = battle.run.combat!.cards.filter((card) => card.cardId === target.cardId);
+      expect(copies.length).toBe(edited.run.deck.filter((card) => card.cardId === target.cardId).length);
+      expect(copies.some((card) => card.upgraded)).toBe(item.upgraded);
+    }
+  });
 });
