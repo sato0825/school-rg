@@ -37,7 +37,7 @@ function html(value: string): string {
 }
 
 export function describeCard(card: Card, content: ContentRegistry): string {
-  return card.effectIds.map((effectId) => {
+  const effects = card.effectIds.map((effectId) => {
     const effect = content.effects.find((item) => item.id === effectId);
     if (!effect) return "効果";
     const value = Number(effect.parameters.amount ?? effect.parameters.amountMs ?? effect.parameters.count ?? 0);
@@ -57,7 +57,9 @@ export function describeCard(card: Card, content: ContentRegistry): string {
       case "transform_card": return "手札を1枚変化";
       default: return "特殊効果";
     }
-  }).join(" · ");
+  });
+  if (card.keywordIds.includes("retain")) effects.push("保持");
+  return effects.join(" · ");
 }
 
 function wordMarkup(word: string, buffer: string): string {
