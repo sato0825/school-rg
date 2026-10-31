@@ -66,3 +66,19 @@ test("WebKit potion mode accepts composed Latin keys and consumes one potion", a
   })));
   await expect(page.locator(".potion-slot")).toHaveCount(1);
 });
+
+test("WebKit ordinary Latin key events activate a card and potion without composition", async ({ page }) => {
+  await startBattle(page);
+  const input = page.locator(".typing-input");
+  await input.focus();
+  await page.keyboard.type("outline");
+  await expect(page.locator(".battle-message")).toContainText("outline を発動");
+  await expect(input).toBeFocused();
+
+  await input.press("F2");
+  await expect(page.locator(".potion-mode")).toHaveAttribute("aria-pressed", "true");
+  await page.keyboard.type("clock");
+  await expect(page.locator(".potion-slot")).toHaveCount(1);
+  await expect(page.locator(".potion-mode")).toHaveAttribute("aria-pressed", "false");
+  await expect(input).toBeFocused();
+});

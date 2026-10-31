@@ -29,4 +29,4 @@
 
 Macの選択入力源が日本語RomajiTypingの状態でSafariの実測ページを開いた。SafariではKeyboard Layout Mapが利用できず、ページは `Layout Map: unavailable` と表示した。computer-useのネイティブキー送出で `strike` と `ka` を入力すると、各 `keydown` は英字の `key` と `code=Key*`、`isComposing=false`、`beforeinput=insertText` で、compositionイベントは発生しなかった。入力源を一度US Extendedへ切り替え、日本語へ戻しても同じだった。この送出経路はSafariの日本語IME変換状態を再現できていない可能性があるため、SafariでIMEオンの発動成功とは扱わない。ゲーム本体の10秒ターン中の長語送出も時間切れと交錯し、発動確認には使えなかった。
 
-別の自動回帰として、Playwright WebKitエンジンに合成中のキーイベントを模擬し、Layout Mapがない場合の未解決 `Process`、長めのカード名 `outline`、ポーション名 `clock`、確定文字の二重入力防止、フォーカスと時間経過を確認した。対象E2E 2/2、lint、型検査が成功。これはWebKitのコード経路の検査であり、macOS Safariの実IMEやiPad実機の受入証拠ではない。
+別の自動回帰として、Playwright WebKitエンジンに合成中のキーイベントを模擬し、Layout Mapがない場合の未解決 `Process`、長めのカード名 `outline`、ポーション名 `clock`、確定文字の二重入力防止、フォーカスと時間経過を確認した。通常の英字キーイベントでも長語カードとポーションを連続発動した。対象E2E 3/3、lint、型検査が成功。これはWebKitのコード経路の検査であり、macOS Safariの実IMEやiPad実機の受入証拠ではない。
