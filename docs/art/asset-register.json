@@ -463,6 +463,21 @@
       "rights": "original generated candidate for school-rg"
     },
     {
+      "id": "stage-hallway-v1",
+      "file": "src/assets/stage-hallway-v1.png",
+      "sha256": "8f24c1285a16c201784751c1a2300cc473f1ecc0e48dbe03ffe5ffdf0c22acb5",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 1,
+      "promptFile": "src/assets/README.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
       "id": "act2-science-wing-candidate-v1",
       "file": "src/assets/stages/act2-science-wing-candidate-v1.png",
       "sha256": "0e2b22e1695c82fecdac8d624308f1a1d8e6441916cfef974ff5b327ca747a41",
