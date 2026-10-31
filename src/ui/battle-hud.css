@@ -134,7 +134,7 @@
 }
 
 .battle-help[hidden]{display:none}
-.battle-help{position:absolute;z-index:9;left:clamp(8px,2vw,22px);top:76px;width:min(360px,calc(100% - 16px));padding:13px 16px;border:1px solid #8ea7b8;border-radius:7px;background:#f7faf9f7;box-shadow:0 9px 22px #20374b35;color:#29465b;font-size:12px}
+.battle-help{position:absolute;z-index:9;left:clamp(8px,2vw,22px);top:76px;width:min(360px,calc(100% - 16px));padding:13px 16px;border:1px solid #8ea7b8;border-radius:7px;background:#f7faf9da;backdrop-filter:blur(5px);box-shadow:0 9px 22px #20374b35;color:#29465b;font-size:12px}
 .battle-help strong{font-size:14px}
 .battle-help ol{margin:8px 0;padding-left:20px;line-height:1.55}
 .battle-help p{margin:7px 0;font-size:11px}
