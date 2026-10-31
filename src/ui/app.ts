@@ -127,6 +127,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   };
   const render = () => {
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
+    const restoreCombatLogFocus = frontScreen === "combat-log" && root.querySelector('[data-action="front-back"]') === document.activeElement;
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
     else if (frontScreen === "title") renderRunTitle(root, demoBattleArt, history);
     else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError);
@@ -143,6 +144,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
+    if (restoreCombatLogFocus) root.querySelector<HTMLButtonElement>('[data-action="front-back"]')?.focus();
     const header = root.querySelector(".topbar, .run-header");
     if (header) {
       const toggle = document.createElement("button");

@@ -19,6 +19,7 @@ test("combat history is keyboard accessible, freezes time, and survives reload",
   await expect(page.locator(".combat-log-entry").first()).toContainText(word);
   await expect(page.getByRole("button", { name: "戦闘に戻る" })).toBeFocused();
   await page.clock.runFor(2_000);
+  await expect(page.getByRole("button", { name: "戦闘に戻る" })).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.locator('[data-role="time"]')).toHaveAttribute("aria-label", remainingBefore!);
   await page.reload();
