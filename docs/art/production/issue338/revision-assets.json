@@ -48,7 +48,7 @@
     "sha256": "126f357cea0e9cbccbf0ffccb749a749fe6d609f243b9f8048b4278789c57cee",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-08122d1b-718f-4e3c-a5e0-24a6c7571321.png",
     "promptRef": "prompts-a.md#BASE-022-v3",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -59,7 +59,7 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending paired actual-size QA",
-    "selectionDecision": "round worn target vs split rectangular block, pending game hand review"
+    "visualReview": "1024-1440 hand/reward, 48px, grayscale, art-only/text-only static paired QA; #367 actual hand pending",
+    "selectionDecision": "round worn target separates silhouette from split rectangular defense board; formal adoption pending"
   }
 ]

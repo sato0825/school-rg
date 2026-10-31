@@ -20,6 +20,8 @@ Finish v1 (不採用): one short white chalk draws a final diagonal line across 
 
 Finish v2: one navy padded school target has a visibly worn lower half, while its upper half remains intact; one short white chalk lands a decisive coral impact on the worn half. The actual rule is stronger damage when the **enemy's HP is at or below 50%**. Remove the fan of cards. No numerical health bar in the art; exact threshold and damage remain in text.
 
+Finish v3: retain the worn lower half and decisive chalk impact, but change the target to a single round padded practice target with a clear circular outline. The previous dark rectangle was too close to BASE-024's rectangular broken defense board at 48px. No cards or numerical HP marks; exact threshold remains in text.
+
 ## BASE-024
 
 Shield break: a wooden school ruler splits a thick navy enemy defense board into two separated halves. The board itself moves aside, unlike pierce where a pencil passes through layered paper.
