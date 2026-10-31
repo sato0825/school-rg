@@ -24,7 +24,7 @@ import { appendRunHistory, emptyRunHistory, legacyTerminalRunId, parseRunHistory
 import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, MAX_ASCENSION_LEVEL } from "../domain/ascension.js";
 import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
-import { createAudioFeedback } from "./audio.js";
+import { createAudioFeedback, resultSoundCue } from "./audio.js";
 import { imeLatinKey } from "./ime-key.js";
 import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
 
@@ -58,6 +58,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const savedDisplay = localStorage.getItem("school-rg-low-stimulus-v1");
     if (savedDisplay !== null) lowStimulus = savedDisplay === "1";
   } catch { /* Keep the device preference when storage is unavailable. */ }
+  audio.setQuiet(lowStimulus);
   let session = createRunSession(0, "literature-demo", demoContent, mapOptions);
   let frontScreen: "title" | "clubs" | "compendium" | "history" | null = "title";
   let frontReturn: "title" | null = "title";
@@ -258,11 +259,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       targetDiscardInstanceId: view.selectedDiscardId,
       targetDebuff: view.selectedDebuff as "weak" | "vulnerable" | "frail" | "poison" | null,
     }, config, demoContent);
-    audio.play("card");
     view.message = `${card.input.text} を発動`;
     const resolved = fireRelic(updated, "card_used", { cardInstanceId: instanceId });
     view.cardFx = cardFx;
     view.resultFx = resultFxForTransition(state, resolved, view.layoutPreviewAllies ?? 1, clock.nowMs());
+    audio.play("card");
+    const resultCue = resultSoundCue(view.resultFx?.marks ?? []);
+    if (resultCue) audio.play(resultCue, 0.07);
     view.dyingEnemyInstanceIds = state.combat!.enemies.filter((enemy) => enemy.hp > 0 && (resolved.combat?.enemies.find((next) => next.instanceId === enemy.instanceId)?.hp ?? enemy.hp) <= 0).map((enemy) => enemy.instanceId);
     setMotion("hero");
     view.selectedDiscardId = null;
@@ -306,7 +309,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
             })), config);
         view.resultFx = resultFxForTransition(beforeEnemyAction, run, view.layoutPreviewAllies ?? 1, clock.nowMs());
         enemyPending = false;
-        if (receivedHit) audio.play("hit");
+        const resultCue = resultSoundCue(view.resultFx?.marks ?? []);
+        if (resultCue) audio.play(resultCue);
         setMotion(receivedHit ? "hit" : null);
         if (run.combat?.phase === "PLAYER_START") {
           run = beginPlayerTurn(run, clock, config, demoContent);
@@ -511,6 +515,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (action === "toggle-stimulus" && session.screen === "combat") {
         lowStimulus = !lowStimulus;
         view.lowStimulus = lowStimulus;
+        audio.setQuiet(lowStimulus);
         try { localStorage.setItem("school-rg-low-stimulus-v1", lowStimulus ? "1" : "0"); } catch { /* Setting still applies in this session. */ }
         render();
         root.querySelector<HTMLButtonElement>("[data-action=toggle-stimulus]")?.focus();
