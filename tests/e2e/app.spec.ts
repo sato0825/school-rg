@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { demoContent, demoEnemyAi, demoRunContentTables } from "../../src/content/demo-battle.js";
 import { createRunSession, enterRunNode, type EncounterPool } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
@@ -1091,8 +1091,10 @@ for (const [clubLabel, clubId] of [
     try { await clearThreeActs(page, 130, true, onTrace); }
     finally {
       await onTrace("final").catch(() => undefined);
+      const diagnosticPath = testInfo.outputPath("normal-run-diagnostic.json");
+      await writeFile(diagnosticPath, JSON.stringify({ clubId, seed: 42, diagnostics }, null, 2));
       await testInfo.attach("normal-run-diagnostic.json", {
-        body: JSON.stringify({ clubId, seed: 42, diagnostics }, null, 2), contentType: "application/json",
+        path: diagnosticPath, contentType: "application/json",
       });
     }
     const route = await page.evaluate(() => {
