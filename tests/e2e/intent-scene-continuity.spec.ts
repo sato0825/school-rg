@@ -74,3 +74,26 @@ for (const width of [1024, 1440] as const) for (const quiet of [false, true] as 
     }
   });
 }
+
+for (const width of [1024, 1440] as const) test(`five resolved attackers do not imply one source at ${width}px`, async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
+  const base = createRunSession(42, "science-demo", demoContent);
+  const start: MapNode = { id: "many-start", act: 1, floor: 0, kind: "start", nextIds: ["many-fight"] };
+  const fight: MapNode = { id: "many-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+  const entered = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
+    demoContent, demoEnemyAi, { combat: ["hall-mop"], elite: ["hall-mop"], boss: ["hall-mop"] });
+  const combat = entered.run.combat!;
+  const enemies = Array.from({ length: 5 }, (_, index) => ({ ...combat.enemies[0]!, instanceId: `many-${index}`, intentId: "mop-intent-sweep" }));
+  const prepared = { ...entered, run: { ...entered.run, combat: { ...combat, enemies } } };
+  await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
+  await page.goto("/");
+  const before = await page.locator(".stage").boundingBox();
+  const remainingMs = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
+  await page.clock.runFor(remainingMs + 80);
+  await page.clock.runFor(650);
+  await expect(page.locator('.result-fx-mark[data-kind="damage"]')).toBeVisible();
+  await expect(page.locator('.intent-trajectory[data-phase="resolved"]')).toHaveCount(0);
+  expect(await page.locator(".stage").boundingBox()).toEqual(before);
+  if (captureDir) await page.screenshot({ path: `${captureDir}/five-resolved-${width}-standard.png` });
+});
