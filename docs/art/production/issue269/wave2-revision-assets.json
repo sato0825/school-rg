@@ -1,0 +1,86 @@
+[
+  {
+    "id": "LIT-005",
+    "version": "v2",
+    "path": "docs/art/production/issue269/assets/card-lit-reread-v2.png",
+    "sha256": "eeb84f99ad7f9853311a66a0dffa9abaa10181c82f365d00067e3f7d4670dfe3",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-f4c8b456-64d1-4bee-b842-13da04a246d5.png",
+    "promptRef": "wave2-revision-prompts.json#LIT-005",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "v2 composition passed the small-size gate, but was too flat beside the series; v3 supersedes it"
+  },
+  {
+    "id": "SCI-009",
+    "version": "v2",
+    "path": "docs/art/production/issue269/assets/card-sci-buffer-v2.png",
+    "sha256": "4379064d394b43547da44e30622c20af8a672068c5cbfe40aebf3abd4644f2b4",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-d599adac-18e4-48fc-b071-06ceb14d8a0a.png",
+    "promptRef": "wave2-revision-prompts.json#SCI-009",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "v2 composition passed the small-size gate, but was too flat beside the series; v3 supersedes it"
+  },
+  {
+    "id": "KEN-011",
+    "version": "v2",
+    "path": "docs/art/production/issue269/assets/card-ken-hasso-v2.png",
+    "sha256": "7302b9a1c031de1de9dd436339e444df5ddc2f3f5d421b908b4f4e5bdbdad45b",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-87866a3a-2d1c-4f35-8295-65a7640732b5.png",
+    "promptRef": "wave2-revision-prompts.json#KEN-011",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "v2 preferred for further art-direction pass; not accepted for runtime"
+  },
+  {
+    "id": "ART-005",
+    "version": "v2",
+    "path": "docs/art/production/issue269/assets/card-art-redraw-v2.png",
+    "sha256": "8e47239844638dd8fed8fcb207994f631ff41c993cf5292c2342ccc4df067b38",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-ba492f1b-0dff-4f5c-a38c-e8ab5d088669.png",
+    "promptRef": "wave2-revision-prompts.json#ART-005",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "v2 composition passed the small-size gate, but was too flat beside the series; v3 supersedes it"
+  }
+]

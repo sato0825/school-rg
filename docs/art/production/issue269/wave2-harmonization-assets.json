@@ -1,0 +1,77 @@
+[
+  {
+    "id": "LIT-005",
+    "version": "v3",
+    "path": "docs/art/production/issue269/assets/card-lit-reread-v3.png",
+    "sha256": "4ca6afc9f8cd6f8d0d17481a0ccf231f9c891f9137d3c24fba414f8030960fcc",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-2e9bdb11-d554-469e-85dc-0d1b1f90f182.png",
+    "promptRef": "wave2-harmonization-prompts.json#LIT-005",
+    "references": [
+      "assets/card-lit-rereadv1.png",
+      "assets/card-lit-rereadv2.png"
+    ],
+    "state": "preferred-draft",
+    "selectionDecision": "v3 preferred for further art-direction pass; not accepted for runtime",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "SCI-009",
+    "version": "v3",
+    "path": "docs/art/production/issue269/assets/card-sci-buffer-v3.png",
+    "sha256": "8c64b7e79ded3bb39b46e4ca0e0defd2286ce0c9959418d1bb0299c586e353ac",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-6b8db8c7-bbfa-4d15-bc4e-c2f6c720ce2c.png",
+    "promptRef": "wave2-harmonization-prompts.json#SCI-009",
+    "references": [
+      "assets/card-sci-bufferv1.png",
+      "assets/card-sci-bufferv2.png"
+    ],
+    "state": "preferred-draft",
+    "selectionDecision": "v3 preferred for further art-direction pass; not accepted for runtime",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "ART-005",
+    "version": "v3",
+    "path": "docs/art/production/issue269/assets/card-art-redraw-v3.png",
+    "sha256": "68c8cb93ef53ce6956961665332b52db79ceca26da9cf33d6a37f51a6cb16528",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-38fc582c-8dc9-4ba0-ae75-266cd82be3d9.png",
+    "promptRef": "wave2-harmonization-prompts.json#ART-005",
+    "references": [
+      "assets/card-art-redrawv1.png",
+      "assets/card-art-redrawv2.png"
+    ],
+    "state": "preferred-draft",
+    "selectionDecision": "v3 preferred for further art-direction pass; not accepted for runtime",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  }
+]

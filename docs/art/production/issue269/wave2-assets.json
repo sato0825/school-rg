@@ -1,0 +1,104 @@
+[
+  {
+    "id": "LIT-005",
+    "version": "v1",
+    "path": "docs/art/production/issue269/assets/card-lit-reread-v1.png",
+    "sha256": "f3a193cda40a084e3c503e020b2a989393464614f4897b9441369a7185ecac84",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-18f7c7e6-0ed8-445e-8d3d-3b382d4c18fb.png",
+    "promptRef": "wave2-prompts.json#LIT-005",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "v1 rejected for hand-window use; retained for provenance and comparison"
+  },
+  {
+    "id": "LIT-009",
+    "version": "v1",
+    "path": "docs/art/production/issue269/assets/card-lit-edit-v1.png",
+    "sha256": "7bd91bce650f5963d5c757409472153794d224d2279ee6bcb49a84641e3eeecd",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-c05feb98-b527-4fdd-9ee8-09b2c81e982a.png",
+    "promptRef": "wave2-prompts.json#LIT-009",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "SCI-007",
+    "version": "v1",
+    "path": "docs/art/production/issue269/assets/card-sci-catalyst-v1.png",
+    "sha256": "c64a9b892952f2bff6811d8fbf95f2348d574932367f27056358a47b96bc4a5f",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-70a60a61-1105-4d83-9d58-221c6ba2d354.png",
+    "promptRef": "wave2-prompts.json#SCI-007",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "SCI-009",
+    "version": "v1",
+    "path": "docs/art/production/issue269/assets/card-sci-buffer-v1.png",
+    "sha256": "0b219b8755d438aa3d0249f9b5bcb59737a83aae8ccc5e5e9565e98cb6d17541",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-68979bcb-b9d4-4f64-a311-5577a89ecb04.png",
+    "promptRef": "wave2-prompts.json#SCI-009",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "v1 rejected for hand-window use; retained for provenance and comparison"
+  },
+  {
+    "id": "KEN-009",
+    "version": "v1",
+    "path": "docs/art/production/issue269/assets/card-ken-guard-step-v1.png",
+    "sha256": "7eedd19866f241fd6e21ee56eb7799f60e971a2f3d915805cd992a314d1ee5c6",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-630c7ef0-e5b1-4045-ba0e-38fc47257cff.png",
+    "promptRef": "wave2-prompts.json#KEN-009",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  }
+]

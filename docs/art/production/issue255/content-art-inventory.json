@@ -950,10 +950,32 @@
       "rarity": null,
       "meaning": "捨て札回収 + 防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 269,
+            "version": "v1",
+            "source": "docs/art/production/issue269/assets/card-lit-reread-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "f3a193cda40a084e3c503e020b2a989393464614f4897b9441369a7185ecac84"
+          },
+          {
+            "issue": 269,
+            "version": "v2",
+            "source": "docs/art/production/issue269/assets/card-lit-reread-v2.png",
+            "state": "superseded-candidate",
+            "sha256": "eeb84f99ad7f9853311a66a0dffa9abaa10181c82f365d00067e3f7d4670dfe3"
+          },
+          {
+            "issue": 269,
+            "version": "v3",
+            "source": "docs/art/production/issue269/assets/card-lit-reread-v3.png",
+            "state": "preferred-draft",
+            "sha256": "4ca6afc9f8cd6f8d0d17481a0ccf231f9c891f9137d3c24fba414f8030960fcc"
+          }
+        ]
       }
     },
     {
@@ -1066,10 +1088,18 @@
       "rarity": null,
       "meaning": "除外 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 269,
+            "version": "v1",
+            "source": "docs/art/production/issue269/assets/card-lit-edit-v1.png",
+            "state": "draft-candidate",
+            "sha256": "7bd91bce650f5963d5c757409472153794d224d2279ee6bcb49a84641e3eeecd"
+          }
+        ]
       }
     },
     {
@@ -1369,10 +1399,18 @@
       "rarity": null,
       "meaning": "毒付与 + 弱体付与",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 269,
+            "version": "v1",
+            "source": "docs/art/production/issue269/assets/card-sci-catalyst-v1.png",
+            "state": "draft-candidate",
+            "sha256": "c64a9b892952f2bff6811d8fbf95f2348d574932367f27056358a47b96bc4a5f"
+          }
+        ]
       }
     },
     {
@@ -1429,10 +1467,32 @@
       "rarity": null,
       "meaning": "防御 + 弱体解除",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 269,
+            "version": "v1",
+            "source": "docs/art/production/issue269/assets/card-sci-buffer-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "0b219b8755d438aa3d0249f9b5bcb59737a83aae8ccc5e5e9565e98cb6d17541"
+          },
+          {
+            "issue": 269,
+            "version": "v2",
+            "source": "docs/art/production/issue269/assets/card-sci-buffer-v2.png",
+            "state": "superseded-candidate",
+            "sha256": "4379064d394b43547da44e30622c20af8a672068c5cbfe40aebf3abd4644f2b4"
+          },
+          {
+            "issue": 269,
+            "version": "v3",
+            "source": "docs/art/production/issue269/assets/card-sci-buffer-v3.png",
+            "state": "preferred-draft",
+            "sha256": "8c64b7e79ded3bb39b46e4ca0e0defd2286ce0c9959418d1bb0299c586e353ac"
+          }
+        ]
       }
     },
     {
@@ -1801,10 +1861,18 @@
       "rarity": null,
       "meaning": "防御 + 残り時間増加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 269,
+            "version": "v1",
+            "source": "docs/art/production/issue269/assets/card-ken-guard-step-v1.png",
+            "state": "draft-candidate",
+            "sha256": "7eedd19866f241fd6e21ee56eb7799f60e971a2f3d915805cd992a314d1ee5c6"
+          }
+        ]
       }
     },
     {
@@ -1859,10 +1927,25 @@
       "rarity": null,
       "meaning": "毎ターン筋力 + 防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 269,
+            "version": "v1",
+            "source": "docs/art/production/issue269/assets/card-ken-hasso-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "414f23d431f629adacb143d529611f8a3095c2cc31834c52ea7e67199aa937d1"
+          },
+          {
+            "issue": 269,
+            "version": "v2",
+            "source": "docs/art/production/issue269/assets/card-ken-hasso-v2.png",
+            "state": "preferred-draft",
+            "sha256": "7302b9a1c031de1de9dd436339e444df5ddc2f3f5d421b908b4f4e5bdbdad45b"
+          }
+        ]
       }
     },
     {
@@ -2038,10 +2121,18 @@
       "rarity": null,
       "meaning": "全体攻撃 + 残り時間増加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 269,
+            "version": "v1",
+            "source": "docs/art/production/issue269/assets/card-mus-chorus-v1.png",
+            "state": "draft-candidate",
+            "sha256": "10a3fe11a72d70dde66c2a8fa6416a00b79d662f3f28406af6ae8c1d8c4769f0"
+          }
+        ]
       }
     },
     {
@@ -2189,10 +2280,18 @@
       "rarity": null,
       "meaning": "連続攻撃 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 269,
+            "version": "v1",
+            "source": "docs/art/production/issue269/assets/card-mus-riff-v1.png",
+            "state": "draft-candidate",
+            "sha256": "f7ed3c206aab17989bb46e0be1a20fa1595f1b65511aa949b92bda6bfd1a4391"
+          }
+        ]
       }
     },
     {
@@ -2397,10 +2496,32 @@
       "rarity": null,
       "meaning": "手札変化 + 防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 269,
+            "version": "v1",
+            "source": "docs/art/production/issue269/assets/card-art-redraw-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "45993507d58cbfae1b184cb087df6c6df8bf8aae4cbbc0606966f9439d091560"
+          },
+          {
+            "issue": 269,
+            "version": "v2",
+            "source": "docs/art/production/issue269/assets/card-art-redraw-v2.png",
+            "state": "superseded-candidate",
+            "sha256": "8e47239844638dd8fed8fcb207994f631ff41c993cf5292c2342ccc4df067b38"
+          },
+          {
+            "issue": 269,
+            "version": "v3",
+            "source": "docs/art/production/issue269/assets/card-art-redraw-v3.png",
+            "state": "preferred-draft",
+            "sha256": "68c8cb93ef53ce6956961665332b52db79ceca26da9cf33d6a37f51a6cb16528"
+          }
+        ]
       }
     },
     {
@@ -2600,10 +2721,18 @@
       "rarity": null,
       "meaning": "全体攻撃 + 毎ターン防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 269,
+            "version": "v1",
+            "source": "docs/art/production/issue269/assets/card-art-triptych-v1.png",
+            "state": "draft-candidate",
+            "sha256": "e0f26b06c39f586da60495d2d3e62677fe5fb671c286f2732910aa654e38e264"
+          }
+        ]
       }
     },
     {
