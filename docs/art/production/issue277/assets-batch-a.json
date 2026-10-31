@@ -26,7 +26,7 @@
     "sha256": "400a940c63d88ab6b762deac2f07ff801ee6e43b343d5ee085991486cc31052e",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-ad0aa769-10a0-4986-b7d6-92ab6c038f00.png",
     "promptRef": "prompts.json#SCI-004",
-    "state": "draft-candidate",
+    "state": "superseded-candidate",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -37,7 +37,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending"
+    "visualReview": "pending",
+    "selectionDecision": "small-size silhouette obscured by busy background; v2 preferred"
   },
   {
     "id": "KEN-002",
