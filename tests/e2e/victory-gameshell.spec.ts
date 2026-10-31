@@ -19,6 +19,7 @@ for (const width of [1024, 1440]) {
       await expect(page.locator('.game-shell[data-screen="won"]')).toBeVisible();
       await expect(page.locator('.game-shell[data-screen="won"]')).toHaveAttribute("data-terminal-transition", "still");
       await expect(page.getByRole("heading", { name: "全Actクリア" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "全Actクリア" })).toBeFocused();
       await expect(page.locator(".hero-art.victory-pose")).toBeVisible();
       await expect(page.locator(".hero-nameplate")).toContainText(club.name);
       await expect(page.locator(".victory-act-marks")).toHaveAttribute("aria-label", "Act 1、Act 2、Act 3を完走");
@@ -68,4 +69,25 @@ test("quiet victory retains actions with no pose animation", async ({ page }) =>
   await page.getByRole("button", { name: "ラン履歴を見る" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(".history-entry")).toHaveCount(1);
+});
+
+test.describe("touch victory controls", () => {
+  test.use({ hasTouch: true });
+  test("the next run is reachable with a tap at tablet width", async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    const initial = createRunSession(42, "literature-demo", demoContent);
+    const boss = initial.run.map.nodes.find((node) => node.act === 3 && node.kind === "boss")!;
+    const won = { ...initial, screen: "won" as const, run: {
+      ...initial.run, act: 3 as const, map: { ...initial.run.map, currentNodeId: boss.id },
+    }, completedNodeIds: [...initial.completedNodeIds, boss.id] };
+    const save = serializeRunSession(won, demoContent, { nowMs: () => 0 }, () => "discard");
+    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), save);
+    await page.goto("/");
+    const button = page.getByRole("button", { name: "新しいランを始める" });
+    const rect = await button.boundingBox();
+    expect(rect?.width).toBeGreaterThanOrEqual(44);
+    expect(rect?.height).toBeGreaterThanOrEqual(44);
+    await button.tap();
+    await expect(page.getByRole("heading", { name: "放課後を、打ち抜く。" })).toBeVisible();
+  });
 });

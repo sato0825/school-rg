@@ -1017,9 +1017,15 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
     };
     return { enemy: animation(".enemy-group"), hero: animation(".victory-pose"), note: animation(".victory-note"), stage: animation(".stage") };
   });
-  expect(phases.enemy.name).toBe("victory-enemy-depart");
-  expect(phases.hero).toEqual({ name: "victory-pose-settle", delay: "0.18s" });
-  expect(phases.note).toEqual({ name: "victory-note-arrive", delay: "0.5s" });
+  if (await page.locator('.game-shell[data-effects="quiet"]').count() || await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+    expect(phases.enemy.name).toBe("none");
+    expect(phases.hero.name).toBe("none");
+    expect(phases.note.name).toBe("none");
+  } else {
+    expect(phases.enemy.name).toBe("victory-enemy-depart");
+    expect(phases.hero).toEqual({ name: "victory-pose-settle", delay: "0.18s" });
+    expect(phases.note).toEqual({ name: "victory-note-arrive", delay: "0.5s" });
+  }
   expect(phases.stage.name).toBe("none");
   expect(await page.evaluate(() => {
     const nodes = Reflect.get(window, "issue292TerminalNodes") as { stage: Element; actor: Element; input: Element };
@@ -1058,6 +1064,27 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   expect(ascensionEnemy.hp).toBe(ascensionEnemy.maxHp);
   expect(ascensionEnemy.maxHp).toBeGreaterThan(demoContent.enemies.find((enemy) => enemy.id === ascensionEnemy.enemyId)!.maxHp);
   await expect(page.locator(".enemy-health-track")).toHaveAttribute("aria-valuemax", String(ascensionEnemy.maxHp));
+});
+
+test("a quiet seeded run clears three Acts with an immediate still victory", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.clock.install();
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.addInitScript(() => localStorage.setItem("school-rg-low-stimulus-v1", "1"));
+  await startDemoRun(page);
+  await clearThreeActs(page);
+  await expect(page.locator('.game-shell[data-effects="quiet"][data-screen="won"]')).toBeVisible();
+  await expect(page.locator(".typing-input")).toBeDisabled();
+});
+
+test("a reduced-motion seeded run clears three Acts without a victory animation", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.clock.install();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await startDemoRun(page);
+  await clearThreeActs(page);
+  await expect(page.locator(".typing-input")).toBeDisabled();
 });
 
 test("literature clears three Acts by typing at tablet width after a save reload", async ({ page }) => {
@@ -1177,7 +1204,7 @@ test("opt-in playtest report survives reload, excludes pause and exports after t
   expect((await readMetrics()).activeMs).toBe(resumedAt);
   await page.getByRole("button", { name: "再開" }).click();
   await clearThreeActs(page);
-  await expect(page.locator(".playtest-result")).toContainText("実操作");
+  await expect(page.locator(".victory-note-metrics")).toContainText("実操作");
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "計測JSONを保存" }).click();
   const download = await downloadPromise;
