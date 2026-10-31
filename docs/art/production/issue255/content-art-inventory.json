@@ -885,8 +885,15 @@
             "issue": 338,
             "version": "v2",
             "source": "docs/art/production/issue338/assets/card-base-finish-v2.png",
-            "state": "preferred-draft",
+            "state": "superseded-candidate",
             "sha256": "97ee0d49270c3b77032bed1513898f4c836a1ddd6a83b75b88700b448337d411"
+          },
+          {
+            "issue": 338,
+            "version": "v3",
+            "source": "docs/art/production/issue338/assets/card-base-finish-v3.png",
+            "state": "preferred-draft",
+            "sha256": "126f357cea0e9cbccbf0ffccb749a749fe6d609f243b9f8048b4278789c57cee"
           }
         ]
       }
@@ -1269,10 +1276,18 @@
       "rarity": null,
       "meaning": "防御 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 377,
+            "version": "v1",
+            "source": "docs/art/production/issue377/assets/card-lit-008-footnote-v1.png",
+            "state": "preferred-draft",
+            "sha256": "c302d6b7ed36ca533040d8c623d941de5ea95b02bd0e390c6f7ffe3b6719649d"
+          }
+        ]
       }
     },
     {
@@ -1372,10 +1387,25 @@
       "rarity": null,
       "meaning": "攻撃 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 377,
+            "version": "v1",
+            "source": "docs/art/production/issue377/assets/card-lit-011-draft-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "e43078bf4af64c0eaa44de2ebe032ad449e3e6677e2879de3373a65701d5e5f2"
+          },
+          {
+            "issue": 377,
+            "version": "v2",
+            "source": "docs/art/production/issue377/assets/card-lit-011-draft-v2.png",
+            "state": "preferred-draft",
+            "sha256": "c7b8a357533f2b334f8ec82f2367d68faadc15e8e2e5769a75f3425372a808f1"
+          }
+        ]
       }
     },
     {
@@ -1878,10 +1908,25 @@
       "rarity": null,
       "meaning": "弱体付与 + 毒付与 + ドロー",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 377,
+            "version": "v1",
+            "source": "docs/art/production/issue377/assets/card-sci-012-neutralize-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "48eb174c4ffa415675eed93dc4d0a51aaa41cf992d1bbc6aacbb375ff0487042"
+          },
+          {
+            "issue": 377,
+            "version": "v2",
+            "source": "docs/art/production/issue377/assets/card-sci-012-neutralize-v2.png",
+            "state": "preferred-draft",
+            "sha256": "0bf67978608983c34bdb9cd904fbc69271e5c7a076c885ff44638b28c9482a21"
+          }
+        ]
       }
     },
     {
@@ -2249,10 +2294,25 @@
       "rarity": null,
       "meaning": "攻撃 + 防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 377,
+            "version": "v1",
+            "source": "docs/art/production/issue377/assets/card-ken-010-pommel-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "d5d535c5349e1932ab3117855bcba73310aed3557d78ac7c7f0cd5f52e9447bf"
+          },
+          {
+            "issue": 377,
+            "version": "v2",
+            "source": "docs/art/production/issue377/assets/card-ken-010-pommel-v2.png",
+            "state": "preferred-draft",
+            "sha256": "6272a363a701d1e875c11154d963dd2a5727edeb3babc814dde6ea6944ddecac"
+          }
+        ]
       }
     },
     {
@@ -2322,10 +2382,18 @@
       "rarity": null,
       "meaning": "全体攻撃 + 反撃",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 377,
+            "version": "v1",
+            "source": "docs/art/production/issue377/assets/card-ken-012-circle-cut-v1.png",
+            "state": "preferred-draft",
+            "sha256": "6e6754e4ba8721f403ec78383703556ad1dce9ccf2f0da879178be88be05a4b6"
+          }
+        ]
       }
     },
     {
@@ -2731,10 +2799,25 @@
       "rarity": null,
       "meaning": "防御 + 残り時間増加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 377,
+            "version": "v1",
+            "source": "docs/art/production/issue377/assets/card-mus-011-backbeat-v1.png",
+            "state": "superseded-candidate",
+            "sha256": "e699e0f07188b7166761118d8c8d7ef3be5bdf4d91cf5068b6bc4f30d8ac1b0c"
+          },
+          {
+            "issue": 377,
+            "version": "v2",
+            "source": "docs/art/production/issue377/assets/card-mus-011-backbeat-v2.png",
+            "state": "preferred-draft",
+            "sha256": "0dc4b7a923884f6a6f82607bc90d0c1e33032f597264c103f54bd7fb9a2d7d8c"
+          }
+        ]
       }
     },
     {
@@ -2760,10 +2843,18 @@
       "rarity": null,
       "meaning": "全体攻撃 + 残り時間増加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 377,
+            "version": "v1",
+            "source": "docs/art/production/issue377/assets/card-mus-012-finale-v1.png",
+            "state": "preferred-draft",
+            "sha256": "b4d8160d1611ed51beb86775ffb767a100a2450e164efdb1ffcfc05045926cf7"
+          }
+        ]
       }
     },
     {
@@ -3184,10 +3275,18 @@
       "rarity": null,
       "meaning": "除外 + 防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 377,
+            "version": "v1",
+            "source": "docs/art/production/issue377/assets/card-art-011-cutout-v1.png",
+            "state": "preferred-draft",
+            "sha256": "436f4de7ffd475f48b431f2b3270b29be6eb71bc1519bfcec37215bb0ad8ccc8"
+          }
+        ]
       }
     },
     {
