@@ -67,7 +67,7 @@ function stageScene(
   run: RunState,
   art: BattleArt,
   options: {
-    scene: "reward" | "route";
+    scene: "reward" | "route" | "treasure" | "shop" | "rest" | "event";
     label: string;
     location: string;
     headerDetails: string;
@@ -84,6 +84,24 @@ function stageScene(
     <header class="run-header reward-scene-header" aria-label="ラン情報"><span class="reward-scene-location">ACT ${run.act} · ${node?.floor ?? 0}F <span>${html(options.location)}</span></span>${options.headerDetails}</header>
     ${options.body}
   </main>`;
+}
+
+type LocationKind = "treasure" | "shop" | "rest" | "event";
+
+function locationResources(run: RunState, potionLimit: number): string {
+  const hpRatio = Math.max(0, Math.min(100, run.player.hp / run.player.maxHp * 100));
+  return `<span class="reward-scene-health"><strong>♥ ${run.player.hp}/${run.player.maxHp}</strong><span class="reward-scene-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span style="width:${hpRatio}%"></span></span></span><span class="location-scene-resources"><span aria-label="所持金 ${run.gold}G">◉ ${run.gold}G</span><span aria-label="デッキ ${run.deck.length}枚">▤ ${run.deck.length}枚</span><span aria-label="ポーション ${run.potionIds.length}/${potionLimit}">✚ ${run.potionIds.length}/${potionLimit}</span></span>`;
+}
+
+function locationScene(root: HTMLElement, run: RunState, art: BattleArt, kind: LocationKind, label: string, body: string, potionLimit: number, lowStimulus: boolean): void {
+  root.innerHTML = stageScene(run, art, {
+    scene: kind,
+    label,
+    location: label,
+    headerDetails: locationResources(run, potionLimit),
+    body,
+    lowStimulus,
+  });
 }
 
 export function renderRunTitle(root: HTMLElement, art: BattleArt, history: RunHistory): void {
@@ -161,7 +179,7 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
   root.innerHTML = stageScene(run, art, { scene: "reward", label: "戦闘報酬", location: "戦闘終了", headerDetails: header, body, enemyUrl: enemy, lowStimulus });
 }
 
-export function renderRunTreasure(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, config: GameConfig = DEFAULT_GAME_CONFIG): void {
+export function renderRunTreasure(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, config: GameConfig = DEFAULT_GAME_CONFIG, lowStimulus = false): void {
   const treasure = session.run.treasure;
   if (!treasure) throw new Error("treasure screen requires offers");
   const full = session.run.potionIds.length >= requireSetting(config.potionSlots);
@@ -171,10 +189,10 @@ export function renderRunTreasure(root: HTMLElement, session: RunSession, conten
     const disabled = offer.kind === "potion" && full;
     return `<button type="button" class="reward-card treasure-offer" data-action="treasure-offer" data-id="${html(offer.offerId)}" ${disabled ? "disabled" : ""}><span class="offer-heading">${offerSymbol(offer.kind)}<small>${offer.kind === "relic" ? "レリック" : "ポーション"}</small></span><strong>${html(definition.name)}</strong><span class="offer-description">${offer.kind === "potion" ? `入力語 ${html(content.potions.find((item) => item.id === offer.contentId)!.input.text)}` : "ラン中に効果を発揮"}</span><span class="offer-outcome">${disabled ? "所持枠が満杯" : "＋ 受け取る"}</span></button>`;
   }).join("");
-  root.innerHTML = shell("宝箱", `<section class="reward-panel treasure-panel"><span class="eyebrow">FOUND ITEM</span><h2>宝箱から1つ選ぶ</h2><p>ポーション ${session.run.potionIds.length}/${requireSetting(config.potionSlots)} · レリック ${session.run.relicIds.length}個</p><div class="reward-options">${offers}</div><button type="button" class="skip-reward" data-action="skip-treasure">何も取らず進む</button></section>`, art, session.run.act);
+  locationScene(root, session.run, art, "treasure", "宝箱", `<section class="reward-panel treasure-panel location-panel" aria-label="宝箱の選択"><span class="eyebrow">FOUND ITEM</span><h2>宝箱から1つ選ぶ</h2><p class="location-guidance">レリック ${session.run.relicIds.length}個 · 受け取るものを選ぶ</p><div class="reward-options">${offers}</div><button type="button" class="skip-reward" data-action="skip-treasure">何も取らず進む</button></section>`, requireSetting(config.potionSlots), lowStimulus);
 }
 
-export function renderRunShop(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, message: string, config: GameConfig = DEFAULT_GAME_CONFIG): void {
+export function renderRunShop(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, message: string, config: GameConfig = DEFAULT_GAME_CONFIG, lowStimulus = false): void {
   const shop = session.run.shop;
   if (!shop) throw new Error("shop screen requires active stock");
   const gold = session.run.gold;
@@ -199,20 +217,20 @@ export function renderRunShop(root: HTMLElement, session: RunSession, content: C
     return `<button type="button" class="mini-choice" data-action="remove-shop-card" data-id="${instance.instanceId}" ${shop.removalUsed || gold < shop.removalPrice || session.run.deck.length <= 1 ? "disabled" : ""}>${html(card.input.text)}${instance.upgraded ? "+" : ""}</button>`;
   }).join("");
   const removalReason = shop.removalUsed ? "この購買では削除済み" : session.run.deck.length <= 1 ? "最後の1枚は削除不可" : gold < shop.removalPrice ? "所持金不足" : "";
-  root.innerHTML = shell("購買", `<section class="reward-panel economy-panel"><h2>購買</h2><p class="choice-balance"><span><span aria-hidden="true">◉</span> 所持金 <strong>${gold}G</strong></span><span>ポーション ${session.run.potionIds.length}/${requireSetting(config.potionSlots)}</span></p><div class="economy-section"><h3>カード</h3><div class="reward-options">${offers}</div></div><div class="economy-section"><h3>レリック</h3><div class="reward-options">${relicOffers || "売り切れ"}</div></div><div class="economy-section"><h3>ポーション</h3><div class="reward-options">${potionOffers || "売り切れ"}</div></div><div class="economy-section"><h3>カードを1枚削除 <span class="section-price">◉ ${shop.removalPrice}G${removalReason ? ` · ${removalReason}` : ""}</span></h3><div class="choice-list">${removal}</div></div><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button><p class="economy-message" role="status">${html(message)}</p></section>`, art, session.run.act);
+  locationScene(root, session.run, art, "shop", "購買", `<section class="reward-panel economy-panel location-panel shop-panel" aria-label="購買の選択"><div class="location-panel-heading"><span class="eyebrow">SCHOOL STORE</span><h2>購買</h2></div><div class="location-scroll"><div class="economy-section shop-cards"><h3>カード</h3><div class="reward-options">${offers}</div></div><div class="shop-side"><div class="economy-section"><h3>レリック</h3><div class="reward-options">${relicOffers || "売り切れ"}</div></div><div class="economy-section"><h3>ポーション</h3><div class="reward-options">${potionOffers || "売り切れ"}</div></div></div><details class="economy-section shop-removal"><summary>カードを1枚削除 <span class="section-price">◉ ${shop.removalPrice}G${removalReason ? ` · ${removalReason}` : ""}</span></summary><div class="choice-list">${removal}</div></details></div><div class="location-panel-footer"><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button><p class="economy-message" role="status">${html(message)}</p></div></section>`, requireSetting(config.potionSlots), lowStimulus);
 }
 
-export function renderRunRest(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
+export function renderRunRest(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, lowStimulus = false): void {
   const choices = session.run.deck.filter((instance) => !instance.upgraded).map((instance) => {
     const card = content.cards.find((item) => item.id === instance.cardId)!;
     return `<button type="button" class="mini-choice" data-action="rest-upgrade" data-id="${instance.instanceId}">${html(card.input.text)}</button>`;
   }).join("");
   const { hp, maxHp } = session.run.player;
   const healed = Math.min(maxHp - hp, Math.ceil(maxHp * DEFAULT_ECONOMY_OPTIONS.restHealPercent / 100));
-  root.innerHTML = shell("休憩", `<section class="reward-panel economy-panel rest-panel"><h2>休憩</h2><div class="rest-actions"><button type="button" class="skip-reward rest-heal" data-action="rest-heal"><span class="rest-action-icon" aria-hidden="true">♥</span><span class="rest-action-text"><strong>休んで回復</strong><span>HP ${hp}/${maxHp} → ${hp + healed}/${maxHp}</span></span><b>${healed === 0 ? "HPは満タン" : `＋${healed} HP`}</b></button><div class="economy-section rest-upgrade"><h3><span class="rest-action-icon" aria-hidden="true">↑</span> カードを1枚強化</h3><div class="choice-list">${choices || "強化可能なカードなし"}</div></div></div></section>`, art, session.run.act);
+  locationScene(root, session.run, art, "rest", "休憩", `<section class="reward-panel economy-panel rest-panel location-panel" aria-label="休憩の選択"><span class="eyebrow">QUIET ROOM</span><h2>休憩</h2><div class="rest-actions"><button type="button" class="skip-reward rest-heal" data-action="rest-heal"><span class="rest-action-icon" aria-hidden="true">♥</span><span class="rest-action-text"><strong>休んで回復</strong><span>HP ${hp}/${maxHp} → ${hp + healed}/${maxHp}</span></span><b>${healed === 0 ? "HPは満タン" : `＋${healed} HP`}</b></button><div class="economy-section rest-upgrade"><h3><span class="rest-action-icon" aria-hidden="true">↑</span> カードを1枚強化</h3><div class="choice-list">${choices || "強化可能なカードなし"}</div></div></div></section>`, requireSetting(DEFAULT_GAME_CONFIG.potionSlots), lowStimulus);
 }
 
-export function renderRunEvent(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
+export function renderRunEvent(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, lowStimulus = false): void {
   const event = activeEvent(session.run, content);
   const choices = availableEventChoices(session.run, content).map(({ choice, available }) => {
     const targets = eventChoiceTargets(session.run, choice);
@@ -225,7 +243,7 @@ export function renderRunEvent(root: HTMLElement, session: RunSession, content: 
     }).join("");
     return `<div class="event-target-choice"><strong>${html(eventActionTitle(choice.label))}</strong>${effects}<label>対象カードを選ぶ<select data-event-target="${html(choice.id)}" aria-label="${html(choice.label)}の対象カード">${options}</select></label><button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}">このカードで決定</button></div>`;
   }).join("");
-  root.innerHTML = shell("校内イベント", `<section class="reward-panel event-panel"><span class="eyebrow">AFTER SCHOOL</span><h2>${html(event.title)}</h2><p>${html(event.description)}</p><div class="event-choices">${choices}</div><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
+  locationScene(root, session.run, art, "event", "校内イベント", `<section class="reward-panel event-panel location-panel" aria-label="校内イベントの選択"><span class="eyebrow">AFTER SCHOOL</span><h2>${html(event.title)}</h2><p class="event-story">${html(event.description)}</p><div class="event-choices">${choices}</div></section>`, requireSetting(DEFAULT_GAME_CONFIG.potionSlots), lowStimulus);
 }
 
 export function renderRunResult(root: HTMLElement, session: RunSession, art: BattleArt, playtest: PlaytestRecord | null = null, playtestError = false, historyError = false): void {

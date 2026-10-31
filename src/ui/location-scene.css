@@ -1,0 +1,153 @@
+/* Noncombat choices occupy the school stage, leaving the student and room visible. */
+.location-scene .reward-scene-shade {
+  background: linear-gradient(90deg, #102d4520 0%, #12334b50 31%, #102b426c 100%);
+}
+.location-scene .reward-scene-hero {
+  left: -2%;
+  width: min(29vw, 390px);
+  height: min(71vh, 610px);
+}
+.location-scene-resources {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 18px);
+  color: #eef4f2;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.location-panel {
+  z-index: 3;
+  width: min(750px, 69vw);
+  max-height: calc(100dvh - 110px);
+  margin: 26px clamp(24px, 4vw, 60px) 20px auto;
+  padding: 22px 25px;
+  overflow-y: auto;
+  border: 1px solid #c3d3d2a3;
+  border-radius: 4px 18px 4px 18px;
+  background: #17394ac9;
+  box-shadow: 0 24px 65px #0b263b87, inset 0 0 0 4px #ffffff13;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #f5f8f2;
+  scrollbar-color: #a2b9bf #1d4052;
+}
+.location-panel h2,
+.location-panel h3 { color: #f8f8f2; }
+.location-panel h2 { margin: 7px 0 8px; font-size: clamp(24px, 2.5vw, 31px); }
+.location-panel .eyebrow { color: #f5b6c5; }
+.location-panel .location-guidance,
+.location-panel .event-story { color: #edf2ef; }
+.location-panel .skip-reward {
+  border-color: #a9c5ca;
+  background: #e4f0eecf;
+  color: #234354;
+}
+.location-panel .reward-card {
+  min-height: 174px;
+  border-radius: 4px 13px 4px 13px;
+  background: #fffefaed;
+  box-shadow: 0 5px 0 #496a799c, 0 12px 25px #0d283b80;
+}
+.location-panel .reward-card:focus-visible,
+.location-panel .event-choice:focus-visible,
+.location-panel .mini-choice:focus-visible,
+.location-panel select:focus-visible {
+  outline-color: #f5bcc8;
+}
+
+/* Treasure: a small choice of found objects on a translucent display shelf. */
+.treasure-panel { width: min(610px, 63vw); margin-top: clamp(52px, 11vh, 104px); }
+.treasure-panel .reward-options { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 510px; }
+.treasure-panel .treasure-offer { border-color: #b7b6cd; }
+.treasure-panel .skip-reward { margin-top: 5px; }
+
+/* Shop: three paper cards, two smaller object shelves, and optional removal. */
+.shop-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(820px, 72vw);
+  max-height: calc(100dvh - 98px);
+  padding: 17px 22px;
+  text-align: left;
+}
+.shop-panel .location-panel-heading { flex: none; }
+.shop-panel .location-panel-heading h2 { margin-bottom: 3px; }
+.shop-panel .location-scroll { min-height: 0; overflow-y: auto; scrollbar-color: #a2b9bf #1d4052; }
+.shop-panel .economy-section { margin: 10px 0; padding: 9px 0 0; border-top-color: #bfd5d64f; }
+.shop-panel .shop-cards { margin-top: 3px; border: 0; }
+.shop-panel .economy-section h3 { margin-bottom: 8px; }
+.shop-panel .reward-options { gap: 10px; margin: 7px 0 12px; }
+.shop-panel .shop-cards .reward-options { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: none; }
+.shop-panel .reward-card { min-height: 150px; padding: 11px; gap: 8px; }
+.shop-panel .reward-card .offer-description { font-size: 12px; }
+.shop-panel .shop-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.shop-panel .shop-side .reward-options { grid-template-columns: 1fr; }
+.shop-panel .shop-side .reward-card { min-height: 115px; }
+.shop-panel .shop-removal { padding-bottom: 5px; }
+.shop-panel .shop-removal summary {
+  cursor: pointer;
+  color: #f6f7ef;
+  font-size: 14px;
+  font-weight: 800;
+}
+.shop-panel .shop-removal .choice-list { margin-top: 10px; }
+.shop-panel .location-panel-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+  padding-top: 10px;
+  border-top: 1px solid #bfd5d64f;
+}
+.shop-panel .economy-message { color: #e9f2ed; }
+
+/* Rest: the two distinct actions remain visible at the same time. */
+.rest-panel { width: min(600px, 62vw); margin-top: clamp(58px, 12vh, 115px); }
+.rest-panel .rest-actions { gap: 16px; }
+.rest-panel .rest-heal { background: #e2f1e9f0; }
+.rest-panel .rest-upgrade { padding-top: 14px; border-top-color: #b2d1cb66; }
+.rest-panel .rest-upgrade .choice-list { max-height: 180px; overflow-y: auto; }
+.rest-panel .rest-upgrade .mini-choice { background: #eaf3f0; }
+
+/* Events read as a notice pinned into the scene; effects remain icon + value. */
+.event-panel { width: min(670px, 67vw); margin-top: clamp(34px, 7vh, 70px); }
+.event-panel .event-story {
+  max-width: 52ch;
+  margin: 12px auto 16px;
+  padding: 11px 14px;
+  border-left: 3px solid #dca7b5;
+  background: #0c2c4080;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+}
+.event-panel .event-choices { max-width: 560px; margin: 15px auto 0; }
+.event-panel .event-choice,
+.event-panel .event-target-choice { background: #fffefaed; }
+
+.location-scene[data-effects="quiet"] .location-panel {
+  background: #19384be6;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+@media (max-width: 1100px) {
+  .location-scene .reward-scene-hero { left: -6%; width: min(34vw, 320px); height: 60vh; }
+  .location-panel { margin-right: 22px; }
+  .shop-panel { width: 70vw; }
+  .location-scene-resources { gap: 8px; font-size: 11px; }
+}
+@media (max-width: 760px) {
+  .location-panel,
+  .treasure-panel,
+  .shop-panel,
+  .rest-panel,
+  .event-panel { width: calc(100% - 20px); max-height: calc(100dvh - 86px); margin: 12px auto; padding: 14px; }
+  .location-scene-resources { font-size: 9px; }
+  .location-scene-resources span:last-child { display: none; }
+  .shop-panel .shop-side { grid-template-columns: 1fr; }
+  .shop-panel .shop-cards .reward-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .location-panel { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
