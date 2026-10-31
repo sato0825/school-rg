@@ -1,0 +1,22 @@
+{
+  "id": "kendo-rig-candidate-v1",
+  "characterId": "kendo-student",
+  "status": "candidate",
+  "canvas": { "width": 1024, "height": 1536 },
+  "runtimeScale": 1.04,
+  "groundY": 1514,
+  "sourceSheet": { "file": "docs/art/candidates/kendo-rig-parts-sheet-candidate-v1.png", "sha256": "2576197b7cddb6ba2aa52bebdb0b0a7e83eab18ab51657d43d4add14e72cba69" },
+  "editableSource": "docs/art/sources/kendo-rig-candidate-v1.ora",
+  "parts": [
+    { "id": "shinai-bag", "file": "docs/art/candidates/kendo-rig-parts-v1/shinai-bag.png", "sha256": "c4036ff06d68584468257992afbc718015f03a66fe8abf0b4a75da542c46b71a", "x": 545, "y": 250, "width": 450, "height": 675, "pivotX": 200, "pivotY": 550 },
+    { "id": "left-leg", "file": "docs/art/candidates/kendo-rig-parts-v1/left-leg.png", "sha256": "940b4ae53c28233bce36bd3087bf88e90f21aa1ecc95fee2f1be5418778f8eb3", "x": 287, "y": 900, "width": 261, "height": 618, "pivotX": 175, "pivotY": 30 },
+    { "id": "right-leg", "file": "docs/art/candidates/kendo-rig-parts-v1/right-leg.png", "sha256": "0c2c4bb428815d146db544d506747ade3430a036c93d4ad94bc49a69a0d7c623", "x": 535, "y": 902, "width": 294, "height": 620, "pivotX": 100, "pivotY": 30 },
+    { "id": "torso", "file": "docs/art/candidates/kendo-rig-parts-v1/torso.png", "sha256": "13c59c524daaabb8766b8be220aae246fc3c71866152ea7918fd2f2f56deb1f9", "x": 305, "y": 367, "width": 416, "height": 598, "pivotX": 208, "pivotY": 510 },
+    { "id": "left-arm", "file": "docs/art/candidates/kendo-rig-parts-v1/left-arm.png", "sha256": "9335901c1377f00d88d9bbb3c69325cf50c03b8287fdb9a800e9010dd1722ac4", "x": 304, "y": 423, "width": 211, "height": 326, "pivotX": 145, "pivotY": 55 },
+    { "id": "right-arm-shinai", "file": "docs/art/candidates/kendo-rig-parts-v1/right-arm-shinai.png", "sha256": "1c0298bbcedfbe0be494c70b931d92e3261a19f8287bccad576adbbfee622996", "x": 624, "y": 37, "width": 296, "height": 746, "pivotX": 58, "pivotY": 414 },
+    { "id": "head", "file": "docs/art/candidates/kendo-rig-parts-v1/head.png", "sha256": "c6be9de01e35d9292b41e13a35cd49f9dbad5d7b2311d667596b52ec52c4ffb6", "x": 191, "y": 42, "width": 514, "height": 422, "pivotX": 325, "pivotY": 368 }
+  ],
+  "expressionLayers": [
+    { "id": "head-hit", "file": "docs/art/candidates/kendo-rig-parts-v1/head-hit.png", "sha256": "d5a3d60d53d18c8ca4bf65053d6fba9fbbe306c31a9fe520fd647e0b35145086", "x": 191, "y": 42, "width": 514, "height": 422, "pivotX": 325, "pivotY": 368, "visible": false }
+  ]
+}

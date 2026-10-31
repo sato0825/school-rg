@@ -11,7 +11,7 @@ export const demoBattleArt: BattleArt = {
   heroUrl: clubPresentation["literature-demo"].idle,
   heroUrlByClubId: Object.fromEntries(Object.entries(clubPresentation).map(([id, art]) => [id, art.idle])),
   heroPosesByClubId: Object.fromEntries(Object.entries(clubPresentation).map(([id, art]) => [id, { idle: art.idle, activate: art.activate, hit: art.hit }])),
-  heroRigCandidateIds: ["literature-demo"],
+  heroRigCandidateIds: ["literature-demo", "kendo-demo"],
   fxPaletteByClubId: {
     "literature-demo": ["#f14a70", "#ffd3dc"],
     "science-demo": ["#25afcc", "#c1f4fa"],

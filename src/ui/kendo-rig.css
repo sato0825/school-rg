@@ -1,0 +1,46 @@
+/* Saeki Ritsu: grounded footwork, guard/strike with bamboo sword, guarded hit. */
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-rig-ready="true"]>.hero-art{opacity:0!important;animation:none!important}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"]:not([data-rig-ready="true"])>.hero-rig{visibility:hidden}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"]>.hero-motion-frame{display:none}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"] .hero-rig{height:min(45vw,98%);bottom:-3%;filter:drop-shadow(9px 15px 7px #1c344c78)}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="idle"] [data-part="head"],
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="idle"] [data-part="head-hit"]{animation:kendo-breath-head 3200ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="idle"] [data-part="torso"]{animation:kendo-breath-torso 3200ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="idle"] [data-part="right-arm-shinai"]{animation:kendo-ready-shinai 3200ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="idle"] [data-part="left-leg"]{animation:kendo-ready-foot 3200ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+@keyframes kendo-breath-head{0%,100%{transform:rotate(-.4deg)}50%{transform:rotate(.5deg) translateY(1px)}}
+@keyframes kendo-breath-torso{0%,100%{transform:translateY(0)}50%{transform:translateY(1px)}}
+@keyframes kendo-ready-shinai{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes kendo-ready-foot{0%,100%{transform:rotate(0)}50%{transform:rotate(.5deg)}}
+
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="card-use"] .rig-part,
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] .rig-part{animation-duration:var(--actor-duration);animation-timing-function:ease-out;animation-fill-mode:both;animation-delay:var(--actor-delay)}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="card-use"] [data-part="right-arm-shinai"]{animation-name:kendo-strike}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="card-use"] [data-part="left-arm"]{animation-name:kendo-guard}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="card-use"] [data-part="torso"]{animation-name:kendo-lunge}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="card-use"] [data-part="head"]{animation-name:kendo-focus}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="card-use"] [data-part="left-leg"]{animation-name:kendo-step}
+@keyframes kendo-strike{0%,22%{transform:rotate(-29deg)}100%{transform:rotate(0)}}
+@keyframes kendo-guard{0%,22%{transform:rotate(-13deg)}100%{transform:rotate(0)}}
+@keyframes kendo-lunge{0%,22%{transform:translateX(7px) rotate(2deg)}100%{transform:none}}
+@keyframes kendo-focus{0%,22%{transform:rotate(2deg)}100%{transform:none}}
+@keyframes kendo-step{0%,22%{transform:rotate(-2deg)}100%{transform:none}}
+
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] [data-part="head"],
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] [data-part="head-hit"]{animation-name:kendo-hit-head}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] [data-part="right-arm-shinai"]{animation-name:kendo-hit-guard}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] [data-part="left-arm"]{animation-name:kendo-hit-arm}
+.game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] [data-part="torso"]{animation-name:kendo-hit-torso}
+@keyframes kendo-hit-head{0%,22%{transform:rotate(-6deg)}100%{transform:none}}
+@keyframes kendo-hit-guard{0%,22%{transform:rotate(-20deg)}100%{transform:none}}
+@keyframes kendo-hit-arm{0%,22%{transform:rotate(14deg)}100%{transform:none}}
+@keyframes kendo-hit-torso{0%,22%{transform:rotate(-3deg)}100%{transform:none}}
+
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="kendo-v1"] .rig-part{animation:none!important}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="card-use"] [data-part="right-arm-shinai"]{transform:rotate(-19deg)}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] [data-part="right-arm-shinai"]{transform:rotate(-15deg)}
+@media(prefers-reduced-motion:reduce){
+  .game-shell .ally-slot[data-actor-rig="kendo-v1"] .rig-part{animation:none!important}
+  .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="card-use"] [data-part="right-arm-shinai"]{transform:rotate(-19deg)}
+  .game-shell .ally-slot[data-actor-rig="kendo-v1"][data-actor-motion="hit"] [data-part="right-arm-shinai"]{transform:rotate(-15deg)}
+}
