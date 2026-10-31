@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { poseGeometryFindings, validateArtVersion } from "../../scripts/art-pose-geometry.mjs";
+import { poseGeometryFindings, validateApprovedPoseSet, validateArtVersion } from "../../scripts/art-pose-geometry.mjs";
 
 const entry = (id, pose, bounds) => ({
   asset: { id, pose },
@@ -26,5 +26,15 @@ describe("art pose production gate", () => {
       expect.stringMatching(/visible height differs/),
       expect.stringMatching(/ground line differs/),
     ]));
+  });
+
+  it("requires exactly one approved version of each pose", () => {
+    const activate = entry("student-activate-v1", "activate", { left: 120, top: 35, right: 880, bottom: 1455 });
+    const hit = entry("student-hit-v1", "hit", { left: 170, top: 55, right: 830, bottom: 1450 });
+    expect(() => validateApprovedPoseSet([idle, activate, hit], "student")).not.toThrow();
+    expect(() => validateApprovedPoseSet([idle, activate, activate], "student")).toThrow(/one version per pose/);
+    expect(() => validateApprovedPoseSet([idle, activate, hit, hit], "student")).toThrow(/one version per pose/);
+    const clipped = entry("student-hit-v2", "hit", { left: 0, top: 55, right: 830, bottom: 1450 });
+    expect(() => validateApprovedPoseSet([idle, activate, clipped], "student")).toThrow(/geometry mismatch/);
   });
 });

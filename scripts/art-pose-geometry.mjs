@@ -34,3 +34,10 @@ export function poseGeometryFindings(entries) {
   }
   return findings;
 }
+
+export function validateApprovedPoseSet(entries, characterId) {
+  if (entries.length !== 3 || ["idle", "activate", "hit"].some((pose) => entries.filter(({ asset }) => asset.pose === pose).length !== 1))
+    throw new Error(`approved motion states must have one version per pose: ${characterId}`);
+  const findings = poseGeometryFindings(entries);
+  if (findings.length) throw new Error(`approved pose geometry mismatch: ${findings.join("; ")}`);
+}

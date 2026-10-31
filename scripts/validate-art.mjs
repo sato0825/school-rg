@@ -4,7 +4,7 @@ import { readFile, access } from "node:fs/promises";
 import { resolve, relative, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { cutoutMargin, pngInfo, validateSvgSource } from "./art-asset-checks.mjs";
-import { poseGeometryFindings, validateArtVersion } from "./art-pose-geometry.mjs";
+import { poseGeometryFindings, validateApprovedPoseSet, validateArtVersion } from "./art-pose-geometry.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const register = JSON.parse(await readFile(resolve(root, "docs/art/asset-register.json"), "utf8"));
@@ -85,12 +85,7 @@ for (const [characterId, poses] of grouped) {
   const sizes = new Set(poses.map((pose) => `${pose.width}x${pose.height}`));
   assert(sizes.size === 1, `pose canvas mismatch: ${characterId}`);
   const approved = poses.filter((pose) => pose.status === "approved-runtime");
-  if (approved.length) {
-    assert(approved.length === 3 && ["idle", "activate", "hit"].every((pose) => approved.filter((item) => item.pose === pose).length === 1),
-      `approved motion states must have one version per pose: ${characterId}`);
-    const findings = poseGeometryFindings(approved.map((asset) => ({ asset, info: poseInfo.get(asset.id) })));
-    assert(findings.length === 0, `approved pose geometry mismatch: ${findings.join("; ")}`);
-  }
+  if (approved.length) validateApprovedPoseSet(approved.map((asset) => ({ asset, info: poseInfo.get(asset.id) })), characterId);
   const candidates = poses.filter((pose) => pose.status === "candidate");
   const candidateFindings = poseGeometryFindings(candidates.map((asset) => ({ asset, info: poseInfo.get(asset.id) })));
   for (const finding of candidateFindings) console.warn(`Candidate geometry review (${characterId}): ${finding}`);
