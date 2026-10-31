@@ -230,12 +230,11 @@ test("impact cues remain legible on the three late-Act stages at PC and iPad siz
       const mark = page.locator(".result-fx-mark[data-kind=damage]").first();
       await expect(mark).toBeVisible();
       await expect(mark).toContainText(/−\d+/);
-      const box = await mark.boundingBox();
-      const stage = await page.locator(".stage").boundingBox();
-      expect(box!.x).toBeGreaterThanOrEqual(stage!.x);
-      expect(box!.x + box!.width).toBeLessThanOrEqual(stage!.x + stage!.width);
-      expect(box!.y).toBeGreaterThanOrEqual(stage!.y);
-      expect(box!.y + box!.height).toBeLessThanOrEqual(stage!.y + stage!.height);
+      const bounds = await mark.evaluate((element) => ({ box: element.getBoundingClientRect().toJSON(), stage: document.querySelector(".stage")!.getBoundingClientRect().toJSON() }));
+      expect(bounds.box.x).toBeGreaterThanOrEqual(bounds.stage.x);
+      expect(bounds.box.x + bounds.box.width).toBeLessThanOrEqual(bounds.stage.x + bounds.stage.width);
+      expect(bounds.box.y).toBeGreaterThanOrEqual(bounds.stage.y);
+      expect(bounds.box.y + bounds.box.height).toBeLessThanOrEqual(bounds.stage.y + bounds.stage.height);
       if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") {
         await mark.evaluate((node) => node.getAnimations().forEach((animation) => { animation.currentTime = 170; }));
         await page.screenshot({ path: `docs/art/previews/issue177-act${act}-impact-${width}.png` });
@@ -243,4 +242,35 @@ test("impact cues remain legible on the three late-Act stages at PC and iPad siz
       await page.close();
     }
   }
+});
+
+for (const [width, height] of [[1440, 900], [1024, 768]] as const) test(`quiet impact cue stays below the open route map at ${width}px`, async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width, height });
+  const base = createRunSession(42, "science-demo", demoContent);
+  const start: MapNode = { id: "overlay-start", act: 1, floor: 0, kind: "start", nextIds: ["overlay-fight"] };
+  const fight: MapNode = { id: "overlay-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+  const session = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
+    demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
+  const combat = session.run.combat!;
+  const sweepId = combat.cards.find((card) => card.cardId === "BASE-011")!.instanceId;
+  const prepared = { ...session, run: { ...session.run, combat: { ...combat, drawPile: [...combat.drawPile.filter((id) => id !== sweepId), sweepId] } } };
+  await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
+  await page.goto("/");
+  await page.locator("[data-action=toggle-stimulus]").click();
+  await page.keyboard.type("sweep");
+  const mark = page.locator(".result-fx-mark[data-kind=damage]");
+  await expect(mark).toBeVisible();
+  expect(await mark.evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+  const stageBefore = await page.locator(".stage").boundingBox();
+  await page.getByRole("button", { name: "マップ", exact: true }).click();
+  await expect(page.getByRole("region", { name: "校内経路" })).toBeVisible();
+  await expect(page.locator(".battle-map-time-state")).toContainText("入力時間停止中");
+  expect(await page.evaluate(() => Number(getComputedStyle(document.querySelector(".battle-map-overlay")!).zIndex))).toBeGreaterThan(
+    await mark.evaluate((node) => Number(getComputedStyle(node.parentElement!).zIndex)));
+  expect(await page.locator(".stage").boundingBox()).toEqual(stageBefore);
+  if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") await page.screenshot({ path: `docs/art/previews/issue177-quiet-map-impact-${width}.png` });
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".battle-map-overlay")).toHaveCount(0);
+  await expect(page.getByRole("textbox", { name: "カード名をタイプ" })).toBeFocused();
 });

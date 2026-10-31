@@ -26,6 +26,7 @@
 [決着の一撃](previews/issue177-final-hit-1024.png) と [敗北の被弾](previews/issue177-final-loss-1024.png) は、勝敗確定後も画面全体を揺らさず対象だけに表示した。
 統合済みの状態アイコンと敵名札を含む [3体編成](previews/issue177-formation-3-1024.png)・[5体編成](previews/issue177-formation-5-1024.png) でも、全体攻撃の結果を敵ごとにずらして表示する。敵詳細は結果キュー中だけ隠し、キュー終了後に戻す。選択中の状態は敵ボタンの読み上げ名にも残る。390px の [3体](previews/issue177-formation-3-390.png)・[5体](previews/issue177-formation-5-390.png) は参考確認で、平常時の詳細パネルと人物が重なる既存の狭幅課題が残る。対象端末はPC/iPadのため本Issueでの狭幅再設計は含めない。
 新しい3 Actの後半背景でも攻撃結果の位置とコントラストを確認した。Act 1 [PC](previews/issue177-act1-impact-1440.png) / [iPad相当](previews/issue177-act1-impact-1024.png)、Act 2 [PC](previews/issue177-act2-impact-1440.png) / [iPad相当](previews/issue177-act2-impact-1024.png)、Act 3 [PC](previews/issue177-act3-impact-1440.png) / [iPad相当](previews/issue177-act3-impact-1024.png)。背景の明暗差があっても赤い数値札と白い縁が分離し、ステージ内に収まる。
+#198 の経路マップと #202 のIME入力を取り込んだ後、低刺激表示の攻撃結果を出したままマップを開く操作も [PC](previews/issue177-quiet-map-impact-1440.png) / [iPad相当](previews/issue177-quiet-map-impact-1024.png) で確認した。マップは結果表示より前面に重なり、開いている間は時計が止まる。閉じるとタイピング欄へフォーカスが戻る。
 
 ## 検証範囲
 
@@ -35,6 +36,7 @@
 - 決着演出の追加後、最後の一撃・致命的な被弾・決着中のセーブ復帰を専用E2E 2件で確認した。全体E2EはPR CIで確認する。
 - #191 のカード・状態表示を取り込んだ後、3体/5体編成の状態異常と全体攻撃を1024px・390pxで専用E2E 4件として確認した。敵詳細が結果キュー中に閉じ、終了後に戻ることも確認した。
 - #196 の背景を取り込んだ後、3 Act後半の戦闘をPC/iPad相当の6画面で操作し、攻撃結果がステージ内に収まる専用E2E 1件を通過した。
+- #198・#202 の統合後、戦闘演出・マップ・IMEのE2E 19件中18件が通過。残る1件は再描画をまたぐ別々の座標取得が原因だったため同じフレームで読むよう修正し、該当E2Eが通過した。最終ツリーの全体ゲートはPR CIで確認する。
 - Macのブラウザ画面による確認であり、iPad実機でのタッチ・描画確認は未実施。
 
 マップ・履歴の半透明オーバーレイは別Issueで扱う。#29の最終キャラクターアート承認にも代えない。
