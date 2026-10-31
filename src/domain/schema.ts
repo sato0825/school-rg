@@ -129,6 +129,22 @@ export const CombatStatusesSchema = z.strictObject({
   enemies: z.record(z.string(), z.record(z.string(), z.number().int())),
 });
 
+export const CombatActionLogEntrySchema = z.strictObject({
+  sequence: positiveInt,
+  turn: positiveInt,
+  kind: z.enum(["card", "potion", "enemy"]),
+  actionId: id,
+  actorEnemyInstanceId: id.nullable(),
+  targetEnemyInstanceId: id.nullable(),
+  playerHpDelta: z.number().int(),
+  playerBlockDelta: z.number().int(),
+  enemyDeltas: z.array(z.strictObject({ instanceId: id, hpDelta: z.number().int(), blockDelta: z.number().int() })),
+  summonedEnemyIds: z.array(id),
+  statusDeltas: z.array(z.strictObject({ side: z.enum(["player", "enemy"]), enemyInstanceId: id.nullable(), status: id, delta: z.number().int() })),
+  handAddedCount: nonNegativeInt,
+  timeDeltaMs: z.number().int(),
+});
+
 export const CombatStateSchema = z.strictObject({
   phase: z.enum(["PLAYER_START", "PLAYER_INPUT", "PLAYER_END", "ENEMY_PHASE", "WON", "LOST"]),
   turn: positiveInt,
@@ -144,6 +160,7 @@ export const CombatStateSchema = z.strictObject({
   clock: TurnClockStateSchema,
   nextTurnBonusMs: nonNegativeInt.default(0),
   statuses: CombatStatusesSchema.default({ player: {}, enemies: {} }),
+  actionLog: z.array(CombatActionLogEntrySchema).optional(),
 });
 
 export const ShopStateSchema = z.strictObject({
@@ -228,6 +245,7 @@ export type RunState = z.infer<typeof RunStateSchema>;
 export type TurnClockState = z.infer<typeof TurnClockStateSchema>;
 export type TypingState = z.infer<typeof TypingStateSchema>;
 export type CombatStatuses = z.infer<typeof CombatStatusesSchema>;
+export type CombatActionLogEntry = z.infer<typeof CombatActionLogEntrySchema>;
 export type ShopState = z.infer<typeof ShopStateSchema>;
 export type TreasureState = z.infer<typeof TreasureStateSchema>;
 export type EventDefinition = z.infer<typeof EventDefinitionSchema>;

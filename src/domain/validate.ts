@@ -108,6 +108,7 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
   const clubs = new Set(content.clubs.map(({ id }) => id));
   const relics = new Set(content.relics.map(({ id }) => id));
   const potions = new Set(content.potions.map(({ id }) => id));
+  const intents = new Set(content.intents.map(({ id }) => id));
   const enemies = new Map(content.enemies.map((enemy) => [enemy.id, enemy]));
   known(run.clubId, clubs, "clubId", issues);
   run.relicIds.forEach((id, i) => known(id, relics, `relicIds.${i}`, issues));
@@ -206,6 +207,22 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
     });
     if (combat.typing.targetEnemyInstanceId) known(combat.typing.targetEnemyInstanceId, enemyInstanceIds, "combat.typing.targetEnemyInstanceId", issues);
     Object.keys(combat.statuses.enemies).forEach((instanceId) => known(instanceId, enemyInstanceIds, `combat.statuses.enemies.${instanceId}`, issues));
+    let previousTurn = 0;
+    combat.actionLog?.forEach((entry, i) => {
+      const path = `combat.actionLog.${i}`;
+      if (entry.sequence !== i + 1 || entry.turn < previousTurn || entry.turn > combat.turn) issues.push({ code: "INVALID_STATE", path, message: "Combat action log order is invalid" });
+      previousTurn = entry.turn;
+      known(entry.actionId, entry.kind === "card" ? cards : entry.kind === "potion" ? potions : intents, `${path}.actionId`, issues);
+      if (entry.kind === "enemy" && !entry.actorEnemyInstanceId || entry.kind !== "enemy" && entry.actorEnemyInstanceId) issues.push({ code: "INVALID_STATE", path: `${path}.actorEnemyInstanceId`, message: "Combat log actor does not match its action kind" });
+      if (entry.actorEnemyInstanceId) known(entry.actorEnemyInstanceId, enemyInstanceIds, `${path}.actorEnemyInstanceId`, issues);
+      if (entry.targetEnemyInstanceId) known(entry.targetEnemyInstanceId, enemyInstanceIds, `${path}.targetEnemyInstanceId`, issues);
+      entry.enemyDeltas.forEach((delta, j) => known(delta.instanceId, enemyInstanceIds, `${path}.enemyDeltas.${j}.instanceId`, issues));
+      entry.summonedEnemyIds.forEach((instanceId, j) => known(instanceId, enemyInstanceIds, `${path}.summonedEnemyIds.${j}`, issues));
+      entry.statusDeltas.forEach((delta, j) => {
+        if (delta.side === "enemy" && !delta.enemyInstanceId || delta.side === "player" && delta.enemyInstanceId) issues.push({ code: "INVALID_STATE", path: `${path}.statusDeltas.${j}`, message: "Combat log status target is invalid" });
+        if (delta.enemyInstanceId) known(delta.enemyInstanceId, enemyInstanceIds, `${path}.statusDeltas.${j}.enemyInstanceId`, issues);
+      });
+    });
   }
   if (issues.length) throw new DomainValidationError(issues);
   return run;

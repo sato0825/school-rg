@@ -2,6 +2,7 @@ import { assessCombatOutcome } from "./combat-outcome.js";
 import { randomInt } from "./random.js";
 import { statusAmount, type StatusKind } from "./status-engine.js";
 import type { ContentRegistry, EnemyInstance, Intent, RunState } from "./schema.js";
+import { recordCombatAction } from "./combat-action-log.js";
 
 export type IntentCondition =
   | { kind: "hp_at_most_percent"; percent: number }
@@ -101,11 +102,12 @@ export function resolveEnemyIntents(run: RunState, ai: EnemyAiRegistry, content:
     if (!intent) throw new RangeError(`unknown Intent: ${enemy.intentId}`);
     const definition = content.enemies.find((item) => item.id === enemy.enemyId);
     if (!definition?.intentIds.includes(intent.id)) throw new RangeError(`Intent is not available to enemy: ${intent.id}`);
+    const beforeAction = current;
     const acted = execute(current, instanceId, intent);
     if (!acted.combat || acted.combat.turn !== current.combat.turn || !["ENEMY_PHASE", "WON", "LOST"].includes(acted.combat.phase)) {
       throw new Error("enemy Intent executor returned an invalid phase");
     }
-    current = assessCombatOutcome(acted);
+    current = recordCombatAction(beforeAction, assessCombatOutcome(acted), { kind: "enemy", actionId: intent.id, actorEnemyInstanceId: instanceId, targetEnemyInstanceId: null });
     current = {
       ...current,
       combat: {
