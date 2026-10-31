@@ -21,13 +21,15 @@ test("six new school places appear on the same seeded route at desktop and iPad 
       const session = { ...base, run: { ...base.run, act, map: { ...base.run.map, currentNodeId: current.id } }, completedNodeIds: [current.id] };
       const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
       const filename = stageCandidateUrlByActPhase[act]![phase].split("/").pop()!.split("?")[0]!;
+      const currentPhase = stagePhaseForNode(current, base.run.map.nodes);
+      const mapFilename = stageCandidateUrlByActPhase[act]![currentPhase].split("/").pop()!.split("?")[0]!;
       for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
         const page = await context.newPage();
         await page.clock.install();
         await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
         await page.setViewportSize({ width, height });
         await page.goto("/");
-        await expect(page.locator(".run-screen")).toHaveAttribute("style", new RegExp(filename));
+        await expect(page.locator(".run-screen")).toHaveAttribute("style", new RegExp(mapFilename));
         await page.locator(`.map-node.available[data-id="${target.id}"]`).click();
         const stage = page.locator(".stage");
         await expect(stage).toHaveAttribute("data-stage-phase", phase);
