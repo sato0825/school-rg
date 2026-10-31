@@ -268,6 +268,51 @@ test("music club starts with extra time and types a tempo card", async ({ page }
   await expect(page.locator(".battle-message")).toContainText(`${unique} を発動`);
 });
 
+test("music chains timed cards by direct input at iPad width after a save reload", async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 820, height: 1180 });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /軽音部/ }).click();
+  await enterNextNode(page);
+  await page.evaluate(() => {
+    const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
+    const combat = saved.session.run.combat;
+    const cardId = (id: string) => combat.cards.find((card: { cardId: string }) => card.cardId === id).instanceId;
+    const tempo = cardId("MUS-001");
+    const sync = cardId("MUS-004");
+    const beat = cardId("MUS-002");
+    combat.hand = [tempo];
+    combat.drawPile = [...combat.cards.map((card: { instanceId: string }) => card.instanceId)
+      .filter((id: string) => id !== tempo && id !== sync && id !== beat), beat, sync];
+    combat.discardPile = [];
+    combat.exhaustPile = [];
+    combat.resolvingPile = [];
+    combat.clock.remainingMs = 10_000;
+    localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
+  });
+  await page.reload();
+  await page.getByRole("button", { name: "再開" }).click();
+  const typeWithTime = async (word: string) => {
+    for (const key of word) {
+      await page.clock.runFor(450);
+      await page.keyboard.press(key);
+    }
+  };
+  await typeWithTime("tempo");
+  await expect(page.locator(".card-word").filter({ hasText: /^sync$/ })).toBeVisible();
+  await page.reload();
+  await page.getByRole("button", { name: "再開" }).click();
+  await typeWithTime("sync");
+  await expect(page.locator(".card-word").filter({ hasText: /^beat$/ })).toBeVisible();
+  const enemyBefore = Number(await page.locator(".enemy-health-track").first().getAttribute("aria-valuenow"));
+  await typeWithTime("beat");
+  await expect(page.locator(".battle-message")).toContainText("beat を発動");
+  expect(Number(await page.locator(".enemy-health-track").first().getAttribute("aria-valuenow"))).toBe(enemyBefore - 6);
+  expect(Number.parseFloat(await page.locator("[data-role=time]").innerText())).toBeGreaterThan(6);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
 test("a new club pool card remains readable and activates on a narrow battle screen", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/?shortRun=1&seed=42");
