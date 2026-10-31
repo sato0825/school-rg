@@ -22,7 +22,8 @@ export function artRigMarkup(): string {
     const partHeight = (part.height / height * 100).toFixed(5);
     const pivotX = (part.pivotX / part.width * 100).toFixed(5);
     const pivotY = (part.pivotY / part.height * 100).toFixed(5);
-    return `<img class="rig-part" data-part="${part.id}" src="${url}" alt="" style="left:${left}%;top:${top}%;width:${partWidth}%;height:${partHeight}%;transform-origin:${pivotX}% ${pivotY}%" />`;
+    const scale = "renderScale" in part ? part.renderScale : 1;
+    return `<img class="rig-part" data-part="${part.id}" src="${url}" alt="" style="left:${left}%;top:${top}%;width:${partWidth}%;height:${partHeight}%;transform-origin:${pivotX}% ${pivotY}%;scale:${scale}" />`;
   }).join("");
   return `<div class="hero-rig" data-rig-id="${manifest.id}" data-art-state="${manifest.status}" style="--rig-scale:${manifest.runtimeScale}" aria-hidden="true">${parts}<span class="rig-paint-trace"></span><span class="rig-art-token"></span></div>`;
 }
