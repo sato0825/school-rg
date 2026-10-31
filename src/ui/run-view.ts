@@ -9,6 +9,7 @@ import { presentationForClub } from "./club-presentation.js";
 import { MAP_ROW_HEIGHT, mapRouteSegments } from "./map-layout.js";
 import { stageUrlForAct } from "./stage-presentation.js";
 import { formatPlaytestTime, type PlaytestRecord } from "./playtest-metrics.js";
+import { historyCounts, type RunHistory } from "../domain/run-history.js";
 
 const kindNames: Record<MapNode["kind"], string> = {
   start: "開始", combat: "戦闘", elite: "強敵", event: "イベント", shop: "購買", rest: "休憩", treasure: "宝箱", boss: "ボス",
@@ -25,8 +26,20 @@ function shell(title: string, body: string, art: BattleArt, act = 1): string {
   return `<main class="run-screen" style="background-image:url('${html(stageUrlForAct(art, act))}')"><div class="run-scrim"></div><header class="run-header"><div class="brand"><span class="brand-mark">✦</span><div><small>SCHOOL ROGUELIKE</small><h1>学園タイピングローグライク</h1></div></div><strong>${html(title)}</strong></header>${body}</main>`;
 }
 
-export function renderRunTitle(root: HTMLElement, art: BattleArt): void {
-  root.innerHTML = shell("放課後から始まる", `<section class="front-panel title-panel"><div class="front-copy"><span class="eyebrow">TYPE YOUR NEXT MOVE</span><h2 aria-label="放課後を、打ち抜く。">放課後を、<br>打ち抜く。</h2><p>言葉が、行動になる。カード名を打ち込み、放課後の校舎を進むタイピングローグライク。</p><div class="title-features"><span>5つの部活</span><span>3つのAct</span><span>1秒を選ぶ戦闘</span></div><div class="front-actions"><button type="button" data-action="open-clubs">ランを始める <span aria-hidden="true">↗</span></button><button type="button" data-action="open-compendium">遊び方と図鑑</button></div><p class="front-note">5部活のデッキ・人物アートは制作候補です。正式な内容と素材の受入は進行中です。</p></div><img class="front-hero" src="${html(presentationForClub("literature-demo").idle)}" alt="文芸部の生徒" /></section>`, art);
+export function renderRunTitle(root: HTMLElement, art: BattleArt, history: RunHistory): void {
+  root.innerHTML = shell("放課後から始まる", `<section class="front-panel title-panel"><div class="front-copy"><span class="eyebrow">TYPE YOUR NEXT MOVE</span><h2 aria-label="放課後を、打ち抜く。">放課後を、<br>打ち抜く。</h2><p>言葉が、行動になる。カード名を打ち込み、放課後の校舎を進むタイピングローグライク。</p><div class="title-features"><span>5つの部活</span><span>3つのAct</span><span>1秒を選ぶ戦闘</span></div><div class="front-actions"><button type="button" data-action="open-clubs">ランを始める <span aria-hidden="true">↗</span></button><button type="button" data-action="open-compendium">遊び方と図鑑</button><button type="button" data-action="open-history">ラン履歴${history.entries.length ? ` · ${history.entries.length}` : ""}</button></div><p class="front-note">5部活のデッキ・人物アートは制作候補です。正式な内容と素材の受入は進行中です。</p></div><img class="front-hero" src="${html(presentationForClub("literature-demo").idle)}" alt="文芸部の生徒" /></section>`, art);
+}
+
+export function renderRunHistory(root: HTMLElement, history: RunHistory, content: ContentRegistry, art: BattleArt, loadError = false, saveError = false): void {
+  const counts = content.clubs.map((club) => {
+    const { won, lost } = historyCounts(history, club.id);
+    return `<div class="history-club"><strong>${html(club.name)}</strong><span>完走 ${won} · 敗北 ${lost}</span></div>`;
+  }).join("");
+  const rows = [...history.entries].reverse().map((entry) => {
+    const club = content.clubs.find((item) => item.id === entry.clubId)?.name ?? entry.clubId;
+    return `<li class="history-entry"><span class="history-outcome ${entry.result}">${entry.result === "won" ? "全Act完走" : "敗北"}</span><strong>${html(club)}</strong><span>ACT ${entry.act} · ${entry.floor}F · 難度 ${entry.ascensionLevel}</span><span>♥ ${entry.hp}/${entry.maxHp} · ${entry.reachedNodes}地点</span><small>シード ${entry.seed}</small></li>`;
+  }).join("");
+  root.innerHTML = shell("ラン履歴", `<section class="front-panel history-panel"><span class="eyebrow">RUN ARCHIVE</span><h2>ラン履歴</h2><p>この端末で終了したランを保存しています。数値スコアと所要時間は未設定です。</p>${loadError ? `<p class="history-error" role="status">履歴を読み込めません。既存データを保持しています。</p>` : saveError ? `<p class="history-error" role="status">履歴を保存できませんでした。この画面の記録は再読込後に残らない可能性があります。</p>` : ""}<div class="history-clubs">${counts}</div><ol class="history-list">${rows || `<li class="history-empty">終了したランはまだありません。</li>`}</ol><button type="button" class="front-back" data-action="front-back">戻る</button></section>`, art);
 }
 
 export function renderClubSelect(root: HTMLElement, content: ContentRegistry, art: BattleArt, progression: Progression, selectedLevels: Readonly<Record<string, number>>, loadError: boolean): void {
@@ -131,9 +144,9 @@ export function renderRunEvent(root: HTMLElement, session: RunSession, content: 
   root.innerHTML = shell("校内イベント", `<section class="reward-panel event-panel"><span class="eyebrow">AFTER SCHOOL</span><h2>${html(event.title)}</h2><p>${html(event.description)}</p><div class="event-choices">${choices}</div><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
 }
 
-export function renderRunResult(root: HTMLElement, session: RunSession, art: BattleArt, playtest: PlaytestRecord | null = null, playtestError = false): void {
+export function renderRunResult(root: HTMLElement, session: RunSession, art: BattleArt, playtest: PlaytestRecord | null = null, playtestError = false, historyError = false): void {
   const won = session.screen === "won";
-  root.innerHTML = shell(won ? "全Act完走" : "ラン終了", `<section class="reward-panel run-result"><span class="eyebrow">RUN RESULT</span><h2>${won ? "全Actクリア" : "敗北"}</h2><p>${won ? "3つのActのボスを突破しました。" : "次のランで再挑戦できます。"}</p><div class="map-stats">ACT ${session.run.act} · 難度 ${session.run.ascensionLevel} · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</div>${playtest ? `<div class="playtest-result"><strong>実操作 ${formatPlaytestTime(playtest.activeMs)}</strong><span>訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</span><button type="button" data-action="export-playtest">計測JSONを保存</button></div>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : ""}<button type="button" class="skip-reward" data-action="new-run">新しいランを始める</button></section>`, art, session.run.act);
+  root.innerHTML = shell(won ? "全Act完走" : "ラン終了", `<section class="reward-panel run-result"><span class="eyebrow">RUN RESULT</span><h2>${won ? "全Actクリア" : "敗北"}</h2><p>${won ? "3つのActのボスを突破しました。" : "次のランで再挑戦できます。"}</p><div class="map-stats">ACT ${session.run.act} · 難度 ${session.run.ascensionLevel} · ♥ ${session.run.player.hp}/${session.run.player.maxHp}</div>${playtest ? `<div class="playtest-result"><strong>実操作 ${formatPlaytestTime(playtest.activeMs)}</strong><span>訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</span><button type="button" data-action="export-playtest">計測JSONを保存</button></div>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : ""}${historyError ? `<p class="history-error" role="status">ラン履歴を保存または読込できません。既存データを保持しています。</p>` : ""}<div class="result-actions"><button type="button" class="skip-reward" data-action="open-history">ラン履歴を見る</button><button type="button" class="skip-reward" data-action="new-run">新しいランを始める</button></div></section>`, art, session.run.act);
 }
 
 export function renderSaveRecovery(root: HTMLElement, art: BattleArt): void {

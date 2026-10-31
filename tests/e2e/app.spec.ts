@@ -179,6 +179,16 @@ test("a defeated run reaches its result and returns to the title by keyboard", a
   await enterNextNode(page);
   for (let turn = 0; turn < 30 && !(await page.locator(".run-result").count()); turn++) await page.clock.runFor(11_000);
   await expect(page.getByRole("heading", { name: "敗北" })).toBeVisible();
+  const lostHistory = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-history-v1")!));
+  expect(lostHistory.entries).toHaveLength(1);
+  expect(lostHistory.entries[0]).toMatchObject({ runId: expect.any(String), clubId: "literature-demo", result: "lost", hp: 0 });
+  await page.getByRole("button", { name: "ラン履歴を見る" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".history-club").first()).toContainText("敗北 1");
+  await page.getByRole("button", { name: "戻る" }).click();
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "敗北" })).toBeVisible();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-history-v1")!).entries.length)).toBe(1);
   await page.getByRole("button", { name: "新しいランを始める" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "放課後を、打ち抜く。" })).toBeVisible();
@@ -795,6 +805,11 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await startDemoRun(page);
   await clearThreeActs(page);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["literature-demo"])).toBe(1);
+  const wonHistory = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-history-v1")!));
+  expect(wonHistory.entries).toHaveLength(1);
+  expect(wonHistory.entries[0]).toMatchObject({ clubId: "literature-demo", result: "won", act: 3 });
+  await page.reload();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-history-v1")!).entries.length)).toBe(1);
   await page.getByRole("button", { name: "新しいランを始める" }).click();
   await page.getByRole("button", { name: "ランを始める" }).click();
   await expect(page.locator(".ascension-choice").nth(1)).toBeEnabled();

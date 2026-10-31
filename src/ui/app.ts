@@ -15,9 +15,10 @@ import { renderBattle, type BattleView } from "./battle-view.js";
 import { candidateBattleArt, demoBattleArt } from "./demo-art.js";
 import { cardFxForUse } from "./card-fx.js";
 import { MOTION_MS } from "./motion-timing.js";
-import { renderClubSelect, renderCompendium, renderRunEvent, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
+import { renderClubSelect, renderCompendium, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
-import { browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
+import { browserHistoryStore, browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
+import { appendRunHistory, emptyRunHistory, legacyTerminalRunId, parseRunHistory, terminalRunEntry } from "../domain/run-history.js";
 import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, MAX_ASCENSION_LEVEL } from "../domain/ascension.js";
 import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
@@ -28,7 +29,7 @@ const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>
 /** Explicit short path for development and E2E; regular runs use the provisional full map. */
 const shortMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 2, treasure: 2 } };
 
-export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(), progressStore: SaveStore = browserProgressStore(), playtestStore: SaveStore = browserPlaytestStore()): () => void {
+export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(), progressStore: SaveStore = browserProgressStore(), playtestStore: SaveStore = browserPlaytestStore(), historyStore: SaveStore = browserHistoryStore()): () => void {
   const audio = createAudioFeedback();
   const params = new URLSearchParams(window.location.search);
   const mapOptions = import.meta.env.DEV && params.get("shortRun") === "1" ? shortMapOptions : DEFAULT_MAP_OPTIONS;
@@ -40,15 +41,26 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const savedProgression = progressStore.read();
     if (savedProgression) progression = parseProgression(JSON.parse(savedProgression), demoContent);
   } catch { progressionLoadError = true; }
+  let history = emptyRunHistory();
+  let historyLoadError = false;
+  let historySaveError = false;
+  try {
+    const savedHistory = historyStore.read();
+    if (savedHistory) history = parseRunHistory(JSON.parse(savedHistory));
+  } catch { historyLoadError = true; }
   const selectedAscensionLevels: Record<string, number> = {};
   let session = createRunSession(0, "literature-demo", demoContent, mapOptions);
-  let frontScreen: "title" | "clubs" | "compendium" | null = "title";
+  let frontScreen: "title" | "clubs" | "compendium" | "history" | null = "title";
   let frontReturn: "title" | null = "title";
   let resumeAfterCompendium = false;
   let restoreError = false;
   try {
     const saved = store.read();
-    if (saved) { session = deserializeRunSession(saved, demoContent, clock); session = { ...session, runId: session.runId ?? crypto.randomUUID() }; frontScreen = null; }
+    if (saved) {
+      session = deserializeRunSession(saved, demoContent, clock);
+      session = { ...session, runId: session.runId ?? (session.screen === "won" || session.screen === "lost" ? legacyTerminalRunId(saved) : crypto.randomUUID()) };
+      frontScreen = null;
+    }
   } catch { restoreError = true; }
   let run: RunState = session.run;
   const previewArt = params.get("artPreview") === "1";
@@ -87,6 +99,16 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   const metricsActive = () => frontScreen === null && !restoreError && session.screen !== "won" && session.screen !== "lost"
     && document.visibilityState === "visible" && !(run.combat?.clock.paused ?? false);
   const observeMetrics = () => { if (metrics) metrics = observePlaytest(metrics, clock.nowMs(), metricsActive()); };
+  const recordTerminal = () => {
+    if (historyLoadError || (session.screen !== "won" && session.screen !== "lost")) return;
+    const next = appendRunHistory(history, terminalRunEntry(session));
+    const changed = next !== history;
+    history = next;
+    if (changed || historySaveError) {
+      try { historyStore.write(JSON.stringify(history)); historySaveError = false; }
+      catch { historySaveError = true; }
+    }
+  };
   const startCombat = () => {
     preloadClubArt(run.clubId);
     view.cardFx = null;
@@ -106,16 +128,17 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   const render = () => {
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
-    else if (frontScreen === "title") renderRunTitle(root, demoBattleArt);
+    else if (frontScreen === "title") renderRunTitle(root, demoBattleArt, history);
     else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError);
     else if (frontScreen === "compendium") renderCompendium(root, demoContent, demoBattleArt);
+    else if (frontScreen === "history") renderRunHistory(root, history, demoContent, demoBattleArt, historyLoadError, historySaveError);
     else if (session.screen === "map") renderRunMap(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);
     else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
     else if (session.screen === "treasure") renderRunTreasure(root, session, demoContent, demoBattleArt, config);
     else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message);
     else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt);
     else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt);
-    else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);
+    else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError);
     else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
@@ -148,6 +171,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (metrics) { observeMetrics(); metrics = finishPlaytestBattle(metrics, run, run.combat!.phase === "WON" ? "won" : "lost"); }
     session = settleRunCombat({ ...session, run }, demoContent);
     run = session.run;
+    recordTerminal();
     if (metrics && (session.screen === "won" || session.screen === "lost")) metrics = finishPlaytest(metrics, session.screen, clock.nowMs());
     if (session.screen === "won" && !progressionLoadError) {
       progression = unlockAfterVictory(progression, session);
@@ -265,6 +289,12 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (action === "toggle-audio") { audio.toggle(); render(); return; }
       if (action === "new-run" || action === "restart") { restart(); return; }
       if (action === "open-clubs" && frontScreen === "title") { frontScreen = "clubs"; render(); return; }
+      if (action === "open-history" && (frontScreen === "title" || (frontScreen === null && (session.screen === "won" || session.screen === "lost")))) {
+        frontReturn = frontScreen === "title" ? "title" : null;
+        frontScreen = "history";
+        render();
+        return;
+      }
       if (action === "ascension-level" && frontScreen === "clubs") {
         const [clubId, rawLevel] = id.split(":");
         const level = Number(rawLevel);
@@ -449,6 +479,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     } catch (error) { handleError(error); }
   }, 80);
   const saveTimer = window.setInterval(persist, 1_000);
+  if (session.screen === "won" || session.screen === "lost") recordTerminal();
   if (metrics && session.screen === "combat" && run.combat) metrics = recordPlaytestBattle(metrics, run, true);
   if (session.screen === "combat" && run.combat?.phase === "PLAYER_START") startCombat();
   if (session.screen === "combat") preloadClubArt(run.clubId);
