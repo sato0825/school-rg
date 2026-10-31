@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_GAME_CONFIG } from "../../src/domain/config.js";
+import { deserializeRunSession, serializeRunSession } from "../../src/domain/save.js";
+import type { RunSession } from "../../src/domain/run-flow.js";
 import { beginEnemyPhase, beginPlayerTurn, completeEnemyPhase, tickPlayerTurn } from "../../src/domain/turn-state.js";
 import { parseRunState } from "../../src/domain/validate.js";
 import { validContent, validRun } from "../fixtures/domain.js";
@@ -32,6 +34,9 @@ describe("turn boundaries in combat history", () => {
     expect(run.combat!.discardPile).toEqual([]);
     expect(parseRunState(JSON.parse(JSON.stringify(run)), validContent)).toEqual(run);
     expect(fullCycle().combat!.actionLog).toEqual(log);
+    const session: RunSession = { run, screen: "combat", completedNodeIds: ["node-start"], rewardCardIds: [], encounterHistory: {} };
+    const restored = deserializeRunSession(serializeRunSession(session, validContent, { nowMs: () => 11_000 }, disposition), validContent, { nowMs: () => 0 });
+    expect(restored.run.combat!.actionLog).toEqual(log);
   });
 
   it("records a lethal start-of-turn status without inventing a fresh time allocation", () => {
