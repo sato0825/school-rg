@@ -22,6 +22,9 @@ test("later floors show distinct school places in combat on PC and iPad sized sc
       await page.setViewportSize({ width, height });
       await page.goto("/");
       await expect(page.locator(".run-screen")).toHaveAttribute("style", new RegExp(latePlates[act - 1]!));
+      if (process.env.SCHOOL_RG_CAPTURE_STAGE_VARIETY === "1" && width === 1024) {
+        await page.screenshot({ path: `docs/art/previews/issue179-act${act}-map-1024.png`, fullPage: true });
+      }
       await page.locator(`.map-node.available[data-id="${target.id}"]`).click();
       const stage = page.locator(".stage");
       await expect(stage).toHaveAttribute("data-act", String(act));
