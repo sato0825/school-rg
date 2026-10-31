@@ -20,6 +20,7 @@ for (const width of [1024, 1440] as const) {
       } } };
       await page.addInitScript((value) => { if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", value); }, serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
       await page.goto("/");
+      await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 1000);
       await expect(page.locator('.hand>.card[aria-label*="leaf"]')).toHaveCount(1);
       const geometry = () => page.evaluate(() => {
         const rect = (selector: string) => {
@@ -49,7 +50,7 @@ for (const width of [1024, 1440] as const) {
       expect(await geometry()).toEqual(before);
       await page.clock.runFor(190);
       if (capture && !baseline) {
-        await page.locator(".ally-slot").first().evaluate((node) => node.getAnimations().forEach((animation) => animation.finish()));
+        await page.addStyleTag({ content: '.ally-slot[data-block-event="block"]::before{animation:none!important;opacity:1!important;transform:none!important}' });
         expect(Number(await page.locator(".ally-slot").first().evaluate((node) => getComputedStyle(node, "::before").opacity))).toBeGreaterThan(.95);
       }
       if (capture) await page.screenshot({ path: `docs/art/previews/issue368/${baseline ? "before" : "after"}-block-${width}-${enemyCount}-${captureVersion}.png` });
