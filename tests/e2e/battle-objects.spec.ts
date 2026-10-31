@@ -5,6 +5,69 @@ import { serializeRunSession } from "../../src/domain/save.js";
 import type { MapNode } from "../../src/domain/schema.js";
 
 for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
+  test(`pile tray keeps the battle visible and returns to typing at ${width}×${height}`, async ({ page }) => {
+    await page.clock.install();
+    await page.setViewportSize({ width, height });
+    const base = createRunSession(42, "science-demo", demoContent);
+    const start: MapNode = { id: "tray-start", act: 1, floor: 0, kind: "start", nextIds: ["tray-fight"] };
+    const fight: MapNode = { id: "tray-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+    const session = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
+      demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
+    const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
+    await page.addInitScript((value) => { if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", value); }, saved);
+    await page.goto("/");
+
+    const draw = page.locator('.pile-token[data-pile="draw"]');
+    await draw.click();
+    await expect(draw).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator("#battle-pile-tray")).toBeVisible();
+    await expect(page.locator(".stage")).toBeVisible();
+    const trayBox = await page.locator("#battle-pile-tray").boundingBox();
+    for (const selector of [".intent-ticket", ".enemy-hud", ".hero-nameplate", ".typing-row", ".hand"]) {
+      const box = await page.locator(selector).first().boundingBox();
+      expect(trayBox && box && (trayBox.x >= box.x + box.width || box.x >= trayBox.x + trayBox.width || trayBox.y >= box.y + box.height || box.y >= trayBox.y + trayBox.height), `${selector} must stay clear of the pile tray: ${JSON.stringify({ trayBox, box })}`).toBeTruthy();
+    }
+    await expect(page.locator('#battle-pile-tray [data-action="close-pile"]')).toBeFocused();
+    await expect(page.locator(".pile-order-note")).toBeVisible();
+    await expect(page.locator(".pile-card")).toHaveCount(Number(await draw.locator("strong").innerText()));
+    const remaining = Number((await page.locator("[data-role=time]").innerText()).replace(/[^0-9.]/g, ""));
+    await page.clock.runFor(400);
+    const after = Number((await page.locator("[data-role=time]").innerText()).replace(/[^0-9.]/g, ""));
+    expect(after).toBeLessThan(remaining);
+    if (process.env.SCHOOL_RG_CAPTURE_TRAY === "1") await page.screenshot({ path: `docs/art/previews/issue200-pile-tray-final-${width}x${height}.png` });
+
+    await page.locator('#battle-pile-tray [data-action="show-pile"][data-id="discard"]').click();
+    await expect(page.locator('#battle-pile-tray [data-id="discard"]')).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator('#battle-pile-tray [data-id="discard"]')).toBeFocused();
+    await page.locator('#battle-pile-tray [data-action="show-pile"][data-id="draw"]').click();
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#battle-pile-tray")).toBeHidden();
+    await expect(page.locator(".typing-input")).toBeFocused();
+    await page.locator('.pile-token[data-pile="exhaust"]').click();
+    await expect(page.locator(".pile-empty")).toHaveText("カードはありません");
+    await page.locator('#battle-pile-tray [data-action="close-pile"]').click();
+    await expect(page.locator(".typing-input")).toBeFocused();
+    await draw.click();
+    await page.locator(".battle-map-trigger").click();
+    await expect(page.locator("#battle-pile-tray")).toBeHidden();
+    await expect(page.locator(".battle-map-overlay")).toBeVisible();
+    await page.locator('.pile-token[data-pile="discard"]').evaluate((button: HTMLElement) => button.click());
+    await expect(page.locator("#battle-pile-tray")).toBeHidden();
+    const pausedTime = await page.locator("[data-role=time]").innerText();
+    await page.clock.runFor(400);
+    await expect(page.locator("[data-role=time]")).toHaveText(pausedTime);
+    await page.keyboard.press("Escape");
+    await expect(page.locator(".battle-map-overlay")).toHaveCount(0);
+    await expect(page.locator(".typing-input")).toBeFocused();
+    await page.keyboard.type("strike");
+    await expect(page.locator('.pile-token[data-pile="discard"]')).toHaveAttribute("aria-label", /捨て札 1枚/);
+    await page.locator('.pile-token[data-pile="discard"]').click();
+    await expect(page.locator("#battle-pile-tray .pile-card strong")).toHaveText("strike");
+    await page.reload();
+    await expect(page.locator("#battle-pile-tray")).toBeHidden();
+    await expect(page.locator('.pile-token[data-pile="discard"]')).toHaveAttribute("aria-label", /捨て札 1枚/);
+  });
+
   test(`card piles and both sides' statuses stay readable at ${width}×${height}`, async ({ page }) => {
     await page.clock.install();
     await page.setViewportSize({ width, height });
@@ -35,6 +98,31 @@ for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, he
     if (process.env.SCHOOL_RG_CAPTURE_OBJECTS === "1") {
       await page.locator('.enemy-roster-button[data-id="objects-enemy-3"]').focus();
       await page.screenshot({ path: `docs/art/previews/issue187-battle-objects-integrated-${width}x${height}.png` });
+    }
+  });
+}
+
+for (const width of [1024, 1440]) for (const allies of [2, 3]) for (const enemies of [1, 3, 5]) {
+  test(`pile tray preserves dense formation HUD at ${width}px, ${allies} allies, ${enemies} enemies`, async ({ page }) => {
+    await page.clock.install();
+    await page.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
+    const base = createRunSession(42, "science-demo", demoContent);
+    const start: MapNode = { id: "dense-start", act: 1, floor: 0, kind: "start", nextIds: ["dense-fight"] };
+    const fight: MapNode = { id: "dense-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+    const session = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
+      demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
+    const combat = session.run.combat!;
+    const sample = combat.enemies[0]!;
+    combat.enemies = Array.from({ length: enemies }, (_, index) => ({ ...sample, instanceId: `dense-enemy-${index + 1}` }));
+    const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
+    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await page.goto(`/?layoutPreview=${allies}`);
+    await page.locator('.pile-token[data-pile="draw"]').click();
+    if (process.env.SCHOOL_RG_CAPTURE_TRAY === "1" && allies === 3 && (enemies === 1 || enemies === 5)) await page.screenshot({ path: `docs/art/previews/issue200-party-final-3allies-${enemies}enemies-${width}.png` });
+    const tray = await page.locator("#battle-pile-tray").boundingBox();
+    for (const selector of [enemies >= 3 ? ".enemy-roster" : ".intent-ticket", ".time-row", ".typing-row", ".hand"]) {
+      const box = await page.locator(selector).boundingBox();
+      expect(tray && box && (tray.x >= box.x + box.width || box.x >= tray.x + tray.width || tray.y >= box.y + box.height || box.y >= tray.y + tray.height), `${selector} must stay clear of the tray`).toBeTruthy();
     }
   });
 }
