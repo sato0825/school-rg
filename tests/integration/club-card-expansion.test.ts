@@ -29,13 +29,16 @@ function typeNewCard(clubId: string, cardId: string, word: string, upgraded: boo
   const added = createCombatCard(entered.run.combat!, demoContent, cardId, upgraded, "hand", { maxHandSize: 10 });
   const needsHandTarget = demoContent.cards.find((card) => card.id === cardId)!.target === "hand";
   const targetId = needsHandTarget ? added.combat.cards.find((card) => card.cardId === "BASE-001")!.instanceId : null;
+  const discardId = added.combat.cards.find((card) => card.cardId === "BASE-002")!.instanceId;
   const combat = { ...added.combat, phase: "PLAYER_INPUT" as const,
     hand: targetId ? [...added.combat.hand, targetId] : added.combat.hand,
-    drawPile: targetId ? added.combat.drawPile.filter((id) => id !== targetId) : added.combat.drawPile,
+    drawPile: added.combat.drawPile.filter((id) => id !== targetId && id !== discardId),
+    discardPile: [discardId],
+    statuses: cardId === "SCI-009" ? { ...added.combat.statuses, player: { ...added.combat.statuses.player, weak: 1 } } : added.combat.statuses,
     clock: { remainingMs: 10_000, lastEventAtMs: 0, paused: false } };
   let run: RunState = { ...entered.run, combat };
   const use = (state: RunState, instanceId: string, targetEnemyInstanceId: string | null, targetHandInstanceId: string | null) =>
-    useCardEffects(state, instanceId, { targetEnemyInstanceId, targetHandInstanceId }, DEFAULT_GAME_CONFIG, demoContent);
+    useCardEffects(state, instanceId, { targetEnemyInstanceId, targetHandInstanceId, targetDiscardInstanceId: discardId, targetDebuff: "weak" }, DEFAULT_GAME_CONFIG, demoContent);
   let now = 0;
   for (const key of word) {
     now += 10;
