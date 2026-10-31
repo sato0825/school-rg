@@ -163,7 +163,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (frontScreen === "compendium") { gameShell = null; renderCompendium(root, demoContent, demoBattleArt); }
     else if (frontScreen === "history") { gameShell = null; renderRunHistory(root, history, demoContent, demoBattleArt, historyLoadError, historySaveError); }
     else if (session.screen === "map" || session.screen === "reward" || session.screen === "combat") {
-      if (!gameShell) gameShell = new GameShell(root, run, view);
+      if (!gameShell) gameShell = new GameShell(root, run, view, demoContent);
       const rendered = document.createElement("div");
       if (session.screen === "map") {
         renderRunMap(rendered, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);

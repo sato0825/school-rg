@@ -1,4 +1,5 @@
 import type { RunState } from "../domain/schema.js";
+import type { ContentRegistry } from "../domain/schema.js";
 import type { BattleView } from "./battle-view.js";
 import { stageUrlForRun } from "./stage-presentation.js";
 
@@ -14,7 +15,7 @@ export class GameShell {
   private readonly overlay: HTMLElement;
   private stageNodeId: string | null = null;
 
-  constructor(root: HTMLElement, run: RunState, view: BattleView) {
+  constructor(root: HTMLElement, run: RunState, view: BattleView, content: ContentRegistry) {
     const initial = document.createElement("div");
     initial.innerHTML = `<main class="game game-shell" aria-label="学園タイピングローグライク"><header class="topbar"></header><section class="stage" aria-label="ゲームの舞台"><div class="stage-vignette"></div><div class="ally-group"><div class="ally-slot"><img class="hero-art" alt="主人公" /><div class="hero-shadow"></div><span class="hero-nameplate"></span></div></div></section><section class="control-deck"><input id="battle-typing-input" class="typing-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="カード名を入力" /></section></main>`;
     const main = initial.querySelector<HTMLElement>(".game");
@@ -39,6 +40,9 @@ export class GameShell {
     this.stageNodeId = run.map.currentNodeId;
     this.actor.style.setProperty("--slot-x", "22%");
     this.hero.src = view.art.heroPosesByClubId?.[run.clubId]?.idle ?? view.art.heroUrlByClubId?.[run.clubId] ?? view.art.heroUrl;
+    const clubName = content.clubs.find((club) => club.id === run.clubId)?.name ?? "主人公";
+    this.hero.alt = `${clubName}の生徒`;
+    this.actor.querySelector(".hero-nameplate")!.textContent = clubName;
     root.replaceChildren(main);
   }
 
@@ -74,7 +78,7 @@ export class GameShell {
     this.hero.style.cssText = hero.style.cssText;
     this.actor.style.cssText = slot.style.cssText;
     slot.replaceWith(this.actor);
-    this.actor.replaceChildren(this.hero, ...slot.childNodes);
+    this.actor.replaceChildren(this.hero, ...[...slot.childNodes].filter((child) => child !== hero));
     this.overlay.remove();
     this.stage.replaceChildren(...stage.childNodes, this.overlay);
     input.replaceWith(this.input);
