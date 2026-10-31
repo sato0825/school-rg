@@ -3019,10 +3019,18 @@
       "rarity": null,
       "meaning": "ターン開始時に反撃",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 291,
+            "version": "v1",
+            "source": "docs/art/production/issue291/assets/relic-bamboo-grip-v1.png",
+            "state": "preferred-draft",
+            "sha256": "91e5d0cdc7d476db0c5b3effb83505de7bc6cdfffd2e28490a207fbbed9a694e"
+          }
+        ]
       }
     },
     {
@@ -3064,10 +3072,18 @@
       "rarity": null,
       "meaning": "美術部カード使用時に防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 291,
+            "version": "v1",
+            "source": "docs/art/production/issue291/assets/relic-sketchbook-v1.png",
+            "state": "preferred-draft",
+            "sha256": "3d14d1dba71ba2c2c1c703ae654b318f7519c85f787389260daf13ce6c57a7a3"
+          }
+        ]
       }
     },
     {
@@ -3083,10 +3099,18 @@
       "rarity": null,
       "meaning": "ターン開始時に防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 291,
+            "version": "v1",
+            "source": "docs/art/production/issue291/assets/relic-spare-shoes-v1.png",
+            "state": "preferred-draft",
+            "sha256": "ed47a6d060de3554e12f7443a785f3df2bea4c6a8265f0f67b74f9ec002f60ed"
+          }
+        ]
       }
     },
     {
@@ -3122,10 +3146,18 @@
       "rarity": null,
       "meaning": "獲得時と戦闘終了時にゴールド",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 291,
+            "version": "v1",
+            "source": "docs/art/production/issue291/assets/relic-attendance-stamp-v1.png",
+            "state": "preferred-draft",
+            "sha256": "99242139447acdfbbe194b6fd11231c51ecb5def63d9e60683ddc0aac4c4e11b"
+          }
+        ]
       }
     },
     {

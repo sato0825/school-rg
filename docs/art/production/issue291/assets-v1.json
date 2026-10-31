@@ -1,0 +1,86 @@
+[
+  {
+    "id": "bamboo-grip",
+    "version": "v1",
+    "path": "docs/art/production/issue291/assets/relic-bamboo-grip-v1.png",
+    "sha256": "91e5d0cdc7d476db0c5b3effb83505de7bc6cdfffd2e28490a207fbbed9a694e",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-070b4d23-6c71-4687-b033-964535a18203.png",
+    "promptRef": "prompts.json#bamboo-grip",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "small-size-and-grayscale-board-reviewed",
+    "selectionDecision": "recognizable object at 48px and 64px on light/dark context, grayscale silhouette distinct; formal runtime adoption pending"
+  },
+  {
+    "id": "sketchbook",
+    "version": "v1",
+    "path": "docs/art/production/issue291/assets/relic-sketchbook-v1.png",
+    "sha256": "3d14d1dba71ba2c2c1c703ae654b318f7519c85f787389260daf13ce6c57a7a3",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-a835f50d-f109-4670-b202-2db5169948cd.png",
+    "promptRef": "prompts.json#sketchbook",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "small-size-and-grayscale-board-reviewed",
+    "selectionDecision": "recognizable object at 48px and 64px on light/dark context, grayscale silhouette distinct; formal runtime adoption pending"
+  },
+  {
+    "id": "spare-shoes",
+    "version": "v1",
+    "path": "docs/art/production/issue291/assets/relic-spare-shoes-v1.png",
+    "sha256": "ed47a6d060de3554e12f7443a785f3df2bea4c6a8265f0f67b74f9ec002f60ed",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-b526daa8-f79d-4a76-9922-ddf42639ba7e.png",
+    "promptRef": "prompts.json#spare-shoes",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "small-size-and-grayscale-board-reviewed",
+    "selectionDecision": "recognizable object at 48px and 64px on light/dark context, grayscale silhouette distinct; formal runtime adoption pending"
+  },
+  {
+    "id": "attendance-stamp",
+    "version": "v1",
+    "path": "docs/art/production/issue291/assets/relic-attendance-stamp-v1.png",
+    "sha256": "99242139447acdfbbe194b6fd11231c51ecb5def63d9e60683ddc0aac4c4e11b",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-2ed43c8d-3de0-42ef-81a5-f4f7ec4cff65.png",
+    "promptRef": "prompts.json#attendance-stamp",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "small-size-and-grayscale-board-reviewed",
+    "selectionDecision": "recognizable object at 48px and 64px on light/dark context, grayscale silhouette distinct; formal runtime adoption pending"
+  }
+]
