@@ -5,6 +5,10 @@ import type { RunSession } from "../domain/run-flow.js";
 import type { ContentRegistry, EventChoice, EventEffect, RunState } from "../domain/schema.js";
 import { describeCard } from "./battle-view.js";
 import { cardArtForId } from "./card-art.js";
+import lockerArt from "../assets/locations/issue304/archive-locker-candidate-v1.png";
+import shopArt from "../assets/locations/issue304/school-shop-candidate-v1.png";
+import restArt from "../assets/locations/issue304/rest-bench-candidate-v1.png";
+import eventArt from "../assets/locations/issue304/event-board-candidate-v1.png";
 
 type LocationScreen = Extract<RunSession["screen"], "treasure" | "shop" | "rest" | "event">;
 
@@ -96,12 +100,15 @@ function shopChoices(session: RunSession, content: ContentRegistry, config: Game
 function restChoices(session: RunSession, content: ContentRegistry): string {
   const { hp, maxHp } = session.run.player;
   const healed = Math.min(maxHp - hp, Math.ceil(maxHp * DEFAULT_ECONOMY_OPTIONS.restHealPercent / 100));
-  const cards = session.run.deck.filter((instance) => !instance.upgraded).map((instance) => {
+  const upgradeable = session.run.deck.filter((instance) => !instance.upgraded);
+  const cards = upgradeable.map((instance) => {
     const card = content.cards.find((item) => item.id === instance.cardId);
     if (!card) throw new Error(`unknown deck card: ${instance.cardId}`);
     return choiceButton("rest-upgrade", instance.instanceId, "↑", "強化対象", card.input.text, describeCard(card, content), "強化する", "", cardThumbnail(card.id));
   }).join("");
-  return `${choiceButton("rest-heal", "", "♥", "回復", "ひと休み", `HP ${hp} → ${hp + healed} / ${maxHp}`, `+${healed} HP`)}<details class="location-drawer"><summary>ノートを手直し <b>↑ カードを1枚強化</b></summary><div class="location-deck-choices">${cards || `<p>強化可能なカードなし</p>`}</div></details>`;
+  const full = healed === 0;
+  const heal = choiceButton("rest-heal", "", "♥", "回復", full && !upgradeable.length ? "休んで進む" : "ひと休み", full ? `HP ${hp}/${maxHp}` : `HP ${hp} → ${hp + healed} / ${maxHp}`, full ? "効果なしで進む" : `+${healed} HP`, full && upgradeable.length ? "HPは満タン" : "");
+  return `${heal}<details class="location-drawer"><summary>ノートを手直し <b>↑ カードを1枚強化</b></summary><div class="location-deck-choices">${cards || `<p>強化可能なカードなし</p>`}</div></details>`;
 }
 
 function eventChoices(session: RunSession, content: ContentRegistry, config: GameConfig): string {
@@ -120,12 +127,13 @@ function eventChoices(session: RunSession, content: ContentRegistry, config: Gam
   }).join("");
 }
 
-function sceneProp(screen: LocationScreen, run: RunState, eventTitle = "校内イベント"): string {
+function sceneProp(screen: LocationScreen, run: RunState): string {
+  const image = (assetId: string, url: string) => `<img class="location-prop-art" src="${escapeHtml(url)}" data-asset-id="${assetId}" alt="" decoding="async" />`;
   switch (screen) {
-    case "treasure": return `<div class="location-prop-locker" aria-hidden="true"><div class="locker-label">資料保管庫</div><div class="locker-open">${run.treasure?.offers.map((offer, index) => `<span data-offer-index="${index}">${offer.kind === "relic" ? "✦" : "✚"}</span>`).join("") ?? ""}</div><div class="locker-lid"></div></div>`;
-    case "shop": return `<div class="location-prop-shop" aria-hidden="true"><div class="shop-awning">校内購買</div><div class="shop-display"><span>▣</span><span>▣</span><span>✦</span><span>✚</span></div><div class="shop-counter"></div></div>`;
-    case "rest": return `<div class="location-prop-rest" aria-hidden="true"><div class="rest-bench"></div><div class="rest-seat"></div><div class="rest-notebook">▤</div></div>`;
-    case "event": return `<div class="location-prop-event" aria-hidden="true"><div class="event-board"><span>${escapeHtml(eventTitle)}</span><i>✦</i><b>?</b></div></div>`;
+    case "treasure": return `<div class="location-prop-locker" aria-hidden="true">${image("archive-locker-candidate-v1", lockerArt)}<div class="locker-open">${run.treasure?.offers.map((_, index) => `<span data-offer-index="${index}"></span>`).join("") ?? ""}</div></div>`;
+    case "shop": return `<div class="location-prop-shop" aria-hidden="true">${image("school-shop-candidate-v1", shopArt)}</div>`;
+    case "rest": return `<div class="location-prop-rest" aria-hidden="true">${image("rest-bench-candidate-v1", restArt)}</div>`;
+    case "event": return `<div class="location-prop-event" aria-hidden="true">${image("event-board-candidate-v1", eventArt)}</div>`;
   }
 }
 
@@ -140,5 +148,5 @@ export function renderRunLocation(root: HTMLElement, session: RunSession, conten
       : screen === "rest" ? restChoices(session, content) : eventChoices(session, content, config);
   const exit = screen === "treasure" ? `<button type="button" class="location-exit" data-action="skip-treasure">何も取らず進む →</button>`
     : screen === "shop" ? `<button type="button" class="location-exit" data-action="leave-shop">購買を出る →</button>` : "";
-  root.innerHTML = `<section class="location-scene" data-location="${screen}" data-low-stimulus="${lowStimulus}" aria-label="${escapeHtml(names[screen])}"><div class="location-prop">${sceneProp(screen, session.run, event?.title)}</div><div class="location-choices"><div class="location-heading"><small>校内 · 地点</small><h2>${escapeHtml(names[screen])}</h2><p>${escapeHtml(instructions[screen])}</p></div>${event ? `<p class="location-event-description">${escapeHtml(event.description)}</p>` : ""}<div class="location-choice-list">${choices}</div>${exit}<p class="location-message" role="status">${escapeHtml(message)}</p></div></section>`;
+  root.innerHTML = `<section class="location-scene" data-location="${screen}" data-low-stimulus="${lowStimulus}" aria-label="${escapeHtml(names[screen])}"><div class="location-prop">${sceneProp(screen, session.run)}</div><div class="location-choices"><div class="location-heading"><small>校内 · 地点</small><h2>${escapeHtml(names[screen])}</h2><p>${escapeHtml(instructions[screen])}</p></div>${event ? `<p class="location-event-description">${escapeHtml(event.description)}</p>` : ""}<div class="location-choice-list">${choices}</div>${exit}<p class="location-message" role="status">${escapeHtml(message)}</p></div></section>`;
 }

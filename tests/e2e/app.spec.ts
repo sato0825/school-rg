@@ -12,7 +12,7 @@ async function startDemoRun(page: import("@playwright/test").Page): Promise<void
 }
 
 /** Isolate a feature flow from the provisional seeded route topology. */
-async function startScriptedRoute(page: import("@playwright/test").Page, kinds: MapNode["kind"][]): Promise<void> {
+async function startScriptedRoute(page: import("@playwright/test").Page, kinds: MapNode["kind"][], playerHp?: number): Promise<void> {
   const start = createRunSession(42, "literature-demo", demoContent);
   const nodes: MapNode[] = [
     { id: "script-start", act: 1, floor: 0, kind: "start", nextIds: ["script-1"] },
@@ -20,7 +20,7 @@ async function startScriptedRoute(page: import("@playwright/test").Page, kinds: 
     { id: "script-boss", act: 1, floor: kinds.length + 1, kind: "boss", nextIds: ["script-next-act"] },
     { id: "script-next-act", act: 2, floor: 0, kind: "start", nextIds: [] },
   ];
-  const session = { ...start, run: { ...start.run, map: { nodes, currentNodeId: nodes[0]!.id } }, completedNodeIds: [nodes[0]!.id] };
+  const session = { ...start, run: { ...start.run, player: { ...start.run.player, hp: playerHp ?? start.run.player.hp }, map: { nodes, currentNodeId: nodes[0]!.id } }, completedNodeIds: [nodes[0]!.id] };
   const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
   await page.addInitScript((value) => {
     if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", value);
@@ -227,7 +227,7 @@ test("shop relic, potion and card purchases persist and respect one-time stock",
 });
 
 test("rest choice accepts focused keyboard activation", async ({ page }) => {
-  await startDemoRun(page);
+  await startScriptedRoute(page, ["rest"], 20);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).first().focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: /休憩席/ })).toBeVisible();
@@ -982,7 +982,11 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
       await page.keyboard.press("Enter");
     } else if (await page.locator('.location-scene[data-location="shop"], .location-scene[data-location="rest"]').count()) {
       if (await page.getByRole("button", { name: /購買を出る/ }).count()) await page.getByRole("button", { name: /購買を出る/ }).click();
-      else await page.locator("[data-action=rest-heal]").click();
+      else if (await page.locator("[data-action=rest-heal]:not(:disabled)").count()) await page.locator("[data-action=rest-heal]").click();
+      else {
+        await page.locator(".location-drawer summary").click();
+        await page.locator('[data-action="rest-upgrade"]').first().click();
+      }
     } else if (await page.locator('.location-scene[data-location="event"]').count()) {
       const choices = page.locator('[data-action="event-choice"]:not(:disabled)').filter({ hasNotText: "戦闘へ" });
       const heal = choices.filter({ hasText: /回復|手当て|深呼吸/ });
