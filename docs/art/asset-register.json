@@ -952,6 +952,57 @@
       "generator": "built-in imagegen; model version not exposed",
       "editableSource": null,
       "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "kendo-defeat-candidate-v1",
+      "file": "docs/art/candidates/kendo-defeat-candidate-v1.png",
+      "sha256": "79cad789c5240a0b7aa8c0ea919528001efb3181c25e12ca7b98e90f03560aad",
+      "width": 1024,
+      "height": 1536,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "character-pose",
+      "characterId": "kendo-student",
+      "pose": "defeat",
+      "referenceId": "kendo-idle-candidate-v1",
+      "promptFile": "docs/art/prompts/issue259-three-club-defeat-v1.md",
+      "generator": "built-in imagegen; model version and seed not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "music-defeat-candidate-v1",
+      "file": "docs/art/candidates/music-defeat-candidate-v1.png",
+      "sha256": "e53498281c4e029e77efbb8be439999200b5fcbde27d674937f17d9dc5a2872f",
+      "width": 1024,
+      "height": 1536,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "character-pose",
+      "characterId": "music-student",
+      "pose": "defeat",
+      "referenceId": "music-idle-candidate-v1",
+      "promptFile": "docs/art/prompts/issue259-three-club-defeat-v1.md",
+      "generator": "built-in imagegen; model version and seed not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "art-defeat-candidate-v1",
+      "file": "docs/art/candidates/art-defeat-candidate-v1.png",
+      "sha256": "72ae07f4ff528c4f5c2fcd8c0aeb74b3275494e6ded6fde1ed4673632a58d640",
+      "width": 1024,
+      "height": 1536,
+      "alpha": "transparent",
+      "status": "candidate",
+      "role": "character-pose",
+      "characterId": "art-student",
+      "pose": "defeat",
+      "referenceId": "art-idle-candidate-v1",
+      "promptFile": "docs/art/prompts/issue259-three-club-defeat-v1.md",
+      "generator": "built-in imagegen; model version and seed not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
     }
   ]
 }

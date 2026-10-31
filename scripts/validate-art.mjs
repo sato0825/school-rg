@@ -39,7 +39,7 @@ for (const asset of register.assets) {
   else throw new Error(`unknown alpha policy: ${asset.id}`);
   assert(typeof asset.rights === "string" && asset.rights.length > 0, `rights missing: ${asset.id}`);
   if (asset.role === "character-pose") {
-    assert(typeof asset.characterId === "string" && ["idle", "activate", "hit"].includes(asset.pose), `pose metadata missing: ${asset.id}`);
+    assert(typeof asset.characterId === "string" && ["idle", "activate", "hit", "defeat"].includes(asset.pose), `pose metadata missing: ${asset.id}`);
     assert(typeof asset.generator === "string" && asset.promptFile && asset.referenceId, `provenance missing: ${asset.id}`);
     await access(projectPath(asset.promptFile));
     const group = grouped.get(asset.characterId) ?? [];
@@ -86,7 +86,8 @@ for (const [characterId, poses] of grouped) {
   assert(sizes.size === 1, `pose canvas mismatch: ${characterId}`);
   const approved = poses.filter((pose) => pose.status === "approved-runtime");
   if (approved.length) validateApprovedPoseSet(approved.map((asset) => ({ asset, info: poseInfo.get(asset.id) })), characterId);
-  const candidates = poses.filter((pose) => pose.status === "candidate");
+  // A seated defeat pose has a deliberately different silhouette and height from standing motion poses.
+  const candidates = poses.filter((pose) => pose.status === "candidate" && pose.pose !== "defeat");
   const candidateFindings = poseGeometryFindings(candidates.map((asset) => ({ asset, info: poseInfo.get(asset.id) })));
   for (const finding of candidateFindings) console.warn(`Candidate geometry review (${characterId}): ${finding}`);
 }
