@@ -6,7 +6,7 @@
     "sha256": "aaee493c98317ca10f9e6d2a474687d5584b1eca3fa38703305ddce475d54faf",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-3393495b-9073-4b1f-8089-b2b4a2e90b30.png",
     "promptRef": "prompts-b.json#BASE-010",
-    "state": "candidate",
+    "state": "superseded-candidate",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -18,7 +18,7 @@
     "colorMode": "RGB",
     "rightsReview": "pending",
     "visualReview": "pending",
-    "selectionDecision": "pending meaning and crop QA"
+    "selectionDecision": "v1 circular dish collided with SCI-010 culture at 48px; v2 separates target shape"
   },
   {
     "id": "BASE-012",
