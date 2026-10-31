@@ -1180,6 +1180,22 @@
       "generator": "built-in imagegen; model version not exposed",
       "editableSource": null,
       "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act3-paper-stage-wing-candidate-v1",
+      "file": "src/assets/stages/act3-paper-stage-wing-candidate-v1.png",
+      "sha256": "6edd6c9e2a17a1ae89eb05bc18e9f8e20b23a5e46e6281be41c5c349e5a7df44",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 3,
+      "referenceId": "act3-paper-backstage-candidate-v1",
+      "promptFile": "docs/art/prompts/issue340-stage-wing-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": "docs/art/sources/issue340-stage-wing-v1.ora",
+      "rights": "original generated candidate for school-rg"
     }
   ]
 }
