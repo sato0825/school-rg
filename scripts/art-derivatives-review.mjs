@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const manifestPath = resolve(root, "docs/art/production/derivatives/issue255-manifest.json");
-const output = resolve(root, "docs/art/production/derivatives/review.html");
+const output = resolve(root, "docs/art/production/derivatives/review-v2.html");
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
 const link = (path) => `../../../../${path}`;
 const escape = (value) => String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
@@ -16,7 +16,7 @@ const groups = [...byId].map(([key, records]) => {
     const one = records.find((record) => record.profile === `${name}-1x`);
     const two = records.find((record) => record.profile === `${name}-2x`);
     const width = name === "detail" ? 384 : one.width;
-    return `<div class="pair"><h3>${name} · ${one.width}×${one.height} CSS px</h3><figure><img src="${link(one.path)}" width="${width}" alt="${escape(key)} ${name} 1x"><figcaption>1x ${one.width}×${one.height} · ${(one.bytes / 1024).toFixed(1)} KiB</figcaption></figure><figure><img src="${link(two.path)}" width="${width}" alt="${escape(key)} ${name} 2x"><figcaption>2x ${two.width}×${two.height} · ${(two.bytes / 1024).toFixed(1)} KiB</figcaption></figure></div>`;
+    return `<div class="pair"><h3>${name} · display ${width}×${Math.round(one.height * width / one.width)} CSS px</h3><figure><img src="${link(one.path)}" width="${width}" alt="${escape(key)} ${name} 1x"><figcaption>1x ${one.width}×${one.height} · ${(one.bytes / 1024).toFixed(1)} KiB</figcaption></figure><figure><img src="${link(two.path)}" width="${width}" alt="${escape(key)} ${name} 2x"><figcaption>2x ${two.width}×${two.height} · ${(two.bytes / 1024).toFixed(1)} KiB</figcaption></figure></div>`;
   }).join("");
   return `<section><h2>${escape(key)} <small>focus ${first.focus.join(", ")}</small></h2><div class="source"><img src="${link(first.sourcePath)}" width="384" alt="${escape(key)} source PNG"><span>source 1536×1024 · ${(first.sourceBytes / 1024).toFixed(1)} KiB</span></div><div class="tiles">${tiles}</div></section>`;
 }).join("");
