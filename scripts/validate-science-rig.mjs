@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { pngInfo } from "./art-asset-checks.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const manifest = JSON.parse(await readFile(resolve(root, "docs/art/rigs/science-rig-candidate-v4.json"), "utf8"));
+const manifest = JSON.parse(await readFile(resolve(root, "docs/art/rigs/science-rig-candidate-v5.json"), "utf8"));
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
@@ -49,7 +49,7 @@ assert(manifest.canvas.width === 1024 && manifest.canvas.height === 1536, "wrong
 assert(manifest.groundY > 0 && manifest.groundY < manifest.canvas.height, "bad ground anchor");
 const source = await readFile(resolve(root, manifest.sourceSheet.file));
 assert(sha(source) === manifest.sourceSheet.sha256, "rig source hash changed");
-assert(manifest.parts.length === 5 && new Set(manifest.parts.map((part) => part.id)).size === 5, "five distinct editable body parts required");
+assert(manifest.parts.length === 7 && new Set(manifest.parts.map((part) => part.id)).size === 7, "seven distinct editable body parts required");
 const ora = zipEntries(await readFile(resolve(root, manifest.editableSource)));
 assert(ora.get("mimetype")?.toString() === "image/openraster", "not an OpenRaster source");
 const xml = ora.get("stack.xml")?.toString("utf8") ?? "";
@@ -69,4 +69,4 @@ for (const part of [...manifest.parts, ...manifest.expressionLayers]) {
 const merged = ora.get("mergedimage.png");
 assert(merged?.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])), "ORA merged preview missing");
 assert(merged.readUInt32BE(16) === manifest.canvas.width && merged.readUInt32BE(20) === manifest.canvas.height, "ORA preview canvas mismatch");
-console.log(`Validated ${manifest.id}: five body and one expression ORA layers, immutable source hashes and joint/canvas geometry`);
+console.log(`Validated ${manifest.id}: seven body and one expression ORA layers, immutable source hashes and joint/canvas geometry`);

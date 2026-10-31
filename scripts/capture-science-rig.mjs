@@ -4,7 +4,7 @@ import { mkdir, copyFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const baseURL = process.env.SCHOOL_RG_CAPTURE_URL ?? "http://127.0.0.1:4197";
-const output = resolve("docs/art/previews/issue233-v4");
+const output = resolve("docs/art/previews/issue233-v5");
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch();
 try {
@@ -17,7 +17,7 @@ try {
     await page.getByRole("button", { name: /科学部/ }).click();
     await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
     const actor = page.locator(".game-shell .ally-slot").first();
-    await actor.locator('[data-rig-id="science-rig-candidate-v4"]').waitFor();
+    await actor.locator('[data-rig-id="science-rig-candidate-v5"]').waitFor();
     await actor.locator('[data-part="head-hit"]').evaluate((node) => node.decode());
     await page.screenshot({ path: resolve(output, `science-${viewport.width}-idle.png`) });
     const word = (await page.locator(".card-word").first().textContent()).trim();

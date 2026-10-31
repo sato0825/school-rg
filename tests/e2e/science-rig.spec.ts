@@ -20,7 +20,9 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     const stageBefore = await stage.boundingBox();
     const rigNode = await actor.locator(".hero-rig").elementHandle();
     await expect(actor).toHaveAttribute("data-actor-rig", "science-v1");
-    await expect(actor.locator(".hero-rig .rig-part")).toHaveCount(6);
+    await expect(actor.locator(".hero-rig .rig-part")).toHaveCount(8);
+    expect(await actor.locator('[data-part="left-leg"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("science-observe-left-leg");
+    expect(await actor.locator('[data-part="right-leg"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("science-observe-right-leg");
     await page.clock.runFor(200);
     expect(await actor.locator(".hero-rig").evaluate((node, previous) => node === previous, rigNode)).toBe(true);
     const word = (await page.locator(".card-word").first().textContent())!.trim();
@@ -50,10 +52,16 @@ test("first render and reload hide unfinished layers, including quiet mode", asy
   expect(await actor.locator(".hero-art").evaluate((node) => getComputedStyle(node).opacity)).toBe("1");
   expect(await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node).visibility)).toBe("hidden");
   await expect(actor).toHaveAttribute("data-rig-ready", "true");
+  const word = (await page.locator(".card-word").first().textContent())!.trim();
+  await page.keyboard.type(word);
+  const savedHand = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.hand.length as number);
   await page.reload();
   await expect(actor).toHaveAttribute("data-rig-ready", "true");
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.hand.length as number)).toBe(savedHand);
   await expect(page.locator(".game")).toHaveAttribute("data-effects", "quiet");
   expect(await actor.locator('[data-part="head"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+  expect(await actor.locator('[data-part="left-leg"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+  expect(await actor.locator('[data-part="right-leg"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
 });
 
 test("enemy turn reveals hit expression while actor anchor remains fixed", async ({ page }) => {

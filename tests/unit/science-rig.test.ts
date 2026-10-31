@@ -7,7 +7,7 @@ describe("science layered candidate", () => {
     expect(rig.status).toBe("candidate");
     expect(rig.characterId).toBe("science-student");
     expect(rig.parts.map((part) => part.id)).toEqual([
-      "lower-body", "torso", "right-arm-pen", "left-arm-notebook", "head",
+      "left-leg", "right-leg", "skirt", "torso", "right-arm-pen", "left-arm-notebook", "head",
     ]);
     expect(rig.expressionLayers.map((part) => part.id)).toEqual(["head-hit"]);
     expect(rig.editableSource).toMatch(/\.ora$/);
@@ -20,10 +20,10 @@ describe("science layered candidate", () => {
     }
   });
 
-  it("renders six addressable candidate layers for the battle actor", () => {
+  it("renders eight addressable candidate layers for the battle actor", () => {
     const markup = scienceRigMarkup();
-    expect(markup).toContain('data-rig-id="science-rig-candidate-v4"');
-    expect(markup.match(/class="rig-part"/g)).toHaveLength(6);
+    expect(markup).toContain('data-rig-id="science-rig-candidate-v5"');
+    expect(markup.match(/class="rig-part"/g)).toHaveLength(8);
     expect(markup).toContain('data-part="right-arm-pen"');
     expect(markup).toContain('data-part="head-hit"');
     expect(markup).toContain('aria-hidden="true"');

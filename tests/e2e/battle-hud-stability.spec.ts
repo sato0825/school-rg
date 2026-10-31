@@ -73,7 +73,8 @@ for (const width of [1440, 1024, 390]) {
     await expect(page.locator(".typing-buffer")).toBeInViewport();
     await page.keyboard.type("sweep");
     await expect(page.locator(".result-fx-mark[data-kind=\"damage\"]")).toBeVisible();
-    await expect(page.locator(".hero-art.act")).toBeVisible();
+    await expect(page.locator('.ally-slot[data-actor-motion="card-use"] .hero-rig')).toBeVisible();
+    expect(await page.locator('[data-part="right-arm-pen"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("science-card-pen");
     expect((await geometry()).actorSlot).toEqual(before.actorSlot);
     if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") await page.screenshot({ path: `docs/art/previews/issue177-card-response-${width}.png` });
     await page.emulateMedia({ reducedMotion: "reduce" });

@@ -1,7 +1,9 @@
-import manifest from "../../docs/art/rigs/science-rig-candidate-v4.json";
+import manifest from "../../docs/art/rigs/science-rig-candidate-v5.json";
 
 const urls: Readonly<Record<string, string>> = {
-  "lower-body": new URL("../../docs/art/candidates/science-rig-parts-v1/lower-body-idle-v2.png", import.meta.url).href,
+  "left-leg": new URL("../../docs/art/candidates/science-rig-parts-v2/left-leg.png", import.meta.url).href,
+  "right-leg": new URL("../../docs/art/candidates/science-rig-parts-v2/right-leg.png", import.meta.url).href,
+  "skirt": new URL("../../docs/art/candidates/science-rig-parts-v2/skirt.png", import.meta.url).href,
   "torso": new URL("../../docs/art/candidates/science-rig-parts-v1/torso.png", import.meta.url).href,
   "right-arm-pen": new URL("../../docs/art/candidates/science-rig-parts-v1/right-arm-pen.png", import.meta.url).href,
   "left-arm-notebook": new URL("../../docs/art/candidates/science-rig-parts-v1/left-arm-notebook.png", import.meta.url).href,

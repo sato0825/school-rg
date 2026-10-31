@@ -22,12 +22,12 @@ function render(motion: BattleView["motion"], quiet = false): HTMLElement {
 }
 
 describe("science rig in combat", () => {
-  it("retains a named actor and all six layers through idle, use and hit", () => {
+  it("retains a named actor and all eight layers through idle, use and hit", () => {
     for (const [motion, expected] of [[null, "idle"], ["hero", "card-use"], ["hit", "hit"]] as const) {
       const actor = render(motion).querySelector<HTMLElement>(".ally-slot")!;
       expect(actor.dataset.actorRig).toBe("science-v1");
       expect(actor.dataset.actorMotion).toBe(expected);
-      expect(actor.querySelectorAll(".hero-rig .rig-part")).toHaveLength(6);
+      expect(actor.querySelectorAll(".hero-rig .rig-part")).toHaveLength(8);
       expect(actor.querySelector(".hero-art")?.getAttribute("alt")).toContain("水野 さき");
       expect(actor.querySelector(".hero-motion-frame")).toBeNull();
     }
