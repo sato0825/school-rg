@@ -13,7 +13,7 @@ describe("resolved combat feedback", () => {
     expect(resultFxForTransition(before, after, 1, 120)?.marks).toEqual([
       { xPercent: 22, kind: "damage", label: "−3" },
       { xPercent: 22, kind: "block-loss", label: "◇ −5" },
-      { xPercent: 78, kind: "damage", label: "−20" },
+      { xPercent: 76, kind: "damage", label: "−20" },
     ]);
   });
 

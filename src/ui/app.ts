@@ -133,12 +133,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (metrics) try { playtestStore.write(JSON.stringify(metrics.record)); }
     catch { metricsLoadError = true; }
   };
-  let shownScreen: string | null = null;
-  let sceneEnteredAtMs: number | null = null;
   const render = () => {
-    const screenKey = frontScreen ?? session.screen;
-    if (shownScreen !== null && shownScreen !== screenKey) sceneEnteredAtMs = clock.nowMs();
-    shownScreen = screenKey;
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
     const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
     const restoreCombatLogFocus = frontScreen === "combat-log" && root.querySelector('[data-action="front-back"]') === document.activeElement;
@@ -156,11 +151,6 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (session.screen === "event") renderRunEvent(root, session, demoContent, demoBattleArt);
     else if (session.screen === "won" || session.screen === "lost") renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError);
     else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
-    const scene = root.querySelector<HTMLElement>(".stage, .run-screen");
-    if (scene && sceneEnteredAtMs !== null && clock.nowMs() - sceneEnteredAtMs < MOTION_MS.sceneChange) {
-      scene.classList.add("scene-arrive");
-      scene.style.setProperty("--scene-delay", `${-(clock.nowMs() - sceneEnteredAtMs)}ms`);
-    }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
     if (restoreTypingFocus && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
