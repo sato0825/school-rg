@@ -40,11 +40,11 @@
   border-radius: 18px;
   background:
     linear-gradient(#eaf3f20b 1px, transparent 1px) 0 0 / 100% 28px,
-    linear-gradient(95deg, #1e394bdc, #193247e8 72%);
+    linear-gradient(95deg, #1e394bc6, #193247d1 72%);
   box-shadow: 0 18px 55px #071c2d8c, inset 0 0 0 1px #d8e5e438;
   color: #f1f6f2;
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 .battle-map-heading {
   display: flex;
