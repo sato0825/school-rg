@@ -4,6 +4,8 @@ import { createRunSession, enterRunNode } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
 import type { MapNode } from "../../src/domain/schema.js";
 
+const captureDir = process.env.ISSUE360_CAPTURE_DIR;
+
 for (const width of [1024, 1440] as const) for (const quiet of [false, true] as const) {
   test(`five-to-one mixed Intent keeps the scene still at ${width}px, quiet=${quiet}`, async ({ page }) => {
     await page.clock.install();
@@ -47,6 +49,7 @@ for (const width of [1024, 1440] as const) for (const quiet of [false, true] as 
     }));
     expect(windupsStayOnEnemy).toBe(true);
     await expect(page.locator(".intent-trajectory")).toHaveCount(0);
+    if (captureDir) await page.screenshot({ path: `${captureDir}/five-preview-${width}-${quiet ? "quiet" : "standard"}.png` });
     await page.locator(".enemy-roster-button").first().click();
     await expect(page.locator(".intent-trajectory")).toHaveCount(1);
     await expect(page.locator(".intent-trajectory")).toHaveAttribute("aria-hidden", "true");
@@ -63,6 +66,7 @@ for (const width of [1024, 1440] as const) for (const quiet of [false, true] as 
     await expect(page.locator('.result-fx-mark[data-kind="block"] .intent-glyph')).toBeVisible();
     await expect(page.locator('.intent-trajectory[data-phase="resolved"]')).toHaveAttribute('data-source', 'cue-enemy-0');
     await expect(page.locator('.intent-trajectory[data-phase="resolved"]')).toHaveAttribute('data-target', 'player');
+    if (captureDir) await page.screenshot({ path: `${captureDir}/one-resolved-${width}-${quiet ? "quiet" : "standard"}.png` });
     expect(await geometry()).toEqual(before);
     if (quiet) {
       expect(await page.locator(".enemy-art").first().evaluate((node) => node.getAnimations().length)).toBe(0);
