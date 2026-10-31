@@ -1103,3 +1103,26 @@ test("sound toggle stays usable on a narrow screen and survives reload", async (
   await expect(sound).toBeVisible();
   await expect(sound).toHaveAttribute("aria-pressed", "true");
 });
+
+test("one typed card emits one sound and mute suppresses the next card", async ({ page }) => {
+  await page.addInitScript(() => {
+    let starts = 0;
+    Object.defineProperty(window, "__soundStarts", { get: () => starts });
+    const Original = window.AudioContext;
+    window.AudioContext = class extends Original {
+      override createOscillator() {
+        const oscillator = super.createOscillator();
+        const start = oscillator.start.bind(oscillator);
+        oscillator.start = (...args) => { starts++; start(...args); };
+        return oscillator;
+      }
+    };
+  });
+  await startDemoRun(page);
+  await enterNextNode(page);
+  await page.keyboard.type("heavy strike");
+  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
+  await page.locator("[data-action=toggle-audio]").click();
+  await page.keyboard.type("strike");
+  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
+});
