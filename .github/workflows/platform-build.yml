@@ -1,0 +1,25 @@
+name: Windows app build
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/platform-build.yml"
+      - "src-tauri/**"
+      - "scripts/check-platform-config.mjs"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - run: npm ci
+      - run: npm run check:platform
+      - run: npm run app:build -- --no-bundle
