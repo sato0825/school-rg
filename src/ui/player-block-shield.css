@@ -23,6 +23,9 @@
 .game-shell[data-screen="combat"] .ally-slot[data-block-event="block-loss"]::before{
   animation:player-shield-break .42s ease-in both;
 }
+.game-shell[data-screen="combat"] .ally-slot[data-block-event="block-loss"]:not([data-player-block="0"])::before{
+  animation:player-shield-recoil .42s ease-out both;
+}
 .game-shell[data-screen="combat"] .ally-slot[data-block-event="block-loss"]::after{
   content:"";
   position:absolute;
@@ -38,13 +41,14 @@
 }
 @keyframes player-shield-form{from{opacity:0;transform:translateY(14px) scale(.72)}to{opacity:1;transform:none}}
 @keyframes player-shield-break{from{opacity:1;transform:none}to{opacity:0;transform:translate(14px,9px) rotate(7deg) scale(.83)}}
+@keyframes player-shield-recoil{0%{opacity:1;transform:none}40%{opacity:.46;transform:translate(9px,3px) rotate(4deg)}100%{opacity:1;transform:none}}
 @keyframes player-shield-crack{from{opacity:1;transform:none}to{opacity:0;transform:translate(15px,12px)}}
 .game-shell[data-effects="quiet"] .ally-slot::before,
 .game-shell[data-effects="quiet"] .ally-slot::after{animation:none!important;transition:none!important}
-.game-shell[data-effects="quiet"] .ally-slot[data-block-event="block-loss"]::before,
+.game-shell[data-effects="quiet"] .ally-slot[data-block-event="block-loss"][data-player-block="0"]::before,
 .game-shell[data-effects="quiet"] .ally-slot[data-block-event="block-loss"]::after{display:none}
 @media(prefers-reduced-motion:reduce){
   .game-shell .ally-slot::before,.game-shell .ally-slot::after{animation:none!important;transition:none!important}
-  .game-shell .ally-slot[data-block-event="block-loss"]::before,
+  .game-shell .ally-slot[data-block-event="block-loss"][data-player-block="0"]::before,
   .game-shell .ally-slot[data-block-event="block-loss"]::after{display:none}
 }
