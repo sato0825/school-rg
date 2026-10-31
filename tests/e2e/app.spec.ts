@@ -267,7 +267,8 @@ test("a defeated run reaches its result and returns to the title by keyboard", a
 
 test("renders the combat HUD and accepts direct keyboard input", async ({ page }) => {
   await startDemoRun(page);
-  await expect(page.getByRole("heading", { name: "学園タイピングローグライク" })).toBeVisible();
+  await expect(page.locator('.game-shell[data-screen="map"]')).toBeVisible();
+  await expect(page.getByRole("heading", { name: "学園タイピングローグライク" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
   await enterNextNode(page);
   await expect(page.locator(".card")).toHaveCount(5);
