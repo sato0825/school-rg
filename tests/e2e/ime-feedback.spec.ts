@@ -11,6 +11,8 @@ test("Japanese IME composition explains the pause and English typing resumes", a
   const input = page.getByRole("textbox", { name: "カード名をタイプ" });
   await expect(input).not.toHaveAttribute("placeholder");
   expect(await page.locator(".typing-buffer").evaluate((element) => getComputedStyle(element).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
+  await page.evaluate(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "Process", isComposing: true, bubbles: true })));
+  await expect(page.locator("#battle-ime-notice")).toContainText("日本語入力中");
   await input.focus();
   const firstWord = (await page.locator(".card-word").first().innerText()).trim();
   const firstLetter = firstWord[0]!;

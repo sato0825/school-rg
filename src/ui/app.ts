@@ -307,7 +307,10 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
 
   function onKeyDown(event: KeyboardEvent): void {
     if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
-    if (imeComposing || event.isComposing || event.keyCode === 229) return;
+    if (imeComposing || event.isComposing || event.keyCode === 229) {
+      setImeNotice("日本語入力中です。英数入力に切り替えるとカード名をタイプできます。");
+      return;
+    }
     if (/^[a-z]$/i.test(event.key) && view.imeNotice) setImeNotice("");
     if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
     const focusTypingInput = event.target instanceof HTMLButtonElement && event.key.length === 1;
