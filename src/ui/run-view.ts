@@ -7,7 +7,7 @@ import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/
 import { ASCENSION_RULES, unlockedLevel, type Progression } from "../domain/ascension.js";
 import { presentationForClub } from "./club-presentation.js";
 import { MAP_ROW_HEIGHT, mapRouteSegments } from "./map-layout.js";
-import { stageUrlForAct } from "./stage-presentation.js";
+import { stageUrlForAct, stageUrlForRun } from "./stage-presentation.js";
 import { formatPlaytestTime, type PlaytestRecord } from "./playtest-metrics.js";
 import { historyCounts, type RunHistory } from "../domain/run-history.js";
 
@@ -22,8 +22,8 @@ function html(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
 }
 
-function shell(title: string, body: string, art: BattleArt, act = 1): string {
-  return `<main class="run-screen" style="background-image:url('${html(stageUrlForAct(art, act))}')"><div class="run-scrim"></div><header class="run-header"><div class="brand"><span class="brand-mark">✦</span><div><small>SCHOOL ROGUELIKE</small><h1>学園タイピングローグライク</h1></div></div><strong>${html(title)}</strong></header>${body}</main>`;
+function shell(title: string, body: string, art: BattleArt, act = 1, run?: RunState): string {
+  return `<main class="run-screen" style="background-image:url('${html(run ? stageUrlForRun(art, run) : stageUrlForAct(art, act))}')"><div class="run-scrim"></div><header class="run-header"><div class="brand"><span class="brand-mark">✦</span><div><small>SCHOOL ROGUELIKE</small><h1>学園タイピングローグライク</h1></div></div><strong>${html(title)}</strong></header>${body}</main>`;
 }
 
 export function renderRunTitle(root: HTMLElement, art: BattleArt, history: RunHistory): void {
@@ -78,7 +78,7 @@ export function renderRunMap(root: HTMLElement, session: RunSession, art: Battle
     return `<button type="button" class="map-node kind-${node.kind} ${node.id === current.id ? "current" : ""} ${visited ? "visited" : ""} ${enabled ? "available" : ""}" data-action="enter-node" data-id="${node.id}" ${enabled ? "" : "disabled"} aria-label="${floor}階 ${html(kindNames[node.kind])}${enabled ? " 選択可能" : ""}"><span>${kindIcons[node.kind]}</span><small>${html(kindNames[node.kind])}</small></button>`;
   }).join("")}</div></div>`).join("");
   const hero = art.heroUrlByClubId?.[run.clubId] ?? art.heroUrl;
-  root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><div class="map-copy"><span>ROUTE SELECT / ACT ${run.act}</span><h2>次の行き先を選ぶ</h2><p>線でつながった場所だけに進めます。</p><div class="map-stats">♥ ${run.player.hp}/${run.player.maxHp} · ${run.gold}G · デッキ ${run.deck.length}枚 · 難度 ${run.ascensionLevel} · シード ${run.seed}</div>${playtest ? `<p class="playtest-stats">実操作 ${formatPlaytestTime(playtest.activeMs)} · 訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</p>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : ""}<button type="button" class="map-compendium" data-action="open-compendium">図鑑</button></div><img class="map-hero" src="${html(hero)}" alt="" decoding="async" /></div><div class="map-scroll" aria-label="Act ${run.act} マップ"><div class="map-route-track">${routeLines}${rows}</div></div></section>`, art, run.act);
+  root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><div class="map-copy"><span>ROUTE SELECT / ACT ${run.act}</span><h2>次の行き先を選ぶ</h2><p>線でつながった場所だけに進めます。</p><div class="map-stats">♥ ${run.player.hp}/${run.player.maxHp} · ${run.gold}G · デッキ ${run.deck.length}枚 · 難度 ${run.ascensionLevel} · シード ${run.seed}</div>${playtest ? `<p class="playtest-stats">実操作 ${formatPlaytestTime(playtest.activeMs)} · 訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</p>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : ""}<button type="button" class="map-compendium" data-action="open-compendium">図鑑</button></div><img class="map-hero" src="${html(hero)}" alt="" decoding="async" /></div><div class="map-scroll" aria-label="Act ${run.act} マップ"><div class="map-route-track">${routeLines}${rows}</div></div></section>`, art, run.act, run);
 }
 
 export function renderRunReward(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {

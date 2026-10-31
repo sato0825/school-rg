@@ -8,7 +8,7 @@ const latePlates = ["act1-library-entrance-candidate-v1", "act2-biology-room-can
 test("later floors show distinct school places in combat on PC and iPad sized screens", async ({ context }) => {
   for (const act of [1, 2, 3] as const) {
     const base = createRunSession(42, "literature-demo", demoContent);
-    const current = base.run.map.nodes.find((node) => node.act === act && node.floor === 6 && node.nextIds.length > 0)!;
+    const current = base.run.map.nodes.find((node) => node.act === act && node.floor === 7 && node.nextIds.length > 0)!;
     const target = base.run.map.nodes.find((node) => node.id === current.nextIds[0])!;
     const session = { ...base, run: { ...base.run, act, map: { ...base.run.map, currentNodeId: current.id } }, completedNodeIds: [current.id] };
     const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
@@ -18,6 +18,7 @@ test("later floors show distinct school places in combat on PC and iPad sized sc
       await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
       await page.setViewportSize({ width, height });
       await page.goto("/");
+      await expect(page.locator(".run-screen")).toHaveAttribute("style", new RegExp(latePlates[act - 1]!));
       await page.locator(`.map-node.available[data-id="${target.id}"]`).click();
       const stage = page.locator(".stage");
       await expect(stage).toHaveAttribute("data-act", String(act));
