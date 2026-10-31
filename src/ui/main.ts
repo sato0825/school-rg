@@ -14,6 +14,7 @@ import "./game-shell.css";
 import "./card-visuals.css";
 import "./visual-system.css";
 import "./location-stage.css";
+import "./stage-state-preview.css";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("Missing #app root");
