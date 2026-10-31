@@ -75,7 +75,7 @@ for (const asset of register.assets) {
       if (asset.editableSource.endsWith(".svg")) validateSvgSource(await readFile(sourceFile, "utf8"), asset.editableParts);
       assert(asset.reviewFile, `review record missing: ${asset.id}`);
       await access(projectPath(asset.reviewFile));
-    } else assert(asset.status === "candidate", `invalid environment status: ${asset.id}`);
+    } else assert(["candidate", "rejected"].includes(asset.status), `invalid environment status: ${asset.id}`);
   } else if (asset.role === "location-prop") {
     assert(["archive", "shop", "rest", "event"].includes(asset.place), `location prop place missing: ${asset.id}`);
     assert(asset.status === "candidate", `location prop requires candidate review: ${asset.id}`);

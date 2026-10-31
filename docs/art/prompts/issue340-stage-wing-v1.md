@@ -1,13 +1,14 @@
 # #340 講堂舞台袖代表プレート: 生成入力と版
 
-対象は#315のP0校内空間候補。組み込みImageGenを2回使用し、参照は既存の `act3-paper-backstage-candidate-v1` と `act3-paper-auditorium-stage-candidate-v1`。外部作品/Slay the Spire 2の素材は参照していない。モデル内部版・seed・生成過程は公開されず、同一入力のピクセル再現は保証できない。
+対象は#315のP0校内空間候補。組み込みImageGenを3回使用し、1・2回目の参照は既存の `act3-paper-backstage-candidate-v1` と `act3-paper-auditorium-stage-candidate-v1`、3回目の参照は2回目の出力と講堂舞台。外部作品/Slay the Spire 2の素材は参照していない。モデル内部版・seed・生成過程は公開されず、同一入力のピクセル再現は保証できない。
 
 | 生成回 | 出力 | SHA-256 | 判定 |
 | --- | --- | --- | --- |
 | 1 | `docs/art/rejected/issue340-stage-wing-v1.png` | `7e3139ae2b6446ccc72240ea0a34c050660bb373b5609da0d31d32dec96c8219` | 棄却。既存舞台裏と正面構図・幕/ロープ/床の面積が近い。採用数に加えない。 |
-| 2 | `src/assets/stages/act3-paper-stage-wing-candidate-v1.png` | `6edd6c9e2a17a1ae89eb05bc18e9f8e20b23a5e46e6281be41c5c349e5a7df44` | 比較候補。左の空き収納、頭上の歩廊、右の舞台開口で横方向の動線が読める。#29採用未了。 |
+| 2 | `src/assets/stages/act3-paper-stage-wing-candidate-v1.png` | `6edd6c9e2a17a1ae89eb05bc18e9f8e20b23a5e46e6281be41c5c349e5a7df44` | 棄却。通路構図は区別できるが床境界が画面下すぎ、GameShellの人物が浮いた。 |
+| 3 | `src/assets/stages/act3-paper-stage-wing-candidate-v2.png` | `e9aeceda1894ba57e758bd23259fe1e68837b841b355f209f5cf7921026970a8` | 比較候補。2回目の通路形を保ち、床境界を上げた。#29採用未了。 |
 
-両方とも元の生成PNGを無変更で保存。1672×941、不透明。2回目を `scripts/build-openraster-source.py` でOpenRaster原本 `docs/art/sources/issue340-stage-wing-v1.ora` に包み、SHA-256は `8dac761dd94541830d7396e762a986999d175573feebc2f152c3aff7cc183426`。原本には生成PNG全体の編集可能なラスター層と、独立した空の照明/前景遮蔽ペイント層を置いた。**生成絵の建具・床・線は一枚に焼き込まれており、部材別編集や再生成時の同一品質はまだ証明できない。** この部分は#29の最終ゲートに残す。
+3点とも元の生成PNGを無変更で保存。1672×941、不透明。2・3回目を `scripts/build-openraster-source.py` でOpenRaster原本 `docs/art/sources/issue340-stage-wing-v1.ora` / `issue340-stage-wing-v2.ora` に包み、SHA-256はそれぞれ `8dac761dd94541830d7396e762a986999d175573feebc2f152c3aff7cc183426` / `067d87482075703e18e032b225afe166abd00bf1b6360b6940be632926ca106d`。原本には生成PNG全体の編集可能なラスター層と、独立した空の照明/前景遮蔽ペイント層を置いた。**生成絵の建具・床・線は一枚に焼き込まれており、部材別編集や再生成時の同一品質はまだ証明できない。** この部分は#29の最終ゲートに残す。
 
 ## 1回目の正確な入力
 
@@ -16,3 +17,7 @@
 ## 2回目の正確な入力
 
 > Create a NEW original wide game-background plate for school-rg: the school auditorium's SIDE WING SERVICE PASSAGE, immediately before the main stage. The attached backstage and auditorium plates define only the shared paper/gouache line-and-color style and geography; do not reuse their front-facing layouts. Compose an asymmetrical THREE-QUARTER view looking down a lateral passage toward a bright stage opening on the FAR RIGHT. A pale slate school corridor wall and recessed supply alcove on the LEFT, an overhead narrow fly-gallery/catwalk crossing into depth, a modest quiet recess along the right back wall, and one clear route toward the auditorium stage. Show no central rear double door, no stacked road cases, no large curtain wall, no rows of audience seats. Deep perspective should run left-to-right, unlike the square front-facing backstage reference. Fixed environment only; supply recess and quiet recess must stay empty so separately layered transparent shop cart and rest seat can fit. Leave the center foreground and right-middle floor open for separately drawn characters, up to five enemies and small props, but keep the floor to roughly the lower 35–40% of the image. Japanese middle school building, thin dark navy hand-drawn outlines, matte layered paper/gouache brush shapes, subdued cool blue-gray and stone-neutral color with gentle diffuse window light. No floor shine or mirror reflections. No people, no characters, no creatures, no text, no signs, no cards, no UI, no logos. Landscape 16:9, stable crisp stage geometry; artistic environment plate rather than cinematic concept art.
+
+## 3回目の正確な入力
+
+> Edit image 1 as a game environment plate. Keep its distinctive lateral school auditorium stage-wing passage, diagonal overhead walkways, empty left supply alcove, and stage opening at far right. Correct the camera/ground geometry to match image 2's established game-character grounding: in image 1 the wall-to-floor contact line is too low (around 64% of frame), making overlaid schoolgirl sprites float. Raise the wall-to-floor boundary to around 48–51% of the frame across the foreground, with a broad clean matte floor occupying the lower half. Keep the passage recognizably lateral and preserve the far-right stage opening, left alcove and cool desaturated paper/gouache texture. Keep thin deep navy outlines, flat dry-brush painted shadows, no reflective shine. Do not add characters, figures, props, shop, bench, signage, text, cards, UI or effects. 16:9 wide 1672×941-feeling background with the same spatial readability as image 2. This is a geometry correction of image 1, not a copy of image 2.

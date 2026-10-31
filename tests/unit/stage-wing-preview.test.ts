@@ -15,7 +15,7 @@ it("keeps one candidate stage wing only on Act 3 floor 11/12 and preserves the s
     const preview = stageWingPreviewForRun(base, atNode, true);
     expect(stageWingPreviewForRun(base, atNode, false)).toEqual(base);
     if (floor === 11 || floor === 12) {
-      expect(preview).toMatchObject({ placeId: "auditorium-stage-wing", artId: "act3-paper-stage-wing-candidate-v1", subsceneId: null, proxy: false });
+      expect(preview).toMatchObject({ placeId: "auditorium-stage-wing", artId: "act3-paper-stage-wing-candidate-v2", subsceneId: null, proxy: false });
       expect(preview.stageUrl).not.toBe(base.stageUrl);
     } else expect(preview).toEqual(base);
     expect(stageWingPreviewForRun(base, JSON.parse(JSON.stringify(atNode)), true)).toEqual(preview);

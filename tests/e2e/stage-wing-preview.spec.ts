@@ -18,7 +18,7 @@ test("#340 compares stage-wing geography with #304 props on same saved Act 3 nod
     const run = { ...base.run, act: 3 as const, player: { ...base.run.player, hp: 20 }, map: { ...base.run.map, currentNodeId: from.id } };
     const saved = serializeRunSession({ ...base, run, completedNodeIds: [from.id] }, demoContent, { nowMs: () => 0 }, () => "discard");
     for (const concept of ["base", "wing"] as const) {
-      const artId = concept === "wing" ? "act3-paper-stage-wing-candidate-v1" : "act3-paper-auditorium-stage-candidate-v1";
+      const artId = concept === "wing" ? "act3-paper-stage-wing-candidate-v2" : "act3-paper-auditorium-stage-candidate-v1";
       const placeId = concept === "wing" ? "auditorium-stage-wing" : "auditorium-stage";
       for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
         const context = await browser.newContext({ viewport: { width, height } });
@@ -40,6 +40,7 @@ test("#340 compares stage-wing geography with #304 props on same saved Act 3 nod
         await page.reload();
         await expect(stage).toHaveAttribute("data-stage-art", artId);
         await expect(stage).toHaveAttribute("data-stage-place", placeId);
+        await expect.poll(async () => prop.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
         if (process.env.SCHOOL_RG_CAPTURE_STAGE_WING === "1") {
           await page.screenshot({ path: `docs/design/previews/issue340-act3-${sample.name}-${concept}-${width}.png`, fullPage: true });
         }
