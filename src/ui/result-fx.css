@@ -18,6 +18,6 @@
 /* Pose images must not size the actor slot when idle/attack/hit sources change. */
 .stage .ally-slot{width:min(32vw,440px)}
 .stage .hero-art{width:100%;max-width:100%;object-position:center bottom}
-.stage[data-ally-count="2"] .ally-slot{width:min(23vw,320px)}
-.stage[data-ally-count="3"] .ally-slot{width:min(17vw,240px)}
-@media(max-width:760px){.stage .ally-slot{width:43vw}.stage[data-ally-count="2"] .ally-slot{width:30vw}.stage[data-ally-count="3"] .ally-slot{width:22vw}}
+.stage[data-ally-count="2"] .ally-slot{width:min(19vw,280px)}
+.stage[data-ally-count="3"] .ally-slot{width:min(16vw,230px)}
+@media(max-width:760px){.stage .ally-slot{width:43vw}.stage[data-ally-count="2"] .ally-slot{width:19vw}.stage[data-ally-count="3"] .ally-slot{width:16vw}}

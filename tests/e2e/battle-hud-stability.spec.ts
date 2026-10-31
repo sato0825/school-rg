@@ -72,7 +72,8 @@ for (const width of [1440, 1024, 390]) {
     expect(await page.locator(".result-fx-mark").first().evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.locator("[data-action=toggle-stimulus]").click();
-    await page.keyboard.type("formula");
+    const blockWord = await page.locator(".card").filter({ hasText: "防御" }).first().locator(".card-word").innerText();
+    await page.keyboard.type(blockWord);
     await expect(page.locator(".result-fx-mark[data-kind=\"block\"]")).toBeVisible();
     expect(await page.locator(".result-fx-mark[data-kind=\"block\"]").evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
     if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") await page.screenshot({ path: `docs/art/previews/issue177-quiet-support-${width}.png` });
