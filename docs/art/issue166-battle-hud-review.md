@@ -13,10 +13,12 @@
 
 | 状態 | 画像 | 確認点 |
 | --- | --- | --- |
-| 入力中・デスクトップ | [1440px](previews/issue166-battle-hud-v3-1440.png) | ヘッダの状態、広いステージ、カードと入力 |
-| 入力中・狭幅 | [390px](previews/issue166-battle-hud-v3-390.png) | 状態・Intent・入力・カードの分離 |
-| 敵行動中・狭幅 | [390px](previews/issue166-enemy-phase-v3-390.png) | 中央の遮蔽物なし、カード操作停止 |
-| 次ターン・狭幅 | [390px](previews/issue166-next-turn-v3-390.png) | ステージ寸法と配置の維持 |
-| ポーション3個・狭幅 | [390px](previews/issue166-three-potions-390.png) | 3枠の同時表示と入力名 |
+| 入力中・デスクトップ | [1440px](previews/issue166-battle-hud-v4-1440.png) | ヘッダの状態、広いステージ、カードと入力 |
+| 入力中・狭幅 | [390px](previews/issue166-battle-hud-v4-390.png) | 状態・Intent・入力・カードの分離 |
+| 敵行動中・デスクトップ | [1440px](previews/issue166-enemy-phase-v4-1440.png) | ステージとヘッダの位置を維持 |
+| 敵行動中・狭幅 | [390px](previews/issue166-enemy-phase-v4-390.png) | 中央の遮蔽物なし、カード操作停止 |
+| 次ターン・デスクトップ | [1440px](previews/issue166-next-turn-v4-1440.png) | 再ドロー後もステージ寸法を維持 |
+| 次ターン・狭幅 | [390px](previews/issue166-next-turn-v4-390.png) | ステージ寸法と配置の維持 |
+| ポーション3個・狭幅 | [390px](previews/issue166-three-potions-v4-390.png) | 3枠の同時表示と入力名 |
 
 自動テストは敵行動前・行動中・次ターンのヘッダ、ステージ、操作欄の矩形一致、横スクロールなし、プレイヤー状態がステージ外、Intentと入力欄の表示を検査する。画像の見た目は別途確認した。キャラクターの同一性・最終アート・約60分の遊びやすさの合否は、この変更で確定しない。

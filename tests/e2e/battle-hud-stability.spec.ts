@@ -28,16 +28,16 @@ for (const width of [1440, 390]) {
     expect(before.player.y + before.player.height).toBeLessThanOrEqual(before.stage.y + 1);
     expect(before.message.y + before.message.height).toBeLessThanOrEqual(before.controls.y + before.controls.height + 1);
     expect(before.scrollWidth).toBe(width);
-    if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-battle-hud-v3-${width}.png` });
+    if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-battle-hud-v4-${width}.png` });
     await page.clock.runFor(30_100);
     await expect(page.locator(".battle-message")).toContainText("敵が予告した行動を実行します");
     await expect(page.locator(".phase-banner")).toHaveCount(0);
     const during = await geometry();
-    if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-enemy-phase-v3-${width}.png` });
+    if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-enemy-phase-v4-${width}.png` });
     await page.clock.runFor(650);
     await expect(page.locator(".battle-message")).toContainText("次のターン");
     const after = await geometry();
-    if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-next-turn-v3-${width}.png` });
+    if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-next-turn-v4-${width}.png` });
     for (const current of [during, after]) {
       expect(current.header).toEqual(before.header);
       expect(current.stage).toEqual(before.stage);

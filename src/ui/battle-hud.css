@@ -11,7 +11,7 @@
 .topbar .player-hud strong{flex:none;font-size:18px}
 .topbar .player-hud strong span{font-size:11px}
 .topbar .player-hud b{flex:none;align-self:center;font-size:14px}
-.topbar .status-row,.topbar .relic-row{display:flex;flex:none;flex-wrap:nowrap;grid-column:auto;min-width:0;max-width:25%;overflow-x:auto;scrollbar-width:thin}
+.topbar .status-row,.topbar .relic-row{display:flex;flex:0 1 auto;flex-wrap:nowrap;grid-column:auto;min-width:0;max-width:160px;overflow-x:auto;scrollbar-width:thin}
 .topbar .status-row:empty,.topbar .relic-row:empty{display:none}
 .topbar .relic-chip,.topbar .status-chip{flex:none}
 .control-deck{height:326px;min-height:0;overflow-y:auto;scrollbar-gutter:stable;scrollbar-width:thin}
@@ -37,7 +37,7 @@
   .topbar .hud-name{font-size:9px}
   .topbar .player-hud strong{font-size:16px}
   .topbar .player-hud b{font-size:12px}
-  .topbar .status-row,.topbar .relic-row{max-width:22%;font-size:9px}
+  .topbar .status-row,.topbar .relic-row{max-width:100px;font-size:9px}
   .topbar .status-chip,.topbar .relic-chip{font-size:8px;padding:2px 3px}
   .control-deck{height:350px;min-height:0;padding:8px;overflow-y:auto}
   .potion-row,.potion-row.active{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:24px 31px;height:62px;min-height:0;align-content:start;justify-content:stretch;overflow:visible}

@@ -530,7 +530,7 @@ test("three new potions can be typed in combat with visible block, damage and he
   expect(potionBoxes[0]!.right).toBeLessThanOrEqual(potionBoxes[1]!.left + 1);
   expect(potionBoxes[1]!.right).toBeLessThanOrEqual(potionBoxes[2]!.left + 1);
   if (process.env.SCHOOL_RG_CAPTURE_POTIONS === "1") {
-    await page.screenshot({ path: "docs/art/previews/issue166-three-potions-390.png" });
+    await page.screenshot({ path: "docs/art/previews/issue166-three-potions-v4-390.png" });
   }
   await page.keyboard.press("F2");
   await page.keyboard.type("splash");
@@ -792,7 +792,7 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
         await page.keyboard.press("F2");
         await page.keyboard.type("bandage");
       }
-      if ((await page.locator(".run-meta").innerText()).includes("boss")) {
+      if (await page.locator(".run-meta").getAttribute("data-kind") === "boss") {
         await expect(page.locator(".enemy-hud")).toContainText(bossNames[bosses]!);
         bosses++;
       }
