@@ -1,0 +1,2238 @@
+{
+  "format": "school-rg-normal-run-ui-survey-v1",
+  "clubId": "science-demo",
+  "seed": 13579,
+  "routePolicy": "combat",
+  "mapMode": "default; shortRun omitted",
+  "virtualClock": true,
+  "timeMeaning": "Wall time is automation execution; playtest activeMs includes Playwright virtual clock advances. Neither is human play time or 60-minute evidence.",
+  "wallMs": 14368,
+  "actionCount": 112,
+  "finalScreen": "result",
+  "runResult": "won",
+  "errors": [],
+  "observations": [
+    {
+      "screen": "node",
+      "nodeId": "a1-f1-n1",
+      "act": 1,
+      "floor": 1,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a1-f1-n1",
+      "act": 1,
+      "floor": 1,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "enemyIds": [
+        "lost-homework"
+      ],
+      "intentIds": [
+        "homework-intent-weak"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a1-f1-n1",
+      "act": 1,
+      "floor": 1,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "cards": [
+        "攻撃\npierce\n攻撃 8\n＋ デッキに追加",
+        "技能\nheal\n特殊効果\n＋ デッキに追加",
+        "部活固有 · 攻撃\ntest tube\n攻撃 7 · 毒時 14 · 毒 2\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f2-n1",
+      "act": 1,
+      "floor": 2,
+      "kind": "rest",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")"
+    },
+    {
+      "screen": "economy",
+      "nodeId": "a1-f2-n1",
+      "act": 1,
+      "floor": 2,
+      "kind": "rest",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")"
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f3-n1",
+      "act": 1,
+      "floor": 3,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a1-f3-n1",
+      "act": 1,
+      "floor": 3,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "enemyIds": [
+        "late-pass"
+      ],
+      "intentIds": [
+        "late-pass-intent-weak"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a1-f3-n1",
+      "act": 1,
+      "floor": 3,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "cards": [
+        "技能\nsacrifice\n特殊効果\n＋ デッキに追加",
+        "部活固有 · 技能\nneutralize\n弱体 2 · 毒 2 · 1枚ドロー\n＋ デッキに追加",
+        "部活固有 · 技能\nformula\n防御 7 · 1枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f4-n0",
+      "act": 1,
+      "floor": 4,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a1-f4-n0",
+      "act": 1,
+      "floor": 4,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "enemyIds": [
+        "paper-heap"
+      ],
+      "intentIds": [
+        "paper-intent-hit"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a1-f4-n0",
+      "act": 1,
+      "floor": 4,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "cards": [
+        "技能\nguard\n防御 8\n＋ デッキに追加",
+        "部活固有 · 技能\nsample\n毒 3 · 1枚ドロー\n＋ デッキに追加",
+        "部活固有 · 技能\nquarantine\n防御 10 · 1枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f5-n0",
+      "act": 1,
+      "floor": 5,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a1-f5-n0",
+      "act": 1,
+      "floor": 5,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "enemyIds": [
+        "folded-school-map"
+      ],
+      "intentIds": [
+        "map-intent-call"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a1-f5-n0",
+      "act": 1,
+      "floor": 5,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "cards": [
+        "部活固有 · 技能\nneutralize\n弱体 2 · 毒 2 · 1枚ドロー\n＋ デッキに追加",
+        "部活固有 · 技能\nquarantine\n防御 10 · 1枚ドロー\n＋ デッキに追加",
+        "能力\nfocus\n特殊効果\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f6-n0",
+      "act": 1,
+      "floor": 6,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a1-f6-n0",
+      "act": 1,
+      "floor": 6,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "enemyIds": [
+        "hall-mop"
+      ],
+      "intentIds": [
+        "mop-intent-sweep"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a1-f6-n0",
+      "act": 1,
+      "floor": 6,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "cards": [
+        "部活固有 · 攻撃\nreaction\n攻撃 6 · 毒時 12\n＋ デッキに追加",
+        "技能\nguard\n防御 8\n＋ デッキに追加",
+        "部活固有 · 技能\nobserve\n弱体 1 · 1枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f7-n0",
+      "act": 1,
+      "floor": 7,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a1-f7-n0",
+      "act": 1,
+      "floor": 7,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")",
+      "enemyIds": [
+        "hall-mop"
+      ],
+      "intentIds": [
+        "mop-intent-sweep"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a1-f7-n0",
+      "act": 1,
+      "floor": 7,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "cards": [
+        "技能\npoison\n毒 4\n＋ デッキに追加",
+        "技能\nboost\n時間 +2秒\n＋ デッキに追加",
+        "部活固有 · 技能\nneutralize\n弱体 2 · 毒 2 · 1枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f8-n0",
+      "act": 1,
+      "floor": 8,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a1-f8-n0",
+      "act": 1,
+      "floor": 8,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")",
+      "enemyIds": [
+        "folded-school-map"
+      ],
+      "intentIds": [
+        "map-intent-call"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a1-f8-n0",
+      "act": 1,
+      "floor": 8,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "cards": [
+        "部活固有 · 攻撃\nassay\n攻撃 5 · 弱体時 10 · 1枚ドロー\n＋ デッキに追加",
+        "技能\nsacrifice\n特殊効果\n＋ デッキに追加",
+        "部活固有 · 技能\nformula\n防御 7 · 1枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f9-n0",
+      "act": 1,
+      "floor": 9,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a1-f9-n0",
+      "act": 1,
+      "floor": 9,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")",
+      "enemyIds": [
+        "paper-heap"
+      ],
+      "intentIds": [
+        "paper-intent-hit"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a1-f9-n0",
+      "act": 1,
+      "floor": 9,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "cards": [
+        "部活固有 · 技能\nculture\n毒 4 · 特殊効果\n＋ デッキに追加",
+        "技能\nboost\n時間 +2秒\n＋ デッキに追加",
+        "技能\ndraw\n2枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f10-n0",
+      "act": 1,
+      "floor": 10,
+      "kind": "shop",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")"
+    },
+    {
+      "screen": "economy",
+      "nodeId": "a1-f10-n0",
+      "act": 1,
+      "floor": 10,
+      "kind": "shop",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")"
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f11-n0",
+      "act": 1,
+      "floor": 11,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a1-f11-n0",
+      "act": 1,
+      "floor": 11,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")",
+      "enemyIds": [
+        "lost-homework"
+      ],
+      "intentIds": [
+        "homework-intent-weak"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a1-f11-n0",
+      "act": 1,
+      "floor": 11,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "cards": [
+        "部活固有 · 攻撃\ntest tube\n攻撃 7 · 毒時 14 · 毒 2\n＋ デッキに追加",
+        "技能\nheal\n特殊効果\n＋ デッキに追加",
+        "部活固有 · 技能\nformula\n防御 7 · 1枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f12-n0",
+      "act": 1,
+      "floor": 12,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a1-f12-n0",
+      "act": 1,
+      "floor": 12,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")",
+      "enemyIds": [
+        "late-pass"
+      ],
+      "intentIds": [
+        "late-pass-intent-weak"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a1-f12-n0",
+      "act": 1,
+      "floor": 12,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "cards": [
+        "部活固有 · 技能\nsample\n毒 3 · 1枚ドロー\n＋ デッキに追加",
+        "攻撃\nheavy strike\n攻撃 14\n＋ デッキに追加",
+        "部活固有 · 技能\ndistill\n毒 5 · 特殊効果\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a1-f13-n0",
+      "act": 1,
+      "floor": 13,
+      "kind": "boss",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a1-f13-n0",
+      "act": 1,
+      "floor": 13,
+      "kind": "boss",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act1-library-entrance-candidate-v1.png\")",
+      "enemyIds": [
+        "gym-scoreboard"
+      ],
+      "intentIds": [
+        "scoreboard-intent-prepare"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a1-f13-n0",
+      "act": 1,
+      "floor": 13,
+      "kind": "boss",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stage-hallway-v1.png\")",
+      "cards": [
+        "技能\nstrengthen\n特殊効果\n＋ デッキに追加",
+        "部活固有 · 技能\nneutralize\n弱体 2 · 毒 2 · 1枚ドロー\n＋ デッキに追加",
+        "技能\nweaken\n弱体 2\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f0-n0",
+      "act": 2,
+      "floor": 0,
+      "kind": "start",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")"
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f1-n0",
+      "act": 2,
+      "floor": 1,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a2-f1-n0",
+      "act": 2,
+      "floor": 1,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "enemyIds": [
+        "safety-sign"
+      ],
+      "intentIds": [
+        "safety-sign-intent-guard"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a2-f1-n0",
+      "act": 2,
+      "floor": 1,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "cards": [
+        "部活固有 · 技能\nbuffer\n防御 6 · 特殊効果\n＋ デッキに追加",
+        "部活固有 · 技能\nneutralize\n弱体 2 · 毒 2 · 1枚ドロー\n＋ デッキに追加",
+        "部活固有 · 技能\nquarantine\n防御 10 · 1枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f2-n0",
+      "act": 2,
+      "floor": 2,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a2-f2-n0",
+      "act": 2,
+      "floor": 2,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "enemyIds": [
+        "chalk-cloud"
+      ],
+      "intentIds": [
+        "chalk-intent-weak"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a2-f2-n0",
+      "act": 2,
+      "floor": 2,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "cards": [
+        "部活固有 · 技能\nformula\n防御 7 · 1枚ドロー\n＋ デッキに追加",
+        "部活固有 · 攻撃\nreaction\n攻撃 6 · 毒時 12\n＋ デッキに追加",
+        "技能\ndelay\n時間 +4秒\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f3-n0",
+      "act": 2,
+      "floor": 3,
+      "kind": "event",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")"
+    },
+    {
+      "screen": "event",
+      "nodeId": "a2-f3-n0",
+      "act": 2,
+      "floor": 3,
+      "kind": "event",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "eventId": "stairwell-memo",
+      "choice": "leave"
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f4-n1",
+      "act": 2,
+      "floor": 4,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a2-f4-n1",
+      "act": 2,
+      "floor": 4,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "enemyIds": [
+        "lab-coil"
+      ],
+      "intentIds": [
+        "coil-intent-brace"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a2-f4-n1",
+      "act": 2,
+      "floor": 4,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "cards": [
+        "部活固有 · 技能\nformula\n防御 7 · 1枚ドロー\n＋ デッキに追加",
+        "攻撃\npierce\n攻撃 8\n＋ デッキに追加",
+        "部活固有 · 技能\nbuffer\n防御 6 · 特殊効果\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f5-n0",
+      "act": 2,
+      "floor": 5,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a2-f5-n0",
+      "act": 2,
+      "floor": 5,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "enemyIds": [
+        "beaker-mist"
+      ],
+      "intentIds": [
+        "mist-intent-poison"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a2-f5-n0",
+      "act": 2,
+      "floor": 5,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "cards": [
+        "部活固有 · 技能\nobserve\n弱体 1 · 1枚ドロー\n＋ デッキに追加",
+        "部活固有 · 攻撃\nreaction\n攻撃 6 · 毒時 12\n＋ デッキに追加",
+        "技能\nsacrifice\n特殊効果\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f6-n0",
+      "act": 2,
+      "floor": 6,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a2-f6-n0",
+      "act": 2,
+      "floor": 6,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "enemyIds": [
+        "lab-magnet"
+      ],
+      "intentIds": [
+        "magnet-intent-hit"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a2-f6-n0",
+      "act": 2,
+      "floor": 6,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "cards": [
+        "部活固有 · 技能\nobserve\n弱体 1 · 1枚ドロー\n＋ デッキに追加",
+        "技能\nboost\n時間 +2秒\n＋ デッキに追加",
+        "技能\nheal\n特殊効果\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f7-n0",
+      "act": 2,
+      "floor": 7,
+      "kind": "event",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")"
+    },
+    {
+      "screen": "event",
+      "nodeId": "a2-f7-n0",
+      "act": 2,
+      "floor": 7,
+      "kind": "event",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "eventId": "lab-cleanup",
+      "choice": "leave"
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f8-n0",
+      "act": 2,
+      "floor": 8,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-biology-room-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a2-f8-n0",
+      "act": 2,
+      "floor": 8,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-biology-room-candidate-v1.png\")",
+      "enemyIds": [
+        "beaker-mist"
+      ],
+      "intentIds": [
+        "mist-intent-poison"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a2-f8-n0",
+      "act": 2,
+      "floor": 8,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "cards": [
+        "部活固有 · 攻撃\nreaction\n攻撃 6 · 毒時 12\n＋ デッキに追加",
+        "部活固有 · 技能\ncatalyst\n毒 2 · 弱体 1\n＋ デッキに追加",
+        "技能\nduplicate\n手札を1枚複製\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f9-n0",
+      "act": 2,
+      "floor": 9,
+      "kind": "rest",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")"
+    },
+    {
+      "screen": "economy",
+      "nodeId": "a2-f9-n0",
+      "act": 2,
+      "floor": 9,
+      "kind": "rest",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")"
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f10-n0",
+      "act": 2,
+      "floor": 10,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-biology-room-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a2-f10-n0",
+      "act": 2,
+      "floor": 10,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-biology-room-candidate-v1.png\")",
+      "enemyIds": [
+        "lab-coil"
+      ],
+      "intentIds": [
+        "coil-intent-brace"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a2-f10-n0",
+      "act": 2,
+      "floor": 10,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "cards": [
+        "技能\nguard\n防御 8\n＋ デッキに追加",
+        "部活固有 · 攻撃\nassay\n攻撃 5 · 弱体時 10 · 1枚ドロー\n＋ デッキに追加",
+        "技能\nduplicate\n手札を1枚複製\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f11-n0",
+      "act": 2,
+      "floor": 11,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-biology-room-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a2-f11-n0",
+      "act": 2,
+      "floor": 11,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-biology-room-candidate-v1.png\")",
+      "enemyIds": [
+        "safety-sign"
+      ],
+      "intentIds": [
+        "safety-sign-intent-guard"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a2-f11-n0",
+      "act": 2,
+      "floor": 11,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "cards": [
+        "技能\nsacrifice\n特殊効果\n＋ デッキに追加",
+        "技能\nboost\n時間 +2秒\n＋ デッキに追加",
+        "部活固有 · 技能\ncatalyst\n毒 2 · 弱体 1\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f12-n0",
+      "act": 2,
+      "floor": 12,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-biology-room-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a2-f12-n0",
+      "act": 2,
+      "floor": 12,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-biology-room-candidate-v1.png\")",
+      "enemyIds": [
+        "lab-magnet"
+      ],
+      "intentIds": [
+        "magnet-intent-hit"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a2-f12-n0",
+      "act": 2,
+      "floor": 12,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "cards": [
+        "能力\nbarrier\n特殊効果\n＋ デッキに追加",
+        "部活固有 · 技能\nformula\n防御 7 · 1枚ドロー\n＋ デッキに追加",
+        "技能\nrecover\n捨て札を1枚回収\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a2-f13-n0",
+      "act": 2,
+      "floor": 13,
+      "kind": "boss",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-biology-room-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a2-f13-n0",
+      "act": 2,
+      "floor": 13,
+      "kind": "boss",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-biology-room-candidate-v1.png\")",
+      "enemyIds": [
+        "club-auditor"
+      ],
+      "intentIds": [
+        "auditor-intent-focus"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a2-f13-n0",
+      "act": 2,
+      "floor": 13,
+      "kind": "boss",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act2-science-wing-candidate-v1.png\")",
+      "cards": [
+        "部活固有 · 技能\ncatalyst\n毒 2 · 弱体 1\n＋ デッキに追加",
+        "技能\nsacrifice\n特殊効果\n＋ デッキに追加",
+        "部活固有 · 攻撃\ntest tube\n攻撃 7 · 毒時 14 · 毒 2\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f0-n0",
+      "act": 3,
+      "floor": 0,
+      "kind": "start",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")"
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f1-n2",
+      "act": 3,
+      "floor": 1,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a3-f1-n2",
+      "act": 3,
+      "floor": 1,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "enemyIds": [
+        "window-shadow"
+      ],
+      "intentIds": [
+        "window-intent-focus"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a3-f1-n2",
+      "act": 3,
+      "floor": 1,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "cards": [
+        "技能\ndelay\n時間 +4秒\n＋ デッキに追加",
+        "攻撃\nsweep\n攻撃 5\n＋ デッキに追加",
+        "部活固有 · 技能\nsample\n毒 3 · 1枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f2-n2",
+      "act": 3,
+      "floor": 2,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a3-f2-n2",
+      "act": 3,
+      "floor": 2,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "enemyIds": [
+        "empty-desk"
+      ],
+      "intentIds": [
+        "desk-intent-frail"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a3-f2-n2",
+      "act": 3,
+      "floor": 2,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "cards": [
+        "攻撃\nshield break\n特殊効果\n＋ デッキに追加",
+        "部活固有 · 技能\nformula\n防御 7 · 1枚ドロー\n＋ デッキに追加",
+        "部活固有 · 技能\ncatalyst\n毒 2 · 弱体 1\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f3-n1",
+      "act": 3,
+      "floor": 3,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a3-f3-n1",
+      "act": 3,
+      "floor": 3,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "enemyIds": [
+        "archive-clock"
+      ],
+      "intentIds": [
+        "clock-intent-prepare"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a3-f3-n1",
+      "act": 3,
+      "floor": 3,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "cards": [
+        "攻撃\nquick attack\n攻撃 4 × 2\n＋ デッキに追加",
+        "部活固有 · 攻撃\ntest tube\n攻撃 7 · 毒時 14 · 毒 2\n＋ デッキに追加",
+        "技能\ndelay\n時間 +4秒\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f4-n1",
+      "act": 3,
+      "floor": 4,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a3-f4-n1",
+      "act": 3,
+      "floor": 4,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "enemyIds": [
+        "stage-spotlight"
+      ],
+      "intentIds": [
+        "spotlight-intent-glare"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a3-f4-n1",
+      "act": 3,
+      "floor": 4,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "cards": [
+        "技能\nrecover\n捨て札を1枚回収\n＋ デッキに追加",
+        "部活固有 · 技能\ndistill\n毒 5 · 特殊効果\n＋ デッキに追加",
+        "部活固有 · 技能\nquarantine\n防御 10 · 1枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f5-n1",
+      "act": 3,
+      "floor": 5,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a3-f5-n1",
+      "act": 3,
+      "floor": 5,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "enemyIds": [
+        "night-announcement"
+      ],
+      "intentIds": [
+        "announcement-intent-frail"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a3-f5-n1",
+      "act": 3,
+      "floor": 5,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "cards": [
+        "部活固有 · 技能\nbuffer\n防御 6 · 特殊効果\n＋ デッキに追加",
+        "技能\ndraw\n2枚ドロー\n＋ デッキに追加",
+        "部活固有 · 技能\nculture\n毒 4 · 特殊効果\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f6-n1",
+      "act": 3,
+      "floor": 6,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a3-f6-n1",
+      "act": 3,
+      "floor": 6,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "enemyIds": [
+        "empty-desk"
+      ],
+      "intentIds": [
+        "desk-intent-frail"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a3-f6-n1",
+      "act": 3,
+      "floor": 6,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "cards": [
+        "攻撃\npierce\n攻撃 8\n＋ デッキに追加",
+        "技能\nguard\n防御 8\n＋ デッキに追加",
+        "部活固有 · 技能\nbuffer\n防御 6 · 特殊効果\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f7-n1",
+      "act": 3,
+      "floor": 7,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-backstage-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a3-f7-n1",
+      "act": 3,
+      "floor": 7,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-backstage-candidate-v1.png\")",
+      "enemyIds": [
+        "window-shadow"
+      ],
+      "intentIds": [
+        "window-intent-focus"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a3-f7-n1",
+      "act": 3,
+      "floor": 7,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "cards": [
+        "部活固有 · 攻撃\ntest tube\n攻撃 7 · 毒時 14 · 毒 2\n＋ デッキに追加",
+        "部活固有 · 技能\ncatalyst\n毒 2 · 弱体 1\n＋ デッキに追加",
+        "部活固有 · 攻撃\nassay\n攻撃 5 · 弱体時 10 · 1枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f8-n1",
+      "act": 3,
+      "floor": 8,
+      "kind": "rest",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")"
+    },
+    {
+      "screen": "economy",
+      "nodeId": "a3-f8-n1",
+      "act": 3,
+      "floor": 8,
+      "kind": "rest",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")"
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f9-n1",
+      "act": 3,
+      "floor": 9,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-backstage-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a3-f9-n1",
+      "act": 3,
+      "floor": 9,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-backstage-candidate-v1.png\")",
+      "enemyIds": [
+        "stage-spotlight"
+      ],
+      "intentIds": [
+        "spotlight-intent-glare"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a3-f9-n1",
+      "act": 3,
+      "floor": 9,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "cards": [
+        "攻撃\nquick attack\n攻撃 4 × 2\n＋ デッキに追加",
+        "部活固有 · 技能\ncatalyst\n毒 2 · 弱体 1\n＋ デッキに追加",
+        "部活固有 · 技能\nquarantine\n防御 10 · 1枚ドロー\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f10-n0",
+      "act": 3,
+      "floor": 10,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-backstage-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a3-f10-n0",
+      "act": 3,
+      "floor": 10,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-backstage-candidate-v1.png\")",
+      "enemyIds": [
+        "archive-clock"
+      ],
+      "intentIds": [
+        "clock-intent-prepare"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a3-f10-n0",
+      "act": 3,
+      "floor": 10,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "cards": [
+        "攻撃\nstrike\n攻撃 6\n＋ デッキに追加",
+        "部活固有 · 技能\ndistill\n毒 5 · 特殊効果\n＋ デッキに追加",
+        "技能\ncounter\n反撃 3\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f11-n0",
+      "act": 3,
+      "floor": 11,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-backstage-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a3-f11-n0",
+      "act": 3,
+      "floor": 11,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-backstage-candidate-v1.png\")",
+      "enemyIds": [
+        "night-announcement"
+      ],
+      "intentIds": [
+        "announcement-intent-frail"
+      ]
+    },
+    {
+      "screen": "reward",
+      "nodeId": "a3-f11-n0",
+      "act": 3,
+      "floor": 11,
+      "kind": "combat",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "cards": [
+        "部活固有 · 技能\nobserve\n弱体 1 · 1枚ドロー\n＋ デッキに追加",
+        "技能\nexhaust\n手札を1枚除外\n＋ デッキに追加",
+        "技能\nboost\n時間 +2秒\n＋ デッキに追加"
+      ]
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f12-n0",
+      "act": 3,
+      "floor": 12,
+      "kind": "rest",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")"
+    },
+    {
+      "screen": "economy",
+      "nodeId": "a3-f12-n0",
+      "act": 3,
+      "floor": 12,
+      "kind": "rest",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")"
+    },
+    {
+      "screen": "node",
+      "nodeId": "a3-f13-n0",
+      "act": 3,
+      "floor": 13,
+      "kind": "boss",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-backstage-candidate-v1.png\")"
+    },
+    {
+      "screen": "battle",
+      "nodeId": "a3-f13-n0",
+      "act": 3,
+      "floor": 13,
+      "kind": "boss",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-backstage-candidate-v1.png\")",
+      "enemyIds": [
+        "graduation-curtain"
+      ],
+      "intentIds": [
+        "curtain-intent-hit"
+      ]
+    },
+    {
+      "screen": "result",
+      "nodeId": "a3-f13-n0",
+      "act": 3,
+      "floor": 13,
+      "kind": "boss",
+      "hp": 38,
+      "maxHp": 38,
+      "background": "url(\"http://127.0.0.1:4240/src/assets/stages/act3-auditorium-foyer-candidate-v1.png\")",
+      "text": "RUN RESULT\n全Actクリア\n\n3つのActのボスを突破しました。\n\nACT 3 · 難度 0 · ♥ 38/38\n実操作 00:34\n訪問 42地点 · 戦闘 32回\n計測JSONを保存\nラン履歴を見る\n新しいランを始める"
+    }
+  ],
+  "metrics": {
+    "formatVersion": 1,
+    "runId": "a0dbc5a2-6d72-4f0b-a4e0-a7d1414535a7",
+    "clubId": "science-demo",
+    "seed": 13579,
+    "ascensionLevel": 0,
+    "partial": false,
+    "activeMs": 34590,
+    "visits": [
+      {
+        "nodeId": "a1-f0-n0",
+        "act": 1,
+        "kind": "start",
+        "atActiveMs": 0
+      },
+      {
+        "nodeId": "a1-f1-n1",
+        "act": 1,
+        "kind": "combat",
+        "atActiveMs": 157
+      },
+      {
+        "nodeId": "a1-f2-n1",
+        "act": 1,
+        "kind": "rest",
+        "atActiveMs": 776
+      },
+      {
+        "nodeId": "a1-f3-n1",
+        "act": 1,
+        "kind": "combat",
+        "atActiveMs": 861
+      },
+      {
+        "nodeId": "a1-f4-n0",
+        "act": 1,
+        "kind": "combat",
+        "atActiveMs": 1194
+      },
+      {
+        "nodeId": "a1-f5-n0",
+        "act": 1,
+        "kind": "combat",
+        "atActiveMs": 1703
+      },
+      {
+        "nodeId": "a1-f6-n0",
+        "act": 1,
+        "kind": "combat",
+        "atActiveMs": 1956
+      },
+      {
+        "nodeId": "a1-f7-n0",
+        "act": 1,
+        "kind": "combat",
+        "atActiveMs": 2292
+      },
+      {
+        "nodeId": "a1-f8-n0",
+        "act": 1,
+        "kind": "combat",
+        "atActiveMs": 2643
+      },
+      {
+        "nodeId": "a1-f9-n0",
+        "act": 1,
+        "kind": "combat",
+        "atActiveMs": 2892
+      },
+      {
+        "nodeId": "a1-f10-n0",
+        "act": 1,
+        "kind": "shop",
+        "atActiveMs": 3187
+      },
+      {
+        "nodeId": "a1-f11-n0",
+        "act": 1,
+        "kind": "combat",
+        "atActiveMs": 3273
+      },
+      {
+        "nodeId": "a1-f12-n0",
+        "act": 1,
+        "kind": "combat",
+        "atActiveMs": 3806
+      },
+      {
+        "nodeId": "a1-f13-n0",
+        "act": 1,
+        "kind": "boss",
+        "atActiveMs": 4360
+      },
+      {
+        "nodeId": "a2-f0-n0",
+        "act": 2,
+        "kind": "start",
+        "atActiveMs": 4963
+      },
+      {
+        "nodeId": "a2-f1-n0",
+        "act": 2,
+        "kind": "combat",
+        "atActiveMs": 5016
+      },
+      {
+        "nodeId": "a2-f2-n0",
+        "act": 2,
+        "kind": "combat",
+        "atActiveMs": 5372
+      },
+      {
+        "nodeId": "a2-f3-n0",
+        "act": 2,
+        "kind": "event",
+        "atActiveMs": 5585
+      },
+      {
+        "nodeId": "a2-f4-n1",
+        "act": 2,
+        "kind": "combat",
+        "atActiveMs": 5665
+      },
+      {
+        "nodeId": "a2-f5-n0",
+        "act": 2,
+        "kind": "combat",
+        "atActiveMs": 6045
+      },
+      {
+        "nodeId": "a2-f6-n0",
+        "act": 2,
+        "kind": "combat",
+        "atActiveMs": 6395
+      },
+      {
+        "nodeId": "a2-f7-n0",
+        "act": 2,
+        "kind": "event",
+        "atActiveMs": 17694
+      },
+      {
+        "nodeId": "a2-f8-n0",
+        "act": 2,
+        "kind": "combat",
+        "atActiveMs": 17752
+      },
+      {
+        "nodeId": "a2-f9-n0",
+        "act": 2,
+        "kind": "rest",
+        "atActiveMs": 17948
+      },
+      {
+        "nodeId": "a2-f10-n0",
+        "act": 2,
+        "kind": "combat",
+        "atActiveMs": 18000
+      },
+      {
+        "nodeId": "a2-f11-n0",
+        "act": 2,
+        "kind": "combat",
+        "atActiveMs": 18302
+      },
+      {
+        "nodeId": "a2-f12-n0",
+        "act": 2,
+        "kind": "combat",
+        "atActiveMs": 18493
+      },
+      {
+        "nodeId": "a2-f13-n0",
+        "act": 2,
+        "kind": "boss",
+        "atActiveMs": 18767
+      },
+      {
+        "nodeId": "a3-f0-n0",
+        "act": 3,
+        "kind": "start",
+        "atActiveMs": 19095
+      },
+      {
+        "nodeId": "a3-f1-n2",
+        "act": 3,
+        "kind": "combat",
+        "atActiveMs": 19146
+      },
+      {
+        "nodeId": "a3-f2-n2",
+        "act": 3,
+        "kind": "combat",
+        "atActiveMs": 19510
+      },
+      {
+        "nodeId": "a3-f3-n1",
+        "act": 3,
+        "kind": "combat",
+        "atActiveMs": 19789
+      },
+      {
+        "nodeId": "a3-f4-n1",
+        "act": 3,
+        "kind": "combat",
+        "atActiveMs": 20067
+      },
+      {
+        "nodeId": "a3-f5-n1",
+        "act": 3,
+        "kind": "combat",
+        "atActiveMs": 31391
+      },
+      {
+        "nodeId": "a3-f6-n1",
+        "act": 3,
+        "kind": "combat",
+        "atActiveMs": 31640
+      },
+      {
+        "nodeId": "a3-f7-n1",
+        "act": 3,
+        "kind": "combat",
+        "atActiveMs": 32169
+      },
+      {
+        "nodeId": "a3-f8-n1",
+        "act": 3,
+        "kind": "rest",
+        "atActiveMs": 32603
+      },
+      {
+        "nodeId": "a3-f9-n1",
+        "act": 3,
+        "kind": "combat",
+        "atActiveMs": 32670
+      },
+      {
+        "nodeId": "a3-f10-n0",
+        "act": 3,
+        "kind": "combat",
+        "atActiveMs": 33121
+      },
+      {
+        "nodeId": "a3-f11-n0",
+        "act": 3,
+        "kind": "combat",
+        "atActiveMs": 33659
+      },
+      {
+        "nodeId": "a3-f12-n0",
+        "act": 3,
+        "kind": "rest",
+        "atActiveMs": 33971
+      },
+      {
+        "nodeId": "a3-f13-n0",
+        "act": 3,
+        "kind": "boss",
+        "atActiveMs": 34061
+      }
+    ],
+    "battleNodeIds": [
+      "a1-f1-n1",
+      "a1-f3-n1",
+      "a1-f4-n0",
+      "a1-f5-n0",
+      "a1-f6-n0",
+      "a1-f7-n0",
+      "a1-f8-n0",
+      "a1-f9-n0",
+      "a1-f11-n0",
+      "a1-f12-n0",
+      "a1-f13-n0",
+      "a2-f1-n0",
+      "a2-f2-n0",
+      "a2-f4-n1",
+      "a2-f5-n0",
+      "a2-f6-n0",
+      "a2-f8-n0",
+      "a2-f10-n0",
+      "a2-f11-n0",
+      "a2-f12-n0",
+      "a2-f13-n0",
+      "a3-f1-n2",
+      "a3-f2-n2",
+      "a3-f3-n1",
+      "a3-f4-n1",
+      "a3-f5-n1",
+      "a3-f6-n1",
+      "a3-f7-n1",
+      "a3-f9-n1",
+      "a3-f10-n0",
+      "a3-f11-n0",
+      "a3-f13-n0"
+    ],
+    "battles": [
+      {
+        "nodeId": "a1-f1-n1",
+        "act": 1,
+        "enemyIds": [
+          "lost-homework"
+        ],
+        "startedAtActiveMs": 157,
+        "endedAtActiveMs": 692,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a1-f3-n1",
+        "act": 1,
+        "enemyIds": [
+          "late-pass"
+        ],
+        "startedAtActiveMs": 861,
+        "endedAtActiveMs": 1098,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a1-f4-n0",
+        "act": 1,
+        "enemyIds": [
+          "paper-heap"
+        ],
+        "startedAtActiveMs": 1194,
+        "endedAtActiveMs": 1635,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a1-f5-n0",
+        "act": 1,
+        "enemyIds": [
+          "folded-school-map"
+        ],
+        "startedAtActiveMs": 1703,
+        "endedAtActiveMs": 1877,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a1-f6-n0",
+        "act": 1,
+        "enemyIds": [
+          "hall-mop"
+        ],
+        "startedAtActiveMs": 1956,
+        "endedAtActiveMs": 2216,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a1-f7-n0",
+        "act": 1,
+        "enemyIds": [
+          "hall-mop"
+        ],
+        "startedAtActiveMs": 2292,
+        "endedAtActiveMs": 2562,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a1-f8-n0",
+        "act": 1,
+        "enemyIds": [
+          "folded-school-map"
+        ],
+        "startedAtActiveMs": 2643,
+        "endedAtActiveMs": 2809,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a1-f9-n0",
+        "act": 1,
+        "enemyIds": [
+          "paper-heap"
+        ],
+        "startedAtActiveMs": 2892,
+        "endedAtActiveMs": 3120,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a1-f11-n0",
+        "act": 1,
+        "enemyIds": [
+          "lost-homework"
+        ],
+        "startedAtActiveMs": 3273,
+        "endedAtActiveMs": 3705,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a1-f12-n0",
+        "act": 1,
+        "enemyIds": [
+          "late-pass"
+        ],
+        "startedAtActiveMs": 3806,
+        "endedAtActiveMs": 4281,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a1-f13-n0",
+        "act": 1,
+        "enemyIds": [
+          "gym-scoreboard"
+        ],
+        "startedAtActiveMs": 4360,
+        "endedAtActiveMs": 4899,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a2-f1-n0",
+        "act": 2,
+        "enemyIds": [
+          "safety-sign"
+        ],
+        "startedAtActiveMs": 5016,
+        "endedAtActiveMs": 5318,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a2-f2-n0",
+        "act": 2,
+        "enemyIds": [
+          "chalk-cloud"
+        ],
+        "startedAtActiveMs": 5372,
+        "endedAtActiveMs": 5540,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a2-f4-n1",
+        "act": 2,
+        "enemyIds": [
+          "lab-coil"
+        ],
+        "startedAtActiveMs": 5665,
+        "endedAtActiveMs": 5979,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a2-f5-n0",
+        "act": 2,
+        "enemyIds": [
+          "beaker-mist"
+        ],
+        "startedAtActiveMs": 6045,
+        "endedAtActiveMs": 6345,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a2-f6-n0",
+        "act": 2,
+        "enemyIds": [
+          "lab-magnet"
+        ],
+        "startedAtActiveMs": 6395,
+        "endedAtActiveMs": 17648,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 2,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a2-f8-n0",
+        "act": 2,
+        "enemyIds": [
+          "beaker-mist"
+        ],
+        "startedAtActiveMs": 17752,
+        "endedAtActiveMs": 17904,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a2-f10-n0",
+        "act": 2,
+        "enemyIds": [
+          "lab-coil"
+        ],
+        "startedAtActiveMs": 18000,
+        "endedAtActiveMs": 18245,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a2-f11-n0",
+        "act": 2,
+        "enemyIds": [
+          "safety-sign"
+        ],
+        "startedAtActiveMs": 18302,
+        "endedAtActiveMs": 18447,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a2-f12-n0",
+        "act": 2,
+        "enemyIds": [
+          "lab-magnet"
+        ],
+        "startedAtActiveMs": 18493,
+        "endedAtActiveMs": 18722,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a2-f13-n0",
+        "act": 2,
+        "enemyIds": [
+          "club-auditor"
+        ],
+        "startedAtActiveMs": 18767,
+        "endedAtActiveMs": 19034,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a3-f1-n2",
+        "act": 3,
+        "enemyIds": [
+          "window-shadow"
+        ],
+        "startedAtActiveMs": 19146,
+        "endedAtActiveMs": 19461,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a3-f2-n2",
+        "act": 3,
+        "enemyIds": [
+          "empty-desk"
+        ],
+        "startedAtActiveMs": 19510,
+        "endedAtActiveMs": 19739,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a3-f3-n1",
+        "act": 3,
+        "enemyIds": [
+          "archive-clock"
+        ],
+        "startedAtActiveMs": 19789,
+        "endedAtActiveMs": 20003,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a3-f4-n1",
+        "act": 3,
+        "enemyIds": [
+          "stage-spotlight"
+        ],
+        "startedAtActiveMs": 20067,
+        "endedAtActiveMs": 31333,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 2,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a3-f5-n1",
+        "act": 3,
+        "enemyIds": [
+          "night-announcement"
+        ],
+        "startedAtActiveMs": 31391,
+        "endedAtActiveMs": 31552,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a3-f6-n1",
+        "act": 3,
+        "enemyIds": [
+          "empty-desk"
+        ],
+        "startedAtActiveMs": 31640,
+        "endedAtActiveMs": 32095,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a3-f7-n1",
+        "act": 3,
+        "enemyIds": [
+          "window-shadow"
+        ],
+        "startedAtActiveMs": 32169,
+        "endedAtActiveMs": 32540,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a3-f9-n1",
+        "act": 3,
+        "enemyIds": [
+          "stage-spotlight"
+        ],
+        "startedAtActiveMs": 32670,
+        "endedAtActiveMs": 33061,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a3-f10-n0",
+        "act": 3,
+        "enemyIds": [
+          "archive-clock"
+        ],
+        "startedAtActiveMs": 33121,
+        "endedAtActiveMs": 33575,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a3-f11-n0",
+        "act": 3,
+        "enemyIds": [
+          "night-announcement"
+        ],
+        "startedAtActiveMs": 33659,
+        "endedAtActiveMs": 33905,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      },
+      {
+        "nodeId": "a3-f13-n0",
+        "act": 3,
+        "enemyIds": [
+          "graduation-curtain"
+        ],
+        "startedAtActiveMs": 34061,
+        "endedAtActiveMs": 34589,
+        "hpBefore": 38,
+        "hpAfter": 38,
+        "turns": 1,
+        "result": "won",
+        "partial": false
+      }
+    ],
+    "result": "won"
+  },
+  "finalNodeId": "a3-f13-n0",
+  "finalUi": "✦\nSCHOOL ROGUELIKE\n学園タイピングローグライク\n全Act完走\n音 ON\nRUN RESULT\n全Actクリア\n\n3つのActのボスを突破しました。\n\nACT 3 · 難度 0 · ♥ 38/38\n実操作 00:34\n訪問 42地点 · 戦闘 32回\n計測JSONを保存\nラン履歴を見る\n新しいランを始める"
+}

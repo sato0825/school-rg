@@ -114,6 +114,15 @@ for (const width of [1024, 1440] as const) test(`five different enemies show eve
   await expect(roster.nth(1)).toHaveAttribute("aria-label", /1番目.*力.*2番目.*ブロック/);
   await expect(roster.nth(2)).toHaveAttribute("aria-label", /脆弱/);
   await expect(roster.nth(3)).toHaveAttribute("aria-label", /召喚/);
+  const effectTokensFit = await roster.evaluateAll((buttons) => buttons.every((button) => {
+    const band = button.querySelector('.intent-steps');
+    if (!band || band.scrollWidth > band.clientWidth + 1) return false;
+    return [...band.querySelectorAll('.intent-step')].every((token) => {
+      const bounds = token.getBoundingClientRect();
+      return bounds.right <= band.getBoundingClientRect().right + 1 && Number.parseFloat(getComputedStyle(token).fontSize) >= 13;
+    });
+  }));
+  expect(effectTokensFit).toBe(true);
   await page.locator(".enemy-art").evaluateAll(async (images) => Promise.all(images.map((image) => (image as HTMLImageElement).decode())));
   if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1") await page.screenshot({ path: `docs/art/previews/issue261-five-enemies-${width}-candidate-v3.png` });
   await roster.nth(0).click();
