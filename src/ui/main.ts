@@ -13,11 +13,16 @@ import "./battle-map-overlay.css";
 import "./game-shell.css";
 import "./card-visuals.css";
 import "./visual-system.css";
+
 import "./victory-view.css";
 import "./loss-view.css";
 import "./location-stage.css";
 import "./intent-glyphs.css";
 import "./item-art.css";
+
+import "./actor-motion.css";
+import "./literature-rig.css";
+
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("Missing #app root");

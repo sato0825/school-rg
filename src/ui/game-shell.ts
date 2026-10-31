@@ -45,9 +45,13 @@ export class GameShell {
     this.header = header;
     this.overlay = document.createElement("div");
     this.content = content;
+
     this.view = view;
     this.art = view.art;
     this.config = config;
+
+    this.main.dataset.effects = view.lowStimulus ? "quiet" : "standard";
+
     this.overlay.className = "game-shell-overlay";
     this.stage.append(this.overlay);
     this.syncStage(run);
@@ -79,6 +83,8 @@ export class GameShell {
     const stage = next?.querySelector<HTMLElement>(".stage");
     const slot = stage?.querySelector<HTMLElement>(".ally-slot");
     const hero = slot?.querySelector<HTMLImageElement>(".hero-art");
+    const nextRig = slot?.querySelector<HTMLElement>(".hero-rig");
+    const currentRig = this.actor.querySelector<HTMLElement>(".hero-rig");
     const input = next?.querySelector<HTMLInputElement>(".typing-input");
     const control = next?.querySelector<HTMLElement>(".control-deck");
     const header = next?.querySelector<HTMLElement>(".topbar");
@@ -98,16 +104,64 @@ export class GameShell {
     this.hero.alt = hero.alt;
     this.hero.style.cssText = hero.style.cssText;
     this.actor.style.cssText = slot.style.cssText;
-    slot.replaceWith(this.actor);
-    this.actor.replaceChildren(this.hero, ...[...slot.childNodes].filter((child) => child !== hero));
-    this.overlay.remove();
-    this.stage.replaceChildren(...stage.childNodes, this.overlay);
-    input.replaceWith(this.input);
+    if (slot.dataset.actorMotion) this.actor.dataset.actorMotion = slot.dataset.actorMotion;
+    else delete this.actor.dataset.actorMotion;
+    if (slot.dataset.actorRig) this.actor.dataset.actorRig = slot.dataset.actorRig;
+    else delete this.actor.dataset.actorRig;
+    const currentAllyGroup = this.actor.parentElement;
+    const nextAllyGroup = slot.parentElement;
+    if (!currentAllyGroup?.classList.contains("ally-group") || !nextAllyGroup?.classList.contains("ally-group")) throw new Error("Missing persistent ally group");
+    if (nextRig && currentRig && nextRig.dataset.rigId === currentRig.dataset.rigId) {
+      // Keep decoded images and animation phase across timer/input redraws.
+      currentRig.style.cssText = nextRig.style.cssText;
+      const currentNameplate = this.actor.querySelector<HTMLElement>(".hero-nameplate");
+      const nextNameplate = slot.querySelector<HTMLElement>(".hero-nameplate");
+      if (currentNameplate && nextNameplate) currentNameplate.innerHTML = nextNameplate.innerHTML;
+    } else {
+      delete this.actor.dataset.rigReady;
+      this.actor.replaceChildren(this.hero, ...[...slot.childNodes].filter((child) => child !== hero));
+    }
+    const rig = this.actor.querySelector<HTMLElement>(".hero-rig");
+    if (rig && this.actor.dataset.rigReady !== "true") {
+      const images = [...rig.querySelectorAll<HTMLImageElement>(".rig-part")];
+      if (images.every((image) => typeof image.decode === "function")) {
+        void Promise.all(images.map((image) => image.decode())).then(() => {
+          if (this.actor.contains(rig)) this.actor.dataset.rigReady = "true";
+        }).catch(() => { /* Keep the complete standing portrait if any layer fails. */ });
+      }
+    }
+    // Keep the actor attached to the live stage. Detaching it restarts all limb animations.
+    for (const child of [...currentAllyGroup.children]) if (child !== this.actor) child.remove();
+    for (const child of [...nextAllyGroup.children]) if (child !== slot) currentAllyGroup.append(child);
+    for (const child of [...this.stage.childNodes]) if (child !== currentAllyGroup && child !== this.overlay) child.remove();
+    let beforeAllyGroup = true;
+    for (const child of [...stage.childNodes]) {
+      if (child === nextAllyGroup) { beforeAllyGroup = false; continue; }
+      this.stage.insertBefore(child, beforeAllyGroup ? currentAllyGroup : this.overlay);
+    }
+    const currentTypingRow = this.control.querySelector<HTMLElement>(".typing-row");
+    const nextTypingRow = control.querySelector<HTMLElement>(".typing-row");
+    if (currentTypingRow && nextTypingRow) {
+      // Preserve the focused input while the clock, hand, and typing feedback redraw.
+      for (const selector of [".typing-caption", ".typing-visual", ".typing-input-help", ".ime-notice", ".typing-hint"]) {
+        const current = currentTypingRow.querySelector<HTMLElement>(selector);
+        const incoming = nextTypingRow.querySelector<HTMLElement>(selector);
+        if (current && incoming) current.innerHTML = incoming.innerHTML;
+      }
+      for (const child of [...this.control.childNodes]) if (child !== currentTypingRow) child.remove();
+      let beforeTypingRow = true;
+      for (const child of [...control.childNodes]) {
+        if (child === nextTypingRow) { beforeTypingRow = false; continue; }
+        this.control.insertBefore(child, beforeTypingRow ? currentTypingRow : null);
+      }
+    } else {
+      input.replaceWith(this.input);
+      this.control.replaceChildren(...control.childNodes);
+    }
     this.input.removeAttribute("aria-label");
     this.input.setAttribute("aria-describedby", input.getAttribute("aria-describedby") ?? "");
     this.input.value = input.value;
     this.input.disabled = input.disabled;
-    this.control.replaceChildren(...control.childNodes);
     this.main.querySelector("#battle-help")?.remove();
     this.main.querySelector(".result-backdrop")?.remove();
     this.main.querySelector(".battle-map-overlay")?.remove();
