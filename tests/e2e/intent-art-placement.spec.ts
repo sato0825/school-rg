@@ -49,8 +49,11 @@ for (const width of [1024, 1440]) {
             await expect(roster.nth(index).locator(".enemy-roster-bar")).toBeVisible();
           }
         }
+        await page.locator(".typing-input").click();
         await expect(page.locator(".typing-input")).toBeFocused();
-        if (process.env.SCHOOL_RG_CAPTURE_INTENT === "1" && (count === 1 || count === 5)) {
+        await page.keyboard.type("s");
+        await expect(page.locator(".typing-visual")).toContainText("s");
+        if (process.env.SCHOOL_RG_CAPTURE_INTENT === "1" && (count <= 2 || count === 5)) {
           await page.screenshot({ path: `docs/art/previews/issue218-${id}-${count}-${width}.png`, fullPage: true });
         }
       });
