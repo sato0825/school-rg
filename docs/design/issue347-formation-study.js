@@ -80,7 +80,7 @@ if (pose === 'activate') {
 }
 if (pose !== 'idle') {
   const actor = allies === 3 ? shell.querySelector('.ally:first-child') : soloActor;
-  const cue = document.createElement('span');
+  const cue = document.createElement('div');
   cue.className = 'formation-actor-cue';
   cue.textContent = pose === 'hit' ? '−6' : '✦';
   cue.setAttribute('aria-hidden', 'true');
