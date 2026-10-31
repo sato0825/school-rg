@@ -52,8 +52,9 @@ for (const asset of register.assets) {
       assert(asset.reviewFile, `review record missing: ${asset.id}`);
       await access(projectPath(asset.reviewFile));
     } else assert(asset.status === "candidate", `invalid pose status: ${asset.id}`);
-  } else if (asset.role === "enemy-portrait") {
+  } else if (asset.role === "enemy-portrait" || asset.role === "enemy-action-pose") {
     assert(typeof asset.enemyId === "string" && asset.enemyId.length > 0, `enemy ID missing: ${asset.id}`);
+    if (asset.role === "enemy-action-pose") assert(["attack-windup", "guard-windup", "hit"].includes(asset.pose), `enemy action pose missing: ${asset.id}`);
     assert(typeof asset.generator === "string" && asset.promptFile, `enemy provenance missing: ${asset.id}`);
     await access(projectPath(asset.promptFile));
     if (asset.status === "approved-runtime") {

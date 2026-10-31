@@ -4,6 +4,8 @@ import { createRunSession, enterRunNode } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
 import type { MapNode } from "../../src/domain/schema.js";
 
+const captureDir = process.env.ISSUE317_CAPTURE_DIR;
+
 async function openPaperFight(page: import("@playwright/test").Page, intentId: string): Promise<void> {
   await page.clock.install();
   const base = createRunSession(42, "literature-demo", demoContent);
@@ -22,20 +24,28 @@ async function openPaperFight(page: import("@playwright/test").Page, intentId: s
   await expect(page.locator('.enemy-action-art[data-intent-id="' + intentId + '"]')).toBeVisible();
 }
 
-for (const [intentId, pose] of [["paper-intent-hit", "attack"], ["paper-intent-guard", "guard"]] as const) {
-  test(`${pose} pose follows the live paper-heap Intent and resolved action`, async ({ page }) => {
-    await page.setViewportSize({ width: 1024, height: 768 });
+for (const width of [1024, 1440] as const) for (const [intentId, pose] of [["paper-intent-hit", "attack"], ["paper-intent-guard", "guard"]] as const) {
+  test(`${pose} pose follows the live paper-heap Intent and resolved action at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
     await openPaperFight(page, intentId);
     const sprite = page.locator(".enemy-action-art");
     await expect(sprite).toHaveAttribute("data-pose", pose);
+    await page.clock.runFor(1_600);
+    if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-${pose}-preview-${width}.png` });
+    if (captureDir) {
+      const labelsHidden = await page.addStyleTag({ content: ".enemy-hud,.intent-body-cue,.intent-trajectory{visibility:hidden!important}" });
+      await page.screenshot({ path: `${captureDir}/paper-heap-${pose}-visual-only-${width}.png` });
+      await labelsHidden.evaluate((element) => element.remove());
+    }
     const stageBefore = await page.locator(".stage").boundingBox();
     const enemyBefore = await page.locator(".enemy-slot").boundingBox();
     const remainingMs = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
     await page.clock.runFor(remainingMs + 80);
     await expect(sprite).toHaveAttribute("data-phase", "action");
-    await page.clock.runFor(650);
-    await expect(sprite).toHaveAttribute("data-pose", pose);
-    await expect(sprite).toHaveAttribute("data-phase", "action");
+    if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-${pose}-action-${width}.png` });
+    // The intent resolves after the 650 ms enemy windup. Inspect while its
+    // 420 ms result cue is still present, before the next turn clears it.
+    await page.clock.runFor(600);
     expect(await page.locator(".stage").boundingBox()).toEqual(stageBefore);
     expect(await page.locator(".enemy-slot").boundingBox()).toEqual(enemyBefore);
     if (pose === "guard") await expect(page.locator('.result-fx-mark[data-kind="block"]')).toBeVisible();
@@ -56,4 +66,32 @@ test("card damage shows the enemy's hit reaction and quiet mode keeps the action
   await expect(sprite).toHaveAttribute("data-pose", "hit");
   await expect(sprite).toHaveAttribute("data-phase", "hit");
   await expect(page.locator('.result-fx-mark[data-kind="damage"]')).toBeVisible();
+  if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-hit-quiet-1440.png` });
+});
+
+test("the paper action silhouette fits a five-enemy formation without moving the stage", async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 1024, height: 768 });
+  const base = createRunSession(97, "science-demo", demoContent);
+  const start: MapNode = { id: "five-start", act: 1, floor: 0, kind: "start", nextIds: ["five-fight"] };
+  const fight: MapNode = { id: "five-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+  const entered = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
+    demoContent, demoEnemyAi, { combat: ["paper-heap"], elite: ["paper-heap"], boss: ["paper-heap"] });
+  const combat = entered.run.combat!;
+  const first = combat.enemies[0]!;
+  const ids = ["paper-heap", "paper-scrap", "hall-mop", "folded-school-map", "archive-clock"];
+  const enemies = ids.map((id, index) => {
+    const definition = demoContent.enemies.find((enemy) => enemy.id === id)!;
+    return { ...first, instanceId: `five-${index}`, enemyId: id, hp: definition.maxHp, maxHp: definition.maxHp, intentId: definition.intentIds[0]! };
+  });
+  const prepared = { ...entered, run: { ...entered.run, combat: { ...combat, enemies } } };
+  await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
+  await page.goto("/");
+  await expect(page.locator(".enemy-slot")).toHaveCount(5);
+  await expect(page.locator('.enemy-action-art[data-pose="attack"]')).toBeVisible();
+  const [stage, hero, paper] = await Promise.all([page.locator(".stage").boundingBox(), page.locator(".ally-slot").boundingBox(), page.locator(".enemy-action-art").boundingBox()]);
+  expect(stage && hero && paper).toBeTruthy();
+  expect(paper!.x).toBeGreaterThan(hero!.x + hero!.width);
+  expect(paper!.x + paper!.width).toBeLessThanOrEqual(stage!.x + stage!.width);
+  if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-1024.png` });
 });

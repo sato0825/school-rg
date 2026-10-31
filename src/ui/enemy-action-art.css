@@ -10,8 +10,10 @@
 .game-shell .enemy-action-art[data-phase="hit"] .enemy-pose-action{opacity:1}
 .game-shell .enemy-action-art[data-pose="guard"] .enemy-pose-action{transform:translateY(5%)}
 .game-shell .enemy-action-art.act[data-pose="guard"]{animation:paper-guard-brace .6s ease-out}
-@keyframes paper-pose-idle{0%,28%,76%,100%{opacity:1}38%,66%{opacity:0}}
-@keyframes paper-pose-windup{0%,28%,76%,100%{opacity:0}38%,66%{opacity:1}}
+/* Keep the lower folded-paper shield visible; the live values sit in the empty gap. */
+.game-shell .stage[data-enemy-count="1"] .enemy-slot:has(.enemy-action-art) .enemy-hud{right:calc(100% - 22px);bottom:6%;width:250px}
+@keyframes paper-pose-idle{0%,70%,100%{opacity:0}80%,94%{opacity:1}}
+@keyframes paper-pose-windup{0%,70%,100%{opacity:1}80%,94%{opacity:0}}
 @keyframes paper-guard-brace{0%{transform:scale(.96)}65%{transform:scale(1.02)}100%{transform:scale(1)}}
 .game[data-effects="quiet"] .enemy-action-art,
 .game[data-effects="quiet"] .enemy-action-art .enemy-pose-idle,
