@@ -154,11 +154,13 @@ export function renderRunEvent(root: HTMLElement, session: RunSession, content: 
 }
 
 function combatLogEntry(entry: CombatActionLogEntry, run: RunState, content: ContentRegistry): string {
+  const turnLabels: Record<string, string> = { "player-start": "入力ターン開始", "player-input-end": "入力時間終了", "player-end": "プレイヤーターン終了", "enemy-start": "敵フェーズ開始", "enemy-end": "敵フェーズ終了" };
   const enemyName = (instanceId: string) => {
     const enemyId = run.combat?.enemies.find((enemy) => enemy.instanceId === instanceId)?.enemyId;
     return content.enemies.find((enemy) => enemy.id === enemyId)?.name ?? instanceId;
   };
-  const label = entry.kind === "card" ? content.cards.find((card) => card.id === entry.actionId)?.input.text
+  const label = entry.kind === "turn" ? turnLabels[entry.actionId]
+    : entry.kind === "card" ? content.cards.find((card) => card.id === entry.actionId)?.input.text
     : entry.kind === "potion" ? content.potions.find((potion) => potion.id === entry.actionId)?.name
       : `${enemyName(entry.actorEnemyInstanceId!)} · ${content.intents.find((intent) => intent.id === entry.actionId)?.label ?? entry.actionId}`;
   const signed = (value: number) => `${value > 0 ? "+" : ""}${value}`;
@@ -173,15 +175,18 @@ function combatLogEntry(entry: CombatActionLogEntry, run: RunState, content: Con
   for (const delta of entry.statusDeltas) details.push(`${delta.side === "player" ? "自分" : enemyName(delta.enemyInstanceId!)} ${statusNames[delta.status] ?? delta.status} ${signed(delta.delta)}`);
   for (const instanceId of entry.summonedEnemyIds) details.push(`${enemyName(instanceId)} が出現`);
   if (entry.handAddedCount) details.push(`手札 +${entry.handAddedCount}`);
+  if (entry.discardedCount) details.push(`捨て札 +${entry.discardedCount}`);
+  if (entry.exhaustedCount) details.push(`除外 +${entry.exhaustedCount}`);
+  if (entry.turnClockMs !== undefined) details.push(`入力時間 ${entry.turnClockMs / 1_000}秒`);
   if (entry.timeDeltaMs) details.push(`時間 ${signed(entry.timeDeltaMs / 1_000)}秒`);
   const target = entry.targetEnemyInstanceId ? ` → ${enemyName(entry.targetEnemyInstanceId)}` : "";
-  return `<li class="combat-log-entry" data-kind="${entry.kind}"><span class="log-sequence">TURN ${entry.turn} · ${String(entry.sequence).padStart(2, "0")}</span><strong>${html(label ?? entry.actionId)}${html(target)}</strong><span class="log-kind">${entry.kind === "card" ? "カード" : entry.kind === "potion" ? "ポーション" : "敵Intent"}</span><div class="log-changes">${(details.length ? details : ["状態変化なし"]).map((detail) => `<span>${html(detail)}</span>`).join("")}</div></li>`;
+  return `<li class="combat-log-entry" data-kind="${entry.kind}"><span class="log-sequence">TURN ${entry.turn} · ${String(entry.sequence).padStart(2, "0")}</span><strong>${html(label ?? entry.actionId)}${html(target)}</strong><span class="log-kind">${entry.kind === "card" ? "カード" : entry.kind === "potion" ? "ポーション" : entry.kind === "turn" ? "進行" : "敵Intent"}</span><div class="log-changes">${(details.length ? details : [entry.kind === "turn" ? "フェーズ移行" : "状態変化なし"]).map((detail) => `<span>${html(detail)}</span>`).join("")}</div></li>`;
 }
 
 export function renderRunCombatLog(root: HTMLElement, run: RunState, content: ContentRegistry, art: BattleArt): void {
   if (!run.combat) throw new Error("combat log requires combat");
   const entries = run.combat.actionLog ?? [];
-  root.innerHTML = shell("戦闘ログ", `<section class="front-panel combat-log-panel"><span class="eyebrow">BATTLE RECORD</span><h2>この戦闘の記録</h2><p>発動したカード・ポーションと、敵が実行したIntentを順番に表示します。</p><button type="button" class="front-back" data-action="front-back">戦闘に戻る</button>${entries.length ? `<ol class="combat-log-list">${entries.map((entry) => combatLogEntry(entry, run, content)).join("")}</ol>` : `<p class="combat-log-empty">まだ行動の記録はありません。</p>`}</section>`, art, run.act);
+  root.innerHTML = shell("戦闘ログ", `<section class="front-panel combat-log-panel"><span class="eyebrow">BATTLE RECORD</span><h2>この戦闘の記録</h2><p>ターンの進行と、発動したカード・ポーション、敵が実行したIntentを順番に表示します。</p><button type="button" class="front-back" data-action="front-back">戦闘に戻る</button>${entries.length ? `<ol class="combat-log-list">${entries.map((entry) => combatLogEntry(entry, run, content)).join("")}</ol>` : `<p class="combat-log-empty">まだ行動の記録はありません。</p>`}</section>`, art, run.act);
 }
 
 export function renderRunResult(root: HTMLElement, session: RunSession, art: BattleArt, playtest: PlaytestRecord | null = null, playtestError = false, historyError = false): void {

@@ -132,7 +132,7 @@ export const CombatStatusesSchema = z.strictObject({
 export const CombatActionLogEntrySchema = z.strictObject({
   sequence: positiveInt,
   turn: positiveInt,
-  kind: z.enum(["card", "potion", "enemy"]),
+  kind: z.enum(["card", "potion", "enemy", "turn"]),
   actionId: id,
   actorEnemyInstanceId: id.nullable(),
   targetEnemyInstanceId: id.nullable(),
@@ -143,6 +143,9 @@ export const CombatActionLogEntrySchema = z.strictObject({
   statusDeltas: z.array(z.strictObject({ side: z.enum(["player", "enemy"]), enemyInstanceId: id.nullable(), status: id, delta: z.number().int() })),
   handAddedCount: nonNegativeInt,
   timeDeltaMs: z.number().int(),
+  turnClockMs: nonNegativeInt.optional(),
+  discardedCount: nonNegativeInt.optional(),
+  exhaustedCount: nonNegativeInt.optional(),
 });
 
 export const CombatStateSchema = z.strictObject({

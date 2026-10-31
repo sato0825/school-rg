@@ -2,6 +2,13 @@ import type { CombatActionLogEntry, CombatState, RunState } from "./schema.js";
 
 type Action = Pick<CombatActionLogEntry, "kind" | "actionId" | "actorEnemyInstanceId" | "targetEnemyInstanceId">;
 
+export const TURN_BOUNDARIES = ["player-start", "player-input-end", "player-end", "enemy-start", "enemy-end"] as const;
+export type TurnBoundary = typeof TURN_BOUNDARIES[number];
+
+export function recordTurnBoundary(before: RunState, after: RunState, boundary: TurnBoundary): RunState {
+  return recordCombatAction(before, after, { kind: "turn", actionId: boundary, actorEnemyInstanceId: null, targetEnemyInstanceId: null });
+}
+
 function statusDeltas(before: CombatState, after: CombatState): CombatActionLogEntry["statusDeltas"] {
   const result: CombatActionLogEntry["statusDeltas"] = [];
   const collect = (side: "player" | "enemy", enemyInstanceId: string | null, oldBag: Record<string, number>, newBag: Record<string, number>) => {
@@ -44,7 +51,13 @@ export function recordCombatAction(before: RunState, after: RunState, action: Ac
     summonedEnemyIds: resolved.enemies.filter((enemy) => !knownEnemies.has(enemy.instanceId)).map((enemy) => enemy.instanceId),
     statusDeltas: statusDeltas(previous, resolved),
     handAddedCount: resolved.hand.filter((id) => !previous.hand.includes(id)).length,
-    timeDeltaMs: resolved.clock.remainingMs - previous.clock.remainingMs,
+    // A turn reset and time spent typing are not time-granting card effects.
+    timeDeltaMs: action.kind === "turn" ? 0 : resolved.clock.remainingMs - previous.clock.remainingMs,
+    ...(action.kind === "turn" ? {
+      discardedCount: resolved.discardPile.filter((id) => !previous.discardPile.includes(id)).length,
+      exhaustedCount: resolved.exhaustPile.filter((id) => !previous.exhaustPile.includes(id)).length,
+      ...(action.actionId === "player-start" && resolved.phase === "PLAYER_INPUT" ? { turnClockMs: resolved.clock.remainingMs } : {}),
+    } : {}),
   };
   return { ...after, combat: { ...resolved, actionLog: [...entries, entry] } };
 }
