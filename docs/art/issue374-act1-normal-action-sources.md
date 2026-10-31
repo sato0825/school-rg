@@ -26,6 +26,22 @@ Reference: `src/assets/enemies/lost-homework-candidate-v1.png`. Preserve the bou
 
 The three PNGs were generated as separate transparent edits from the same idle target using built-in imagegen. They are whole-body poses, not independently adjustable paper/leg parts. The effect/target and all numbers stay in live UI/AX. At 70 px, the fan may still be confused with a paper attack; this needs an unfamiliar-player comparison.
 
+## Folded school map
+
+Reference: `src/assets/enemies/folded-school-map-candidate-v1.png`. Preserve the broad cream accordion map, blue-green rooms, red corridor lines, central dark triangular hood/amber eyes and red tassel/bell on the left.
+
+| Intent/event | Source | SHA-256 | Shape contract |
+| --- | --- | --- | --- |
+| `map-intent-hit` / damage 4 | `src/assets/enemies/actions/folded-school-map-attack-candidate-v1.png` | `1da15149b89ecac453195807404de0826981c23403c4bb2d3ab890c892a92845` | Left fold extends as a large pointed beak. |
+| `map-intent-call` / summon `paper-scrap` | `src/assets/enemies/actions/folded-school-map-summon-candidate-v1.png` | `829cb83ab1131e831cfa39d109a08b7d6400ee99766ae8d85a6f376499177309` | Accordion opens a round negative-space gate; no second creature is painted. |
+| Card damage / hit | `src/assets/enemies/actions/folded-school-map-hit-candidate-v1.png` | `69f8d011592d72dc584c039198335b9fc6a0e8d204898a9358e22ea28a6477c3` | Map folds down and tassel swings; this recoil is subtle at small sizes. |
+
+These are built-in imagegen transparent edits of the same portrait. The wide floating enemy has no physical floor contact; its center/bottom placement must remain stable in the GameShell. The hit candidate may fail the small-scale reaction gate and must be checked alongside a runtime shot before adoption.
+
+## Hall mop portrait gate
+
+The current `hall-mop-candidate-v1/v2` portraits have an opaque dark background and a more textured, near-real rendering than the other school-paper enemies. Deriving three action poses directly from this portrait would preserve that mismatch and prevent clean cutout motion. A versioned, transparent style-aligned idle reference is needed before its `mop-intent-sweep` (damage twice, then Block), `mop-intent-hit` and hit reaction can pass the #29 art gate. This is a per-enemy block; the other three candidates can continue to runtime validation.
+
 ## Unmade in this issue
 
-`hall-mop` and `folded-school-map` still need their Intent-specific poses, hit reactions and source records. All four enemies still need runtime mapping, GameShell screenshots and first-sight/iPad checks. Do not close #374 based on source pose production.
+`hall-mop` still needs a style-aligned transparent idle and all Intent-specific poses and hit reaction. The other three candidates still need runtime mapping, GameShell screenshots, mixed 5-enemy composition, first-sight/iPad checks and part-editable source rigs. Do not close #374 based on source pose production.
