@@ -28,13 +28,14 @@ import { createAudioFeedback } from "./audio.js";
 import { imeLatinKey } from "./ime-key.js";
 import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
 import { GameShell } from "./game-shell.js";
+import { cardProfilesForBuild, type CardProfileCatalog } from "./card-profile.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
 /** Explicit short path for development and E2E; regular runs use the provisional full map. */
 const shortMapOptions: MapGenerationOptions = { floorsPerAct: 2, lanes: 4, kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 2, treasure: 2 } };
 
-export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(), progressStore: SaveStore = browserProgressStore(), playtestStore: SaveStore = browserPlaytestStore(), historyStore: SaveStore = browserHistoryStore()): () => void {
+export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(), progressStore: SaveStore = browserProgressStore(), playtestStore: SaveStore = browserPlaytestStore(), historyStore: SaveStore = browserHistoryStore(), cardProfiles: CardProfileCatalog = cardProfilesForBuild(import.meta.env.DEV)): () => void {
   const audio = createAudioFeedback();
   const params = new URLSearchParams(window.location.search);
   const mapOptions = import.meta.env.DEV && params.get("shortRun") === "1" ? shortMapOptions : DEFAULT_MAP_OPTIONS;
@@ -89,7 +90,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, resultFx: null, dyingEnemyInstanceIds: [], animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, resultFx: null, dyingEnemyInstanceIds: [], animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined, cardProfiles };
   let imeComposing = false;
   let imeNeedsRecovery = false;
   let keyboardLayoutMap: ReadonlyMap<string, string> | null = null;
@@ -169,7 +170,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         renderRunMap(rendered, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);
         gameShell.showOverlay("map", run, rendered);
       } else if (session.screen === "reward") {
-        renderRunReward(rendered, session, demoContent, demoBattleArt);
+        renderRunReward(rendered, session, demoContent, demoBattleArt, cardProfiles);
         gameShell.showOverlay("reward", run, rendered);
       } else {
         view.animationNowMs = clock.nowMs();
