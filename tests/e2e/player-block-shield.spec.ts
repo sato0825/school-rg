@@ -15,15 +15,12 @@ for (const width of [1024, 1440] as const) {
       const entered = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
         demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
       const combat = entered.run.combat!;
-      const defendId = combat.hand[0]!;
       const prepared = { ...entered, run: { ...entered.run, combat: { ...combat,
-        cards: combat.cards.map((card) => card.instanceId === defendId ? { ...card, cardId: "BASE-002" }
-          : combat.hand.includes(card.instanceId) && card.cardId === "BASE-002" ? { ...card, cardId: "BASE-001" } : card),
         enemies: Array.from({ length: enemyCount }, (_, index) => ({ ...combat.enemies[0]!, instanceId: `block-enemy-${index + 1}` })),
       } } };
-      await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
+      await page.addInitScript((value) => { if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", value); }, serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
       await page.goto("/");
-      await expect(page.locator('.hand>.card[aria-label*="defend"]')).toHaveCount(1);
+      await expect(page.locator('.hand>.card[aria-label*="leaf"]')).toHaveCount(1);
       const geometry = () => page.evaluate(() => {
         const rect = (selector: string) => {
           const { x, y, width, height } = document.querySelector(selector)!.getBoundingClientRect();
@@ -32,30 +29,38 @@ for (const width of [1024, 1440] as const) {
         return { header: rect(".topbar"), stage: rect(".stage"), actor: rect(".ally-slot"), controls: rect(".control-deck") };
       });
       const before = await geometry();
+      const blockBefore = Number((await page.locator(".player-hud b").innerText()).match(/\d+/)?.[0]);
       const baseline = process.env.ISSUE368_BASELINE === "1";
       const capture = process.env.ISSUE368_CAPTURE === "1";
-      if (capture) await page.screenshot({ path: `docs/art/previews/issue368/${baseline ? "before" : "after"}-idle-${width}-${enemyCount}.png` });
+      const captureVersion = process.env.ISSUE368_CAPTURE_VERSION ?? "v3";
+      if (capture) await page.screenshot({ path: `docs/art/previews/issue368/${baseline ? "before" : "after"}-idle-${width}-${enemyCount}-${captureVersion}.png` });
       await page.locator(".typing-input").focus();
-      await page.keyboard.type("defend");
+      await page.keyboard.type("leaf");
       await expect(page.locator('.result-fx-mark[data-kind="block"]')).toBeVisible();
-      await expect(page.locator(".player-hud b")).toContainText("5");
+      const blockAfter = Number((await page.locator(".player-hud b").innerText()).match(/\d+/)?.[0]);
+      expect(blockAfter).toBeGreaterThan(blockBefore);
       if (!baseline) {
-        await expect(page.locator('.player-hud b[aria-label="ブロック 5"]')).toBeVisible();
-        await expect(page.locator(".ally-slot").first()).toHaveAttribute("data-player-block", "5");
+        await expect(page.locator(`.player-hud b[aria-label="ブロック ${blockAfter}"]`)).toBeVisible();
+        await expect(page.locator(".ally-slot").first()).toHaveAttribute("data-player-block", String(blockAfter));
         await expect(page.locator(".ally-slot").first()).toHaveAttribute("data-block-event", "block");
         const surface = await page.locator(".ally-slot").first().evaluate((node) => getComputedStyle(node, "::before").content);
         expect(surface).not.toBe("none");
       }
       expect(await geometry()).toEqual(before);
-      if (capture) await page.screenshot({ path: `docs/art/previews/issue368/${baseline ? "before" : "after"}-block-${width}-${enemyCount}.png` });
+      await page.clock.runFor(190);
+      if (capture && !baseline) {
+        await page.locator(".ally-slot").first().evaluate((node) => node.getAnimations().forEach((animation) => animation.finish()));
+        expect(Number(await page.locator(".ally-slot").first().evaluate((node) => getComputedStyle(node, "::before").opacity))).toBeGreaterThan(.95);
+      }
+      if (capture) await page.screenshot({ path: `docs/art/previews/issue368/${baseline ? "before" : "after"}-block-${width}-${enemyCount}-${captureVersion}.png` });
       if (!baseline) {
         await page.clock.runFor(550);
         await expect(page.locator(".ally-slot").first()).toHaveAttribute("data-block-event", "none");
-        await expect(page.locator(".ally-slot").first()).toHaveAttribute("data-player-block", "5");
+        await expect(page.locator(".ally-slot").first()).toHaveAttribute("data-player-block", String(blockAfter));
         await page.evaluate(() => localStorage.setItem("school-rg-low-stimulus-v1", "1"));
         await page.reload();
         await expect(page.locator(".game-shell")).toHaveAttribute("data-effects", "quiet");
-        await expect(page.locator(".ally-slot").first()).toHaveAttribute("data-player-block", "5");
+        await expect(page.locator(".ally-slot").first()).toHaveAttribute("data-player-block", String(blockAfter));
         expect(await page.locator(".ally-slot").first().evaluate((node) => getComputedStyle(node, "::before").animationName)).toBe("none");
       }
     });

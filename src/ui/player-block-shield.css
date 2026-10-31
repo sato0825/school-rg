@@ -4,16 +4,12 @@
   content:"";
   position:absolute;
   z-index:4;
-  left:49%;
-  bottom:20%;
-  width:43%;
-  height:47%;
+  left:53%;
+  bottom:27%;
+  width:45%;
+  height:48%;
   pointer-events:none;
-  clip-path:polygon(12% 8%,79% 0,100% 21%,91% 74%,43% 100%,0 77%);
-  background:
-    linear-gradient(132deg,transparent 0 20%,#fffefaaf 21% 23%,transparent 24% 67%,#e9fffa91 68% 70%,transparent 71%),
-    linear-gradient(145deg,#f5fff4c9,#8dc6d6a6 48%,#5b91b7a8);
-  box-shadow:inset 0 0 0 4px #fffef1,0 0 14px #e8fff9;
+  background:url("../assets/fx/player-block-shield.svg") center/contain no-repeat;
   filter:drop-shadow(0 2px 3px #174b66a3);
   transform-origin:42% 87%;
 }
