@@ -241,7 +241,7 @@ test("renders the combat HUD and accepts direct keyboard input", async ({ page }
   await enterNextNode(page);
   await expect(page.locator(".card")).toHaveCount(5);
   await expect(page.locator(".enemy-slot")).toHaveCount(1);
-  const seconds = Number((await page.locator("[data-role=time]").innerText()).replace("sec", "").trim());
+  const seconds = Number.parseFloat(await page.locator("[data-role=time]").innerText());
   expect(seconds).toBeGreaterThan(0);
   expect(seconds).toBeLessThanOrEqual(10);
   await page.keyboard.press("z");
@@ -297,7 +297,7 @@ test("music club starts with extra time and types a tempo card", async ({ page }
   await expect(page.locator(".map-stats")).toContainText("39/39");
   await enterNextNode(page);
   await expect(page.locator(".relic-row")).toContainText("部室のメトロノーム");
-  const time = Number((await page.locator("[data-role=time]").innerText()).replace("sec", "").trim());
+  const time = Number.parseFloat(await page.locator("[data-role=time]").innerText());
   expect(time).toBeGreaterThan(10);
   const words = await page.locator(".card-word").allTextContents();
   const unique = ["tempo", "beat", "rest", "sync"].find((word) => words.includes(word));

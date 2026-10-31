@@ -57,3 +57,80 @@
   .topbar:has(.playtest-export){grid-template-rows:30px 42px 16px}
   .topbar .playtest-export{grid-column:1/-1;grid-row:3;justify-self:end;padding:1px 4px;font-size:8px}
 }
+
+/* The next action uses shape, label, and value together. Health uses length and a number. */
+.intent-ticket{width:min(270px,100%);max-width:100%;min-height:55px;gap:8px;padding:6px 9px;white-space:normal}
+.intent-icon{display:grid;flex:none;place-items:center;width:31px;height:31px;border:2px solid currentColor;border-radius:50%;font-size:18px;line-height:1;font-weight:900;color:#9f334c}
+.intent-ticket[data-category="defend"] .intent-icon{border-radius:5px;color:#37698a}
+.intent-ticket[data-category="buff"] .intent-icon,.intent-ticket[data-category="summon"] .intent-icon{color:#51744d}
+.intent-ticket[data-category="debuff"] .intent-icon{color:#745492}
+.intent-copy{display:flex;flex:1;flex-direction:column;min-width:0;gap:2px;text-align:left}
+.intent-ticket .intent-copy small{display:block;font-size:10px;letter-spacing:0;color:#5c5260;line-height:1.1}
+.intent-ticket .intent-copy strong{font-size:12px;line-height:1.15;white-space:normal;overflow-wrap:anywhere}
+.intent-ticket b{flex:none;font-variant-numeric:tabular-nums;font-size:19px}
+.enemy-hud{display:grid;gap:4px;min-width:0;width:min(260px,100%);padding:7px 9px;border-left-width:3px}
+.enemy-hud-head{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0}
+.enemy-hud-head strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.enemy-hp-number{flex:none;font-size:15px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.enemy-hp-number small{font-size:10px;color:#dce7e9}
+.enemy-health-track{display:block;position:relative;width:100%;height:11px;overflow:hidden;border:1px solid #e5d6d3;border-radius:2px;background:repeating-linear-gradient(90deg,#293a47 0,#293a47 calc(25% - 1px),#d1dad8 calc(25% - 1px),#d1dad8 25%)}
+.enemy-health-fill{display:block;height:100%;background:#e87583;border-right:2px solid #fff;transition:width .18s ease-out}
+.enemy-block{justify-self:start;padding:1px 4px;border:1px solid #9bbbd0;border-radius:3px;color:#d2e6f1;font-size:10px;font-weight:800}
+.player-health{display:grid;flex:none;gap:2px;min-width:72px}
+.player-health-track{display:block;width:100%;height:7px;overflow:hidden;border:1px solid #aec1c8;border-radius:2px;background:repeating-linear-gradient(90deg,#263c4d 0,#263c4d calc(25% - 1px),#a9bdc3 calc(25% - 1px),#a9bdc3 25%)}
+.player-health-fill{display:block;height:100%;background:#e98497;border-right:2px solid #fff;transition:width .18s ease-out}
+.typing-row{gap:10px}
+.typing-caption{display:block;flex:none;color:#eff5f1;font-size:12px;letter-spacing:0;line-height:1.15}
+.typing-buffer{min-width:0}
+.typing-buffer{position:relative}
+.typing-visual{display:block;min-height:23px;pointer-events:none}
+.typing-input{position:absolute;inset:0;width:100%;height:100%;padding:0;margin:0;border:0;opacity:0;cursor:text}
+.typing-buffer:focus-within{outline:3px solid #f3d37a;outline-offset:2px}
+.typing-input-help{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.typing-buffer .placeholder{color:#506b79;font-size:12px;font-weight:700}
+.stimulus-toggle{flex:none;padding:6px 8px;border:1px solid #9cabb9;border-radius:5px;background:#edf3f5;color:#294b66;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap}
+.stimulus-toggle[aria-pressed="true"]{border-color:#60808c;background:#dce8e7}
+.game[data-effects="quiet"] .hero-art,.game[data-effects="quiet"] .enemy-art,.game[data-effects="quiet"] .caret{animation:none!important;filter:none!important}
+.game[data-effects="quiet"] .card-fx-mark,.game[data-effects="quiet"] .card-fx-trail{animation:none!important;opacity:.8}
+.game[data-effects="quiet"] .card-fx-mark{transform:translate(-50%,-50%)}
+.game[data-effects="quiet"] .card-fx-trail{display:none}
+.game[data-effects="quiet"] .card-fx-mark i,.game[data-effects="quiet"] .card-fx-mark b{box-shadow:none}
+.game[data-effects="quiet"] .card,.game[data-effects="quiet"] .time-fill,.game[data-effects="quiet"] .enemy-health-fill,.game[data-effects="quiet"] .player-health-fill{transition:none!important}
+.game[data-effects="quiet"] .card:hover,.game[data-effects="quiet"] .card:focus-visible{transform:none}
+.game[data-effects="quiet"] .enemy-slot.targeted:after{box-shadow:0 0 0 3px #fff8}
+@media(prefers-reduced-motion:reduce){.hero-art,.enemy-art,.caret{animation:none!important}.card:hover,.card:focus-visible{transform:none}}
+
+@media(max-width:760px){
+  .game{grid-template-rows:116px minmax(0,1fr) 350px}
+  .topbar{grid-template-columns:minmax(0,1fr) repeat(3,auto);grid-template-rows:30px 42px 24px;gap:4px}
+  .topbar .run-meta{grid-column:1;grid-row:1}
+  .topbar .pause-button{grid-column:2;grid-row:1}
+  .topbar .audio-toggle{grid-column:3;grid-row:1}
+  .topbar .stimulus-toggle{grid-column:4;grid-row:1;padding:3px;font-size:9px}
+  .topbar .player-hud{grid-column:1/-1;grid-row:2}
+  .topbar .battle-guide[data-action="open-combat-log"]{grid-column:3;grid-row:3}
+  .topbar .battle-guide[data-action="open-compendium"]{grid-column:4;grid-row:3}
+  .topbar .battle-guide{padding:2px 6px;font-size:9px}
+  .intent-ticket{min-height:42px;padding:3px 5px;gap:4px}
+  .intent-icon{width:22px;height:22px;font-size:14px;border-width:1px}
+  .intent-ticket .intent-copy small{font-size:10px}
+  .intent-ticket .intent-copy strong{font-size:12px}
+  .intent-ticket b{font-size:14px}
+  .enemy-hud,.stage[data-enemy-count="2"] .enemy-hud{display:grid;gap:2px;padding:4px;width:100%;text-align:left;white-space:normal}
+  .enemy-hud-head strong{font-size:11px}
+  .enemy-hp-number{font-size:13px}
+  .enemy-hp-number small{font-size:8px}
+  .enemy-health-track{height:8px}
+  .enemy-block{font-size:8px}
+  .player-health{min-width:64px}
+  .player-health-track{height:6px}
+  .typing-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px;margin:5px auto}
+  .typing-caption{font-size:12px}
+  .time-label span{font-size:10px;letter-spacing:0;white-space:nowrap}
+  .typing-hint{grid-column:1/-1}
+  .typing-buffer .placeholder{font-size:10px}
+  .game:has(.playtest-export){grid-template-rows:132px minmax(0,1fr) 350px}
+  .topbar:has(.playtest-export){grid-template-rows:30px 42px 24px 16px}
+  .topbar .playtest-export{grid-row:4}
+  .layout-preview-label{left:2%;transform:none;max-width:40%;font-size:8px}
+}

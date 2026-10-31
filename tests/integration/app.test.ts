@@ -27,7 +27,7 @@ describe("run and typing combat HUD", () => {
     expect(root.textContent).toContain("山札 5");
     expect(root.textContent).toContain("捨て札 0");
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "z", bubbles: true }));
-    expect(root.querySelector(".typing-buffer")?.textContent).toContain("ここに入力が表示されます");
+    expect(root.querySelector(".typing-buffer")?.textContent).toContain("下の手札から英単語を入力");
     unmount();
   });
 
@@ -44,6 +44,46 @@ describe("run and typing combat HUD", () => {
     expect(root.querySelector("[data-action=toggle-audio]")?.getAttribute("aria-pressed")).toBe("false");
     unmountAgain();
     window.localStorage.removeItem("school-rg-audio-v1");
+  });
+
+  it("keeps the low stimulus choice across rendering and mounting", () => {
+    window.localStorage.removeItem("school-rg-low-stimulus-v1");
+    const root = document.querySelector<HTMLElement>("#app")!;
+    const unmount = mountApp(root);
+    root.querySelector<HTMLButtonElement>("[data-action=open-clubs]")?.click();
+    root.querySelector<HTMLButtonElement>("[data-action=choose-club]")?.click();
+    root.querySelector<HTMLButtonElement>(".map-node.available[aria-label*='戦闘']")?.click();
+    root.querySelector<HTMLButtonElement>("[data-action=toggle-stimulus]")!.click();
+    expect(root.querySelector(".game")?.getAttribute("data-effects")).toBe("quiet");
+    expect(root.querySelector("[data-action=toggle-stimulus]")?.getAttribute("aria-pressed")).toBe("true");
+    unmount();
+    const unmountAgain = mountApp(root);
+    expect(root.querySelector(".game")?.getAttribute("data-effects")).toBe("quiet");
+    unmountAgain();
+    window.localStorage.removeItem("school-rg-low-stimulus-v1");
+  });
+
+  it("keeps focus and the accessible value through typing, cancellation, and potion mode", () => {
+    const root = document.querySelector<HTMLElement>("#app")!;
+    const unmount = mountApp(root, { read: () => null, write: () => undefined });
+    root.querySelector<HTMLButtonElement>("[data-action=open-clubs]")?.click();
+    root.querySelector<HTMLButtonElement>("[data-action=choose-club]")?.click();
+    root.querySelector<HTMLButtonElement>(".map-node.available[aria-label*='戦闘']")?.click();
+    const firstWord = root.querySelector(".card-word")!.textContent!.trim();
+    const original = root.querySelector<HTMLInputElement>(".typing-input")!;
+    original.focus();
+    original.dispatchEvent(new KeyboardEvent("keydown", { key: "z", bubbles: true, cancelable: true }));
+    expect(root.querySelector<HTMLInputElement>(".typing-input")!.value).toBe("");
+    root.querySelector<HTMLInputElement>(".typing-input")!.dispatchEvent(new KeyboardEvent("keydown", { key: firstWord[0], bubbles: true, cancelable: true }));
+    expect(root.querySelector<HTMLInputElement>(".typing-input")!.value).toBe(firstWord[0]);
+    expect(document.activeElement).toBe(root.querySelector(".typing-input"));
+    root.querySelector<HTMLInputElement>(".typing-input")!.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+    expect(root.querySelector<HTMLInputElement>(".typing-input")!.value).toBe("");
+    root.querySelector<HTMLInputElement>(".typing-input")!.dispatchEvent(new KeyboardEvent("keydown", { key: "F2", bubbles: true, cancelable: true }));
+    expect(root.querySelector(".potion-mode")?.getAttribute("aria-pressed")).toBe("true");
+    expect(root.querySelector<HTMLInputElement>(".typing-input")!.labels?.[0]?.textContent).toBe("ポーション名をタイプ");
+    expect(document.activeElement).toBe(root.querySelector(".typing-input"));
+    unmount();
   });
 
   it("reports a failed history write without changing the saved run", () => {
