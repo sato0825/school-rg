@@ -111,7 +111,10 @@ function resultFxMarkup(fx: ResultFx | null, nowMs: number): string {
   if (!fx) return "";
   const delay = actionDelayMs(nowMs, fx.startedAtMs, MOTION_MS.hit);
   return `<div class="result-fx-layer" aria-hidden="true">${fx.marks.map((mark, index) => {
-    const stack = fx.marks.slice(0, index).filter((previous) => previous.xPercent === mark.xPercent).length;
+    const previous = fx.marks.slice(0, index);
+    const sameActor = previous.filter((item) => item.xPercent === mark.xPercent).length;
+    const actorOrder = new Set([...previous.map((item) => item.xPercent), mark.xPercent]).size - 1;
+    const stack = sameActor * 2 + actorOrder % 2;
     return `<span class="result-fx-mark" data-kind="${mark.kind}" style="left:${mark.xPercent}%;--fx-offset:${stack * 36}px;animation-delay:${delay}ms">${html(mark.label)}</span>`;
   }).join("")}</div>`;
 }

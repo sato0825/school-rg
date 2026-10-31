@@ -152,3 +152,49 @@ test("a lethal enemy hit stays localized before the defeat result", async ({ pag
   await page.clock.runFor(420);
   await expect(page.locator(".run-result")).toBeVisible();
 });
+
+for (const { count, width, height } of [{ count: 3, width: 1024, height: 768 }, { count: 5, width: 1024, height: 768 }, { count: 3, width: 390, height: 844 }, { count: 5, width: 390, height: 844 }]) {
+  test(`${count} enemy status icons and all-target impact cues stay separate at ${width}px`, async ({ page }) => {
+    await page.clock.install();
+    await page.setViewportSize({ width, height });
+    const base = createRunSession(42, "science-demo", demoContent);
+    const start: MapNode = { id: "formation-start", act: 1, floor: 0, kind: "start", nextIds: ["formation-fight"] };
+    const fight: MapNode = { id: "formation-fight", act: 1, floor: 1, kind: "elite", nextIds: [] };
+    const session = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
+      demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
+    const combat = session.run.combat!;
+    const enemy = combat.enemies[0]!;
+    const sampleId = combat.cards.find((card) => card.cardId === "SCI-001")!.instanceId;
+    const sweepId = combat.cards.find((card) => card.cardId === "BASE-011")!.instanceId;
+    const prepared = { ...session, run: { ...session.run, combat: { ...combat,
+      enemies: Array.from({ length: count }, (_, index) => ({ ...enemy, instanceId: `formation-enemy-${index + 1}` })),
+      drawPile: [...combat.drawPile.filter((id) => id !== sampleId && id !== sweepId), sweepId, sampleId],
+    } } };
+    const saved = serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard");
+    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await page.goto("/");
+    await page.keyboard.type("sample");
+    await page.locator(".enemy-roster-button").first().click();
+    await expect(page.locator(".result-fx-mark[data-kind=debuff]")).toContainText("毒 +3");
+    await expect(page.locator(".enemy-detail-status").first()).toContainText("毒");
+    const statusMark = await page.locator(".result-fx-mark[data-kind=debuff]").boundingBox();
+    const roster = await page.locator(".enemy-roster").boundingBox();
+    expect(statusMark!.y + statusMark!.height).toBeLessThanOrEqual(roster!.y);
+    await page.keyboard.type("sweep");
+    await expect(page.locator(".result-fx-mark[data-kind=damage]")).toHaveCount(count);
+    await page.clock.runFor(140);
+    const marks = await page.locator(".result-fx-mark[data-kind=damage]").evaluateAll((nodes) => nodes.map((node) => {
+      const box = node.getBoundingClientRect();
+      return { left: box.left, right: box.right, top: box.top, bottom: box.bottom };
+    }));
+    for (let a = 0; a < marks.length; a++) for (let b = a + 1; b < marks.length; b++) {
+      const first = marks[a]!; const second = marks[b]!;
+      expect(first.right <= second.left || second.right <= first.left || first.bottom <= second.top || second.bottom <= first.top).toBe(true);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+    if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") {
+      await page.locator(".result-fx-mark").evaluateAll((nodes) => nodes.forEach((node) => node.getAnimations().forEach((animation) => { animation.currentTime = 170; })));
+      await page.screenshot({ path: `docs/art/previews/issue177-formation-${count}-${width}.png` });
+    }
+  });
+}
