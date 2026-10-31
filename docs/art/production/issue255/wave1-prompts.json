@@ -1,0 +1,22 @@
+[
+  {
+    "id": "LIT-002", "slug": "card-lit-leaf-v1", "transparent": false,
+    "prompt": "Original 3:2 landscape card illustration for a Japanese middle-school literature club action named Leaf. A loose notebook page turns upward like a small protective wing, while one additional clean sheet peeks from beneath it, visually conveying block plus draw. Keep the page wing and extra sheet completely inside the central 60 percent of the canvas, with generous calm pale blue-gray negative space on all four edges for crop safety. Gentle youthful anime storybook gouache, clean thin dark-navy contours, simplified readable silhouette at 140 by 100 pixels, cool navy/teal/lavender with only a tiny coral accent, neutral daylight. School desk hinted softly behind the object, subordinate to the main silhouette. No people, text, letters, fake handwriting, logo, card frame, photorealism, gritty detail, or imitation of any existing game."
+  },
+  {
+    "id": "SCI-001", "slug": "card-sci-sample-v1", "transparent": false,
+    "prompt": "Original 3:2 landscape card illustration for a Japanese middle-school science club action named Sample. A single capped classroom specimen vial containing three dark-teal floating droplets stands beside a small blank observation slip, visually conveying a status sample plus drawing knowledge. Keep vial and slip entirely within the central 60 percent of canvas, with generous calm pale blue-gray negative space on every edge for crop safety. Gentle youthful anime storybook gouache, clean thin dark-navy contours, simplified strong silhouette at 140 by 100 pixels, cool navy/teal/lavender and only one tiny coral accent, neutral daylight. Quiet science table plane behind, no dramatic glow or realism. No people, text, letters, measurement marks, logo, card frame, poison skull, photorealism, gritty detail, or imitation of any existing game."
+  },
+  {
+    "id": "KEN-001", "slug": "card-ken-parry-v1", "transparent": false,
+    "prompt": "Original 3:2 landscape card illustration for a Japanese middle-school kendo club action named Parry. One bamboo shinai held in a firm diagonal guard intercepts a soft incoming paper ribbon; a small pale-lavender deflection arc curls back, conveying defense and counter without injury or a combatant. Keep full shinai, ribbon and arc inside central 65 percent of canvas with quiet pale blue-gray edges for crop safety. Gentle youthful anime storybook gouache, clean thin dark-navy contours, simplified unmistakable silhouette at 140 by 100 pixels, cool navy/teal/lavender and one tiny coral accent, neutral daylight. A very faint school dojo floor behind. No people, text, letters, logo, card frame, violence, blood, photorealism, gritty detail, or imitation of any existing game."
+  },
+  {
+    "id": "MUS-001", "slug": "card-mus-tempo-v1", "transparent": false,
+    "prompt": "Original 3:2 landscape card illustration for a Japanese middle-school music club action named Tempo. Two small wooden rhythm clappers with navy grips meet at the center, making three evenly spaced pale-teal circular pulses; a single loose blank score sheet lifts behind them, conveying bought time plus a new card. Keep clappers, pulses and sheet entirely within central 60 percent of canvas, with generous quiet pale blue-gray edges for crop safety. Gentle youthful anime storybook gouache, clean thin dark-navy contours, simplified readable silhouette at 140 by 100 pixels, cool navy/teal/lavender with one tiny coral accent, neutral daylight. No musical notes or written marks, no people, text, letters, logo, card frame, photorealism, gritty detail, or imitation of any existing game."
+  },
+  {
+    "id": "ART-002", "slug": "card-art-frame-v1", "transparent": false,
+    "prompt": "Original 3:2 landscape card illustration for a Japanese middle-school art club action named Frame. A simple sturdy school art frame stands upright around a calm pale-teal brushwash and an inner protective square, conveying a held defensive boundary; one small coral paint dab on a brush rests nearby. Keep full frame and brush entirely within the central 60 percent of canvas, with quiet pale blue-gray empty edges for crop safety. Gentle youthful anime storybook gouache, clean thin dark-navy contours, simplified recognizable silhouette at 140 by 100 pixels, cool navy/teal/lavender and only a tiny coral accent, neutral daylight. No ornate gold, people, text, letters, logo, card UI, photorealism, gritty detail, or imitation of any existing game."
+  }
+]
