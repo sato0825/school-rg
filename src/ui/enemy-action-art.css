@@ -11,6 +11,12 @@
 .game-shell .enemy-action-art[data-pose="guard"] .enemy-pose-action{transform:translateY(5%)}
 .game-shell .enemy-action-art.act[data-pose="attack"]{animation:paper-pencil-thrust .65s cubic-bezier(.2,.7,.2,1) both}
 .game-shell .enemy-action-art.act[data-pose="guard"]{animation:paper-guard-brace .65s ease-out both}
+.game-shell .enemy-action-art.act[data-art-id="enemy-late-pass-action"][data-pose="status"],
+.game-shell .enemy-action-art.act[data-art-id="enemy-lost-homework-action"][data-pose="status"]{animation:normal-paper-hinder .65s ease-out both}
+.game-shell .enemy-action-art.act[data-art-id="enemy-folded-school-map-action"][data-pose="summon"]{animation:normal-map-open .65s ease-out both}
+.game-shell .enemy-action-art.act[data-art-id="enemy-late-pass-action"][data-pose="attack"],
+.game-shell .enemy-action-art.act[data-art-id="enemy-lost-homework-action"][data-pose="attack"],
+.game-shell .enemy-action-art.act[data-art-id="enemy-folded-school-map-action"][data-pose="attack"]{animation:paper-pencil-thrust .65s cubic-bezier(.2,.7,.2,1) both}
 .game-shell .enemy-action-art[data-phase="action"]:not(.act)[data-pose="attack"]{animation:paper-pencil-recoil .42s ease-out both}
 .game-shell .enemy-action-art[data-phase="action"]:not(.act)[data-pose="guard"]{animation:paper-guard-settle .42s ease-out both}
 /* Keep the lower folded-paper shield visible; the live values sit in the empty gap. */
@@ -30,6 +36,8 @@
 @keyframes paper-guard-brace{0%,40%{transform:translateX(0) scale(.98)}70%{transform:translateX(3%) scale(.96)}100%{transform:translateX(-4%) scale(1.08)}}
 @keyframes paper-pencil-recoil{0%{transform:translateX(-20%) rotate(-4deg)}100%{transform:translateX(0) rotate(0)}}
 @keyframes paper-guard-settle{0%{transform:translateX(-4%) scale(1.08)}100%{transform:translateX(0) scale(1)}}
+@keyframes normal-paper-hinder{0%,25%{transform:scale(.94) rotate(0)}65%{transform:scale(1.05) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes normal-map-open{0%,25%{transform:scaleX(.92)}65%{transform:scaleX(1.06)}100%{transform:scaleX(1)}}
 .game[data-effects="quiet"] .enemy-action-art,
 .game[data-effects="quiet"] .enemy-action-art .enemy-pose-idle,
 .game[data-effects="quiet"] .enemy-action-art .enemy-pose-action{animation:none!important;transition:none!important}

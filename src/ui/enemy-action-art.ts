@@ -1,3 +1,5 @@
+import { act1NormalActionArtById } from "./act1-normal-action-art.js";
+
 /** Presentation-only assets. Intent choice and effects remain owned by the domain. */
 export type EnemyActionPose = "attack" | "guard" | "status" | "buff" | "summon" | "mixed" | "prepare" | "heavy";
 export type EnemyIntentPose = { pose: EnemyActionPose; url: string };
@@ -10,6 +12,7 @@ export type EnemyActionArt = {
 };
 
 export const enemyActionArtById: Readonly<Record<string, EnemyActionArt>> = {
+  ...act1NormalActionArtById,
   "paper-heap": {
     artId: "enemy-paper-heap-action",
     version: "candidate-v2",
