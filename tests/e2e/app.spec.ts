@@ -401,6 +401,36 @@ for (const [act, kind, enemyId, name] of [
   });
 }
 
+for (const [act, enemyId, name] of [
+  [1, "gym-scoreboard", "体育館の得点板"],
+  [2, "lab-ventilation", "実験棟の換気装置"],
+  [3, "graduation-curtain", "講堂の閉じる幕"],
+] as const) {
+  test(`Act ${act} alternate boss ${name} shows its Intent and falls to typed cards`, async ({ page }) => {
+    await page.clock.install();
+    await page.setViewportSize({ width: 390, height: 844 });
+    const start = createRunSession(42, "literature-demo", demoContent);
+    const from: MapNode = { id: "boss-start", act, floor: 0, kind: "start", nextIds: ["boss-fight"] };
+    const fight: MapNode = { id: "boss-fight", act, floor: 1, kind: "boss", nextIds: [] };
+    const session = { ...start, run: { ...start.run, act, map: { currentNodeId: from.id, nodes: [from, fight] } }, completedNodeIds: [from.id] };
+    const pool: EncounterPool = { combat: [enemyId], elite: [enemyId], boss: [enemyId] };
+    const entered = enterRunNode(session, fight.id, demoContent, demoEnemyAi, pool);
+    const saved = serializeRunSession(entered, demoContent, { nowMs: () => 0 }, () => "discard");
+    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await page.goto("/");
+    await expect(page.locator(".enemy-hud")).toContainText(name);
+    const intentId = entered.run.combat!.enemies[0]!.intentId;
+    await expect(page.locator(".intent-ticket")).toContainText(demoContent.intents.find((item) => item.id === intentId)!.label);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await expect(page.locator(".intent-ticket")).toBeInViewport();
+    if (process.env.SCHOOL_RG_CAPTURE_BOSSES === "1") {
+      await page.screenshot({ path: `docs/content/previews/issue124-act${act}-boss-narrow-20261031.png`, fullPage: true });
+    }
+    await typeThroughBattle(page, ".reward-panel, .run-result");
+    await expect(page.locator(".reward-panel, .run-result")).toBeVisible();
+  });
+}
+
 test("a potion is typed in its own mode and consumed after extending the active turn", async ({ page }) => {
   await page.clock.install();
   await startDemoRun(page);
@@ -624,7 +654,7 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
   await startDemoRun(page);
   for (let encounter = 0; encounter < 3; encounter++) {
     await enterNextNode(page);
-    if (encounter === 2) await expect(page.locator(".enemy-hud")).toContainText("追試の番人");
+    if (encounter === 2) await expect(page.locator(".enemy-hud")).toContainText(/追試の番人|体育館の得点板/);
     await typeThroughBattle(page);
     await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
     await expect(page.locator(".reward-card.signature")).not.toHaveCount(0);
@@ -648,7 +678,7 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
 async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ battles: number; bosses: number }> {
   let battles = 0;
   let bosses = 0;
-  const bossNames = ["追試の番人", "部活監査の影", "終業の鐘"];
+  const bossNames = [/追試の番人|体育館の得点板/, /部活監査の影|実験棟の換気装置/, /終業の鐘|講堂の閉じる幕/];
   for (let step = 0; step < 36 && !(await page.locator(".run-result").count()); step++) {
     if (await page.locator(".map-panel").count()) {
       const available = page.locator(".map-node.available");
