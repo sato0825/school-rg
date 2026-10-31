@@ -19,6 +19,15 @@ export const enemyActionArtById: Readonly<Record<string, EnemyActionArt>> = {
     },
     hit: new URL("../assets/enemies/actions/paper-heap-hit-candidate-v2.png", import.meta.url).href,
   },
+  "hall-monitor": {
+    artId: "enemy-hall-monitor-action",
+    version: "candidate-v1",
+    intents: {
+      "hall-intent-hit": { pose: "attack", url: new URL("../assets/enemies/actions/hall-monitor-attack-windup-candidate-v1.png", import.meta.url).href },
+      "hall-intent-guard": { pose: "guard", url: new URL("../assets/enemies/actions/hall-monitor-guard-windup-candidate-v1.png", import.meta.url).href },
+    },
+    hit: new URL("../assets/enemies/actions/hall-monitor-hit-candidate-v1.png", import.meta.url).href,
+  },
 };
 
 /** A missing asset remains idle; it must never borrow another enemy's pose. */
