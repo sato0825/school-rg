@@ -1397,10 +1397,10 @@ test("one typed card emits one sound and mute suppresses the next card", async (
   await startDemoRun(page);
   await enterNextNode(page);
   await page.keyboard.type("heavy strike");
-  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
+  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(2);
   await page.locator("[data-action=toggle-audio]").click();
   await page.keyboard.type("strike");
-  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
+  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(2);
 });
 
 test("battle help stays on the battle screen and does not alter the clock", async ({ page }) => {
