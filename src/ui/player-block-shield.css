@@ -9,7 +9,7 @@
   width:45%;
   height:48%;
   pointer-events:none;
-  background:url("../assets/fx/player-block-shield.svg") center/contain no-repeat;
+  background:url("../assets/fx/player-block-paper-v2.svg") center/contain no-repeat;
   filter:drop-shadow(0 2px 3px #174b66a3);
   transform-origin:42% 87%;
 }
