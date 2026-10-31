@@ -1,0 +1,86 @@
+[
+  {
+    "id": "MUS-003",
+    "version": "v1",
+    "path": "docs/art/production/issue277/assets/card-mus-rest-v1.png",
+    "sha256": "95722ff41b06ccf7d68a95319d1512a909a846a04cebf288edc01a0c71f18984",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-08260be0-af94-49f3-9cf4-4c0acf53f038.png",
+    "promptRef": "prompts.json#MUS-003",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "small-size silhouette obscured by busy background; v2 preferred"
+  },
+  {
+    "id": "ART-001",
+    "version": "v1",
+    "path": "docs/art/production/issue277/assets/card-art-sketch-v1.png",
+    "sha256": "a7f7761106c3ae340d81c4b47d1e4a91595a6b2187e7a728daa900032ec7b39e",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-88675071-5723-4cac-b260-18311a898fac.png",
+    "promptRef": "prompts.json#ART-001",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "main object identifiable at 112x57 and 48px; not accepted for runtime"
+  },
+  {
+    "id": "ART-003",
+    "version": "v1",
+    "path": "docs/art/production/issue277/assets/card-art-paint-v1.png",
+    "sha256": "2ec9ed61e5d0db5dd9c5316609c8dcd7c123da0bb7c2a400dd048cdaaf319f51",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-8c1e3a99-8c76-4b4b-a03f-b95eca42b311.png",
+    "promptRef": "prompts.json#ART-003",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "small-size silhouette obscured by busy background; v2 preferred"
+  },
+  {
+    "id": "ART-004",
+    "version": "v1",
+    "path": "docs/art/production/issue277/assets/card-art-erase-v1.png",
+    "sha256": "223e8a685a8b7e7778addfff038067a9c0d8e6db10b18caafda26d3bd4e16724",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-950065ac-e38c-4bda-8073-95c57970e089.png",
+    "promptRef": "prompts.json#ART-004",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "main object identifiable at 112x57 and 48px; not accepted for runtime"
+  }
+]

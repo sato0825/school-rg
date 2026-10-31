@@ -1,0 +1,6 @@
+{
+  "id":"SCI-002",
+  "slug":"card-sci-observe-v2",
+  "reference":"assets/card-sci-observe-v1.png",
+  "prompt":"Revise this original Observe card art for a Japanese middle-school science club. Keep a single dark-navy magnifying glass with a complete SHORT HANDLE visible entirely inside the inner 50 percent width and 50 percent height, and one small blank observation card beneath its lens. The lens reveals a simple lavender fading spot. Remove all flowers, leaves, books, window scene, fake card border, and background objects. Use a near-blank pale blue-gray desk and large quiet margins. The whole glass must remain recognizable in a narrow 112x57 hand-card crop and square 48px thumbnail. Match the existing cool youthful anime storybook gouache art: clean thin dark-navy contour with strong silhouette, moderate soft watercolor texture, cool navy teal lavender and a tiny coral accent. No people, text, letters, labels, logos, rarity, card UI, photorealism or imitation of any other game. Output 3:2 landscape."
+}

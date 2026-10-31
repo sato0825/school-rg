@@ -1,0 +1,24 @@
+[
+  {
+    "id": "SCI-002",
+    "version": "v2",
+    "path": "docs/art/production/issue277/assets/card-sci-observe-v2.png",
+    "sha256": "fc37892125b41e1fe04ee736991120f180560eb179ea24553ef2c0e18d1b6ecb",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-96a8ec1e-9fd9-46e9-8244-fc0b26b89977.png",
+    "promptRef": "observe-v2-prompt.json",
+    "reference": "assets/card-sci-observe-v1.png",
+    "state": "preferred-draft",
+    "selectionDecision": "less clutter and complete magnifying glass at narrow crop; not accepted for runtime",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  }
+]
