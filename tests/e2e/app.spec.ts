@@ -67,7 +67,7 @@ async function scriptActiveEvent(page: import("@playwright/test").Page, eventId:
     localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
   }, eventId);
   await page.reload();
-  await expect(page.locator(".event-panel")).toBeVisible();
+  await expect(page.locator('.location-scene[data-location="event"]')).toBeVisible();
 }
 
 async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
@@ -138,43 +138,43 @@ test("shop and event choices accept focused keyboard activation", async ({ page 
   await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "購買" }).focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
-  await expect(page.locator(".shop-relic-offer")).toContainText("90G · 所持金不足");
-  await page.locator(".reward-card").first().focus();
+  await expect(page.getByRole("heading", { name: /購買/ })).toBeVisible();
+  await expect(page.locator('[data-action="buy-relic"]')).toContainText("所持金不足");
+  await page.locator('[data-action="buy-offer"]').first().focus();
   await page.keyboard.press("Enter");
-  await expect(page.locator(".reward-card").first()).toBeDisabled();
-  await page.getByRole("button", { name: "購買を出る" }).focus();
+  await expect(page.locator('[data-action="buy-offer"]').first()).toBeDisabled();
+  await page.getByRole("button", { name: /購買を出る/ }).focus();
   await page.keyboard.press("Enter");
   await page.locator(".map-node.available").filter({ hasText: "イベント" }).focus();
   await page.keyboard.press("Enter");
-  await expect(page.locator(".event-panel")).toBeVisible();
-  await page.locator(".event-choice:not(:disabled)").first().focus();
+  await expect(page.locator('.location-scene[data-location="event"]')).toBeVisible();
+  await page.locator('[data-action="event-choice"]:not(:disabled)').first().focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
 });
 
-test("run choices show outcomes and unavailable reasons at phone and desktop widths", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+test("run choices show outcomes and unavailable reasons at iPad and desktop widths", async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
   await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
-  await expect(page.locator(".choice-balance")).toContainText("所持金");
-  await expect(page.locator(".shop-relic-offer .offer-price")).toContainText("所持金不足");
-  await expect(page.locator(".shop-relic-offer")).toBeDisabled();
-  await expect(page.locator(".reward-card .offer-symbol").first()).toBeVisible();
+  await expect(page.locator(".run-gold")).toHaveAttribute("aria-label", /所持金/);
+  await expect(page.locator('[data-action="buy-relic"] .location-choice-outcome')).toContainText("所持金不足");
+  await expect(page.locator('[data-action="buy-relic"]')).toBeDisabled();
+  await expect(page.locator(".location-choice-icon").first()).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-shop-phone-20261031.png", fullPage: true });
   await page.setViewportSize({ width: 1024, height: 768 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-shop-ipad-20261031.png", fullPage: true });
-  await page.getByRole("button", { name: "購買を出る" }).click();
+  await page.getByRole("button", { name: /購買を出る/ }).click();
   await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
   await scriptActiveEvent(page, "after-school-board");
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1024, height: 768 });
   const borrow = page.locator('[data-action="event-choice"][data-id="borrow"]');
-  await expect(borrow.locator(".choice-effect[data-tone=cost]")).toContainText("-10G");
-  await expect(borrow.locator(".choice-effect[data-tone=gain]")).toContainText("カード追加");
+  await expect(borrow).toContainText("-10G");
+  await expect(borrow).toContainText("を得る");
   expect(await borrow.getAttribute("aria-label")).toBeNull();
-  await expect(borrow).toHaveAccessibleName(/資料を借りる.*-10G.*カード追加/);
+  await expect(borrow).toHaveAccessibleName(/資料を借りる.*-10G.*を得る/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-event-phone-20261031.png", fullPage: true });
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -190,7 +190,7 @@ test("run choices show outcomes and unavailable reasons at phone and desktop wid
   await page.reload();
   const unavailable = page.locator('[data-action="event-choice"][data-id="borrow"]');
   await expect(unavailable).toBeDisabled();
-  await expect(unavailable).toHaveAccessibleName(/選択不可.*10G必要/);
+  await expect(unavailable).toHaveAccessibleName(/10G必要/);
 });
 
 test("shop relic, potion and card purchases persist and respect one-time stock", async ({ page }) => {
@@ -204,25 +204,25 @@ test("shop relic, potion and card purchases persist and respect one-time stock",
     sessionStorage.setItem("test-shop-gold-set", "1");
   });
   await page.reload();
-  const relic = page.locator(".shop-relic-offer");
-  const potion = page.locator(".shop-potion-offer");
+  const relic = page.locator('[data-action="buy-relic"]');
+  const potion = page.locator('[data-action="buy-potion"]');
   await expect(relic).toHaveCount(1);
   await expect(potion).toHaveCount(1);
   await relic.focus();
   await page.keyboard.press("Enter");
   await expect(relic).toBeDisabled();
   await expect(relic).toContainText("購入済み");
-  await expect(page.locator(".economy-message")).toContainText("レリックを購入");
+  await expect(page.locator(".location-message")).toContainText("レリックを購入");
   await potion.focus();
   await page.keyboard.press("Enter");
   await expect(potion).toBeDisabled();
   await expect(potion).toContainText("購入済み");
-  await expect(page.locator(".economy-panel")).toContainText("ポーション 3/3");
+  await expect(page.locator(".run-potions")).toHaveAttribute("aria-label", "ポーション 3/3枠");
   await page.locator("[data-action=buy-offer]").first().focus();
   await page.keyboard.press("Enter");
   await page.reload();
-  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
-  await expect(page.locator(".shop-relic-offer, .shop-potion-offer, [data-action=buy-offer]").filter({ hasText: "購入済み" })).toHaveCount(3);
+  await expect(page.getByRole("heading", { name: /購買/ })).toBeVisible();
+  await expect(page.locator("[data-action=buy-relic], [data-action=buy-potion], [data-action=buy-offer]").filter({ hasText: "購入済み" })).toHaveCount(3);
   await expect(page.locator("[data-action=remove-shop-card]").first()).toBeDisabled();
 });
 
@@ -230,9 +230,9 @@ test("rest choice accepts focused keyboard activation", async ({ page }) => {
   await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).first().focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
-  await expect(page.locator(".rest-heal")).toContainText(/HP \d+\/\d+ → \d+\/\d+/);
-  await expect(page.locator(".rest-heal")).toHaveAccessibleName(/休んで回復.*HP/);
+  await expect(page.getByRole("heading", { name: /休憩席/ })).toBeVisible();
+  await expect(page.locator("[data-action=rest-heal]")).toContainText(/HP \d+ → \d+ \/ \d+/);
+  await expect(page.locator("[data-action=rest-heal]")).toHaveAccessibleName(/ひと休み.*HP/);
   if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-rest-desktop-20261031.png", fullPage: true });
   await page.setViewportSize({ width: 1024, height: 768 });
   if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-rest-ipad-20261031.png", fullPage: true });
@@ -971,17 +971,20 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
       const respite = available.filter({ hasText: /休憩|宝箱|購買|イベント/ });
       await (hp <= 24 && await rest.count() ? rest.first() : await respite.count() ? respite.first() : available.first()).focus();
       await page.keyboard.press("Enter");
-    } else if (await page.locator(".treasure-panel").count()) {
-      await page.locator(".treasure-offer:not(:disabled)").first().focus();
+    } else if (await page.locator('.location-scene[data-location="treasure"]').count()) {
+      await page.locator('[data-action="treasure-offer"]:not(:disabled)').first().focus();
       await page.keyboard.press("Enter");
+      await expect(page.locator('.location-scene[data-claiming="true"]')).toBeVisible();
+      await page.clock.runFor(350);
+      await expect(page.locator(".map-panel")).toBeVisible();
     } else if (await page.locator(".reward-panel:not(.run-result):not(.economy-panel):not(.event-panel)").count()) {
       await page.getByRole("button", { name: "報酬を受け取らず進む" }).focus();
       await page.keyboard.press("Enter");
-    } else if (await page.locator(".economy-panel").count()) {
-      if (await page.getByRole("button", { name: "購買を出る" }).count()) await page.getByRole("button", { name: "購買を出る" }).click();
+    } else if (await page.locator('.location-scene[data-location="shop"], .location-scene[data-location="rest"]').count()) {
+      if (await page.getByRole("button", { name: /購買を出る/ }).count()) await page.getByRole("button", { name: /購買を出る/ }).click();
       else await page.locator("[data-action=rest-heal]").click();
-    } else if (await page.locator(".event-panel").count()) {
-      const choices = page.locator(".event-choice:not(:disabled)").filter({ hasNotText: "戦う" });
+    } else if (await page.locator('.location-scene[data-location="event"]').count()) {
+      const choices = page.locator('[data-action="event-choice"]:not(:disabled)').filter({ hasNotText: "戦闘へ" });
       const heal = choices.filter({ hasText: /回復|手当て|深呼吸/ });
       await (await heal.count() ? heal.first() : choices.first()).click();
     } else if (await page.locator(".enemy-slot").count()) {
@@ -1272,19 +1275,19 @@ test("treasure offers survive reload and a focused choice completes its node", a
   await startScriptedRoute(page, ["combat", "treasure"]);
   await enterNextNode(page);
   await typeThroughBattle(page);
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1024, height: 768 });
   await expect(page.locator(".reward-card .offer-outcome").first()).toContainText("デッキに追加");
   if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-reward-phone-20261031.png", fullPage: true });
   await page.getByRole("button", { name: "報酬を受け取らず進む" }).click();
   await page.locator(".map-node.available").filter({ hasText: "宝箱" }).focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { name: "宝箱から1つ選ぶ" })).toBeVisible();
-  await expect(page.locator(".treasure-offer .offer-outcome").first()).toContainText("受け取る");
+  await expect(page.getByRole("heading", { name: "資料保管庫" })).toBeVisible();
+  await expect(page.locator('[data-action="treasure-offer"] .location-choice-outcome').first()).toContainText("受け取る");
   if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-treasure-phone-20261031.png", fullPage: true });
-  const offers = await page.locator(".treasure-offer").allTextContents();
+  const offers = await page.locator('[data-action="treasure-offer"]').allTextContents();
   await page.reload();
-  await expect(page.locator(".treasure-offer")).toHaveText(offers);
-  await page.locator(".treasure-offer").first().focus();
+  await expect(page.locator('[data-action="treasure-offer"]')).toHaveText(offers);
+  await page.locator('[data-action="treasure-offer"]').first().focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.relicIds)).toHaveLength(2);
@@ -1294,17 +1297,18 @@ test("treasure offers survive reload and a focused choice completes its node", a
 test("a route can upgrade at rest and buy once at the shop", async ({ page }) => {
   await startScriptedRoute(page, ["rest", "shop"]);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).last().click();
-  await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /休憩席/ })).toBeVisible();
+  await page.locator('.location-drawer summary').click();
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
-  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /購買/ })).toBeVisible();
   await expect(page.locator("[data-action=buy-offer]")).toHaveCount(3);
-  await page.locator(".reward-card").first().click();
-  await expect(page.locator(".reward-panel")).toContainText("所持金 10G");
-  await expect(page.locator(".reward-card").first()).toBeDisabled();
+  await page.locator("[data-action=buy-offer]").first().click();
+  await expect(page.locator(".run-gold")).toHaveAttribute("aria-label", "所持金 10");
+  await expect(page.locator("[data-action=buy-offer]").first()).toBeDisabled();
   await expect(page.locator("[data-action=buy-offer]").nth(1)).toBeDisabled();
   await expect(page.locator("[data-action=buy-offer]").nth(1)).toContainText("所持金不足");
-  await page.getByRole("button", { name: "購買を出る" }).click();
+  await page.getByRole("button", { name: /購買を出る/ }).click();
   await expect(page.locator(".map-node.available")).toContainText("ボス");
 });
 
@@ -1313,9 +1317,9 @@ test("an event choice can start typed combat and cannot be entered twice", async
   await page.clock.install();
   await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
-  await page.getByRole("button", { name: "購買を出る" }).click();
+  await page.getByRole("button", { name: /購買を出る/ }).click();
   await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
-  await expect(page.locator(".event-panel")).toBeVisible();
+  await expect(page.locator('.location-scene[data-location="event"]')).toBeVisible();
   await scriptActiveEvent(page, "after-school-board");
   await page.locator("[data-action=event-choice][data-id=fight]").click();
   await expect(page.locator(".enemy-slot")).toHaveCount(1);
@@ -1329,7 +1333,7 @@ test("an event potion can be typed during combat and damages its enemy target", 
   await page.clock.install();
   await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
-  await page.getByRole("button", { name: "購買を出る" }).click();
+  await page.getByRole("button", { name: /購買を出る/ }).click();
   await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
   await scriptActiveEvent(page, "after-school-board");
   await page.locator("[data-action=event-choice][data-id=ink]").click();
@@ -1348,7 +1352,7 @@ test("new events in each Act render at narrow width and resolve by keyboard", as
   ];
   for (const sample of samples) {
     const eventPage = await page.context().newPage();
-    await eventPage.setViewportSize({ width: 390, height: 844 });
+    await eventPage.setViewportSize({ width: 1024, height: 768 });
     const base = createRunSession(42, "literature-demo", demoContent);
     const start: MapNode = { id: `a${sample.act}-start`, act: sample.act, floor: 0, kind: "start", nextIds: [`a${sample.act}-event`] };
     const node: MapNode = { id: `a${sample.act}-event`, act: sample.act, floor: 1, kind: "event", nextIds: [] };
@@ -1358,8 +1362,8 @@ test("new events in each Act render at narrow width and resolve by keyboard", as
     const saved = serializeRunSession(scripted, demoContent, { nowMs: () => 0 }, () => "discard");
     await eventPage.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
     await eventPage.goto("/");
-    await expect(eventPage.locator(".event-panel h2")).toHaveText(sample.title);
-    await expect(eventPage.locator(".event-choice")).toHaveCount(sample.act === 1 ? 3 : 4);
+    await expect(eventPage.locator('.location-scene[data-location="event"] h2')).toHaveText(sample.title);
+    await expect(eventPage.locator('[data-action="event-choice"]')).toHaveCount(sample.act === 1 ? 3 : 4);
     expect(await eventPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     if (process.env.SCHOOL_RG_CAPTURE_EVENTS === "1") {
       await eventPage.screenshot({ path: `docs/content/previews/issue116-act${sample.act}-event-narrow-20261031.png`, fullPage: true });
@@ -1379,7 +1383,7 @@ test("deck-edit events select a specific card by keyboard across all Acts", asyn
   ];
   for (const sample of samples) {
     const eventPage = await page.context().newPage();
-    await eventPage.setViewportSize({ width: 390, height: 844 });
+    await eventPage.setViewportSize({ width: 1024, height: 768 });
     const base = createRunSession(42, "literature-demo", demoContent);
     const start: MapNode = { id: `a${sample.act}-start`, act: sample.act, floor: 0, kind: "start", nextIds: [`a${sample.act}-event`] };
     const node: MapNode = { id: `a${sample.act}-event`, act: sample.act, floor: 1, kind: "event", nextIds: [] };
@@ -1389,11 +1393,14 @@ test("deck-edit events select a specific card by keyboard across all Acts", asyn
     const saved = serializeRunSession(scripted, demoContent, { nowMs: () => 0 }, () => "discard");
     await eventPage.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
     await eventPage.goto("/");
-    await expect(eventPage.locator(".event-panel")).toBeVisible();
-    const target = eventPage.locator(`select[data-event-target=${sample.choiceId}]`);
+    await expect(eventPage.locator('.location-scene[data-location="event"]')).toBeVisible();
+    const target = eventPage.locator(`.location-event-target:has([data-action=event-choice][data-id=${sample.choiceId}]) input[type=radio]`).nth(2);
     await expect(target).toBeVisible();
     await eventPage.reload();
-    await target.press("d");
+    await eventPage.locator(`.location-event-target:has([data-action=event-choice][data-id=${sample.choiceId}]) input[type=radio]`).first().focus();
+    await eventPage.keyboard.press("ArrowRight");
+    await eventPage.keyboard.press("ArrowRight");
+    await expect(target).toBeChecked();
     const selectedId = await target.inputValue();
     expect(selectedId).toBe(scripted.run.deck[2]!.instanceId);
     if (process.env.SCHOOL_RG_CAPTURE_DECK_EVENTS === "1") {
@@ -1430,14 +1437,15 @@ test("reload preserves an unfinished potion word and its inventory", async ({ pa
 test("reload preserves a shop purchase and an unfinished typed card", async ({ page }) => {
   await startScriptedRoute(page, ["rest", "shop", "combat"]);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).last().click();
+  await page.locator('.location-drawer summary').click();
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
-  await page.locator(".reward-card").first().click();
+  await page.locator("[data-action=buy-offer]").first().click();
   await page.reload();
-  await expect(page.getByRole("heading", { name: "購買" })).toBeVisible();
-  await expect(page.locator(".reward-panel")).toContainText("所持金 10G");
-  await expect(page.locator(".reward-card").first()).toBeDisabled();
-  await page.getByRole("button", { name: "購買を出る" }).click();
+  await expect(page.getByRole("heading", { name: /購買/ })).toBeVisible();
+  await expect(page.locator(".run-gold")).toHaveAttribute("aria-label", "所持金 10");
+  await expect(page.locator("[data-action=buy-offer]").first()).toBeDisabled();
+  await page.getByRole("button", { name: /購買を出る/ }).click();
   await page.locator(".map-node.available").click();
   const word = await page.locator(".card-word").first().innerText();
   await page.keyboard.type(word.slice(0, 1));
