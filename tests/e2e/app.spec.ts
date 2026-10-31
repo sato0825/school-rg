@@ -1087,7 +1087,7 @@ for (const [clubLabel, clubId] of [
     await page.goto("/?seed=42");
     await page.getByRole("button", { name: "ランを始める" }).click();
     await page.getByRole("button", { name: new RegExp(clubLabel) }).click();
-    await page.clock.pauseAt(await page.evaluate(() => Date.now()));
+    await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 10_000);
     const diagnostics: unknown[] = [];
     const onTrace = async (phase: string) => { diagnostics.push(await readRunDiagnostic(page, phase)); };
     try { await clearThreeActs(page, 130, true, onTrace, 50); }
