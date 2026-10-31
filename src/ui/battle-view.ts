@@ -9,6 +9,7 @@ import { cardArtForId } from "./card-art.js";
 import { describeEnemyIntent, type IntentVisualStep } from "./intent-visual.js";
 import { DEFAULT_GAME_CONFIG, type GameConfig } from "../domain/config.js";
 import { identityForClub } from "../content/character-identities.js";
+import { paperHeapActionForIntent, type EnemyActionArt } from "./enemy-action-art.js";
 
 export type BattleArt = StageArt & {
   heroUrl: string;
@@ -17,6 +18,7 @@ export type BattleArt = StageArt & {
   previewLabel?: string;
   previewLabelByClubId?: Readonly<Record<string, string>>;
   enemyUrlById: Readonly<Record<string, string>>;
+  enemyActionArtById?: Readonly<Record<string, EnemyActionArt>>;
   fxPaletteByClubId?: Readonly<Record<string, readonly [string, string]>>;
 };
 
@@ -31,6 +33,7 @@ export type BattleView = {
   cardFx?: CardFx | null;
   resultFx?: ResultFx | null;
   dyingEnemyInstanceIds?: readonly string[];
+  resolvedEnemyIntentIdByInstanceId?: Readonly<Record<string, string>>;
   animationNowMs: number;
   potionModeKey: string;
   potionSlotLimit: number;
@@ -174,6 +177,16 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     const statusDescription = Object.entries(enemyStatuses).filter(([, count]) => count !== 0)
       .map(([kind, count]) => `${statusNames[kind] ?? kind} ${count}`).join("、");
     const targeted = (potionActive ? potionControl!.typing.targetEnemyInstanceId : combat.typing.targetEnemyInstanceId) === enemy.instanceId;
+    const resolvedIntentId = view.resolvedEnemyIntentIdByInstanceId?.[enemy.instanceId];
+    const actionArt = view.art.enemyActionArtById?.[enemy.enemyId];
+    const actionKind = paperHeapActionForIntent(resolvedIntentId ?? enemy.intentId);
+    const hitByCard = view.motion === "hero" && view.resultFx?.marks.some((mark) => mark.kind === "damage" && Math.abs(mark.xPercent - layout.enemies[index]!.xPercent) < 0.1);
+    const pose = hitByCard ? "hit" : actionKind;
+    const actionImage = pose === "hit" ? actionArt?.hit : pose === "attack" ? actionArt?.attack : pose === "guard" ? actionArt?.guard : null;
+    const posePhase = hitByCard ? "hit" : view.motion === "enemy" || resolvedIntentId ? "action" : "preview";
+    const enemyImage = actionArt && actionImage
+      ? `<div class="enemy-art enemy-action-art ${view.motion === "enemy" ? "act" : ""}" data-art-id="${html(actionArt.artId)}" data-art-version="${html(actionArt.version)}" data-pose="${pose}" data-phase="${posePhase}" data-intent-id="${html(resolvedIntentId ?? enemy.intentId)}" style="animation-delay:${enemyDelay}ms"><img class="enemy-pose-idle" src="${html(view.art.enemyUrlById[enemy.enemyId] ?? "")}" alt=""/><img class="enemy-pose-action" src="${html(actionImage)}" alt=""/></div>`
+      : `<img class="enemy-art ${view.motion === "enemy" ? "act" : ""}" style="animation-delay:${enemyDelay}ms" src="${html(view.art.enemyUrlById[enemy.enemyId] ?? "")}" alt="" />`;
     const enemyLabel = `敵 ${index + 1}を対象に選ぶ。${intentVisual.ariaLabel}${statusDescription ? `。状態: ${statusDescription}` : ""}${targeted ? "。選択中" : ""}`;
     if (targeted && intentVisual.steps.some((step) => (step.kind === "attack" || step.kind === "debuff") && step.target === "player")) {
       const sourceX = layout.enemies[index]!.xPercent;
@@ -184,7 +197,7 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     if (denseFormation) enemyRoster.push(`<button type="button" class="enemy-roster-button ${targeted ? "targeted" : ""}" data-action="enemy" data-id="${enemy.instanceId}" aria-pressed="${targeted}" aria-label="${html(enemyLabel)}"><span class="enemy-roster-head"><span class="enemy-roster-order" aria-hidden="true">${index + 1}</span><span class="enemy-tier" data-tier="${intentVisual.tier.kind}" aria-hidden="true">${html(intentVisual.tier.symbol)}</span><span class="enemy-roster-name">${html(definition?.name ?? "敵")}</span><span class="enemy-roster-value">${enemy.hp}<small>/${enemy.maxHp}</small></span></span><span class="enemy-roster-bar" role="meter" aria-label="敵 ${index + 1}のHP" aria-valuemin="0" aria-valuemax="${enemy.maxHp}" aria-valuenow="${enemy.hp}"><span style="width:${hpRatio}%"></span></span>${intentStepsMarkup(intentVisual.steps)}${enemy.block > 0 ? `<span class="enemy-block">◇ ${enemy.block}</span>` : ""}<span class="enemy-detail" aria-hidden="true"><span class="enemy-detail-heading"><span>敵 ${index + 1}</span><strong>${html(definition?.name ?? "敵")}</strong></span><strong>次の行動 · ${html(intentVisual.title)}</strong>${intentStepsMarkup(intentVisual.steps)}${intentVisual.steps.map((step, order) => `<span>${order + 1}. ${html(step.description)}</span>`).join("")}${statusDescription ? `<span class="enemy-detail-status">${statusMarkup(enemyStatuses)}</span>` : ""}</span></button>`);
     const slotTag = denseFormation || enemy.hp <= 0 ? "div" : "button";
     return `<${slotTag} class="enemy-slot ${targeted ? "targeted" : ""} ${enemy.hp <= 0 ? "defeated" : ""}" style="--slot-x:${layout.enemies[index]!.xPercent}%" ${slotTag === "div" ? 'aria-hidden="true"' : `type="button" data-action="enemy" data-id="${enemy.instanceId}" aria-pressed="${targeted}" aria-label="${html(enemyLabel)}"`}>
-      <img class="enemy-art ${view.motion === "enemy" ? "act" : ""}" style="animation-delay:${enemyDelay}ms" src="${html(view.art.enemyUrlById[enemy.enemyId] ?? "")}" alt="" />
+      ${enemyImage}
       ${bodyCues}
       ${denseFormation ? `<span class="enemy-art-number" aria-hidden="true">${index + 1}</span>` : ""}
       <span class="enemy-hud"><span class="enemy-hud-head"><span class="enemy-tier" data-tier="${intentVisual.tier.kind}" aria-hidden="true">${html(intentVisual.tier.symbol)}</span><strong>${targeted ? "対象: " : ""}${html(definition?.name ?? "敵")}</strong><span class="enemy-hp-number">${enemy.hp}<small>/${enemy.maxHp}</small></span></span><span class="enemy-health-track" role="meter" aria-label="${html(definition?.name ?? "敵")}のHP" aria-valuemin="0" aria-valuemax="${enemy.maxHp}" aria-valuenow="${enemy.hp}"><span class="enemy-health-fill" style="width:${hpRatio}%"></span></span><span class="intent-ticket" aria-hidden="true"><span class="intent-copy"><small>次の行動 · </small><strong>${html(intentVisual.title)}</strong></span></span>${intentStepsMarkup(intentVisual.steps)}${enemy.block > 0 ? `<span class="enemy-block">◇ ${enemy.block} ブロック</span>` : ""}</span>

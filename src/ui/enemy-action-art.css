@@ -1,0 +1,25 @@
+/* #317 candidate: the enemy silhouette carries its next action. Exact values stay in the HUD. */
+.game-shell .enemy-action-art{position:relative;display:block;flex:none;overflow:visible}
+.game-shell .enemy-action-art .enemy-pose-idle,
+.game-shell .enemy-action-art .enemy-pose-action{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;pointer-events:none}
+.game-shell .enemy-action-art[data-phase="preview"] .enemy-pose-idle{animation:paper-pose-idle 3.8s ease-in-out infinite}
+.game-shell .enemy-action-art[data-phase="preview"] .enemy-pose-action{animation:paper-pose-windup 3.8s ease-in-out infinite}
+.game-shell .enemy-action-art[data-phase="action"] .enemy-pose-idle,
+.game-shell .enemy-action-art[data-phase="hit"] .enemy-pose-idle{opacity:0}
+.game-shell .enemy-action-art[data-phase="action"] .enemy-pose-action,
+.game-shell .enemy-action-art[data-phase="hit"] .enemy-pose-action{opacity:1}
+.game-shell .enemy-action-art[data-pose="guard"] .enemy-pose-action{transform:translateY(5%)}
+.game-shell .enemy-action-art.act[data-pose="guard"]{animation:paper-guard-brace .6s ease-out}
+@keyframes paper-pose-idle{0%,28%,76%,100%{opacity:1}38%,66%{opacity:0}}
+@keyframes paper-pose-windup{0%,28%,76%,100%{opacity:0}38%,66%{opacity:1}}
+@keyframes paper-guard-brace{0%{transform:scale(.96)}65%{transform:scale(1.02)}100%{transform:scale(1)}}
+.game[data-effects="quiet"] .enemy-action-art,
+.game[data-effects="quiet"] .enemy-action-art .enemy-pose-idle,
+.game[data-effects="quiet"] .enemy-action-art .enemy-pose-action{animation:none!important;transition:none!important}
+.game[data-effects="quiet"] .enemy-action-art[data-phase="preview"] .enemy-pose-idle{opacity:0}
+.game[data-effects="quiet"] .enemy-action-art[data-phase="preview"] .enemy-pose-action{opacity:1}
+@media(prefers-reduced-motion:reduce){
+  .game-shell .enemy-action-art,.game-shell .enemy-action-art .enemy-pose-idle,.game-shell .enemy-action-art .enemy-pose-action{animation:none!important;transition:none!important}
+  .game-shell .enemy-action-art[data-phase="preview"] .enemy-pose-idle{opacity:0}
+  .game-shell .enemy-action-art[data-phase="preview"] .enemy-pose-action{opacity:1}
+}
