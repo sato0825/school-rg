@@ -1360,6 +1360,22 @@
       "derivation": "identity copy of source PNG; no retouch",
       "editableSource": null,
       "rights": "original AI-generated school-rg candidate; source review and human adoption pending"
+    },
+    {
+      "id": "act1-paper-courtyard-service-candidate-v1",
+      "file": "src/assets/stages/act1-paper-courtyard-service-candidate-v1.png",
+      "sha256": "56639860743bf367591be85c16c469dab50cad4ddf27eb139cedac726300d794",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 1,
+      "referenceId": "act1-paper-covered-courtyard-candidate-v1",
+      "promptFile": "docs/art/prompts/issue356-courtyard-service-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": "docs/art/sources/issue356-courtyard-service-v1.ora",
+      "rights": "original generated candidate for school-rg"
     }
   ]
 }
