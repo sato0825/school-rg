@@ -78,7 +78,7 @@
 .player-health{display:grid;flex:none;gap:2px;min-width:72px}
 .player-health-track{display:block;width:100%;height:7px;overflow:hidden;border:1px solid #aec1c8;border-radius:2px;background:repeating-linear-gradient(90deg,#263c4d 0,#263c4d calc(25% - 1px),#a9bdc3 calc(25% - 1px),#a9bdc3 25%)}
 .player-health-fill{display:block;height:100%;background:#e98497;border-right:2px solid #fff;transition:width .18s ease-out}
-.typing-row{gap:10px}
+.typing-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px}
 .typing-caption{display:block;flex:none;color:#eff5f1;font-size:12px;letter-spacing:0;line-height:1.15}
 .typing-buffer{position:relative;min-width:0;min-height:33px;padding:4px 0;border:0;border-bottom:2px solid #8cabb8;border-radius:0;background:transparent;box-shadow:none;color:#f3f7f5}
 .typing-visual{display:block;min-height:23px;pointer-events:none}
