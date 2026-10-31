@@ -40,17 +40,27 @@ test("#357 compares Act 2 stair candidate with terrace at saved combat and treas
           const prop = page.locator('.location-prop-art[data-asset-id="archive-locker-candidate-v1"]');
           await expect(prop).toBeVisible();
           await expect.poll(async () => prop.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
-        } else await expect(stage).toHaveAttribute("data-stage-phase", "player");
+        } else {
+          await expect(page.locator(".game-shell")).toHaveAttribute("data-screen", "combat");
+          await expect(stage.locator(".enemy-slot")).toHaveCount(1);
+        }
         expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.map.currentNodeId)).toBe(sample.targetId);
         await page.reload();
         await expect(stage).toHaveAttribute("data-stage-art", artId);
         await expect(stage).toHaveAttribute("data-stage-place", placeId);
+        if (sample.kind === "treasure") {
+          const prop = page.locator('.location-prop-art[data-asset-id="archive-locker-candidate-v1"]');
+          await expect(prop).toBeVisible();
+          await expect.poll(async () => prop.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+          await prop.evaluate((image: HTMLImageElement) => image.decode());
+        }
         await stage.evaluate(async (node) => {
           const url = (node as HTMLElement).style.backgroundImage.slice(5, -2);
           const image = new Image();
           image.src = url;
           await image.decode();
         });
+        await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
         if (process.env.SCHOOL_RG_CAPTURE_TERRACE_STAIR === "1") {
           await page.screenshot({ path: `docs/design/previews/issue357-seed${sample.seed}-act2-${target.floor}f-${sample.kind}-${concept}-${width}.png`, fullPage: true, animations: "disabled" });
         }

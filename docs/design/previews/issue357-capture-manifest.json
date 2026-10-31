@@ -1,0 +1,162 @@
+[
+  {
+    "file": "docs/design/previews/issue357-seed42-act2-11f-combat-base-1440.png",
+    "sha256": "9b987cad40852dd1361fa18972b2a8733bf164ec09381b64de32b89fd247a5c0",
+    "bytes": 1471575,
+    "seed": 42,
+    "floor": 11,
+    "kind": "combat",
+    "concept": "base",
+    "viewportWidth": 1440
+  },
+  {
+    "file": "docs/design/previews/issue357-seed42-act2-11f-combat-stairs-1440.png",
+    "sha256": "92108e3250e5ce485f46a0291ab5387c7ec02c3cb0b8c83a5213975dd8ce47ca",
+    "bytes": 1543265,
+    "seed": 42,
+    "floor": 11,
+    "kind": "combat",
+    "concept": "stairs",
+    "viewportWidth": 1440
+  },
+  {
+    "file": "docs/design/previews/issue357-seed42-act2-12f-treasure-base-1440.png",
+    "sha256": "04bb6dcd42ef809492fcd58f9e5b03f2315fd2023ffb5c19997b965d1322301e",
+    "bytes": 1855548,
+    "seed": 42,
+    "floor": 12,
+    "kind": "treasure",
+    "concept": "base",
+    "viewportWidth": 1440
+  },
+  {
+    "file": "docs/design/previews/issue357-seed42-act2-12f-treasure-stairs-1440.png",
+    "sha256": "70eb83036703d449dc6720ff1872599e5a9f7c47efcdc1eb0cc600cf3f2868ca",
+    "bytes": 1905388,
+    "seed": 42,
+    "floor": 12,
+    "kind": "treasure",
+    "concept": "stairs",
+    "viewportWidth": 1440
+  },
+  {
+    "file": "docs/design/previews/issue357-seed97-act2-11f-treasure-base-1440.png",
+    "sha256": "4e8ea2dd2d6a138f15a2c5a9b65e860e1a3ce484abeaaeefc9afa7dcd45b1271",
+    "bytes": 1855923,
+    "seed": 97,
+    "floor": 11,
+    "kind": "treasure",
+    "concept": "base",
+    "viewportWidth": 1440
+  },
+  {
+    "file": "docs/design/previews/issue357-seed97-act2-11f-treasure-stairs-1440.png",
+    "sha256": "3b92fd68c793cfb402d277136479ffb5e5ff42185b41109d67b44e3303978f13",
+    "bytes": 1905980,
+    "seed": 97,
+    "floor": 11,
+    "kind": "treasure",
+    "concept": "stairs",
+    "viewportWidth": 1440
+  },
+  {
+    "file": "docs/design/previews/issue357-seed97-act2-12f-combat-base-1440.png",
+    "sha256": "b2afd6f6c42188ede37d689c867fb7d6adfc487229f553942a4c4c0588615613",
+    "bytes": 1451339,
+    "seed": 97,
+    "floor": 12,
+    "kind": "combat",
+    "concept": "base",
+    "viewportWidth": 1440
+  },
+  {
+    "file": "docs/design/previews/issue357-seed97-act2-12f-combat-stairs-1440.png",
+    "sha256": "08673582e4db32fa0cbeac97797c12156795d962f3a2b524b2d359979b71f66e",
+    "bytes": 1525705,
+    "seed": 97,
+    "floor": 12,
+    "kind": "combat",
+    "concept": "stairs",
+    "viewportWidth": 1440
+  },
+  {
+    "file": "docs/design/previews/issue357-seed42-act2-11f-combat-base-1024.png",
+    "sha256": "43062b4d0f736d06783d88f0e54cb64c28b5b7716106cc9f209af5262fafd74c",
+    "bytes": 860306,
+    "seed": 42,
+    "floor": 11,
+    "kind": "combat",
+    "concept": "base",
+    "viewportWidth": 1024
+  },
+  {
+    "file": "docs/design/previews/issue357-seed42-act2-11f-combat-stairs-1024.png",
+    "sha256": "d514765c1dfff1fd2329f94574fc5a8e8726a19b3f5d1d0f50369ea146e1c506",
+    "bytes": 911515,
+    "seed": 42,
+    "floor": 11,
+    "kind": "combat",
+    "concept": "stairs",
+    "viewportWidth": 1024
+  },
+  {
+    "file": "docs/design/previews/issue357-seed42-act2-12f-treasure-base-1024.png",
+    "sha256": "5e67463cce95544f0b08b1e32f26a86fec22c1dc9a9bbdc686578f0395b01ea1",
+    "bytes": 1132461,
+    "seed": 42,
+    "floor": 12,
+    "kind": "treasure",
+    "concept": "base",
+    "viewportWidth": 1024
+  },
+  {
+    "file": "docs/design/previews/issue357-seed42-act2-12f-treasure-stairs-1024.png",
+    "sha256": "1ccdaf6b8e693f18b95df3d2e7a3e8f02f6a11e8d098de667fd51ded19b33aa9",
+    "bytes": 1164667,
+    "seed": 42,
+    "floor": 12,
+    "kind": "treasure",
+    "concept": "stairs",
+    "viewportWidth": 1024
+  },
+  {
+    "file": "docs/design/previews/issue357-seed97-act2-11f-treasure-base-1024.png",
+    "sha256": "baead5db92a09e15a9128bef6c74cb362f549ce2eed280454bc4dc224b8e3858",
+    "bytes": 1132666,
+    "seed": 97,
+    "floor": 11,
+    "kind": "treasure",
+    "concept": "base",
+    "viewportWidth": 1024
+  },
+  {
+    "file": "docs/design/previews/issue357-seed97-act2-11f-treasure-stairs-1024.png",
+    "sha256": "59a9591fd04b39a07a8b724a6043e12a899334a6899de2a5be56057014b2e358",
+    "bytes": 1165004,
+    "seed": 97,
+    "floor": 11,
+    "kind": "treasure",
+    "concept": "stairs",
+    "viewportWidth": 1024
+  },
+  {
+    "file": "docs/design/previews/issue357-seed97-act2-12f-combat-base-1024.png",
+    "sha256": "bdfa0e12efa639dcab38b7121e102eca4a62fd76adefb345567889060f63ba50",
+    "bytes": 852098,
+    "seed": 97,
+    "floor": 12,
+    "kind": "combat",
+    "concept": "base",
+    "viewportWidth": 1024
+  },
+  {
+    "file": "docs/design/previews/issue357-seed97-act2-12f-combat-stairs-1024.png",
+    "sha256": "97d523077993e8748708a5fe629b3756a16a636d3a57a8721ed724cbe00ead3e",
+    "bytes": 906692,
+    "seed": 97,
+    "floor": 12,
+    "kind": "combat",
+    "concept": "stairs",
+    "viewportWidth": 1024
+  }
+]
