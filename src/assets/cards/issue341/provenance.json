@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "cardId": "BASE-004",
+      "version": "issue328-v1",
+      "runtimePath": "src/assets/cards/issue341/base-quick-attack-candidate-v1.png",
+      "originalPath": "docs/art/production/issue328/assets/card-base-quick-attack-v1.png",
+      "sourceIssue": 328,
+      "sourceCommit": "963f357e944cfbc8ba0b2e50a3e5aa84ba71b262",
+      "sha256": "0ac611650fdc522999e9c18c7e66e8532b69112ce34bdc8fc09c300c86e825c4",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-005",
+      "version": "issue328-v1",
+      "runtimePath": "src/assets/cards/issue341/base-guard-candidate-v1.png",
+      "originalPath": "docs/art/production/issue328/assets/card-base-guard-v1.png",
+      "sourceIssue": 328,
+      "sourceCommit": "963f357e944cfbc8ba0b2e50a3e5aa84ba71b262",
+      "sha256": "5acaa7335c7a777e7004d7d17fac5725dcd75da0c0bc9a56260f7768658aa1af",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-006",
+      "version": "issue328-v1",
+      "runtimePath": "src/assets/cards/issue341/base-heal-candidate-v1.png",
+      "originalPath": "docs/art/production/issue328/assets/card-base-heal-v1.png",
+      "sourceIssue": 328,
+      "sourceCommit": "963f357e944cfbc8ba0b2e50a3e5aa84ba71b262",
+      "sha256": "3b1e46109a4c0aed7ec44a7a9a2bf5ce03a0a7db8f55107a044c6433c9f35fcb",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-008",
+      "version": "issue328-v1",
+      "runtimePath": "src/assets/cards/issue341/base-strengthen-candidate-v1.png",
+      "originalPath": "docs/art/production/issue328/assets/card-base-strengthen-v1.png",
+      "sourceIssue": 328,
+      "sourceCommit": "963f357e944cfbc8ba0b2e50a3e5aa84ba71b262",
+      "sha256": "30ab0d5840ac5d469606808ab711aefaa20b90b2c61d16db48ce36642cca0de6",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-009",
+      "version": "issue328-v1",
+      "runtimePath": "src/assets/cards/issue341/base-weaken-candidate-v1.png",
+      "originalPath": "docs/art/production/issue328/assets/card-base-weaken-v1.png",
+      "sourceIssue": 328,
+      "sourceCommit": "963f357e944cfbc8ba0b2e50a3e5aa84ba71b262",
+      "sha256": "a1c3bbdb21c1a5f808d76ee50fe0849ceb6b391cb2ac0e31442a5a9e2c23e289",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-010",
+      "version": "issue328-v2",
+      "runtimePath": "src/assets/cards/issue341/base-poison-candidate-v2.png",
+      "originalPath": "docs/art/production/issue328/assets/card-base-poison-v2.png",
+      "sourceIssue": 328,
+      "sourceCommit": "963f357e944cfbc8ba0b2e50a3e5aa84ba71b262",
+      "sha256": "0bb8af44b1716d116558535a33331ff31fa28c47c3778269513b29e50b41fa06",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-012",
+      "version": "issue328-v1",
+      "runtimePath": "src/assets/cards/issue341/base-pierce-candidate-v1.png",
+      "originalPath": "docs/art/production/issue328/assets/card-base-pierce-v1.png",
+      "sourceIssue": 328,
+      "sourceCommit": "963f357e944cfbc8ba0b2e50a3e5aa84ba71b262",
+      "sha256": "6b8941ad0d02b98fa0603cf5c5a945b96525b428af96a5ef9539854b74c1fe07",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-014",
+      "version": "issue328-v1",
+      "runtimePath": "src/assets/cards/issue341/base-recover-candidate-v1.png",
+      "originalPath": "docs/art/production/issue328/assets/card-base-recover-v1.png",
+      "sourceIssue": 328,
+      "sourceCommit": "963f357e944cfbc8ba0b2e50a3e5aa84ba71b262",
+      "sha256": "cac1302a9fe6375637d08d6fad219efd5980b7e6cb71ad8734d14b2447ed8d0f",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-015",
+      "version": "issue328-v1",
+      "runtimePath": "src/assets/cards/issue341/base-exhaust-candidate-v1.png",
+      "originalPath": "docs/art/production/issue328/assets/card-base-exhaust-v1.png",
+      "sourceIssue": 328,
+      "sourceCommit": "963f357e944cfbc8ba0b2e50a3e5aa84ba71b262",
+      "sha256": "a37463da80490fff8f356176c1ee353c4c766e69ef5f189b06e1b7fc7781978a",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "BASE-018",
+      "version": "issue328-v1",
+      "runtimePath": "src/assets/cards/issue341/base-cleanse-candidate-v1.png",
+      "originalPath": "docs/art/production/issue328/assets/card-base-cleanse-v1.png",
+      "sourceIssue": 328,
+      "sourceCommit": "963f357e944cfbc8ba0b2e50a3e5aa84ba71b262",
+      "sha256": "6423d606a5d488e688f9d89ed4a604eb77f0b3a2a3c0ac3da0da9e32b2f27956",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    }
+  ]
+}
