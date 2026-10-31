@@ -121,12 +121,19 @@ export class GameShell {
   showLoss(session: RunSession, content: ContentRegistry, lowStimulus: boolean, options: LossNoteOptions): void {
     const wasLoss = this.main.dataset.screen === "lost";
     const { run } = session;
+    if (!wasLoss) {
+      const stageImage = this.stage.style.backgroundImage;
+      this.main.style.setProperty("--loss-stage-image", stageImage);
+      this.main.style.backgroundImage = `linear-gradient(0deg,#102d40a8,transparent 53%,#0e2c3d40),${stageImage}`;
+      this.stage.style.backgroundImage = "none";
+    }
     this.main.dataset.screen = "lost";
     this.main.dataset.club = run.clubId;
     this.main.dataset.effects = lowStimulus ? "quiet" : "standard";
     this.stage.dataset.act = String(run.act);
     this.input.disabled = true;
     this.input.value = "";
+    this.control.inert = true;
     this.hero.className = "hero-art loss-pose";
     this.hero.src = defeatCandidateByClubId[run.clubId] ?? this.hero.src;
     const club = content.clubs.find((item) => item.id === run.clubId)?.name ?? "部活動";

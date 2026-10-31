@@ -1,27 +1,36 @@
-.game-shell[data-screen="lost"] .control-deck{visibility:hidden}
-.game-shell[data-screen="lost"] .topbar{height:68px;min-height:68px}
-.game-shell[data-screen="lost"] .loss-header-facts{font-size:13px;font-weight:850;letter-spacing:.05em;color:#dce9ef}
+.game-shell[data-screen="lost"] .control-deck{visibility:hidden;opacity:0;pointer-events:none;transition:opacity .25s ease-out,visibility 0s linear .25s}
+.game-shell[data-screen="lost"]{background-size:cover;background-position:center 54%;background-repeat:no-repeat}
+.game-shell[data-screen="lost"] .stage{background:none}
+.game-shell[data-screen="lost"] .stage::before{content:"";position:absolute;inset:0;background:var(--loss-stage-image) center 54%/cover no-repeat;pointer-events:none;animation:loss-stage-crossfade .28s ease-out both}
+.game-shell[data-screen="lost"] .topbar{height:72px;min-height:72px}
+.game-shell[data-screen="lost"] .loss-header-facts{display:flex;align-items:center;gap:30px;font-size:12px;font-weight:850;letter-spacing:.04em;color:#dce9ef}
+.game-shell[data-screen="lost"] .loss-header-place{color:#d7e6ed}
+.game-shell[data-screen="lost"] .loss-header-health{display:flex;align-items:baseline;gap:3px;color:#f09bb2}
+.game-shell[data-screen="lost"] .loss-header-health>span{margin-right:4px;font-size:25px}
+.game-shell[data-screen="lost"] .loss-header-health strong{font-size:22px}
+.game-shell[data-screen="lost"] .loss-header-health small{font-size:11px;color:#d5dfe4}
+.game-shell[data-screen="lost"] .loss-header-health i{align-self:center;width:90px;height:4px;margin-left:8px;border-radius:5px;background:#b5c3c557}
 .game-shell[data-screen="lost"] .enemy-group,.game-shell[data-screen="lost"] .enemy-roster{opacity:.22;filter:saturate(.45);pointer-events:none}
 .game-shell[data-screen="lost"] .intent-ticket,.game-shell[data-screen="lost"] .enemy-hud,.game-shell[data-screen="lost"] .enemy-status{display:none}
 .game-shell[data-screen="lost"] .hero-art.loss-pose{height:min(46vw,98%);max-width:min(36vw,430px);object-fit:contain;object-position:center bottom;animation:loss-pose-settle .3s ease-out both;filter:drop-shadow(0 9px 8px #23405755)}
 .game-shell[data-screen="lost"] .hero-shadow{width:75%;left:12.5%;height:14px;bottom:0;opacity:.6}
-.game-shell[data-screen="lost"] .game-shell-overlay{display:flex;align-items:center;justify-content:flex-end;padding:18px clamp(26px,9vw,150px) 120px;background:linear-gradient(90deg,transparent 35%,#17354a25 75%);pointer-events:none}
-.game-shell[data-screen="lost"] .loss-note{width:min(360px,42vw);max-height:min(75vh,520px);overflow-y:auto;margin:0;padding:23px 26px 20px;border:1px solid #9bb7c6;border-left:5px solid #627f96;border-radius:4px 10px 10px 4px;background:repeating-linear-gradient(180deg,#f6f8f3f8 0 31px,#b8cdd378 32px,#f6f8f3f8 33px);box-shadow:0 14px 32px #15304755;color:#294459;pointer-events:auto}
-.game-shell[data-screen="lost"] .loss-note::before{content:"放課後の記録";display:block;font-size:10px;font-weight:900;letter-spacing:.18em;color:#677c89}
-.game-shell[data-screen="lost"] .loss-note h2{margin:12px 0 17px;font-size:30px;color:#395971;line-height:1.15}
-.game-shell[data-screen="lost"] .loss-note h2:focus{outline:2px solid #427aa3;outline-offset:4px}
-.game-shell[data-screen="lost"] .loss-note-facts{margin:0 0 5px;font-size:13px;font-weight:800}
-.game-shell[data-screen="lost"] .loss-note-hp{margin:7px 0 2px;font-size:16px;color:#a84962}
-.game-shell[data-screen="lost"] .loss-note-hp strong{font-size:26px}
-.game-shell[data-screen="lost"] .loss-note-hp small{font-size:13px}
-.game-shell[data-screen="lost"] .loss-note-damage{margin:0 0 18px;font-size:11px;font-weight:800;color:#6e4c5a}
-.game-shell[data-screen="lost"] .loss-note-actions{display:flex;flex-direction:column;gap:8px}
-.game-shell[data-screen="lost"] .loss-note-actions button,.game-shell[data-screen="lost"] .loss-note-metrics button{min-height:40px;border:1px solid #718da0;border-radius:5px;background:#ecf3f5;color:#224459;font-size:13px;font-weight:850;cursor:pointer}
-.game-shell[data-screen="lost"] .loss-note-actions button:first-child{background:#426e88;border-color:#426e88;color:#fff}
+.game-shell[data-screen="lost"] .game-shell-overlay{display:flex;align-items:center;justify-content:flex-end;top:72px;padding:42px clamp(26px,9vw,150px) 20px;background:linear-gradient(90deg,transparent 42%,#17354a30 100%);pointer-events:none}
+.game-shell[data-screen="lost"] .loss-note{position:relative;width:min(320px,38vw);max-height:min(75vh,520px);overflow-y:auto;margin:0;padding:28px 29px 25px;border:1px solid #d0ded7;border-radius:3px 14px 5px 3px;background:linear-gradient(135deg,#f7f5e8f2,#e5eee9f0);box-shadow:-11px 17px 33px #102c3f7d,inset 0 0 0 6px #ffffff66;color:#294459;pointer-events:auto;transform:rotate(.5deg)}
+.game-shell[data-screen="lost"] .loss-note::before{content:"";position:absolute;left:11px;top:14px;bottom:14px;border-left:2px solid #83a5a783}
+.game-shell[data-screen="lost"] .loss-note-eyebrow{display:block;color:#63838b;font-size:10px;font-weight:850;letter-spacing:.09em}
+.game-shell[data-screen="lost"] .loss-note h2{margin:34px 0 19px;font-size:24px;color:#284d5c;line-height:1.2;letter-spacing:.06em}
+.game-shell[data-screen="lost"] .loss-note h2:focus-visible{outline:2px solid #427aa3;outline-offset:4px}
+.game-shell[data-screen="lost"] .loss-note-damage{margin:0 0 27px;padding-top:14px;border-top:1px solid #91b1b485;font-size:11px;font-weight:800;color:#9d5b70}
+.game-shell[data-screen="lost"] .loss-note-actions{display:flex;flex-direction:row;gap:9px}
+.game-shell[data-screen="lost"] .loss-note-actions button,.game-shell[data-screen="lost"] .loss-note-metrics button{min-height:37px;padding:6px 13px;border:1px solid #8bb0b5;border-radius:999px;background:transparent;color:#315e67;font-size:11px;font-weight:850;cursor:pointer;white-space:nowrap}
+.game-shell[data-screen="lost"] .loss-note-actions button:first-child{background:#24566a;border-color:#24566a;color:#fff}
 .game-shell[data-screen="lost"] .loss-note button:focus-visible{outline:3px solid #b85b79;outline-offset:2px}
 .game-shell[data-screen="lost"] .loss-note-metrics{margin-top:16px;padding-top:8px;border-top:1px solid #a8bac4;font-size:11px;line-height:1.6}
 .game-shell[data-screen="lost"] .loss-note-metrics button{display:block;margin-top:7px;min-height:30px;padding:3px 9px;font-size:11px}
 @keyframes loss-pose-settle{from{opacity:.45;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:1100px){.game-shell[data-screen="lost"] .topbar{height:96px;min-height:96px}.game-shell[data-screen="lost"] .game-shell-overlay{padding:10px 35px 95px}.game-shell[data-screen="lost"] .loss-note{width:min(320px,43vw);padding:15px 19px}.game-shell[data-screen="lost"] .loss-note h2{font-size:25px;margin:6px 0 12px}.game-shell[data-screen="lost"] .hero-art.loss-pose{max-width:38vw}}
-.game-shell[data-effects="quiet"][data-screen="lost"] .hero-art.loss-pose{animation:none}
-@media(prefers-reduced-motion:reduce){.game-shell[data-screen="lost"] .hero-art.loss-pose{animation:none}}
+@keyframes loss-stage-crossfade{from{opacity:1}to{opacity:0}}
+@media(max-width:1100px){.game-shell[data-screen="lost"] .topbar{height:96px;min-height:96px}.game-shell[data-screen="lost"] .game-shell-overlay{padding:10px 35px 0}.game-shell[data-screen="lost"] .loss-note{width:min(315px,39vw);padding:23px 24px}.game-shell[data-screen="lost"] .loss-note h2{font-size:22px;margin:28px 0 17px}.game-shell[data-screen="lost"] .hero-art.loss-pose{max-width:38vw}}
+.game-shell[data-effects="quiet"][data-screen="lost"] .hero-art.loss-pose,.game-shell[data-effects="quiet"][data-screen="lost"] .stage::before{animation:none}
+.game-shell[data-effects="quiet"][data-screen="lost"] .stage::before{opacity:0}
+.game-shell[data-effects="quiet"][data-screen="lost"] .control-deck{transition:none}
+@media(prefers-reduced-motion:reduce){.game-shell[data-screen="lost"] .hero-art.loss-pose,.game-shell[data-screen="lost"] .stage::before{animation:none}.game-shell[data-screen="lost"] .stage::before{opacity:0}.game-shell[data-screen="lost"] .control-deck{transition:none}}

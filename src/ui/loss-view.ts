@@ -27,17 +27,12 @@ export function createLossNote(session: RunSession, content: ContentRegistry, op
   note.setAttribute("role", "region");
   note.setAttribute("aria-label", "ランの結果");
   const heading = document.createElement("h2");
-  heading.textContent = "敗北";
+  heading.textContent = "今日はここまで";
+  heading.setAttribute("aria-label", "敗北");
   heading.tabIndex = -1;
-  const club = content.clubs.find((item) => item.id === run.clubId)?.name ?? "部活動";
-  const floor = run.map.nodes.find((item) => item.id === run.map.currentNodeId)?.floor ?? 0;
-  const facts = document.createElement("p");
-  facts.className = "loss-note-facts";
-  facts.textContent = `${club} · ACT ${run.act} · ${floor}F`;
-  const hp = document.createElement("p");
-  hp.className = "loss-note-hp";
-  hp.setAttribute("aria-label", `HP ${run.player.hp}/${run.player.maxHp}`);
-  hp.innerHTML = `<span aria-hidden="true">♥</span> <strong>${run.player.hp}</strong><small>/${run.player.maxHp}</small>`;
+  const eyebrow = document.createElement("span");
+  eyebrow.className = "loss-note-eyebrow";
+  eyebrow.textContent = "✦　書きとめた活動記録";
   const lastDamage = run.lastCombatLog?.entries.filter((entry) => entry.playerHpDelta < 0).at(-1);
   const damage = document.createElement("p");
   damage.className = "loss-note-damage";
@@ -47,17 +42,18 @@ export function createLossNote(session: RunSession, content: ContentRegistry, op
     const amount = Math.abs(lastDamage.playerHpDelta);
     damage.setAttribute("aria-label", `${source ? `${source}の行動で` : "最後の行動で"}HP ${amount}減少`);
     damage.textContent = `♥ −${amount}${source ? ` · ${source}` : ""}`;
-  } else damage.textContent = "HP 0";
+  } else damage.textContent = `♥ ${run.player.hp}/${run.player.maxHp}`;
   const actions = document.createElement("div");
   actions.className = "loss-note-actions";
-  for (const [label, action] of [["新しいランを始める", "new-run"], ["ラン履歴を見る", "open-history"]] as const) {
+  for (const [label, visible, action] of [["新しいランを始める", "もう一度", "new-run"], ["ラン履歴を見る", "記録を見る", "open-history"]] as const) {
     const button = document.createElement("button");
     button.type = "button";
     button.dataset.action = action;
-    button.textContent = label;
+    button.setAttribute("aria-label", label);
+    button.textContent = visible;
     actions.append(button);
   }
-  note.append(heading, facts, hp, damage, actions);
+  note.append(eyebrow, heading, damage, actions);
   if (options.playtestActiveMs !== undefined) {
     const metrics = document.createElement("div");
     metrics.className = "loss-note-metrics";
@@ -90,6 +86,13 @@ export function lossHeader(run: RunState, content: ContentRegistry): HTMLElement
   header.className = "loss-header-facts";
   const club = content.clubs.find((item) => item.id === run.clubId)?.name ?? "部活動";
   const floor = run.map.nodes.find((item) => item.id === run.map.currentNodeId)?.floor ?? 0;
-  header.textContent = `${club} · ACT ${run.act} · ${floor}F · HP ${run.player.hp}/${run.player.maxHp}`;
+  const place = document.createElement("span");
+  place.className = "loss-header-place";
+  place.textContent = `${club} · ACT ${run.act} · ${floor}F`;
+  const health = document.createElement("span");
+  health.className = "loss-header-health";
+  health.setAttribute("aria-label", `HP ${run.player.hp}/${run.player.maxHp}`);
+  health.innerHTML = `<span aria-hidden="true">♥</span> <strong>${run.player.hp}</strong><small>/${run.player.maxHp}</small><i aria-hidden="true"></i>`;
+  header.append(place, health);
   return header;
 }
