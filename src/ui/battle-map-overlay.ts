@@ -18,16 +18,16 @@ export function battleMapOverlayMarkup(session: RunSession): string {
   const { run } = session;
   const current = run.map.nodes.find((node) => node.id === run.map.currentNodeId);
   if (!current) throw new RangeError(`unknown current node: ${run.map.currentNodeId}`);
-  const nodes = run.map.nodes.filter((node) => node.act === run.act);
-  const floors = [...new Map(nodes.map((node) => [node.floor, { act: node.act, floor: node.floor }])).values()]
-    .sort((a, b) => a.floor - b.floor);
   const nextIds = new Set(current.nextIds);
-  const routeSegments = mapRouteSegments(nodes, floors, current.id, nextIds, new Set(session.completedNodeIds));
+  const nodes = run.map.nodes.filter((node) => node.act === run.act || nextIds.has(node.id));
+  const floors = [...new Map(nodes.map((node) => [`${node.act}:${node.floor}`, { act: node.act, floor: node.floor }])).values()]
+    .sort((a, b) => a.act - b.act || a.floor - b.floor);
+  const routeSegments = mapRouteSegments(nodes, floors, current.id, nextIds, new Set([...session.completedNodeIds, current.id]));
   const lines = routeSegments.map((segment) => `<path class="route-${segment.state}" data-from="${html(segment.fromId)}" data-to="${html(segment.toId)}" d="M ${segment.x1} ${segment.y1} L ${segment.x2} ${segment.y2}" />`).join("");
-  const rows = floors.map(({ floor }) => `<li class="battle-map-floor" ${floor === current.floor ? 'data-current-floor="true"' : ""}><span class="battle-map-floor-label">${floor === 0 ? "START" : `${floor}F`}</span><div class="battle-map-floor-nodes">${nodes.filter((node) => node.floor === floor).map((node) => {
+  const rows = floors.map(({ act, floor }) => `<li class="battle-map-floor" ${act === current.act && floor === current.floor ? 'data-current-floor="true"' : ""}><span class="battle-map-floor-label">${act === run.act ? (floor === 0 ? "START" : `${floor}F`) : `ACT ${act}`}</span><div class="battle-map-floor-nodes">${nodes.filter((node) => node.act === act && node.floor === floor).map((node) => {
     const state = node.id === current.id ? "current" : nextIds.has(node.id) ? "next" : session.completedNodeIds.includes(node.id) ? "visited" : "future";
     const status = state === "current" ? "現在地" : state === "next" ? "戦闘後の候補" : state === "visited" ? "通過済み" : "未到達";
-    return `<div class="battle-map-node kind-${node.kind} ${state}" data-node-id="${html(node.id)}" aria-label="${floor}階 ${html(kindLabels[node.kind])}、${status}"><span aria-hidden="true">${kindMarks[node.kind]}</span><small>${html(kindLabels[node.kind])}</small></div>`;
+    return `<div class="battle-map-node kind-${node.kind} ${state}" data-node-id="${html(node.id)}" aria-label="Act ${node.act} ${floor}階 ${html(kindLabels[node.kind])}、${status}"><span aria-hidden="true">${kindMarks[node.kind]}</span><small>${html(kindLabels[node.kind])}</small></div>`;
   }).join("")}</div></li>`).join("");
 
   return `<div class="battle-map-overlay" data-role="battle-map-overlay">
