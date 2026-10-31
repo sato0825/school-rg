@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { join } from "node:path";
 import { demoContent } from "../../src/content/demo-battle.js";
 import { createRunSession } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
@@ -25,6 +26,10 @@ for (const width of [1024, 1440]) {
       await expect(page.getByRole("button", { name: "新しいランを始める" })).toBeInViewport();
       await expect(page.getByRole("button", { name: "ラン履歴を見る" })).toBeInViewport();
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+      if (process.env.SCHOOL_RG_VICTORY_OUTPUT_DIR) {
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: join(process.env.SCHOOL_RG_VICTORY_OUTPUT_DIR, `issue292-victory-${club.id}-${width}.png`) });
+      }
       const firstStage = await page.locator(".stage").evaluate((element) => {
         const rect = element.getBoundingClientRect();
         const actor = element.querySelector(".ally-slot")!.getBoundingClientRect();

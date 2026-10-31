@@ -999,7 +999,7 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
         bosses++;
       }
       battles++;
-      await typeThroughBattle(page);
+      await typeThroughBattle(page, bosses === 3 ? ".run-result" : ".reward-panel");
     } else throw new Error(`unexpected run screen at step ${step}`);
   }
   const result = await page.locator(".run-result").innerText().catch(() => "ラン結果画面なし");
@@ -1018,8 +1018,10 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
 test("a seeded run clears all three Acts with typed combat", async ({ page }) => {
   test.setTimeout(120_000);
   await page.clock.install();
+  await page.setViewportSize({ width: 1024, height: 768 });
   await startDemoRun(page);
   await clearThreeActs(page);
+  if (process.env.SCHOOL_RG_VICTORY_OUTPUT_DIR) await page.screenshot({ path: `${process.env.SCHOOL_RG_VICTORY_OUTPUT_DIR}/issue292-victory-actual-3act-1024.png` });
   await expect(page.getByRole("button", { name: /戦闘ログ/ })).toHaveCount(0);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.lastCombatLog.entries.some((entry: { actionId: string }) => entry.actionId === "won"))).toBe(true);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["literature-demo"])).toBe(1);
