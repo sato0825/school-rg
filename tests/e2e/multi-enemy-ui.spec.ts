@@ -44,7 +44,7 @@ for (const [count, width] of [[3, 390], [4, 390], [5, 390], [5, 1440]] as const)
     const detail = await roster.last().locator(".enemy-detail").boundingBox();
     expect(detail!.x).toBeGreaterThanOrEqual(stage!.x - 1);
     expect(detail!.x + detail!.width).toBeLessThanOrEqual(stage!.x + stage!.width + 1);
-    if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1" && count === 5) await page.screenshot({ path: `docs/art/previews/issue170-five-enemies-${width}.png` });
+    if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1" && count === 5) await page.screenshot({ path: `docs/art/previews/issue170-five-enemies-v3-${width}.png` });
     await roster.nth(1).click();
     await expect(roster.nth(1)).toBeFocused();
     await expect(roster.nth(1).locator(".enemy-detail")).toBeVisible();

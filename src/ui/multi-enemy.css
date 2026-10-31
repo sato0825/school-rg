@@ -43,3 +43,6 @@
   .enemy-detail-values,.enemy-detail-status{font-size:10px;font-weight:800;line-height:1.2}
   .enemy-detail-status{color:#675374}
 }
+@media(max-width:760px) and (min-height:800px){
+  .enemy-roster-button .enemy-detail{bottom:calc(100% + 180px)}
+}
