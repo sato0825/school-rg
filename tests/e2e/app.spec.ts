@@ -179,9 +179,8 @@ test("a defeated run reaches its result and returns to the title by keyboard", a
   await enterNextNode(page);
   for (let turn = 0; turn < 30 && !(await page.locator(".run-result").count()); turn++) await page.clock.runFor(11_000);
   await expect(page.getByRole("heading", { name: "敗北" })).toBeVisible();
-  await page.getByRole("button", { name: "最後の戦闘ログ" }).click();
-  await expect(page.locator('.combat-log-entry[data-kind="result"]')).toContainText("敗北確定");
-  await page.getByRole("button", { name: "前の画面に戻る" }).click();
+  await expect(page.getByRole("button", { name: /戦闘ログ/ })).toHaveCount(0);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.lastCombatLog.entries.some((entry: { actionId: string }) => entry.actionId === "lost"))).toBe(true);
   const lostHistory = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-history-v1")!));
   expect(lostHistory.entries).toHaveLength(1);
   expect(lostHistory.entries[0]).toMatchObject({ runId: expect.any(String), clubId: "literature-demo", result: "lost", hp: 0 });
@@ -813,9 +812,8 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await page.clock.install();
   await startDemoRun(page);
   await clearThreeActs(page);
-  await page.getByRole("button", { name: "最後の戦闘ログ" }).click();
-  await expect(page.locator('.combat-log-entry[data-kind="result"]').first()).toContainText("勝利確定");
-  await page.getByRole("button", { name: "前の画面に戻る" }).click();
+  await expect(page.getByRole("button", { name: /戦闘ログ/ })).toHaveCount(0);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.lastCombatLog.entries.some((entry: { actionId: string }) => entry.actionId === "won"))).toBe(true);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-progression-v1")!).unlockedByClub["literature-demo"])).toBe(1);
   const wonHistory = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-history-v1")!));
   expect(wonHistory.entries).toHaveLength(1);
@@ -1249,29 +1247,55 @@ test("one typed card emits one sound and mute suppresses the next card", async (
   expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
 });
 
-test("the combat guide pauses input time and restores the previous pause state", async ({ page }) => {
+test("battle help stays on the battle screen and does not alter the clock", async ({ page }) => {
   await page.clock.install();
   await startDemoRun(page);
   await enterNextNode(page);
   const time = page.locator("[data-role=time]");
-  const before = await time.innerText();
-  await page.getByRole("button", { name: "遊び方" }).click();
-  await expect(page.getByRole("heading", { name: "カード名をタイプして行動" })).toBeVisible();
-  await expect(page.locator(".how-to-play")).toContainText("誤キーは無視");
-  await page.clock.runFor(5_000);
-  await page.getByRole("button", { name: "戻る" }).click();
-  expect(Number.parseFloat(before) - Number.parseFloat(await time.innerText())).toBeLessThan(0.2);
-  await expect(page.getByRole("button", { name: "一時停止" })).toBeVisible();
+  const before = Number.parseFloat(await time.innerText());
+  await page.getByRole("button", { name: "操作" }).click();
+  await expect(page.locator("#battle-help")).toBeVisible();
+  await expect(page.locator(".stage")).toBeVisible();
+  await expect(page.locator(".hand")).toBeVisible();
+  await expect(page.getByRole("button", { name: "操作" })).toHaveAttribute("aria-expanded", "true");
+  await page.clock.runFor(1_000);
+  expect(before - Number.parseFloat(await time.innerText())).toBeGreaterThan(0.7);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#battle-help")).toBeHidden();
+  await expect(page.getByRole("button", { name: "操作" })).toBeFocused();
   await page.getByRole("button", { name: "一時停止" }).click();
+  await expect(page.getByRole("button", { name: "再開" })).toBeFocused();
   const pausedAt = await time.innerText();
-  await page.getByRole("button", { name: "遊び方" }).click();
-  await page.clock.runFor(5_000);
-  await page.getByRole("button", { name: "戻る" }).click();
-  await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
+  await page.getByRole("button", { name: "操作" }).click();
+  await page.clock.runFor(1_000);
   expect(await time.innerText()).toBe(pausedAt);
-  await page.locator("[data-action=toggle-audio]").click();
-  await expect(page.locator("[data-action=toggle-audio]")).toHaveAttribute("aria-pressed", "false");
+  await page.getByRole("button", { name: "閉じる" }).click();
+  await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "操作" })).toBeFocused();
+  await page.getByRole("button", { name: "再開" }).click();
+  await page.getByRole("button", { name: "操作" }).click();
+  await page.keyboard.press("s");
+  await expect(page.locator("#battle-help")).toBeHidden();
+  await expect(page.locator(".typing-input")).toHaveValue("s");
 });
+
+for (const viewport of [{ width: 1280, height: 800 }, { width: 820, height: 1180 }]) {
+  test(`battle help fits ${viewport.width}px without hiding the combat context`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await startDemoRun(page);
+    await enterNextNode(page);
+    await page.getByRole("button", { name: "操作" }).click();
+    const help = await page.locator("#battle-help").boundingBox();
+    expect(help).not.toBeNull();
+    expect(help!.x).toBeGreaterThanOrEqual(0);
+    expect(help!.x + help!.width).toBeLessThanOrEqual(viewport.width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width);
+    await expect(page.locator(".stage .enemy-hud").first()).toBeVisible();
+    await expect(page.locator(".hand .card").first()).toBeVisible();
+    await expect(page.locator(".topbar .brand")).toHaveCount(0);
+    await page.getByRole("button", { name: "閉じる" }).click();
+  });
+}
 
 test("default club selection shows five distinct characters and chosen battle art", async ({ page }) => {
   const requested: string[] = [];
