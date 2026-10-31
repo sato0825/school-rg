@@ -6,7 +6,7 @@
     "sha256": "f3a193cda40a084e3c503e020b2a989393464614f4897b9441369a7185ecac84",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-18f7c7e6-0ed8-445e-8d3d-3b382d4c18fb.png",
     "promptRef": "wave2-prompts.json#LIT-005",
-    "state": "draft-candidate",
+    "state": "superseded-candidate",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -17,7 +17,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending"
+    "visualReview": "pending",
+    "selectionDecision": "v1 rejected for hand-window use; retained for provenance and comparison"
   },
   {
     "id": "LIT-009",
@@ -66,7 +67,7 @@
     "sha256": "0b219b8755d438aa3d0249f9b5bcb59737a83aae8ccc5e5e9565e98cb6d17541",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-68979bcb-b9d4-4f64-a311-5577a89ecb04.png",
     "promptRef": "wave2-prompts.json#SCI-009",
-    "state": "draft-candidate",
+    "state": "superseded-candidate",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -77,7 +78,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending"
+    "visualReview": "pending",
+    "selectionDecision": "v1 rejected for hand-window use; retained for provenance and comparison"
   },
   {
     "id": "KEN-009",

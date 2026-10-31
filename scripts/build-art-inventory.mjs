@@ -9,7 +9,7 @@ const output = path.join(root, "docs/art/production/issue255");
 const candidates = JSON.parse(fs.readFileSync(path.join(output, "existing-candidates.json"), "utf8"));
 const wave1 = JSON.parse(fs.readFileSync(path.join(output, "wave1-assets.json"), "utf8"));
 const wave2Dir = path.join(root, "docs/art/production/issue269");
-const wave2 = ["wave2-assets.json", "wave2-assets-supplement.json"]
+const wave2 = ["wave2-assets.json", "wave2-assets-supplement.json", "wave2-revision-assets.json", "wave2-harmonization-assets.json"]
   .flatMap((file) => JSON.parse(fs.readFileSync(path.join(wave2Dir, file), "utf8")));
 const allProducedAssets = [...wave1.map((asset) => ({ ...asset, issue: 255 })), ...wave2.map((asset) => ({ ...asset, issue: 269 }))];
 if (new Set(allProducedAssets.map((asset) => `${asset.id}:${asset.version}`)).size !== allProducedAssets.length) throw new Error("duplicate produced asset ID/version");
