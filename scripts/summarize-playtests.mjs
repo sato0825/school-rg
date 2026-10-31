@@ -32,6 +32,57 @@ function actDurations(record) {
   return durations;
 }
 
+function encounterSamples(record) {
+  if (record.partial || record.result === null || !Array.isArray(record.battles)
+    || record.battles.length === 0 || record.battles.length !== record.battleNodeIds.length) return null;
+  const battles = record.battles;
+  if (!battles.every((battle) => !battle.partial && (battle.result === "won" || battle.result === "lost")
+    && Number.isSafeInteger(battle.act) && battle.act >= 1 && battle.act <= 3
+    && Array.isArray(battle.enemyIds) && battle.enemyIds.length > 0
+    && battle.enemyIds.every((id) => typeof id === "string" && id.length > 0))) return null;
+  return battles;
+}
+
+function encounterVariety(records) {
+  const runs = records.map(encounterSamples).filter((samples) => samples !== null);
+  const byAct = [1, 2, 3].map((act) => ({ act, battles: 0, repeatedBattles: 0, distinctEnemyIds: 0 }));
+  const enemyIdsByAct = [new Set(), new Set(), new Set()];
+  const repeatsPerRun = [];
+  for (const battles of runs) {
+    const seen = new Set();
+    let repeated = 0;
+    for (const battle of battles) {
+      const index = battle.act - 1;
+      const signature = `${battle.act}:${[...battle.enemyIds].sort().join("|")}`;
+      if (seen.has(signature)) { byAct[index].repeatedBattles++; repeated++; }
+      else seen.add(signature);
+      byAct[index].battles++;
+      for (const enemyId of battle.enemyIds) enemyIdsByAct[index].add(enemyId);
+    }
+    repeatsPerRun.push(repeated);
+  }
+  for (let index = 0; index < 3; index++) byAct[index].distinctEnemyIds = enemyIdsByAct[index].size;
+  return {
+    runsWithUsableEncounterRecords: runs.length,
+    medianRepeatedBattlesPerRun: median(repeatsPerRun),
+    byAct,
+  };
+}
+
+function observedVisits(records) {
+  const kinds = {};
+  let runs = 0;
+  for (const record of records) {
+    if (record.partial || record.result === null) continue;
+    if (record.visits.length) runs++;
+    for (const visit of record.visits) {
+      if (typeof visit.kind !== "string" || !visit.kind) continue;
+      kinds[visit.kind] = (kinds[visit.kind] ?? 0) + 1;
+    }
+  }
+  return { fullRunsWithVisits: runs, visitKinds: kinds };
+}
+
 export function summarizePlaytests(values) {
   const byRun = new Map();
   for (const value of values) {
@@ -63,6 +114,8 @@ export function summarizePlaytests(values) {
       medianBattleMs: median(finishedBattles.map((battle) => battle.endedAtActiveMs - battle.startedAtActiveMs)),
       totalHpLoss: finishedBattles.reduce((sum, battle) => sum + Math.max(0, battle.hpBefore - battle.hpAfter), 0),
       medianActMs: [0, 1, 2].map((index) => median(acts.map((durations) => durations[index]).filter((value) => value !== null))),
+      encounterVariety: encounterVariety(records),
+      observedVisits: observedVisits(records),
     };
   }
   return { targetRunMs: TARGET_RUN_MS, uniqueRuns: byRun.size, inputRecords: values.length,
