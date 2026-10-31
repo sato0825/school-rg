@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "setId": "issue255-wave1-candidates",
+  "assetManifests": ["docs/art/production/issue255/wave1-assets.json"],
+  "outputRoot": "src/assets/cards/derivatives/issue255",
+  "outputManifest": "docs/art/production/derivatives/issue255-manifest.json",
+  "selections": [
+    { "id": "LIT-002", "version": "v1", "focusX": 0.51, "focusY": 0.53 },
+    { "id": "SCI-001", "version": "v1", "focusX": 0.45, "focusY": 0.50 },
+    { "id": "KEN-001", "version": "v2", "focusX": 0.51, "focusY": 0.50 },
+    { "id": "MUS-001", "version": "v1", "focusX": 0.49, "focusY": 0.50 },
+    { "id": "ART-002", "version": "v1", "focusX": 0.52, "focusY": 0.50 }
+  ]
+}
