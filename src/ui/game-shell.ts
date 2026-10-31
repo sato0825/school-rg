@@ -3,6 +3,7 @@ import type { ContentRegistry } from "../domain/schema.js";
 import type { BattleView } from "./battle-view.js";
 import { stageUrlForRun } from "./stage-presentation.js";
 import { identityForClub } from "../content/character-identities.js";
+import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
 
 /** The stage and actor belong to the run, rather than to an individual screen. */
 export class GameShell {
@@ -15,9 +16,11 @@ export class GameShell {
   private readonly header: HTMLElement;
   private readonly overlay: HTMLElement;
   private readonly content: ContentRegistry;
+  private readonly art: BattleView["art"];
+  private readonly config: GameConfig;
   private stageNodeId: string | null = null;
 
-  constructor(root: HTMLElement, run: RunState, view: BattleView, content: ContentRegistry) {
+  constructor(root: HTMLElement, run: RunState, view: BattleView, content: ContentRegistry, config: GameConfig = DEFAULT_GAME_CONFIG) {
     const initial = document.createElement("div");
     initial.innerHTML = `<main class="game game-shell" aria-label="学園タイピングローグライク"><header class="topbar"></header><section class="stage" aria-label="ゲームの舞台"><div class="stage-vignette"></div><div class="ally-group"><div class="ally-slot"><img class="hero-art" alt="主人公" /><div class="hero-shadow"></div><span class="hero-nameplate"></span></div></div></section><section class="control-deck"><input id="battle-typing-input" class="typing-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="カード名を入力" /></section></main>`;
     const main = initial.querySelector<HTMLElement>(".game");
@@ -37,6 +40,8 @@ export class GameShell {
     this.header = header;
     this.overlay = document.createElement("div");
     this.content = content;
+    this.art = view.art;
+    this.config = config;
     this.overlay.className = "game-shell-overlay";
     this.stage.append(this.overlay);
     this.stage.style.backgroundImage = `url("${stageUrlForRun(view.art, run)}")`;
@@ -104,9 +109,13 @@ export class GameShell {
     this.overlay.replaceChildren();
   }
 
-  showOverlay(screen: "reward" | "map", run: RunState, rendered: HTMLElement): void {
-    const panel = rendered.querySelector<HTMLElement>(screen === "reward" ? ".reward-panel" : ".map-panel");
+  showOverlay(screen: "reward" | "map" | "treasure" | "shop" | "rest" | "event", run: RunState, rendered: HTMLElement): void {
+    const panel = rendered.querySelector<HTMLElement>(screen === "reward" ? ".reward-panel" : screen === "map" ? ".map-panel" : ".location-scene");
     if (!panel) throw new Error(`Missing ${screen} panel`);
+    if (this.stageNodeId !== run.map.currentNodeId) {
+      this.stage.style.backgroundImage = `url("${stageUrlForRun(this.art, run)}")`;
+      this.stageNodeId = run.map.currentNodeId;
+    }
     this.overlay.replaceChildren(panel);
     this.main.dataset.screen = screen;
     this.input.disabled = true;
@@ -120,13 +129,14 @@ export class GameShell {
     const meta = document.createElement("div");
     meta.className = "run-meta";
     const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
-    meta.textContent = `ACT ${run.act} · ${node?.floor ?? 0}F · ${screen === "reward" ? "報酬" : "経路"}`;
+    const screenNames = { reward: "報酬", map: "経路", treasure: "宝箱", shop: "購買", rest: "休憩", event: "イベント" };
+    meta.textContent = `ACT ${run.act} · ${node?.floor ?? 0}F · ${screenNames[screen]}`;
     this.header.append(meta);
     const hp = document.createElement("div");
     hp.className = "player-hud run-player-hud";
     hp.setAttribute("aria-label", `${this.content.clubs.find((club) => club.id === run.clubId)?.name ?? "主人公"}の状態`);
     const ratio = Math.max(0, Math.min(100, run.player.hp / run.player.maxHp * 100));
-    hp.innerHTML = `<span class="player-health"><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><span class="player-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span class="player-health-fill" style="width:${ratio}%"></span></span></span><span class="run-gold" aria-label="所持金 ${run.gold}">◉ ${run.gold}</span><span class="run-deck" aria-label="デッキ ${run.deck.length}枚">▣ ${run.deck.length}</span>`;
+    hp.innerHTML = `<span class="player-health"><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><span class="player-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span class="player-health-fill" style="width:${ratio}%"></span></span></span><span class="run-gold" aria-label="所持金 ${run.gold}">◉ ${run.gold}</span><span class="run-deck" aria-label="デッキ ${run.deck.length}枚">▣ ${run.deck.length}</span>${screen !== "map" && screen !== "reward" ? `<span class="run-potions" aria-label="ポーション ${run.potionIds.length}/${requireSetting(this.config.potionSlots)}枠">✚ ${run.potionIds.length}/${requireSetting(this.config.potionSlots)}</span>` : ""}`;
     this.header.append(hp);
   }
 }

@@ -17,7 +17,8 @@ import { cardFxForUse } from "./card-fx.js";
 import { recordCombatResult } from "../domain/combat-action-log.js";
 import { MOTION_MS } from "./motion-timing.js";
 import { resultFxForTransition } from "./result-fx.js";
-import { renderClubSelect, renderCompendium, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
+import { renderClubSelect, renderCompendium, renderRunHistory, renderRunMap, renderRunResult, renderRunReward, renderRunTitle, renderSaveRecovery } from "./run-view.js";
+import { renderRunLocation } from "./location-stage.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserHistoryStore, browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
 import { appendRunHistory, emptyRunHistory, legacyTerminalRunId, parseRunHistory, terminalRunEntry } from "../domain/run-history.js";
@@ -156,14 +157,16 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
     const battleMapScrollTop = root.querySelector<HTMLElement>(".battle-map-scroll")?.scrollTop;
     const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
+    const previousScreen = root.querySelector<HTMLElement>(".game-shell")?.dataset.screen;
+    const locationFocused = document.activeElement instanceof HTMLElement && root.contains(document.activeElement) ? { action: document.activeElement.dataset.action, id: document.activeElement.dataset.id } : null;
     const restoreBattleMapFocus = root.querySelector(".battle-map-close") === document.activeElement;
     if (restoreError) { gameShell = null; renderSaveRecovery(root, demoBattleArt); }
     else if (frontScreen === "title") { gameShell = null; renderRunTitle(root, demoBattleArt, history); }
     else if (frontScreen === "clubs") { gameShell = null; renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError); }
     else if (frontScreen === "compendium") { gameShell = null; renderCompendium(root, demoContent, demoBattleArt); }
     else if (frontScreen === "history") { gameShell = null; renderRunHistory(root, history, demoContent, demoBattleArt, historyLoadError, historySaveError); }
-    else if (session.screen === "map" || session.screen === "reward" || session.screen === "combat") {
-      if (!gameShell) gameShell = new GameShell(root, run, view, demoContent);
+    else if (session.screen === "map" || session.screen === "reward" || session.screen === "combat" || session.screen === "treasure" || session.screen === "shop" || session.screen === "rest" || session.screen === "event") {
+      if (!gameShell) gameShell = new GameShell(root, run, view, demoContent, config);
       const rendered = document.createElement("div");
       if (session.screen === "map") {
         renderRunMap(rendered, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);
@@ -171,16 +174,15 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       } else if (session.screen === "reward") {
         renderRunReward(rendered, session, demoContent, demoBattleArt);
         gameShell.showOverlay("reward", run, rendered);
-      } else {
+      } else if (session.screen === "combat") {
         view.animationNowMs = clock.nowMs();
         renderBattle(rendered, run, demoContent, view, config);
         gameShell.showBattle(run, rendered);
+      } else {
+        renderRunLocation(rendered, session, demoContent, view.message, config);
+        gameShell.showOverlay(session.screen, run, rendered);
       }
     }
-    else if (session.screen === "treasure") { gameShell = null; renderRunTreasure(root, session, demoContent, demoBattleArt, config); }
-    else if (session.screen === "shop") { gameShell = null; renderRunShop(root, session, demoContent, demoBattleArt, view.message); }
-    else if (session.screen === "rest") { gameShell = null; renderRunRest(root, session, demoContent, demoBattleArt); }
-    else if (session.screen === "event") { gameShell = null; renderRunEvent(root, session, demoContent, demoBattleArt); }
     else if (session.screen === "won" || session.screen === "lost") { gameShell = null; renderRunResult(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, historyLoadError || historySaveError); }
     else { gameShell = null; view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view, config); }
     const handElement = root.querySelector<HTMLElement>(".hand");
@@ -236,6 +238,12 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       const current = root.querySelector<HTMLElement>(".battle-map-floor[data-current-floor='true']");
       const scroll = root.querySelector<HTMLElement>(".battle-map-scroll");
       if (current && scroll) scroll.scrollTop = battleMapScrollTop ?? Math.max(0, current.offsetTop - scroll.clientHeight / 2 + current.clientHeight / 2);
+    }
+    if (frontScreen === null && (session.screen === "treasure" || session.screen === "shop" || session.screen === "rest" || session.screen === "event")) {
+      const buttons = [...root.querySelectorAll<HTMLButtonElement>(".location-scene button[data-action], .topbar button[data-action]")];
+      const same = buttons.find((button) => !button.disabled && button.dataset.action === locationFocused?.action && button.dataset.id === locationFocused?.id);
+      if (same) same.focus({ preventScroll: true });
+      else if (previousScreen !== session.screen || locationFocused?.action) buttons.find((button) => !button.disabled && button.closest(".location-scene"))?.focus({ preventScroll: true });
     }
     persist();
   };
@@ -571,7 +579,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (session.screen === "event" && action === "event-choice") {
         const relicCount = run.relicIds.length;
-        const targetCardInstanceId = button.closest(".event-target-choice")?.querySelector<HTMLSelectElement>("select[data-event-target]")?.value;
+        const targetCardInstanceId = button.closest(".event-target-choice")?.querySelector<HTMLInputElement>("input[type=radio]:checked")?.value;
         session = chooseRunEventChoice(session, id, demoContent, demoEnemyAi, config, targetCardInstanceId);
         run = session.run;
         for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
