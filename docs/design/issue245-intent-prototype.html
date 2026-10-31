@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Issue 245 · Enemy Intent language</title>
+  <style>
+    :root{font-family:"Hiragino Sans","Yu Gothic",system-ui,sans-serif;color:#e8f1f4;background:#0a1520}
+    *{box-sizing:border-box}
+    body{margin:0}
+    button{font:inherit}
+    .prototype-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:#102131;color:#d5e4e8}
+    .prototype-controls strong{margin-right:10px}
+    .prototype-controls button{border:1px solid #6d8794;background:#1c3847;color:#e6f0ef;border-radius:6px;padding:5px 11px;cursor:pointer}
+    .prototype-controls button[aria-pressed="true"]{background:#cfe8e7;color:#163c49}
+    .prototype-note{font-size:12px;opacity:.78}
+    .game-frame{width:min(100%,1440px);height:min(calc(100vh - 54px),900px);min-height:710px;margin:auto;display:grid;grid-template-rows:62px minmax(0,1fr);background:#13283a;overflow:hidden}
+    .game-head{display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:#172c3f;border-bottom:1px solid #6382948c}
+    .head-location{display:flex;align-items:center;gap:16px}
+    .head-location b{font-size:15px;letter-spacing:.1em}
+    .encounter-class{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#e6ecec}
+    .class-glyph{display:inline-grid;place-items:center;width:25px;height:25px;border:2px solid #d2e2e3;transform:rotate(45deg)}
+    .class-glyph span{transform:rotate(-45deg);font-size:15px}
+    .game-frame[data-class="elite"] .class-glyph{border-color:#e9c573;box-shadow:0 0 0 3px #e9c57324}
+    .game-frame[data-class="boss"] .class-glyph{border-color:#e9a7ad;box-shadow:0 0 0 4px #e9a7ad24}
+    .head-hp{display:flex;gap:10px;align-items:center;font-weight:900;font-variant-numeric:tabular-nums}
+    .head-hp .hp-gauge{width:112px;height:8px;background:#617080;border-radius:5px;overflow:hidden}
+    .head-hp .hp-gauge i{display:block;background:#da9aae;width:82%;height:100%}
+    .head-hp .block{border:1px solid #8ec8d5;border-radius:6px;padding:3px 7px;color:#bde6ed}
+    .stage{position:relative;background-image:linear-gradient(#15354918,#0a1c294a),url("../../src/assets/stage-hallway-v1.png");background-size:cover;background-position:center;overflow:hidden;isolation:isolate}
+    .stage:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#16354a33 0%,transparent 50%,#08172318 100%);pointer-events:none}
+    .hero{position:absolute;z-index:2;left:6%;bottom:4%;height:min(78%,470px);max-width:29%;filter:drop-shadow(0 14px 10px #0d203050)}
+    .enemy-line{position:absolute;z-index:4;left:38%;right:4%;top:6%;bottom:5%;display:grid;grid-template-columns:repeat(var(--count),minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:11px;align-items:end}
+    .enemy{position:relative;min-width:0;min-height:0;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;cursor:pointer;border:0;padding:0;background:transparent;color:#fff;text-align:center}
+    .enemy:focus-visible{outline:3px solid #f5d58b;outline-offset:3px;border-radius:8px}
+    .enemy[data-selected="true"] .enemy-art{filter:drop-shadow(0 0 12px #d5ecf6aa) drop-shadow(0 14px 8px #0f263e70)}
+    .enemy-art{position:relative;z-index:1;width:100%;height:64%;min-height:0;max-height:64%;flex:0 1 64%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 14px 8px #0f263e70)}
+    .enemy[data-active="true"] .enemy-art{transform:translateY(-8px)}
+    .intent-sequence{display:flex;align-items:center;justify-content:center;gap:3px;min-height:34px;width:100%}
+    .step{display:grid;grid-template-columns:auto auto;align-items:center;justify-content:center;gap:2px;min-width:0;padding:4px 5px;border-radius:5px;background:#d8e8e8ed;color:#183447;font-variant-numeric:tabular-nums;font-weight:900;font-size:15px}
+    .step[data-kind="attack"]{background:#f0d9da}
+    .step[data-kind="block"]{background:#d7eaf0}
+    .step[data-kind="buff"]{background:#e8e2cc}
+    .step[data-kind="debuff"]{background:#e8def0}
+    .step[data-kind="summon"]{background:#e2e9dd}
+    .step[data-active="true"]{outline:3px solid #fff8d8;outline-offset:2px}
+    .step svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+    .step-text{white-space:nowrap}
+    .target-mark{grid-column:1/-1;justify-self:center;font-size:10px;line-height:1;font-weight:900;letter-spacing:.02em}
+    .target-mark[data-target="player"]{color:#873d55}
+    .target-mark[data-target="self"]{color:#266680}
+    .target-mark[data-target="enemy"]{color:#526839}
+    .seq-arrow{font-size:15px;color:#d5e5e8;font-weight:900;flex:none}
+    .enemy-id{position:relative;z-index:4;display:grid;flex:none;gap:5px;width:100%;max-width:260px;min-height:97px;margin-top:-8px;padding:7px 9px 9px;background:#102d40ef;border:1px solid #95b7c1a8;border-radius:8px;box-shadow:0 5px 12px #0a203b66;text-align:left}
+    .identity-row{display:flex;align-items:center;gap:5px;min-width:0}
+    .identity-row strong{font-size:12px;line-height:1.1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .hp-row{display:flex;align-items:center;gap:5px;min-width:0}
+    .class-mark{display:inline-grid;place-items:center;flex:none;width:13px;height:13px;border:1.5px solid #d2e2e3;transform:rotate(45deg);font-size:0}
+    .enemy[data-class="elite"] .class-mark{border:2px double #e9c573;box-shadow:0 0 0 2px #e9c57355}
+    .enemy[data-class="boss"] .class-mark{border:2px solid #e9a7ad;box-shadow:0 0 0 3px #e9a7ad55}
+    .hp-number{font-size:13px;font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .enemy-hp{display:block;flex:1;height:7px;border-radius:3px;background:#667481;overflow:hidden}
+    .enemy-hp i{display:block;width:var(--hp);height:100%;background:#e08d9e}
+    .enemy-status{position:relative;z-index:5;flex:none;margin-top:4px;height:24px;display:flex;align-items:center;justify-content:center;gap:5px;color:#102c3c}
+    .status{background:#d4e7e7e8;padding:2px 5px;border-radius:4px;font-size:11px;font-weight:900}
+    .feedback{position:absolute;z-index:6;top:26%;left:50%;transform:translateX(-50%);padding:3px 8px;border-radius:5px;background:#f8efdf;color:#6b2d48;font-weight:900;font-size:16px;opacity:0;pointer-events:none}
+    .enemy[data-active="true"] .feedback{opacity:1}
+    .stage-detail{position:absolute;z-index:5;left:33%;bottom:4%;max-width:360px;padding:10px 13px;border-radius:9px;background:#102a3cde;border:1px solid #9ec6d0ad;backdrop-filter:blur(8px);font-size:12px;line-height:1.5;opacity:0;pointer-events:none}
+    .stage-detail[data-open="true"]{opacity:1}
+    .stage-detail strong{display:block;font-size:14px;margin-bottom:3px}
+    .preview-watermark{position:absolute;z-index:6;bottom:5px;right:5px;font-size:9px;background:#152f3e;color:#d5e9ea;padding:2px 5px}
+    .game-frame[data-count="5"] .enemy-line{left:26%;right:1%;gap:5px}
+    .game-frame[data-count="5"] .hero{left:2%;height:min(59%,340px)}
+    .game-frame[data-count="5"] .step{font-size:13px;padding:3px;gap:1px}
+    .game-frame[data-count="5"] .step svg{width:16px;height:16px}
+    .game-frame[data-count="5"] .seq-arrow{font-size:14px}
+    .game-frame[data-count="5"] .target-mark{font-size:11px}
+    .game-frame[data-count="5"] .enemy-art{height:50%}
+    .game-frame[data-count="5"] .enemy-id{min-height:108px;padding:5px}
+    .game-frame[data-count="5"] .identity-row strong{font-size:11px}
+    .game-frame[data-count="5"] .hp-number{font-size:11px}
+    .game-frame[data-count="5"] .stage-detail{left:2%;top:3%;bottom:auto;width:240px}
+    .game-frame[data-quiet="true"] .enemy-art,.game-frame[data-quiet="true"] .feedback{transition:none!important;animation:none!important}
+    .game-frame[data-quiet="true"] .enemy[data-active="true"] .enemy-art{transform:none}
+    @media(prefers-reduced-motion:reduce){.enemy[data-active="true"] .enemy-art{transform:none}}
+    @media(max-width:1100px){
+      .game-frame{min-height:710px;grid-template-rows:52px minmax(0,1fr)}
+      .game-head{padding:0 14px}.hero{left:2%;height:70%}
+      .enemy-line{left:32%;right:2%;gap:5px}
+      .stage-detail{left:26%}
+      .game-frame[data-count="5"] .enemy-line{left:25%;right:1%}
+      .game-frame[data-count="5"] .step{font-size:13px}
+      .game-frame[data-count="5"] .step svg{width:16px;height:16px}
+      .game-frame[data-count="5"] .identity-row strong{font-size:11px}
+    }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="position:absolute;width:0;height:0">
+    <symbol id="i-attack" viewBox="0 0 24 24"><path d="M4 19 19 4M14 4h5v5M4 13v6h6"/></symbol>
+    <symbol id="i-block" viewBox="0 0 24 24"><path d="M12 2 20 6v6c0 5-3 8-8 10C7 20 4 17 4 12V6z"/></symbol>
+    <symbol id="i-buff" viewBox="0 0 24 24"><path d="M12 20V4m-5 5 5-5 5 5M5 20h14"/></symbol>
+    <symbol id="i-debuff" viewBox="0 0 24 24"><path d="M12 4v16m-5-5 5 5 5-5M5 4h14"/></symbol>
+    <symbol id="i-summon" viewBox="0 0 24 24"><path d="M4 7h10v12H4zM10 4h10v12h-4M7 12h4m-2-2v4"/></symbol>
+  </svg>
+  <div class="prototype-controls" aria-label="デザイン検証用の操作">
+    <strong>Intent視覚文法 · 設計候補</strong>
+    <button data-case="mop">攻撃×2＋防御</button>
+    <button data-case="clock">力＋防御</button>
+    <button data-case="poison">毒／脆弱</button>
+    <button data-case="summon">召喚</button>
+    <button data-case="elite">強敵</button>
+    <button data-case="five">5体編成</button>
+    <button data-case="boss">ボス</button>
+    <button id="quiet">低刺激</button>
+    <button id="play">予告順に行動</button>
+    <span class="prototype-note">開発用切替。実ゲーム画面には表示しません。</span>
+  </div>
+  <main class="game-frame" data-class="normal" data-count="1" data-quiet="false">
+    <header class="game-head">
+      <div class="head-location"><b>ACT 1 · 1F</b><span class="encounter-class"><span class="class-glyph"><span>◇</span></span><span id="class-text">通常戦</span></span></div>
+      <div class="head-hp"><span>♥ 38/38</span><span class="hp-gauge" aria-label="主人公HP 38/38"><i></i></span><span class="block">◇ 0</span></div>
+    </header>
+    <section class="stage" aria-label="戦闘舞台">
+      <img class="hero" src="../art/candidates/serious-student-idle-candidate-v2.png" alt="科学部の生徒">
+      <div class="enemy-line" id="enemy-line" style="--count:1"></div>
+      <div class="stage-detail" id="stage-detail" data-open="false" role="status"></div>
+      <span class="preview-watermark">#245 視覚文法候補 · ランタイム未採用</span>
+    </section>
+  </main>
+  <script type="module">
+    const asset = (name) => `../../src/assets/enemies/${name}`;
+    const hero = document.querySelector('.hero');
+    const frame = document.querySelector('.game-frame');
+    const line = document.querySelector('#enemy-line');
+    const detail = document.querySelector('#stage-detail');
+    const cases = {
+      mop: { className:'normal', enemies:[{name:'廊下のモップ', hp:25,max:25,block:0, art:asset('hall-mop-candidate-v2.png'), label:'モップが二度払う', steps:[['attack','3×2','味方へ'],['block','+4','自分へ']]}] },
+      clock: { className:'normal', enemies:[{name:'閉鎖時刻の時計',hp:35,max:35,block:0,art:asset('archive-clock-candidate-v1.png'),label:'針を整える',steps:[['buff','力+1','自分へ'],['block','+5','自分へ']]}] },
+      poison: { className:'normal', enemies:[{name:'試験管の蒸気',hp:28,max:28,block:0,art:asset('beaker-mist-candidate-v1.png'),label:'蒸気が体にまとわりつく',steps:[['debuff','毒+1','味方へ']]},{name:'舞台の追光',hp:32,max:32,block:0,art:asset('stage-spotlight-candidate-v1.png'),label:'光が隙を作る',steps:[['debuff','脆弱+1','味方へ']]}] },
+      summon: { className:'normal', enemies:[{name:'折れた校内図',hp:22,max:22,block:0,art:asset('folded-school-map-candidate-v1.png'),label:'紙片が抜ける',steps:[['summon','紙片+1','敵側へ']]}] },
+      elite: { className:'elite', enemies:[{name:'閉まる校門',hp:35,max:35,block:0,art:asset('school-gate-candidate-v1.png'),label:'門が押し戻す',steps:[['attack','4','味方へ'],['block','+3','自分へ']]}] },
+      five: { className:'normal', enemies:[
+        {name:'廊下のモップ',hp:25,max:25,block:0,art:asset('hall-mop-candidate-v2.png'),label:'二度払う',steps:[['attack','3×2','味方へ'],['block','+4','自分へ']]},
+        {name:'校内図',hp:22,max:22,block:0,art:asset('folded-school-map-candidate-v1.png'),label:'紙片が抜ける',steps:[['summon','+1','敵側へ']]},
+        {name:'蒸気',hp:28,max:28,block:0,art:asset('beaker-mist-candidate-v1.png'),label:'毒を付ける',steps:[['debuff','毒+1','味方へ']]},
+        {name:'コイル',hp:31,max:31,block:0,art:asset('lab-coil-candidate-v1.png'),label:'守りながら弾ける',steps:[['block','+4','自分へ'],['attack','3','味方へ']]},
+        {name:'時計',hp:35,max:35,block:0,art:asset('archive-clock-candidate-v1.png'),label:'針が二度鳴る',steps:[['attack','4×2','味方へ']]}
+      ] },
+      boss: { className:'boss', enemies:[{name:'追試の番人',hp:38,max:38,block:0,art:asset('final-exam-candidate-v1.png'),label:'追試の鐘',steps:[['attack','7','味方へ']]}] }
+    };
+    const names={attack:'攻撃',block:'防御',buff:'強化',debuff:'状態異常',summon:'召喚'};
+    function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+    function fullStep(step){return `${names[step[0]]} ${step[1]}、${step[2]}`;}
+    function markup(enemy,index,className){
+      const targetKind=target=>target==='味方へ'?'player':target==='自分へ'?'self':'enemy';
+      const targetGlyph={player:'↙',self:'◎',enemy:'↗'};
+      const effects=enemy.steps.map(step=>`<span class="step" data-kind="${step[0]}" title="${fullStep(step)}"><svg aria-hidden="true"><use href="#i-${step[0]}"></use></svg><span class="step-text">${escapeHtml(step[1])}</span><span class="target-mark" data-target="${targetKind(step[2])}" aria-label="${escapeHtml(step[2])}">${targetGlyph[targetKind(step[2])]}</span></span>`).join('<span class="seq-arrow" aria-hidden="true">›</span>');
+      const aria=`${enemy.name}、HP ${enemy.hp}/${enemy.max}、ブロック ${enemy.block}。次の行動: ${enemy.steps.map(fullStep).join('、続いて ')}。`;
+      return `<button class="enemy" type="button" data-index="${index}" data-selected="false" data-class="${className}" aria-label="${escapeHtml(aria)}">
+        <img class="enemy-art" alt="" src="${enemy.art}">
+        <div class="enemy-id"><div class="identity-row"><span class="class-mark" aria-hidden="true"></span><strong>${escapeHtml(enemy.name)}</strong></div><div class="hp-row"><span class="enemy-hp" role="meter" aria-label="${escapeHtml(enemy.name)}のHP" aria-valuemin="0" aria-valuemax="${enemy.max}" aria-valuenow="${enemy.hp}"><i style="--hp:${enemy.hp/enemy.max*100}%"></i></span><span class="hp-number">${enemy.hp}/${enemy.max}</span></div><div class="intent-sequence" aria-label="次の行動">${effects}</div></div>
+        <div class="enemy-status">${enemy.block>0?`<span class="status">◇ ${enemy.block}</span>`:''}</div>
+        <div class="feedback" aria-hidden="true">${escapeHtml(enemy.steps[0][1])}</div>
+      </button>`;
+    }
+    let current='mop';
+    function render(which){
+      current=which;
+      const scenario=cases[which];
+      frame.dataset.class=scenario.className;
+      frame.dataset.count=String(scenario.enemies.length);
+      line.style.setProperty('--count',scenario.enemies.length);
+      document.querySelector('#class-text').textContent=scenario.className==='boss'?'ボス戦':scenario.className==='elite'?'強敵戦':'通常戦';
+      line.innerHTML=scenario.enemies.map((enemy,index)=>markup(enemy,index,scenario.className)).join('');
+      detail.dataset.open='false';
+      document.querySelectorAll('[data-case]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.case===which)));
+    }
+    document.querySelectorAll('[data-case]').forEach(button=>button.addEventListener('click',()=>render(button.dataset.case)));
+    line.addEventListener('click',event=>{
+      const button=event.target.closest('.enemy');if(!button)return;
+      const index=Number(button.dataset.index), enemy=cases[current].enemies[index];
+      line.querySelectorAll('.enemy').forEach(item=>item.dataset.selected=String(item===button));
+      detail.innerHTML=`<strong>${escapeHtml(enemy.name)} · ${escapeHtml(enemy.label)}</strong>${enemy.steps.map((step,i)=>`${i+1}. ${escapeHtml(fullStep(step))}`).join('<br>')}`;
+      detail.dataset.open='true';
+    });
+    document.querySelector('#quiet').addEventListener('click',event=>{frame.dataset.quiet=String(frame.dataset.quiet!=='true');event.currentTarget.setAttribute('aria-pressed',frame.dataset.quiet);});
+    document.querySelector('#play').addEventListener('click',async event=>{
+      const control=event.currentTarget;
+      control.disabled=true;
+      for(const enemy of line.querySelectorAll('.enemy')){
+        enemy.dataset.active='true';
+        const steps=enemy.querySelectorAll('.step');
+        for(const step of steps){
+          step.dataset.active='true';
+          enemy.querySelector('.feedback').textContent=step.querySelector('.step-text').textContent;
+          await new Promise(resolve=>setTimeout(resolve,frame.dataset.quiet==='true'?250:480));
+          step.dataset.active='false';
+        }
+        enemy.dataset.active='false';
+      }
+      control.disabled=false;
+    });
+    const query=new URLSearchParams(location.search);
+    render(cases[query.get('case')]?query.get('case'):'mop');
+    if(query.get('quiet')==='1'||(query.get('quiet')!=='0'&&matchMedia('(prefers-reduced-motion: reduce)').matches)){frame.dataset.quiet='true';document.querySelector('#quiet').setAttribute('aria-pressed','true');}
+  </script>
+</body>
+</html>
