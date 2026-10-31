@@ -1,5 +1,5 @@
 import { requireSetting } from "./config.js";
-import { createRandomState, randomInt, type RandomState } from "./random.js";
+import { createRandomState, randomInt, shuffle, type RandomState } from "./random.js";
 import type { MapNode, RunState } from "./schema.js";
 
 export type EncounterKind = Extract<MapNode["kind"], "combat" | "elite" | "event" | "shop" | "rest" | "treasure">;
@@ -78,16 +78,21 @@ export function generateRunMap(seed: number, options: MapGenerationOptions = DEF
       else {
         // A same-lane spine keeps each node live. A single local fork gives a
         // real choice without the crossing, almost-complete mesh of old maps.
+        // Keep the old entropy draw count so a seed retains its encounter kinds,
+        // enemy rotation and post-map RNG state when only its routes change.
+        const routeOrder = shuffle(state, current.map((_, lane) => lane));
+        state = routeOrder.state;
+        let direction = 0;
         for (let lane = 0; lane < previous.length; lane++) {
+          const routeDraw = randomInt(state, current.length - 1);
+          state = routeDraw.state;
+          if (lane === 0) direction = routeDraw.value % 2;
           previous[lane]!.nextIds = [current[lane]!.id];
         }
         for (let branch = 0; branch < BRANCHES_PER_FLOOR; branch++) {
-          const gap = randomInt(state, current.length - 1);
-          state = gap.state;
-          const direction = randomInt(state, 2);
-          state = direction.state;
-          const source = gap.value + direction.value;
-          const target = gap.value + (1 - direction.value);
+          const gap = routeOrder.items[branch]! % (current.length - 1);
+          const source = gap + direction;
+          const target = gap + (1 - direction);
           previous[source]!.nextIds.push(current[target]!.id);
         }
       }
