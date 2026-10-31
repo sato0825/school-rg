@@ -14,6 +14,6 @@ describe("map route projection", () => {
       [boss.id, start.id, "available"],
       [start.id, fight.id, "future"],
     ]);
-    expect(nodes[0].nextIds).toEqual(["a2-start"]);
+    expect(boss.nextIds).toEqual(["a2-start"]);
   });
 });
