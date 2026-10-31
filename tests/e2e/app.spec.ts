@@ -129,6 +129,40 @@ test("shop and event choices accept focused keyboard activation", async ({ page 
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
 });
 
+test("run choices show outcomes and unavailable reasons at phone and desktop widths", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await startDemoRun(page);
+  await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
+  await expect(page.locator(".choice-balance")).toContainText("所持金");
+  await expect(page.locator(".shop-relic-offer .offer-price")).toContainText("所持金不足");
+  await expect(page.locator(".shop-relic-offer")).toBeDisabled();
+  await expect(page.locator(".reward-card .offer-symbol").first()).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-shop-phone-20261031.png", fullPage: true });
+  await page.getByRole("button", { name: "購買を出る" }).click();
+  await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
+  await scriptActiveEvent(page, "after-school-board");
+  const borrow = page.locator('[data-action="event-choice"][data-id="borrow"]');
+  await expect(borrow.locator(".choice-effect[data-tone=cost]")).toContainText("-10G");
+  await expect(borrow.locator(".choice-effect[data-tone=gain]")).toContainText("カード追加");
+  expect(await borrow.getAttribute("aria-label")).toBeNull();
+  await expect(borrow).toHaveAccessibleName(/資料を借りる.*-10G.*カード追加/);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-event-phone-20261031.png", fullPage: true });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await expect(borrow).toBeVisible();
+  if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-event-desktop-20261031.png", fullPage: true });
+  await page.addInitScript(() => {
+    const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
+    saved.session.run.gold = 0;
+    localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
+  });
+  await page.reload();
+  const unavailable = page.locator('[data-action="event-choice"][data-id="borrow"]');
+  await expect(unavailable).toBeDisabled();
+  await expect(unavailable).toHaveAccessibleName(/選択不可.*10G必要/);
+});
+
 test("shop relic, potion and card purchases persist and respect one-time stock", async ({ page }) => {
   await startDemoRun(page);
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();

@@ -61,6 +61,10 @@ function eventUnavailableReason(run: RunState, choice: EventChoice): string {
   return eventChoiceTargets(run, choice)?.length === 0 ? "対象カードなし" : "条件未達";
 }
 
+function eventActionTitle(label: string): string {
+  return label.split(" · ")[0]!.replace(/^\d+Gで/, "");
+}
+
 function shell(title: string, body: string, art: BattleArt, act = 1): string {
   return `<main class="run-screen" style="background-image:url('${html(stageUrlForAct(art, act))}')"><div class="run-scrim"></div><header class="run-header"><div class="brand"><span class="brand-mark">✦</span><div><small>SCHOOL ROGUELIKE</small><h1>学園タイピングローグライク</h1></div></div><strong>${html(title)}</strong></header>${body}</main>`;
 }
@@ -167,7 +171,7 @@ export function renderRunShop(root: HTMLElement, session: RunSession, content: C
     return `<button type="button" class="mini-choice" data-action="remove-shop-card" data-id="${instance.instanceId}" ${shop.removalUsed || gold < shop.removalPrice || session.run.deck.length <= 1 ? "disabled" : ""}>${html(card.input.text)}${instance.upgraded ? "+" : ""}</button>`;
   }).join("");
   const removalReason = shop.removalUsed ? "この購買では削除済み" : session.run.deck.length <= 1 ? "最後の1枚は削除不可" : gold < shop.removalPrice ? "所持金不足" : "";
-  root.innerHTML = shell("購買", `<section class="reward-panel economy-panel"><span class="eyebrow">SCHOOL SHOP</span><h2>購買</h2><p class="choice-balance"><span><span aria-hidden="true">◉</span> 所持金 <strong>${gold}G</strong></span><span>ポーション ${session.run.potionIds.length}/${requireSetting(config.potionSlots)}</span></p><p>商品は一度ずつ購入できます。</p><div class="economy-section"><h3>カード</h3><div class="reward-options">${offers}</div></div><div class="economy-section"><h3>レリック</h3><div class="reward-options">${relicOffers || "売り切れ"}</div></div><div class="economy-section"><h3>ポーション</h3><div class="reward-options">${potionOffers || "売り切れ"}</div></div><div class="economy-section"><h3>カードを1枚削除 <span class="section-price">◉ ${shop.removalPrice}G${removalReason ? ` · ${removalReason}` : ""}</span></h3><p class="choice-guidance">削除するカードを選ぶとデッキから取り除きます。</p><div class="choice-list">${removal}</div></div><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button><p class="economy-message" role="status">${html(message)}</p></section>`, art, session.run.act);
+  root.innerHTML = shell("購買", `<section class="reward-panel economy-panel"><h2>購買</h2><p class="choice-balance"><span><span aria-hidden="true">◉</span> 所持金 <strong>${gold}G</strong></span><span>ポーション ${session.run.potionIds.length}/${requireSetting(config.potionSlots)}</span></p><div class="economy-section"><h3>カード</h3><div class="reward-options">${offers}</div></div><div class="economy-section"><h3>レリック</h3><div class="reward-options">${relicOffers || "売り切れ"}</div></div><div class="economy-section"><h3>ポーション</h3><div class="reward-options">${potionOffers || "売り切れ"}</div></div><div class="economy-section"><h3>カードを1枚削除 <span class="section-price">◉ ${shop.removalPrice}G${removalReason ? ` · ${removalReason}` : ""}</span></h3><div class="choice-list">${removal}</div></div><button type="button" class="skip-reward" data-action="leave-shop">購買を出る</button><p class="economy-message" role="status">${html(message)}</p></section>`, art, session.run.act);
 }
 
 export function renderRunRest(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
@@ -177,7 +181,7 @@ export function renderRunRest(root: HTMLElement, session: RunSession, content: C
   }).join("");
   const { hp, maxHp } = session.run.player;
   const healed = Math.min(maxHp - hp, Math.ceil(maxHp * DEFAULT_ECONOMY_OPTIONS.restHealPercent / 100));
-  root.innerHTML = shell("休憩", `<section class="reward-panel economy-panel rest-panel"><span class="eyebrow">REST STOP</span><h2>休憩</h2><p>回復するか、デッキのカードを1枚強化します。</p><div class="rest-actions"><button type="button" class="skip-reward rest-heal" data-action="rest-heal"><span class="rest-action-icon" aria-hidden="true">♥</span><span class="rest-action-text"><strong>休んで回復</strong><span>HP ${hp}/${maxHp} → ${hp + healed}/${maxHp}</span></span><b>＋${healed} HP</b></button><div class="economy-section rest-upgrade"><h3><span class="rest-action-icon" aria-hidden="true">↑</span> カードを1枚強化</h3><p class="choice-guidance">強化するカードを選ぶと、そのカードに＋が付きます。</p><div class="choice-list">${choices || "強化可能なカードなし"}</div></div></div></section>`, art, session.run.act);
+  root.innerHTML = shell("休憩", `<section class="reward-panel economy-panel rest-panel"><h2>休憩</h2><div class="rest-actions"><button type="button" class="skip-reward rest-heal" data-action="rest-heal"><span class="rest-action-icon" aria-hidden="true">♥</span><span class="rest-action-text"><strong>休んで回復</strong><span>HP ${hp}/${maxHp} → ${hp + healed}/${maxHp}</span></span><b>＋${healed} HP</b></button><div class="economy-section rest-upgrade"><h3><span class="rest-action-icon" aria-hidden="true">↑</span> カードを1枚強化</h3><div class="choice-list">${choices || "強化可能なカードなし"}</div></div></div></section>`, art, session.run.act);
 }
 
 export function renderRunEvent(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
@@ -185,13 +189,13 @@ export function renderRunEvent(root: HTMLElement, session: RunSession, content: 
   const choices = availableEventChoices(session.run, content).map(({ choice, available }) => {
     const targets = eventChoiceTargets(session.run, choice);
     const effects = `<span class="event-choice-effects">${choice.effects.map((effect) => eventEffectMarkup(effect, content)).join("")}</span>`;
-    if (!targets || !available) return `<button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}" ${available ? "" : "disabled"}><strong>${html(choice.label)}</strong>${effects}${available ? "" : `<span class="choice-unavailable">選択不可 · ${html(eventUnavailableReason(session.run, choice))}</span>`}</button>`;
+    if (!targets || !available) return `<button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}" ${available ? "" : "disabled"}><strong>${html(eventActionTitle(choice.label))}</strong>${effects}${available ? "" : `<span class="choice-unavailable">選択不可 · ${html(eventUnavailableReason(session.run, choice))}</span>`}</button>`;
     const options = targets.map((instance) => {
       const card = content.cards.find((item) => item.id === instance.cardId)!;
       const deckIndex = session.run.deck.findIndex((item) => item.instanceId === instance.instanceId) + 1;
       return `<option value="${html(instance.instanceId)}">${html(card.input.text)}${instance.upgraded ? " +" : ""} · ${String(deckIndex).padStart(2, "0")}</option>`;
     }).join("");
-    return `<div class="event-target-choice"><strong>${html(choice.label)}</strong>${effects}<label>対象カードを選ぶ<select data-event-target="${html(choice.id)}" aria-label="${html(choice.label)}の対象カード">${options}</select></label><button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}">このカードで決定</button></div>`;
+    return `<div class="event-target-choice"><strong>${html(eventActionTitle(choice.label))}</strong>${effects}<label>対象カードを選ぶ<select data-event-target="${html(choice.id)}" aria-label="${html(choice.label)}の対象カード">${options}</select></label><button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}">このカードで決定</button></div>`;
   }).join("");
   root.innerHTML = shell("校内イベント", `<section class="reward-panel event-panel"><span class="eyebrow">AFTER SCHOOL</span><h2>${html(event.title)}</h2><p>${html(event.description)}</p><div class="event-choices">${choices}</div><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
 }

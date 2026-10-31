@@ -53,11 +53,15 @@
 @media (max-width: 600px) {
   .reward-panel { padding: 18px; }
   .reward-panel .reward-options { display: grid; grid-template-columns: 1fr; gap: 10px; overflow: visible; margin: 20px auto; }
+  .economy-panel .reward-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .reward-panel .reward-card { min-height: 0; gap: 8px; padding: 13px 15px; }
+  .economy-panel .reward-card { padding: 11px; }
   .reward-panel .reward-card > strong { font-size: 17px; }
   .reward-panel .offer-description, .reward-panel .offer-price, .reward-panel .offer-outcome { font-size: 13px; }
   .reward-panel .offer-heading small { font-size: 12px; }
   .reward-panel .offer-symbol { width: 28px; height: 28px; font-size: 18px; }
+  .economy-panel .offer-symbol { width: 24px; height: 24px; font-size: 17px; }
+  .economy-panel .offer-heading { gap: 5px; }
   .reward-panel .offer-price, .reward-panel .offer-outcome { padding: 7px 9px; }
   .economy-panel .economy-section { margin: 14px 0; padding: 13px 0; }
   .economy-panel .economy-section h3 { font-size: 15px; }
