@@ -69,7 +69,7 @@
     "sha256": "7014b85952c41c4baac712818134725f364ab84756406c71c435f92fb7dd3cde",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-4fbd5900-aa49-4493-af38-31af51bdb45b.png",
     "promptRef": "prompts-a.md#BASE-022",
-    "state": "candidate",
+    "state": "superseded-candidate",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -80,8 +80,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending two-stage meaning QA"
+    "visualReview": "semantic failure: implies last card in hand, not target HP <= 50%",
+    "selectionDecision": "do not use v1; replace with v2"
   },
   {
     "id": "BASE-024",
