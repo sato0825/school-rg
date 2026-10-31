@@ -43,7 +43,10 @@ for (const width of [1024, 1440] as const) for (const [intentId, pose] of [["pap
     const remaining = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
     await page.clock.runFor(remaining + 80);
     await expect(page.locator(".enemy-action-art")).toHaveAttribute("data-phase", "action");
+    await expect(page.locator(".enemy-action-art")).toHaveCSS("animation-name", pose === "attack" ? "paper-pencil-thrust" : "paper-guard-brace");
     await capture(page, `paper-${pose}-${width}-windup`);
+    await page.clock.runFor(500);
+    if (captureDir) await page.screenshot({ path: `${captureDir}/paper-${pose}-${width}-contact.png` });
     let resolved = false;
     for (let tick = 0; tick < 12 && !resolved; tick++) {
       await page.clock.runFor(100);
