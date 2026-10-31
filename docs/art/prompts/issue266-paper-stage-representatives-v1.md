@@ -1,0 +1,25 @@
+# Issue #266: 紙・ガッシュ調のAct別代表3場面
+
+組み込みImageGenを各場面に1回ずつ使った。詳細モデル版は公開されておらず、同一入力のピクセル再現性は保証されない。共通の参照画像は①`act1-paper-atrium-candidate-v1`（#249の環境描写、カメラ高さ、薄い紙/ガッシュ面）、②`serious-student-approved-direction`（女子中学生の細い濃紺線、人物比率）、③`paper-heap-candidate-v1`（敵の紙面と低彩度涼色）。①の建築構図は複製しない。すべて人物・敵・文字・UI・効果を描かない不透明16:9の環境プレートで、左の味方1〜3人と右の敵最大5体を別レイヤーで置く中央・下部の広い余白を求めた。
+
+| ID | 場所 | 前景で避けるもの |
+| --- | --- | --- |
+| `act1-paper-library-candidate-v1` | 図書閲覧室 | 書架・読書机を遠景と端に置く |
+| `act2-paper-physics-candidate-v1` | 物理実験室 | 天体模型・望遠鏡・実験机を遠景と端に置く |
+| `act3-paper-auditorium-stage-candidate-v1` | 講堂舞台 | 客席・幕・照明を遠景と端に置く |
+
+## 場面別生成入力
+
+### Act 1 図書閲覧室
+
+> Use case: stylized-concept. Asset type: independent opaque 16:9 school battle background plate. Input images: Image 1 is the #249 paper-and-gouache school atrium style reference and camera-height reference, NOT a layout to copy. Image 2 is the approved middle-school girl linework and proportions reference. Image 3 is the paper-monster reference for layered paper texture, cool low-saturation color, deep-navy fine ink outlines. Create a DISTINCT ACT 1 SCHOOL LIBRARY READING ROOM seen from its doorway. Low shelving and a few reading desks only along the distant walls, a tall window bay at the far back, bookshelves defining the room on left and right, broad empty pale slate floor across the central and lower two-thirds. The place must be unmistakably a library, not the atrium and not a long corridor. Keep a generous blank stage zone for 1–3 independently layered girl sprites on the left and up to five enemies on the right, plus readable intent/HP overlays. Paint architectural planes as thin hand-painted gouache over pale paper, soft fibrous dry-brush textures, restrained deep-navy fine contour lines, matte flooring with broad quiet painterly shadows and NO realistic floor reflection or bright window grid. Cool low-saturation blue-gray, dusty teal, neutral cream, calm school atmosphere; dramatic accents are reserved for card effects. No people, characters, monsters, text, labels, logos, UI, effects, watermark.
+
+### Act 2 物理実験室
+
+> Use case: stylized-concept. Asset type: independent opaque 16:9 battle background plate. Image 1 is #249's paper-and-gouache school atrium visual standard for thin navy contours, matte fibrous planes and camera height; do not reuse its entrance-hall composition. Image 2 is the approved middle-school girl linework/proportion reference. Image 3 is the paper-monster reference for layered paper texture and cool restrained colors. Create a clearly DISTINCT ACT 2 SCHOOL PHYSICS DEMONSTRATION ROOM, seen straight on: a blue-gray chalkboard on the far wall, closed teaching cabinets and one brass orrery on far left, a compact telescope and stored lab stools on far right, windows high along one side. All equipment remains on the far perimeter. Central and lower two-thirds are broad clear pale slate MATTE floor for separately layered 1–3 schoolgirl sprites on left and up to five enemies on right. Room should read as an actual practical middle-school science room, not a corridor, not a futuristic laboratory, and visibly different from the paper atrium. Paint with thin hand-painted gouache over pale paper, subtle dry-brush grain, clean deep-navy fine contours, flattened shadows and a calm low-saturation cool blue/teal/cream palette. No photographic floor, no mirrored reflection, no glossy shine, no sharp checkerboard sunlight, no heavy dark blue wash. No people, characters, monsters, text, labels, UI, effects, watermark.
+
+### Act 3 講堂舞台
+
+> Use case: stylized-concept. Asset type: independent opaque 16:9 middle-school battle environment plate. Input images: Image 1 is #249's school atrium style/camera reference for paper-gouache matte planes and fine navy ink; do not copy its floor plan. Image 2 is the approved middle-school girl drawing reference. Image 3 is the paper-monster reference for layered pale paper grain, fine navy outlines and restrained cool colors. Create a clearly DISTINCT ACT 3 SCHOOL AUDITORIUM STAGE at calm blue hour. View from the stage toward distant empty seating and small balcony; folded dark muted blue-violet curtains at far outer sides, simple stage work lights high at side, a hint of wooden proscenium framing. Broad empty MATTE wooden performance floor across central and lower two-thirds for 1–3 overlaid girl characters on the left and up to five enemy sprites on right; keep the lower gameplay area uncluttered. Draw the entire architecture as thin hand-painted gouache on pale paper with soft dry-brush texture, modest flat shadow shapes and consistent fine deep-navy contours. Cooler and slightly dimmer than the Act 1 atrium, but keep silhouettes, HP/Intent and hand cards highly legible; muted navy, dusty periwinkle and neutral pale wood, NO orange theatrical glow, no black horror tones. Avoid photo realism, glossy wooden reflections, long hallway or generic empty box. No people, creatures, audience, words, labels, UI, effects, logo, watermark.
+
+SHA、寸法、参照、版と原本有無、採否は[素材台帳](../asset-register.json)に記録。これらは候補であり、#263〜#265の各Act4場面完了や#29最終アート採用の証拠ではない。
