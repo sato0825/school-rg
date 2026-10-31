@@ -44,6 +44,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let session = createRunSession(0, "literature-demo", demoContent, mapOptions);
   let frontScreen: "title" | "clubs" | "compendium" | null = "title";
   let frontReturn: "title" | null = "title";
+  let resumeAfterCompendium = false;
   let restoreError = false;
   try {
     const saved = store.read();
@@ -212,6 +213,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     metrics = null;
     frontScreen = "title";
     frontReturn = "title";
+    resumeAfterCompendium = false;
     restoreError = false;
     restoreError = false;
     view.message = "カード名をタイプして発動。誤入力は無視されます。";
@@ -261,13 +263,22 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         render();
         return;
       }
-      if (action === "open-compendium" && (frontScreen === "title" || (frontScreen === null && session.screen === "map"))) {
+      if (action === "open-compendium" && (frontScreen === "title" || (frontScreen === null && (session.screen === "map" || (session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT"))))) {
         frontReturn = frontScreen === "title" ? "title" : null;
+        resumeAfterCompendium = session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused;
+        if (resumeAfterCompendium) run = pausePlayerTurn(run, clock, disposition);
         frontScreen = "compendium";
         render();
         return;
       }
-      if (action === "front-back" && frontScreen) { frontScreen = frontScreen === "clubs" ? "title" : frontReturn; render(); return; }
+      if (action === "front-back" && frontScreen) {
+        frontScreen = frontScreen === "clubs" ? "title" : frontReturn;
+        if (resumeAfterCompendium && run.combat?.phase === "PLAYER_INPUT" && run.combat.clock.paused) run = resumePlayerTurn(run, clock);
+        resumeAfterCompendium = false;
+        render();
+        enemyPhase();
+        return;
+      }
       if (frontScreen !== null || restoreError) return;
       if (restoreError) return;
       if (session.screen === "won" || session.screen === "lost") {

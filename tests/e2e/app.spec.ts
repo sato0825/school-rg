@@ -1126,3 +1126,26 @@ test("one typed card emits one sound and mute suppresses the next card", async (
   await page.keyboard.type("strike");
   expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
 });
+
+test("the combat guide pauses input time and restores the previous pause state", async ({ page }) => {
+  await page.clock.install();
+  await startDemoRun(page);
+  await enterNextNode(page);
+  const time = page.locator("[data-role=time]");
+  const before = await time.innerText();
+  await page.getByRole("button", { name: "遊び方" }).click();
+  await expect(page.getByRole("heading", { name: "カード名をタイプして行動" })).toBeVisible();
+  await expect(page.locator(".how-to-play")).toContainText("誤キーは無視");
+  await page.clock.runFor(5_000);
+  await page.getByRole("button", { name: "戻る" }).click();
+  expect(await time.innerText()).toBe(before);
+  await expect(page.getByRole("button", { name: "一時停止" })).toBeVisible();
+  await page.getByRole("button", { name: "一時停止" }).click();
+  await page.getByRole("button", { name: "遊び方" }).click();
+  await page.clock.runFor(5_000);
+  await page.getByRole("button", { name: "戻る" }).click();
+  await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
+  expect(await time.innerText()).toBe(before);
+  await page.locator("[data-action=toggle-audio]").click();
+  await expect(page.locator("[data-action=toggle-audio]")).toHaveAttribute("aria-pressed", "false");
+});
