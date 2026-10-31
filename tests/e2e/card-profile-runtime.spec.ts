@@ -8,14 +8,23 @@ for (const width of [1024, 1440] as const) {
   test(`provisional profiles are distinct from type and preserve the live hand/reward at ${width}px`, async ({ page }) => {
     await page.clock.install();
     await page.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
-    const base = createRunSession(42, "science-demo", demoContent);
+    const base = createRunSession(42, "kendo-demo", demoContent);
     const start: MapNode = { id: "profile-start", act: 1, floor: 0, kind: "start", nextIds: ["profile-fight"] };
     const fight: MapNode = { id: "profile-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
     const entered = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
       demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
-    await page.addInitScript((value) => { if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", value); }, serializeRunSession(entered, demoContent, { nowMs: () => 0 }, () => "discard"));
+    const combat = entered.run.combat!;
+    const occasionalId = combat.cards[0]!.instanceId;
+    const scarceId = combat.cards[1]!.instanceId;
+    const prepared = { ...entered, run: { ...entered.run, combat: { ...combat,
+      cards: combat.cards.map((card) => card.instanceId === occasionalId ? { ...card, cardId: "KEN-009" } : card.instanceId === scarceId ? { ...card, cardId: "KEN-011" } : card),
+      drawPile: [...combat.drawPile.filter((id) => id !== occasionalId && id !== scarceId), occasionalId, scarceId],
+    } } };
+    await page.addInitScript((value) => { if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", value); }, serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard"));
     await page.goto("/");
     await expect(page.locator(".game-shell[data-screen=combat] .hand>.card[data-profile]")).toHaveCount(5);
+    await expect(page.locator(".hand>.card[data-profile=occasional]")).toHaveCount(1);
+    await expect(page.locator(".hand>.card[data-profile=scarce]")).toHaveCount(1);
     const handFit = await page.locator(".hand>.card[data-profile]").evaluateAll((cards) => cards.map((card) => {
       const badge = card.querySelector(".card-profile")!.getBoundingClientRect();
       const kind = card.querySelector(".card-kind")!.getBoundingClientRect();
@@ -35,7 +44,7 @@ for (const width of [1024, 1440] as const) {
       await page.screenshot({ path: `docs/art/previews/issue327-combat-${width}-candidate-v1.png` });
     }
 
-    const rewardSession = { ...entered, screen: "reward" as const, rewardCardIds: ["BASE-001", "BASE-009", "BASE-021"], run: { ...entered.run, combat: { ...entered.run.combat!, phase: "WON" as const } } };
+    const rewardSession = { ...entered, screen: "reward" as const, rewardCardIds: ["BASE-001", "KEN-009", "KEN-011"], run: { ...entered.run, combat: { ...entered.run.combat!, phase: "WON" as const } } };
     await page.close();
     const rewardPage = await page.context().newPage();
     await rewardPage.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
@@ -60,5 +69,9 @@ for (const width of [1024, 1440] as const) {
       await rewardPage.locator(".reward-card .card-art img").evaluateAll(async (images) => Promise.all(images.map((image) => (image as HTMLImageElement).decode())));
       await rewardPage.screenshot({ path: `docs/art/previews/issue327-reward-${width}-candidate-v1.png` });
     }
+    await rewardPage.evaluate(() => localStorage.setItem("school-rg-low-stimulus-v1", "1"));
+    await rewardPage.reload();
+    await expect(rewardPage.locator(".reward-card[data-profile] .card-profile")).toHaveCount(3);
+    expect(await rewardPage.locator(".reward-card[data-profile] .card-profile").evaluateAll((badges) => badges.every((badge) => badge.getAnimations().length === 0))).toBe(true);
   });
 }
