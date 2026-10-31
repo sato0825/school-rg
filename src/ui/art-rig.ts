@@ -1,4 +1,4 @@
-import manifest from "../../docs/art/rigs/art-rig-candidate-v3.json";
+import manifest from "../../docs/art/rigs/art-rig-candidate-v2.json";
 
 const urls: Readonly<Record<string, string>> = {
   "head": new URL("../../docs/art/candidates/art-rig-parts-v2/head.png", import.meta.url).href,

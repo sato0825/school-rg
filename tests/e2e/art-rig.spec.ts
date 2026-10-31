@@ -55,9 +55,9 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     const actor = await openArtBattle(page);
     const stage = page.locator(".game-shell .stage");
     await expect(actor).toHaveAttribute("data-rig-ready", "true");
-    await expect(actor.locator(".hero-rig")).toHaveAttribute("data-rig-id", "art-rig-candidate-v3");
+    await expect(actor.locator(".hero-rig")).toHaveAttribute("data-rig-id", "art-rig-candidate-v2");
     await expect(actor.locator(".hero-rig .rig-part")).toHaveCount(7);
-    await expect(actor.locator('[data-part="head"]')).toHaveCSS("scale", "1.1");
+    await expect(actor.locator('[data-part="head"]')).toHaveCSS("scale", "1");
     const before = await actor.boundingBox();
     const stageBefore = await stage.boundingBox();
     await page.screenshot({ path: test.info().outputPath("idle.png") });
@@ -161,7 +161,8 @@ for (const [cardId, word, cue] of [["ART-003", "paint", "copy"], ["ART-005", "re
     await expect(actor).toHaveAttribute("data-actor-motion", "card-use");
     await expect(actor).toHaveAttribute("data-art-action", cue);
     await expect(actor.locator(".rig-art-token")).toHaveCSS("animation-name", "art-token-in");
-    await page.clock.runFor(220);
+    // CSS animation time is compositor time, while page.clock controls the game event timer.
+    await new Promise((resolve) => setTimeout(resolve, 220));
     expect(Number(await actor.locator(".rig-art-token").evaluate((node) => getComputedStyle(node).opacity))).toBeGreaterThan(0.5);
     await page.screenshot({ path: test.info().outputPath(`${cue}-mark.png`) });
   });
