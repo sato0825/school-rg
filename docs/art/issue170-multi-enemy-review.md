@@ -14,8 +14,8 @@
 
 ![1440px・5体編成](previews/issue170-five-enemies-v5-1440.png)
 
-検証: `npm run lint`、`npm run typecheck`、`npx vitest run tests/integration/multi-enemy-ui.test.ts`（3件）、`SCHOOL_RG_E2E_PORT=4186 npx playwright test tests/e2e/multi-enemy-ui.spec.ts`（4件）。390pxでは3/4/5体、1440pxでは5体を確認。5体編成で敵を選んで `strike` を入力し、対象のHP減少も確認した。全体検証は親Issueへの統合後に実施する。
+検証: `npm run lint`、`npm run typecheck`、`npx vitest run tests/integration/multi-enemy-ui.test.ts`（3件）、`SCHOOL_RG_CAPTURE_MULTI=1 SCHOOL_RG_E2E_PORT=4194 npx playwright test tests/e2e/multi-enemy-ui.spec.ts`（4件）。390pxでは3/4/5体、1440pxでは5体を確認。5体編成で敵を選んで `strike` を入力し、対象のHP減少も確認した。全体検証は親Issueへの統合後に実施する。
 
-初回描画とタイマー更新で時間単位が異なっていたため、更新経路も「秒」にそろえた。v3/v4画像は修正前の記録として保持し、レビューにはv5を使用する。
+初回描画とタイマー更新で時間単位が異なっていたため、更新経路も「秒」にそろえ、meterの値も更新する。v5はこの作業ツリーを配信する専用のViteポート4194で撮影し、配信ソースに `<small> 秒</small>` が含まれることを照合した。v3/v4画像は修正前の記録として保持し、レビューにはv5を使用する。
 
 敵絵と背景は現在の制作候補であり、最終アートの採用判断は #29 のゲートに属する。
