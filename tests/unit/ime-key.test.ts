@@ -14,5 +14,6 @@ describe("IME English card key resolution", () => {
   it("does not turn unsupported or non-letter keys into card input", () => {
     expect(imeLatinKey({ key: "Process", code: "Enter" }, new Map([["Enter", "Enter"]]))).toBeNull();
     expect(imeLatinKey({ key: "Process", code: "KeyQ" }, new Map([["KeyQ", "あ"]]))).toBeNull();
+    expect(imeLatinKey({ key: "あ", code: "KeyA" }, new Map([["KeyA", "a"]]))).toBeNull();
   });
 });

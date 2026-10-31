@@ -6,6 +6,7 @@ export function imeLatinKey(
   layoutMap: ReadonlyMap<string, string> | null,
 ): string | null {
   if (/^[a-z]$/i.test(event.key)) return event.key;
+  if (event.key !== "Process" && event.key !== "Unidentified") return null;
   const mapped = layoutMap?.get(event.code);
   return mapped && /^[a-z]$/i.test(mapped) ? mapped : null;
 }
