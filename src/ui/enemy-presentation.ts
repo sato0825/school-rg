@@ -25,4 +25,10 @@ export const enemyCandidateUrlById = {
   "last-bus": new URL("../assets/enemies/last-bus-candidate-v1.png", import.meta.url).href,
   "gym-scoreboard": new URL("../assets/enemies/gym-scoreboard-candidate-v1.png", import.meta.url).href,
   "lab-ventilation": new URL("../assets/enemies/lab-ventilation-candidate-v1.png", import.meta.url).href,
+  "hall-mop": new URL("../assets/enemies/hall-mop-candidate-v2.png", import.meta.url).href,
+  "folded-school-map": new URL("../assets/enemies/folded-school-map-candidate-v1.png", import.meta.url).href,
+  "beaker-mist": new URL("../assets/enemies/beaker-mist-candidate-v1.png", import.meta.url).href,
+  "lab-coil": new URL("../assets/enemies/lab-coil-candidate-v1.png", import.meta.url).href,
+  "stage-spotlight": new URL("../assets/enemies/stage-spotlight-candidate-v1.png", import.meta.url).href,
+  "archive-clock": new URL("../assets/enemies/archive-clock-candidate-v1.png", import.meta.url).href,
 } as const;

@@ -8,8 +8,8 @@ it("has an image source for every registered enemy", () => {
 });
 
 it("gives every registered school enemy distinct, replaceable candidate art", () => {
-  expect(Object.keys(enemyCandidateUrlById)).toHaveLength(25);
-  expect(new Set(Object.values(enemyCandidateUrlById)).size).toBe(25);
+  expect(Object.keys(enemyCandidateUrlById)).toHaveLength(demoContent.enemies.length);
+  expect(new Set(Object.values(enemyCandidateUrlById)).size).toBe(demoContent.enemies.length);
   expect(new Set(Object.keys(enemyCandidateUrlById))).toEqual(new Set(demoContent.enemies.map((enemy) => enemy.id)));
   for (const [id, url] of Object.entries(enemyCandidateUrlById)) {
     expect(demoBattleArt.enemyUrlById[id]).toBe(url);

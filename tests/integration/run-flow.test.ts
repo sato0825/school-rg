@@ -52,7 +52,7 @@ describe("run encounter and reward loop", () => {
     for (let index = 0; index < 3; index++) {
       const next = availableRunNodes(session)[0]!;
       session = enterRunNode(session, next.id, demoContent, demoEnemyAi, demoEncounterTable);
-      expect(next.kind === "boss" ? ["final-exam", "gym-scoreboard"] : ["paper-heap", "late-pass", "lost-homework"])
+      expect(next.kind === "boss" ? ["final-exam", "gym-scoreboard"] : ["paper-heap", "late-pass", "lost-homework", "hall-mop", "folded-school-map"])
         .toContain(session.run.combat?.enemies[0]?.enemyId);
       const won = { ...session, run: { ...session.run, combat: { ...session.run.combat!, phase: "WON" as const } } };
       session = chooseRunReward(settleRunCombat(won, demoContent), null);
