@@ -5,6 +5,7 @@ import { actionDelayMs, loopDelayMs, MOTION_MS } from "./motion-timing.js";
 import type { CardFx } from "./card-fx.js";
 import type { ResultFx } from "./result-fx.js";
 import { cardArtForId } from "./card-art.js";
+import { cardProfileForId, cardProfileLabel, cardProfileMarkup, provisionalCardProfileCatalog, type CardProfileCatalog } from "./card-profile.js";
 import { describeEnemyIntent, type IntentVisualStep } from "./intent-visual.js";
 import { DEFAULT_GAME_CONFIG, type GameConfig } from "../domain/config.js";
 import { identityForClub } from "../content/character-identities.js";
@@ -37,6 +38,7 @@ export type BattleView = {
   imeNotice?: string;
   helpOpen?: boolean;
   layoutPreviewAllies?: number;
+  cardProfiles?: CardProfileCatalog;
 };
 
 function html(value: string): string {
@@ -182,8 +184,8 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     </${slotTag}>`;
   }).join("");
   const previewAllies = layout.allies.slice(1).map((slot, index) => `<div class="ally-slot mock-ally" style="--slot-x:${slot.xPercent}%" aria-hidden="true"><div class="mock-ally-body"><span>仮配置 ${index + 2}</span></div></div>`).join("");
-  const cards = hand.map(({ instanceId, card }, index) => { const art = cardArtForId(card.id); return `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-card-kind="${card.type}" data-long-word="${card.input.text.length > 10}" data-action="card" data-id="${instanceId}" data-art-id="${html(art.artId)}" data-art-version="${html(art.version)}" aria-pressed="${selected === instanceId}" aria-label="${html(card.input.text)} ${html(describeCard(card, content))}${selected === instanceId ? "（選択中）" : ""}">
-    <span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-kind">${html(cardTypeNames[card.type] ?? card.type)}</span><span class="card-sigil" aria-hidden="true"></span>
+  const cards = hand.map(({ instanceId, card }, index) => { const art = cardArtForId(card.id); const profile = cardProfileForId(card.id, view.cardProfiles ?? provisionalCardProfileCatalog); return `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-card-kind="${card.type}" ${profile ? `data-profile="${profile}"` : ""} data-long-word="${card.input.text.length > 10}" data-action="card" data-id="${instanceId}" data-art-id="${html(art.artId)}" data-art-version="${html(art.version)}" aria-pressed="${selected === instanceId}" aria-label="${html(card.input.text)} ${html(describeCard(card, content))}${profile ? `。仮の入手頻度 ${cardProfileLabel(profile)}` : ""}${selected === instanceId ? "（選択中）" : ""}">
+    <span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-kind">${html(cardTypeNames[card.type] ?? card.type)}</span>${cardProfileMarkup(profile)}<span class="card-profile-frame" aria-hidden="true"></span><span class="card-sigil" aria-hidden="true"></span>
     <span class="card-art" data-art-state="${art.state}" aria-hidden="true">${art.url ? `<img src="${html(art.url)}" alt="" />` : ""}</span><strong class="card-word">${wordMarkup(card.input.text, combat.typing.buffer)}</strong><span class="card-effect">${html(describeCard(card, content))}</span>
   </button>`; }).join("");
   const potions = run.potionIds.map((potionId, index) => {
