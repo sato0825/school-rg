@@ -132,7 +132,7 @@ export const CombatStatusesSchema = z.strictObject({
 export const CombatActionLogEntrySchema = z.strictObject({
   sequence: positiveInt,
   turn: positiveInt,
-  kind: z.enum(["card", "potion", "enemy", "turn"]),
+  kind: z.enum(["card", "potion", "enemy", "turn", "relic", "result"]),
   actionId: id,
   actorEnemyInstanceId: id.nullable(),
   targetEnemyInstanceId: id.nullable(),
@@ -143,6 +143,12 @@ export const CombatActionLogEntrySchema = z.strictObject({
   statusDeltas: z.array(z.strictObject({ side: z.enum(["player", "enemy"]), enemyInstanceId: id.nullable(), status: id, delta: z.number().int() })),
   handAddedCount: nonNegativeInt,
   timeDeltaMs: z.number().int(),
+  goldDelta: z.number().int().optional(),
+  relicTrigger: z.enum(["acquired", "combat_start", "card_used", "hit_taken", "turn_start", "turn_end", "combat_end"]).optional(),
+  relicRuleId: id.optional(),
+  relicStacks: positiveInt.optional(),
+  sourceCardInstanceId: id.optional(),
+  triggerHpLost: nonNegativeInt.optional(),
   turnClockMs: nonNegativeInt.optional(),
   discardedCount: nonNegativeInt.optional(),
   exhaustedCount: nonNegativeInt.optional(),
@@ -232,6 +238,12 @@ export const RunStateSchema = z.strictObject({
   event: EventStateSchema.nullable().default(null),
   map: z.strictObject({ nodes: z.array(MapNodeSchema), currentNodeId: id }),
   combat: CombatStateSchema.nullable(),
+  lastCombatLog: z.strictObject({
+    turn: positiveInt,
+    entries: z.array(CombatActionLogEntrySchema),
+    cards: z.array(CardInstanceSchema),
+    enemies: z.array(z.strictObject({ instanceId: id, enemyId: id })),
+  }).optional(),
 });
 
 export type ContentRegistry = z.infer<typeof ContentRegistrySchema>;

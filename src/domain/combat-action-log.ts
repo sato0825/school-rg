@@ -1,6 +1,7 @@
 import type { CombatActionLogEntry, CombatState, RunState } from "./schema.js";
 
-type Action = Pick<CombatActionLogEntry, "kind" | "actionId" | "actorEnemyInstanceId" | "targetEnemyInstanceId">;
+type Action = Pick<CombatActionLogEntry, "kind" | "actionId" | "actorEnemyInstanceId" | "targetEnemyInstanceId">
+  & Partial<Pick<CombatActionLogEntry, "relicTrigger" | "relicRuleId" | "relicStacks" | "sourceCardInstanceId" | "triggerHpLost">>;
 
 export const TURN_BOUNDARIES = ["player-start", "player-input-end", "player-end", "enemy-start", "enemy-end"] as const;
 export type TurnBoundary = typeof TURN_BOUNDARIES[number];
@@ -53,6 +54,7 @@ export function recordCombatAction(before: RunState, after: RunState, action: Ac
     handAddedCount: resolved.hand.filter((id) => !previous.hand.includes(id)).length,
     // A turn reset and time spent typing are not time-granting card effects.
     timeDeltaMs: action.kind === "turn" ? 0 : resolved.clock.remainingMs - previous.clock.remainingMs,
+    goldDelta: after.gold - before.gold,
     ...(action.kind === "turn" ? {
       discardedCount: resolved.discardPile.filter((id) => !previous.discardPile.includes(id)).length,
       exhaustedCount: resolved.exhaustPile.filter((id) => !previous.exhaustPile.includes(id)).length,
@@ -60,4 +62,49 @@ export function recordCombatAction(before: RunState, after: RunState, action: Ac
     } : {}),
   };
   return { ...after, combat: { ...resolved, actionLog: [...entries, entry] } };
+}
+
+/** The result marker precedes combat-end relic rewards and is idempotent. */
+export function recordCombatResult(run: RunState): RunState {
+  if (run.combat?.phase !== "WON" && run.combat?.phase !== "LOST") return run;
+  if (run.combat.actionLog?.some((entry) => entry.kind === "result")) return run;
+  return recordCombatAction(run, run, { kind: "result", actionId: run.combat.phase === "WON" ? "won" : "lost", actorEnemyInstanceId: null, targetEnemyInstanceId: null });
+}
+
+function subtractNested(total: CombatActionLogEntry, nested: CombatActionLogEntry[]): CombatActionLogEntry {
+  const sum = (select: (entry: CombatActionLogEntry) => number) => nested.reduce((value, entry) => value + select(entry), 0);
+  const enemyDeltas = total.enemyDeltas.map((delta) => ({
+    ...delta,
+    hpDelta: delta.hpDelta - sum((entry) => entry.enemyDeltas.find((item) => item.instanceId === delta.instanceId)?.hpDelta ?? 0),
+    blockDelta: delta.blockDelta - sum((entry) => entry.enemyDeltas.find((item) => item.instanceId === delta.instanceId)?.blockDelta ?? 0),
+  })).filter((delta) => delta.hpDelta !== 0 || delta.blockDelta !== 0);
+  const statusDeltas = total.statusDeltas.map((delta) => ({
+    ...delta,
+    delta: delta.delta - sum((entry) => entry.statusDeltas.find((item) => item.side === delta.side && item.enemyInstanceId === delta.enemyInstanceId && item.status === delta.status)?.delta ?? 0),
+  })).filter((delta) => delta.delta !== 0);
+  const handAddedCount = total.handAddedCount - sum((entry) => entry.handAddedCount);
+  if (handAddedCount < 0) throw new Error("nested relic history exceeds enemy action draw count");
+  return {
+    ...total,
+    playerHpDelta: total.playerHpDelta - sum((entry) => entry.playerHpDelta),
+    playerBlockDelta: total.playerBlockDelta - sum((entry) => entry.playerBlockDelta),
+    enemyDeltas,
+    statusDeltas,
+    summonedEnemyIds: total.summonedEnemyIds.filter((id) => !nested.some((entry) => entry.summonedEnemyIds.includes(id))),
+    handAddedCount,
+    timeDeltaMs: total.timeDeltaMs - sum((entry) => entry.timeDeltaMs),
+    goldDelta: (total.goldDelta ?? 0) - sum((entry) => entry.goldDelta ?? 0),
+  };
+}
+
+/** Put an Intent before hit-triggered relics without counting their effects twice. */
+export function recordEnemyActionWithReactions(before: RunState, after: RunState, actorEnemyInstanceId: string, actionId: string): RunState {
+  const base = before.combat?.actionLog ?? [];
+  const nested = after.combat?.actionLog?.slice(base.length) ?? [];
+  const action: Action = { kind: "enemy", actionId, actorEnemyInstanceId, targetEnemyInstanceId: null };
+  if (!nested.length) return recordCombatAction(before, after, action);
+  const withoutNested: RunState = { ...after, combat: { ...after.combat!, actionLog: base } };
+  const total = recordCombatAction(before, withoutNested, action).combat!.actionLog!.at(-1)!;
+  const parent = subtractNested(total, nested);
+  return { ...after, combat: { ...after.combat!, actionLog: [...base, parent, ...nested.map((entry, index) => ({ ...entry, sequence: base.length + index + 2 }))] } };
 }
