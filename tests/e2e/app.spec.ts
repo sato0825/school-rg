@@ -1113,10 +1113,9 @@ test("deck-edit events select a specific card by keyboard across all Acts", asyn
     const target = eventPage.locator(`select[data-event-target=${sample.choiceId}]`);
     await expect(target).toBeVisible();
     await eventPage.reload();
-    await target.focus();
-    await eventPage.keyboard.press("ArrowDown");
+    await target.press("d");
     const selectedId = await target.inputValue();
-    expect(selectedId).toBe(scripted.run.deck[1]!.instanceId);
+    expect(selectedId).toBe(scripted.run.deck[2]!.instanceId);
     if (process.env.SCHOOL_RG_CAPTURE_DECK_EVENTS === "1") {
       await eventPage.screenshot({ path: `docs/content/previews/issue157-act${sample.act}-event-narrow-20261031.png`, fullPage: true });
     }

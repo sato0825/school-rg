@@ -145,7 +145,8 @@ export function renderRunEvent(root: HTMLElement, session: RunSession, content: 
     if (!targets || !available) return `<button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}" ${available ? "" : "disabled"}>${html(choice.label)}${available ? "" : " · 条件未達"}</button>`;
     const options = targets.map((instance) => {
       const card = content.cards.find((item) => item.id === instance.cardId)!;
-      return `<option value="${html(instance.instanceId)}">${html(card.input.text)}${instance.upgraded ? " +" : ""}</option>`;
+      const deckIndex = session.run.deck.findIndex((item) => item.instanceId === instance.instanceId) + 1;
+      return `<option value="${html(instance.instanceId)}">${html(card.input.text)}${instance.upgraded ? " +" : ""} · ${String(deckIndex).padStart(2, "0")}</option>`;
     }).join("");
     return `<div class="event-target-choice"><label>${html(choice.label)}<select data-event-target="${html(choice.id)}" aria-label="${html(choice.label)}の対象カード">${options}</select></label><button type="button" class="event-choice" data-action="event-choice" data-id="${html(choice.id)}">このカードで決定</button></div>`;
   }).join("");

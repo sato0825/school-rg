@@ -4,6 +4,7 @@ import { extraEvents } from "../../src/content/extra-events.js";
 import { availableEventChoices } from "../../src/domain/events.js";
 import { chooseRunEventChoice, createRunSession, enterRunNode } from "../../src/domain/run-flow.js";
 import { deserializeRunSession, serializeRunSession } from "../../src/domain/save.js";
+import { parseContentRegistry } from "../../src/domain/validate.js";
 import type { MapNode } from "../../src/domain/schema.js";
 
 function eventSession(act: 1 | 2 | 3, eventId?: string, clubId = "literature-demo") {
@@ -111,5 +112,13 @@ describe("expanded Act events", () => {
     expect(() => chooseRunEventChoice(oneCard, "remove", demoContent, demoEnemyAi, undefined, oneCard.run.deck[0]!.instanceId)).toThrow(/conditions/);
     expect(() => chooseRunEventChoice(upgrade, "leave", demoContent, demoEnemyAi, undefined, upgrade.run.deck[0]!.instanceId)).toThrow(/unexpected event card target/);
     expect(upgrade.run.gold).toBe(50);
+  });
+
+  it("rejects an event definition with two target-changing effects", () => {
+    const invalid = structuredClone(demoContent);
+    invalid.events.push({ id: "invalid-edit", title: "invalid", description: "invalid", choices: [
+      { id: "both", label: "both", requires: [], effects: [{ kind: "upgrade_card" }, { kind: "remove_card" }] },
+    ] });
+    expect(() => parseContentRegistry(invalid)).toThrow(/only one deck card/);
   });
 });
