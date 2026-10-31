@@ -39,3 +39,9 @@
 #261の独立開発URL（2026-10-31時点）を別Playwright Chromiumで操作し、科学部で戦闘へ進めた。seed2の手札にSCI-002 `observe`、seed3にBASE-002 `defend` とBASE-003 `heavy strike` が出た。描画直後は画像のロードが終わっていなかったため、画像ロード完了後にスクリーンショットを保存した。両seedとも5枚すべて `img.naturalWidth > 0`、`observe`・`defend` の絵欠落なし。効果文字は12pxでカード内に収まった。
 
 一方seed3の `heavy strike` は長い英字語が2行になり、効果欄の下端がカード下端を越えた（`effectInside=false`）。スクリーンショット `qa-runtime-science-seed3-1024-v2.png` と再現スクリプト `qa-runtime.mjs` を#261担当へ共有し、カード内への収まりを修正依頼した。これはカード絵の欠落ではなく本編レイアウトの未解決問題。新しいレイアウト修正後の再確認は未了。#272/#276/#279のGitHub CheckはすべてPASSしたが、本件の実画面不具合を解消したことは示さない。
+
+### 後続の再確認とQAスクリプト修正
+
+後続の#261表示で同じseed2/3を再確認し、`qa-runtime-science-seed*-1024-v3.png` に保存した。10枚の画像はすべてロード済み、効果文字12px、`heavy strike` も含む10/10枚の効果欄がカード内に収まった。#261担当の別worktreeの表示結果であり、このPRがレイアウト修正を実装したわけではない。
+
+追加した`qa-runtime.mjs`は、初回CI lintでNodeの`URL`とブラウザ評価内の`document`/`getComputedStyle`、ログ出力の`console`が`no-undef`になった。Nodeパスは`fileURLToPath`を明示importし、ブラウザ内は`globalThis`を介して参照するよう修正。対象eslintと実画面再実行は成功。PRの最終CIはこの修正コミットの完了結果を別途確認する。

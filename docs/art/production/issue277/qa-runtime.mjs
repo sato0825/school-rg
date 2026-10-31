@@ -1,7 +1,8 @@
 import { chromium } from "playwright";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const base = path.dirname(new URL(import.meta.url).pathname);
+const base = path.dirname(fileURLToPath(import.meta.url));
 const browser = await chromium.launch({ headless: true });
 for (const seed of [2, 3]) {
   const page = await browser.newPage({ viewport: { width: 1024, height: 768 }, deviceScaleFactor: 1 });
@@ -10,7 +11,7 @@ for (const seed of [2, 3]) {
   await page.getByRole("button", { name: /ランを始める/ }).click();
   await page.locator(".club-choice").nth(1).click();
   await page.locator(".map-node.kind-combat.available").first().click();
-  await page.waitForFunction(() => [...document.querySelectorAll("button.card img")].every((image) => image.complete), { timeout: 5000 });
+  await page.waitForFunction(() => [...globalThis.document.querySelectorAll("button.card img")].every((image) => image.complete), undefined, { timeout: 5000 });
   await page.waitForTimeout(400);
   const cards = await page.locator("button.card").evaluateAll((nodes) => nodes.map((node) => {
     const art = node.querySelector(".card-art");
@@ -23,14 +24,14 @@ for (const seed of [2, 3]) {
       artState: art?.getAttribute("data-art-state"),
       imageLoaded: Boolean(image?.complete && image.naturalWidth > 0),
       effect: effect?.textContent,
-      effectFont: effect ? getComputedStyle(effect).fontSize : null,
+      effectFont: effect ? globalThis.getComputedStyle(effect).fontSize : null,
       cardSize: [cardRect.width, cardRect.height],
       effectInside: Boolean(effectRect && effectRect.bottom <= cardRect.bottom),
     };
   }));
-  const filename = `qa-runtime-science-seed${seed}-1024-v2.png`;
+  const filename = `qa-runtime-science-seed${seed}-1024-v3.png`;
   await page.screenshot({ path: path.join(base, filename), fullPage: true });
-  console.log(JSON.stringify({ seed, cards, filename }));
+  globalThis.console.log(JSON.stringify({ seed, cards, filename }));
   await page.close();
 }
 await browser.close();
