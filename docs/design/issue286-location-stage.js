@@ -1,3 +1,4 @@
+/* global document, URL, location */
 const scenes = {
   treasure: { label: "宝箱", title: "資料保管庫", instruction: "品を一つ選ぶ", exit: "何も取らず進む", choices: [
     ["✦", "しおりの護符", "レリック", "戦闘開始時に防御 +2", "受け取る"],
