@@ -27,7 +27,7 @@
     "sha256": "6b8941ad0d02b98fa0603cf5c5a945b96525b428af96a5ef9539854b74c1fe07",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-a3ae67d6-39b2-47b7-a5e8-97f54ff482a3.png",
     "promptRef": "prompts-b.json#BASE-012",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -38,8 +38,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending meaning and crop QA"
+    "visualReview": "1024-1440-hand-reward-48-grayscale-art-text-pair-reviewed",
+    "selectionDecision": "distinct object/action at small size; exact target/amount and sequence require text/runtime feedback; adoption pending"
   },
   {
     "id": "BASE-014",
@@ -48,7 +48,7 @@
     "sha256": "cac1302a9fe6375637d08d6fad219efd5980b7e6cb71ad8734d14b2447ed8d0f",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-f6ea8b5d-f0fc-48c7-b37d-f33b3cb0dd83.png",
     "promptRef": "prompts-b.json#BASE-014",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -59,8 +59,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending meaning and crop QA"
+    "visualReview": "1024-1440-hand-reward-48-grayscale-art-text-pair-reviewed",
+    "selectionDecision": "distinct object/action at small size; exact target/amount and sequence require text/runtime feedback; adoption pending"
   },
   {
     "id": "BASE-015",
@@ -69,7 +69,7 @@
     "sha256": "a37463da80490fff8f356176c1ee353c4c766e69ef5f189b06e1b7fc7781978a",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-22209fcd-67f0-43c4-8753-cc83d9ece5d5.png",
     "promptRef": "prompts-b.json#BASE-015",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -80,8 +80,8 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending meaning and crop QA"
+    "visualReview": "1024-1440-hand-reward-48-grayscale-art-text-pair-reviewed",
+    "selectionDecision": "distinct object/action at small size; exact target/amount and sequence require text/runtime feedback; adoption pending"
   },
   {
     "id": "BASE-018",
@@ -90,7 +90,7 @@
     "sha256": "6423d606a5d488e688f9d89ed4a604eb77f0b3a2a3c0ac3da0da9e32b2f27956",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-9087305a-2642-4543-a65c-db63849d398e.png",
     "promptRef": "prompts-b.json#BASE-018",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -101,7 +101,7 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending meaning and crop QA"
+    "visualReview": "1024-1440-hand-reward-48-grayscale-art-text-pair-reviewed",
+    "selectionDecision": "distinct object/action at small size; exact target/amount and sequence require text/runtime feedback; adoption pending"
   }
 ]

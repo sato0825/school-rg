@@ -6,7 +6,7 @@
     "sha256": "0bb8af44b1716d116558535a33331ff31fa28c47c3778269513b29e50b41fa06",
     "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-97e67c4c-a20a-45e9-982d-3308d70174ff.png",
     "promptRef": "prompt-poison-v2.json",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
@@ -17,7 +17,7 @@
     ],
     "colorMode": "RGB",
     "rightsReview": "pending",
-    "visualReview": "pending",
-    "selectionDecision": "pending revised crop QA"
+    "visualReview": "1024-1440-hand-reward-48-grayscale-art-text-pair-reviewed",
+    "selectionDecision": "distinct object/action at small size; exact target/amount and sequence require text/runtime feedback; adoption pending"
   }
 ]
