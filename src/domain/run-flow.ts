@@ -80,6 +80,7 @@ function createEncounter(run: RunState, encounter: string | readonly string[], c
     })),
     typing: createTypingState([]), clock: { remainingMs: 0, lastEventAtMs: 0, paused: false }, nextTurnBonusMs: 0,
     statuses: { player: {}, enemies: {} },
+    actionLog: [],
   };
   let entered: RunState = { ...run, rngState: shuffled.state, player: { ...run.player, block: 0 }, combat };
   for (const enemy of combat.enemies) entered = selectEnemyIntent(entered, enemy.instanceId, ai, content, 1);

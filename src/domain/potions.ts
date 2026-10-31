@@ -4,6 +4,7 @@ import { requireSetting, type GameConfig } from "./config.js";
 import { enqueueEffectAction, resolveDueEffects, type EffectAction, type EffectEvent } from "./effect-primitives.js";
 import { createEventQueue } from "./event-queue.js";
 import type { ContentRegistry, RunState } from "./schema.js";
+import { recordCombatAction } from "./combat-action-log.js";
 import { addCurrentTurnTime } from "./time-resource.js";
 import { advanceSelectionTime, tickPlayerTurn, type TurnEndDisposition } from "./turn-state.js";
 import { chooseTypingCard, chooseTypingEnemyTarget, createTypingState, pressTypingKey, type SelectionResult, type TypableCard, type TypingKeyEvent } from "./typing.js";
@@ -62,7 +63,8 @@ function applyPotion(run: RunState, instanceId: string, targetEnemyInstanceId: s
     const queue = enqueueEffectAction(createEventQueue<EffectEvent>(), current, current.combat!.clock.lastEventAtMs, action);
     current = resolveDueEffects(current, queue, current.combat!.clock.lastEventAtMs, config).run;
   }
-  return { ...current, potionIds: current.potionIds.filter((_, position) => position !== index) };
+  const resolved = { ...current, potionIds: current.potionIds.filter((_, position) => position !== index) };
+  return recordCombatAction(run, resolved, { kind: "potion", actionId: potion.id, actorEnemyInstanceId: null, targetEnemyInstanceId });
 }
 
 function applySelection(run: RunState, result: SelectionResult, clock: MonotonicClock, config: GameConfig, content: ContentRegistry, disposition: TurnEndDisposition): RunState {

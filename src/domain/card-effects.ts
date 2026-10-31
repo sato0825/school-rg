@@ -6,6 +6,7 @@ import { requireSetting, type GameConfig } from "./config.js";
 import { enqueueEffectAction, resolveDueEffects, type ActorRef, type EffectAction, type EffectEvent } from "./effect-primitives.js";
 import { createEventQueue } from "./event-queue.js";
 import type { ContentRegistry, Effect, RunState } from "./schema.js";
+import { recordCombatAction } from "./combat-action-log.js";
 import { addCurrentTurnTime } from "./time-resource.js";
 import type { MonotonicClock } from "./clock.js";
 import { clearStatus, statusAmount } from "./status-engine.js";
@@ -198,5 +199,6 @@ export function useCardEffects(
   }
   const destination = definition.type === "power" || destinationAfterUse(current.combat!, content, cardInstanceId) === "exhaust"
     ? "exhaustPile" : "discardPile";
-  return { ...current, combat: moveCombatCard(current.combat!, cardInstanceId, destination, { maxHandSize: requireSetting(config.handLimit) }).combat };
+  const resolved = { ...current, combat: moveCombatCard(current.combat!, cardInstanceId, destination, { maxHandSize: requireSetting(config.handLimit) }).combat };
+  return recordCombatAction(run, resolved, { kind: "card", actionId: definition.id, actorEnemyInstanceId: null, targetEnemyInstanceId: selection.targetEnemyInstanceId });
 }
