@@ -1083,3 +1083,46 @@ test("unsupported save versions leave the stored data intact", async ({ page }) 
   expect(await page.evaluate((saveKey) => localStorage.getItem(saveKey), key)).toBe(unsupported);
   expect(original).not.toBeNull();
 });
+
+test("sound toggle stays usable on a narrow screen and survives reload", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/?shortRun=1&seed=42");
+  const sound = page.locator("[data-action=toggle-audio]");
+  await expect(sound).toBeVisible();
+  await expect(sound).toHaveAttribute("aria-pressed", "true");
+  await sound.click();
+  await expect(sound).toHaveAttribute("aria-pressed", "false");
+  await page.reload();
+  await expect(sound).toHaveAttribute("aria-pressed", "false");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await expect(sound).toBeVisible();
+  await sound.click();
+  await expect(sound).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await enterNextNode(page);
+  await expect(sound).toBeVisible();
+  await expect(sound).toHaveAttribute("aria-pressed", "true");
+});
+
+test("one typed card emits one sound and mute suppresses the next card", async ({ page }) => {
+  await page.addInitScript(() => {
+    let starts = 0;
+    Object.defineProperty(window, "__soundStarts", { get: () => starts });
+    const Original = window.AudioContext;
+    window.AudioContext = class extends Original {
+      override createOscillator() {
+        const oscillator = super.createOscillator();
+        const start = oscillator.start.bind(oscillator);
+        oscillator.start = (...args) => { starts++; start(...args); };
+        return oscillator;
+      }
+    };
+  });
+  await startDemoRun(page);
+  await enterNextNode(page);
+  await page.keyboard.type("heavy strike");
+  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
+  await page.locator("[data-action=toggle-audio]").click();
+  await page.keyboard.type("strike");
+  expect(await page.evaluate(() => Reflect.get(window, "__soundStarts"))).toBe(1);
+});
