@@ -29,6 +29,11 @@ for (const width of [1440, 1024]) for (const [place, artId] of Object.entries(pl
     expect(await art.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
     await expect(page.locator(".hero-art")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight)).toBe(true);
+    if (place === "shop") {
+      await expect(page.locator(".location-shelf .location-choice")).toHaveCount(5);
+      for (const offer of await page.locator(".location-shelf .location-choice").all()) await expect(offer).toBeInViewport();
+      await expect(page.locator(".location-drawer summary")).toBeInViewport();
+    }
     const capture = process.env.SCHOOL_RG_PROP_CAPTURE_DIR;
     if (capture) await page.screenshot({ path: `${capture}/${place}-${width}.png`, fullPage: true });
     if (place === "treasure" && width === 1024) {
