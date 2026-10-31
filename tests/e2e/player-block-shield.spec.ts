@@ -63,6 +63,19 @@ for (const width of [1024, 1440] as const) {
         await expect(page.locator(".game-shell")).toHaveAttribute("data-effects", "quiet");
         await expect(page.locator(".ally-slot").first()).toHaveAttribute("data-player-block", String(blockAfter));
         expect(await page.locator(".ally-slot").first().evaluate((node) => getComputedStyle(node, "::before").animationName)).toBe("none");
+        const remainingMs = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
+        await page.clock.runFor(remainingMs + 80);
+        await page.clock.runFor(650);
+        const afterEnemyBlock = Number((await page.locator(".player-hud b").innerText()).match(/\d+/)?.[0]);
+        expect(afterEnemyBlock).toBeLessThan(blockAfter);
+        await expect(page.locator(".ally-slot").first()).toHaveAttribute("data-player-block", String(afterEnemyBlock));
+        const shieldAfterHit = await page.locator(".ally-slot").first().evaluate((node) => {
+          const style = getComputedStyle(node, "::before");
+          return { content: style.content, display: style.display, animation: style.animationName };
+        });
+        expect(shieldAfterHit.animation).toBe("none");
+        if (afterEnemyBlock > 0) expect(shieldAfterHit.content).not.toBe("none");
+        else expect(shieldAfterHit.content === "none" || shieldAfterHit.display === "none").toBe(true);
       }
     });
   }
