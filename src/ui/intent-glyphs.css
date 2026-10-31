@@ -6,15 +6,18 @@
 .game-shell .intent-step[data-kind="buff"] .intent-glyph,.game-shell .intent-step[data-kind="heal"] .intent-glyph{color:#c8edcf}
 .game-shell .intent-step[data-kind="debuff"] .intent-glyph{color:#e2d2fb}
 .game-shell .intent-step[data-kind="summon"] .intent-glyph{color:#d5e8f6}
-.game-shell .intent-omen{position:absolute;z-index:5;right:1%;bottom:48%;display:flex;align-items:center;gap:2px;padding:5px;color:#fff;border:2px solid #f4ecdc;background:#704256e6;box-shadow:0 3px 10px #1b304a72;pointer-events:none;transform:rotate(8deg)}
-.game-shell .intent-omen .intent-glyph{width:29px;height:29px;filter:drop-shadow(0 1px 2px #172e40)}
-.game-shell .intent-omen .intent-target-glyph{width:16px;height:16px;align-self:end}
-.game-shell .intent-omen[data-kind="attack"]{border-radius:2px 16px 2px 12px;background:#774052e8}
-.game-shell .intent-omen[data-kind="attack"]::before{content:"";position:absolute;right:calc(100% - 1px);top:50%;width:33px;height:3px;background:#ad4e64b8;clip-path:polygon(0 50%,18% 0,18% 35%,100% 35%,100% 65%,18% 65%,18% 100%);transform:translateY(-50%)}
-.game-shell .intent-omen[data-kind="block"]{border-radius:13px 13px 22px 22px;background:#315b71e8}
-.game-shell .intent-omen[data-kind="heal"],.game-shell .intent-omen[data-kind="buff"]{border-radius:18px 4px 18px 4px;background:#365f52e8}
-.game-shell .intent-omen[data-kind="debuff"]{border-radius:4px 18px 4px 18px;background:#634b77e8}
-.game-shell .intent-omen[data-kind="summon"]{border-radius:20px 20px 3px 3px;background:#3b6176e8}
+.game-shell .intent-omen{position:absolute;z-index:5;right:1%;bottom:48%;display:flex;align-items:center;gap:2px;padding:3px 4px;border-radius:9px 2px 13px 3px;background:#f8f8efda;color:#a72f55;pointer-events:none;transform:rotate(8deg)}
+.game-shell .intent-omen .intent-glyph{width:29px;height:29px;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 1px 2px #172e40)}
+.game-shell .intent-omen .intent-target-glyph{width:14px;height:14px;align-self:end;filter:drop-shadow(0 0 2px #fff)}
+.game-shell .intent-omen[data-kind="attack"]::before{content:"";position:absolute;right:calc(100% - 1px);top:50%;width:22px;height:2px;background:#ad4e64b8;clip-path:polygon(0 50%,18% 0,18% 35%,100% 35%,100% 65%,18% 65%,18% 100%);transform:translateY(-50%);opacity:0}
+.game-shell .enemy-slot.targeted .intent-omen[data-kind="attack"]::before,.game-shell .enemy-slot:hover .intent-omen[data-kind="attack"]::before,.game-shell .enemy-art.act+.intent-omen[data-kind="attack"]::before{opacity:1}
+.game-shell .intent-omen[data-kind="block"]{color:#3a7892}
+.game-shell .intent-omen[data-kind="heal"],.game-shell .intent-omen[data-kind="buff"]{color:#36765c}
+.game-shell .intent-omen[data-kind="debuff"]{color:#785d99}
+.game-shell .intent-omen[data-kind="summon"]{color:#3b718c}
+.game-shell .stage:is([data-enemy-count="3"],[data-enemy-count="4"],[data-enemy-count="5"]) .intent-omen{padding:0;background:none}
+.game-shell .stage:is([data-enemy-count="3"],[data-enemy-count="4"],[data-enemy-count="5"]) .intent-omen .intent-glyph{width:32px;height:32px;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 3px #fff) drop-shadow(0 1px 2px #183448)}
+.game-shell .stage:is([data-enemy-count="3"],[data-enemy-count="4"],[data-enemy-count="5"]) .intent-omen .intent-target-glyph{display:none}
 .game-shell .enemy-art.act+.intent-omen{animation:omen-act .32s ease-out both}
 @keyframes omen-act{0%{opacity:.65;scale:.82}60%{opacity:1;scale:1.18}100%{opacity:1;scale:1}}
 .game-shell .result-fx-mark{display:flex;align-items:center;gap:5px}
@@ -23,6 +26,6 @@
 .game-shell .result-fx-mark[data-kind="block"] .intent-glyph,.game-shell .result-fx-mark[data-kind="block-loss"] .intent-glyph{color:#c5eef6}
 .game-shell .result-fx-mark[data-kind="buff"] .intent-glyph,.game-shell .result-fx-mark[data-kind="heal"] .intent-glyph{color:#d4f2d6}
 .game-shell .result-fx-mark[data-kind="debuff"] .intent-glyph{color:#e2d1f9}
-.game[data-effects="quiet"] .intent-omen,.game[data-effects="quiet"] .enemy-art.act+.intent-omen{animation:none;transform:none;box-shadow:none}
-@media(prefers-reduced-motion:reduce){.game-shell .intent-omen,.game-shell .enemy-art.act+.intent-omen{animation:none;transform:none;box-shadow:none}}
-@media(max-width:1100px){.game-shell .intent-omen{padding:3px}.game-shell .intent-omen .intent-glyph{width:24px;height:24px}.game-shell .intent-omen .intent-target-glyph{width:13px;height:13px}.game-shell .intent-step .intent-glyph{width:17px;height:17px}.game-shell .intent-step .intent-target-glyph{width:13px;height:13px}}
+.game[data-effects="quiet"] .intent-omen,.game[data-effects="quiet"] .enemy-art.act+.intent-omen{animation:none;transform:none}
+@media(prefers-reduced-motion:reduce){.game-shell .intent-omen,.game-shell .enemy-art.act+.intent-omen{animation:none;transform:none}}
+@media(max-width:1100px){.game-shell .intent-omen .intent-glyph{width:24px;height:24px}.game-shell .intent-omen .intent-target-glyph{width:12px;height:12px}.game-shell .intent-step .intent-glyph{width:17px;height:17px}.game-shell .intent-step .intent-target-glyph{width:13px;height:13px}}
