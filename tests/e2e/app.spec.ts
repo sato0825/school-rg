@@ -833,6 +833,15 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await expect(page.locator(".enemy-hud")).toContainText("29/29");
 });
 
+test("literature clears three Acts by typing at tablet width after a save reload", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 820, height: 1180 });
+  await page.clock.install();
+  await startDemoRun(page);
+  await clearThreeActs(page, 36, true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
 for (const [clubLabel, clubId] of [
   ["文芸部", "literature-demo"], ["科学部", "science-demo"], ["剣道部", "kendo-demo"],
   ["軽音部", "music-demo"], ["美術部", "art-demo"],
