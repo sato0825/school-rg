@@ -23,10 +23,10 @@ for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, he
     await expect(page.locator("#battle-pile-tray")).toBeVisible();
     await expect(page.locator(".stage")).toBeVisible();
     const trayBox = await page.locator("#battle-pile-tray").boundingBox();
-    const intentBox = await page.locator(".intent-ticket").boundingBox();
-    expect(trayBox && intentBox && (trayBox.y >= intentBox.y + intentBox.height || intentBox.x >= trayBox.x + trayBox.width)).toBeTruthy();
-    const hpBox = await page.locator(".enemy-hud").boundingBox();
-    expect(trayBox && hpBox && trayBox.y >= hpBox.y + hpBox.height).toBeTruthy();
+    for (const selector of [".intent-ticket", ".enemy-hud", ".hero-art", ".enemy-art", ".typing-row", ".hand"]) {
+      const box = await page.locator(selector).first().boundingBox();
+      expect(trayBox && box && (trayBox.x >= box.x + box.width || box.x >= trayBox.x + trayBox.width || trayBox.y >= box.y + box.height || box.y >= trayBox.y + trayBox.height), `${selector} must stay clear of the pile tray: ${JSON.stringify({ trayBox, box })}`).toBeTruthy();
+    }
     await expect(page.locator('#battle-pile-tray [data-action="close-pile"]')).toBeFocused();
     await expect(page.locator(".pile-order-note")).toBeVisible();
     await expect(page.locator(".pile-card")).toHaveCount(Number(await draw.locator("strong").innerText()));
@@ -34,7 +34,7 @@ for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, he
     await page.clock.runFor(400);
     const after = Number((await page.locator("[data-role=time]").innerText()).replace(/[^0-9.]/g, ""));
     expect(after).toBeLessThan(remaining);
-    if (process.env.SCHOOL_RG_CAPTURE_TRAY === "1") await page.screenshot({ path: `docs/art/previews/issue200-pile-tray-v4-${width}x${height}.png` });
+    if (process.env.SCHOOL_RG_CAPTURE_TRAY === "1") await page.screenshot({ path: `docs/art/previews/issue200-pile-tray-v7-${width}x${height}.png` });
 
     await page.locator('#battle-pile-tray [data-action="show-pile"][data-id="discard"]').click();
     await expect(page.locator('#battle-pile-tray [data-id="discard"]')).toHaveAttribute("aria-pressed", "true");
