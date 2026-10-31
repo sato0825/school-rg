@@ -40,7 +40,7 @@ export function createLossNote(session: RunSession, content: ContentRegistry, op
   hp.innerHTML = `<span aria-hidden="true">♥</span> <strong>${run.player.hp}</strong><small>/${run.player.maxHp}</small>`;
   const actions = document.createElement("div");
   actions.className = "loss-note-actions";
-  for (const [label, action] of [["新しいランを始める", "new-run"], ["ラン履歴を見る", "open-history"]]) {
+  for (const [label, action] of [["新しいランを始める", "new-run"], ["ラン履歴を見る", "open-history"]] as const) {
     const button = document.createElement("button");
     button.type = "button";
     button.dataset.action = action;
@@ -62,13 +62,13 @@ export function createLossNote(session: RunSession, content: ContentRegistry, op
     note.append(metrics);
   } else if (options.playtestError) {
     const warning = document.createElement("p");
-    warning.role = "status";
+    warning.setAttribute("role", "status");
     warning.textContent = "計測データを読めません。既存データを保持しています。";
     note.append(warning);
   }
   if (options.historyError) {
     const warning = document.createElement("p");
-    warning.role = "status";
+    warning.setAttribute("role", "status");
     warning.textContent = "ラン履歴を保存または読込できません。既存データを保持しています。";
     note.append(warning);
   }
