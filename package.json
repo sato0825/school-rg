@@ -11,6 +11,7 @@
     "app:build": "tauri build",
     "app:ios:init": "tauri ios init",
     "app:ios:build": "tauri ios build",
+    "check:platform": "node scripts/check-platform-config.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run tests/unit",
