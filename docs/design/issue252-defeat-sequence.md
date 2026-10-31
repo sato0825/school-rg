@@ -45,4 +45,4 @@
 
 ## 検証状況
 
-表示候補の[PC最終被弾](previews/issue252-pc-impact.png)、[PC敗北静止](previews/issue252-pc-settled.png)、[PC結果](previews/issue252-pc-summary.png)、[iPad結果](previews/issue252-ipad-summary.png)を目視確認。`node scripts/verify-defeat-mock.mjs` はPC/iPadの6状態で画像のロード、画面外はみ出し、人物と敵の保持、結果ノートの位置、低刺激スキップを確認する。上記のゲーム状態遷移、入力競合、音/実機、5部活品質は本PRでは未検証であり、実装完了には数えない。
+表示候補の[PC最終被弾](previews/issue252-pc-impact.png)、[PC敗北静止](previews/issue252-pc-settled.png)、[PC結果](previews/issue252-pc-summary.png)、[PC低刺激](previews/issue252-pc-low-stimulus.png)、[iPad最終被弾](previews/issue252-ipad-impact.png)、[iPad結果](previews/issue252-ipad-summary.png)を目視確認。`node scripts/verify-defeat-mock.mjs` はPC/iPadの6状態で画像のロード、画面外はみ出し、人物と敵の保持、結果ノートの位置、低刺激スキップを確認する。上記のゲーム状態遷移、入力競合、音/実機、5部活品質は本PRでは未検証であり、実装完了には数えない。
