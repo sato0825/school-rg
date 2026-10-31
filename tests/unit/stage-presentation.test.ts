@@ -89,3 +89,25 @@ it("preserves the generated map and post-map RNG state for the same seed", () =>
   for (const node of run.map.nodes) stageSelectionForRun(demoBattleArt, runAt(run, node));
   expect(run.rngState).toEqual(originalRng);
 });
+
+it("shows all four places per Act and bounds consecutive repetition on two seeded routes", () => {
+  for (const [seed, nextIndex] of [[42, 0], [97, 1]] as const) {
+    const run = createRunSession(seed, "literature-demo", demoContent).run;
+    let current = run.map.nodes.find((node) => node.id === run.map.currentNodeId)!;
+    const visits: { act: number; placeId: string }[] = [];
+    while (current) {
+      const placeId = stageSelectionForRun(demoBattleArt, runAt(run, current)).placeId!;
+      visits.push({ act: current.act, placeId });
+      const nextId = current.nextIds[Math.min(nextIndex, current.nextIds.length - 1)];
+      if (!nextId) break;
+      current = run.map.nodes.find((node) => node.id === nextId)!;
+    }
+    expect(visits).toHaveLength(42);
+    for (const act of [1, 2, 3]) {
+      const places = visits.filter((item) => item.act === act).map((item) => item.placeId);
+      expect(new Set(places).size).toBe(4);
+      const longest = places.reduce((state, placeId) => ({ previous: placeId, streak: placeId === state.previous ? state.streak + 1 : 1, maximum: Math.max(state.maximum, placeId === state.previous ? state.streak + 1 : 1) }), { previous: "", streak: 0, maximum: 0 }).maximum;
+      expect(longest).toBe(4);
+    }
+  }
+});
