@@ -87,6 +87,29 @@ test("opt-in combat report records typed potion consumption", async ({ page }) =
   ]));
 });
 
+test("one opt-in route records reward, shop, event and typed potion together", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.clock.install();
+  await startScriptedRoute(page, ["combat", "shop", "event"], true);
+  await page.locator(".map-node.available").filter({ hasText: "戦闘" }).click();
+  await page.keyboard.press("F2");
+  await page.keyboard.type("clock");
+  await typeThroughBattle(page);
+  await expect(page.locator(".reward-panel")).toBeVisible();
+  await page.locator(".reward-card").first().click();
+  await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
+  await page.locator("[data-action=buy-offer]").first().click();
+  await page.getByRole("button", { name: "購買を出る" }).click();
+  await page.locator(".map-node.available").filter({ hasText: "イベント" }).click();
+  await page.locator(".event-choice:not(:disabled)").first().click();
+  const record = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-playtest-v1")!));
+  for (const [source, action] of [["reward", "offered"], ["reward", "selected"], ["reward", "acquired"],
+    ["shop", "offered"], ["shop", "selected"], ["shop", "acquired"], ["event", "offered"],
+    ["event", "selected"], ["combat", "consumed"]]) {
+    expect(record.contentEvents, `${source}/${action}`).toEqual(expect.arrayContaining([expect.objectContaining({ source, action })]));
+  }
+});
+
 test("map routes match the saved seed and remain keyboard operable on narrow screens", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await startDemoRun(page);
