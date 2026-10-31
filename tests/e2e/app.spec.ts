@@ -697,7 +697,7 @@ test("one to three ally slots fit a shared stage at desktop and narrow widths", 
           allies: rect(".ally-slot").map((box) => ({ left: box.left, right: box.right, bottom: box.bottom })),
           enemies: rect(".enemy-slot").map((box) => ({ left: box.left, right: box.right, bottom: box.bottom })),
           label: previewLabel && { left: previewLabel.left, right: previewLabel.right },
-          hudRight: playerHud.right, intentLeft: intent.left };
+          hudRight: playerHud.right, hudBottom: playerHud.bottom, stageTop: stage.top, intentLeft: intent.left };
       });
       expect(boxes.allies).toHaveLength(count);
       for (const box of [...boxes.allies, ...boxes.enemies]) {
@@ -708,7 +708,8 @@ test("one to three ally slots fit a shared stage at desktop and narrow widths", 
       for (let index = 1; index < boxes.allies.length; index++) expect(boxes.allies[index - 1]!.right).toBeLessThanOrEqual(boxes.allies[index]!.left + 1);
       expect(boxes.allies.at(-1)!.right).toBeLessThanOrEqual(boxes.enemies[0]!.left + 1);
       if (count > 1) {
-        expect(boxes.label!.left).toBeGreaterThanOrEqual(boxes.hudRight - 1);
+        expect(boxes.hudBottom).toBeLessThanOrEqual(boxes.stageTop + 1);
+        expect(boxes.label!.left).toBeGreaterThanOrEqual(boxes.stage.left - 1);
         expect(boxes.label!.right).toBeLessThanOrEqual(boxes.intentLeft + 1);
       }
       await expect(page.locator(".control-deck")).toBeVisible();
