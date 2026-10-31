@@ -42,12 +42,12 @@ export function actorMotionState(
 ): Readonly<{ baseUrl: string; overlayUrl: string | null; kind: ActorMotionKind | null; delayMs: number }> | null {
   if (clubId !== "literature-demo" || !sources) return null;
   const kind = motion === "hero" ? "card-use" : motion === "hit" ? "hit" : null;
-  if (!kind || lowStimulus) return { baseUrl: sources.idle, overlayUrl: lowStimulus && kind ? sources[actorMotionClips[kind].pose] : null, kind: lowStimulus ? kind : null, delayMs: 0 };
+  if (!kind) return { baseUrl: sources.idle, overlayUrl: null, kind: null, delayMs: 0 };
   const clip = actorMotionClips[kind];
   return {
-    baseUrl: sources.idle,
-    overlayUrl: sources[clip.pose],
+    baseUrl: sources[clip.pose],
+    overlayUrl: lowStimulus ? null : sources.idle,
     kind,
-    delayMs: actionDelayMs(nowMs, startedAtMs ?? nowMs, clip.durationMs),
+    delayMs: lowStimulus ? 0 : actionDelayMs(nowMs, startedAtMs ?? nowMs, clip.durationMs),
   };
 }

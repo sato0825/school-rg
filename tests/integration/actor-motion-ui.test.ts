@@ -23,11 +23,11 @@ describe("literature actor candidate in live battle markup", () => {
     const slot = card.querySelector<HTMLElement>(".ally-slot")!;
     expect(slot.dataset.actorMotion).toBe("card-use");
     expect(slot.style.getPropertyValue("--actor-delay")).toBe("-190ms");
-    expect(slot.querySelector<HTMLImageElement>(".hero-art")?.src).toContain("idle.png");
-    expect(slot.querySelector<HTMLImageElement>(".hero-motion-frame")?.src).toContain("activate.png");
+    expect(slot.querySelector<HTMLImageElement>(".hero-art")?.src).toContain("activate.png");
+    expect(slot.querySelector<HTMLImageElement>(".hero-motion-frame")?.src).toContain("idle.png");
     expect(slot.querySelector(".hero-art")?.getAttribute("alt")).toContain("吉野 こはる");
     expect(slot.querySelector(".hero-motion-frame")?.getAttribute("aria-hidden")).toBe("true");
-    expect(render("hit").querySelector<HTMLImageElement>(".hero-motion-frame")?.src).toContain("hit.png");
+    expect(render("hit").querySelector<HTMLImageElement>(".hero-art")?.src).toContain("hit.png");
     expect(render(null).querySelector(".hero-motion-frame")).toBeNull();
   });
 
@@ -35,6 +35,6 @@ describe("literature actor candidate in live battle markup", () => {
     const quiet = render("hero", true);
     expect(quiet.querySelector(".game")?.getAttribute("data-effects")).toBe("quiet");
     expect(quiet.querySelector(".ally-slot")?.getAttribute("data-actor-motion")).toBe("card-use");
-    expect(quiet.querySelector(".hero-motion-frame")).toBeTruthy();
+    expect(quiet.querySelector(".hero-motion-frame")).toBeNull();
   });
 });

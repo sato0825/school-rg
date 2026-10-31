@@ -8,26 +8,27 @@
 }
 .game-shell .ally-slot[data-actor-motion="card-use"] .hero-art,
 .game-shell .ally-slot[data-actor-motion="hit"] .hero-art{
-  animation:actor-base-cede var(--actor-duration) ease-out both;
+  animation:actor-action-pose var(--actor-duration) ease-out both;
   animation-delay:var(--actor-delay);
 }
 .game-shell .ally-slot[data-actor-motion="card-use"] .hero-motion-frame{
-  animation:actor-card-use var(--actor-duration) ease-out both;
+  animation:actor-idle-cover var(--actor-duration) ease-out both;
   animation-delay:var(--actor-delay);
 }
 .game-shell .ally-slot[data-actor-motion="hit"] .hero-motion-frame{
-  animation:actor-hit var(--actor-duration) ease-out both;
+  animation:actor-idle-cover var(--actor-duration) ease-out both;
   animation-delay:var(--actor-delay);
 }
-@keyframes actor-base-cede{0%,12%,90%,100%{opacity:1}24%,78%{opacity:0}}
-@keyframes actor-card-use{
+@keyframes actor-idle-cover{0%,12%,90%,100%{opacity:1}24%,78%{opacity:0}}
+@keyframes actor-action-pose{
   0%,12%{opacity:0;transform:translate(0,0) rotate(0)}
   24%{opacity:1;transform:translate(-4px,2px) rotate(-1deg)}
   50%{opacity:1;transform:translate(19px,-9px) rotate(2deg)}
   78%{opacity:1;transform:translate(12px,-4px) rotate(1deg)}
   90%,100%{opacity:0;transform:translate(0,0) rotate(0)}
 }
-@keyframes actor-hit{
+.game-shell .ally-slot[data-actor-motion="hit"] .hero-art{animation-name:actor-hit-pose}
+@keyframes actor-hit-pose{
   0%,10%{opacity:0;transform:translate(0,0) rotate(0)}
   22%{opacity:1;transform:translate(-12px,3px) rotate(-2deg)}
   50%{opacity:1;transform:translate(-7px,2px) rotate(-1deg)}
@@ -39,14 +40,14 @@
   animation:none!important;transition:none!important;
 }
 .game[data-effects="quiet"] .ally-slot[data-actor-motion="hit"] .hero-art,
-.game[data-effects="quiet"] .ally-slot[data-actor-motion="card-use"] .hero-art{opacity:0}
+.game[data-effects="quiet"] .ally-slot[data-actor-motion="card-use"] .hero-art{opacity:1}
 .game[data-effects="quiet"] .ally-slot[data-actor-motion="hit"] .hero-motion-frame,
-.game[data-effects="quiet"] .ally-slot[data-actor-motion="card-use"] .hero-motion-frame{opacity:1}
+.game[data-effects="quiet"] .ally-slot[data-actor-motion="card-use"] .hero-motion-frame{opacity:0}
 @media(prefers-reduced-motion:reduce){
   .game-shell .ally-slot[data-actor-motion] .hero-art,
   .game-shell .ally-slot[data-actor-motion] .hero-motion-frame{animation:none!important;transition:none!important}
   .game-shell .ally-slot[data-actor-motion="hit"] .hero-art,
-  .game-shell .ally-slot[data-actor-motion="card-use"] .hero-art{opacity:0}
+  .game-shell .ally-slot[data-actor-motion="card-use"] .hero-art{opacity:1}
   .game-shell .ally-slot[data-actor-motion="hit"] .hero-motion-frame,
-  .game-shell .ally-slot[data-actor-motion="card-use"] .hero-motion-frame{opacity:1}
+  .game-shell .ally-slot[data-actor-motion="card-use"] .hero-motion-frame{opacity:0}
 }
