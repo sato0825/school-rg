@@ -1,0 +1,50 @@
+/* #368: defense occupies the actor's space, so its target is clear without reading a pop-up. */
+.game-shell[data-screen="combat"] .ally-slot[data-player-block]:not([data-player-block="0"])::before,
+.game-shell[data-screen="combat"] .ally-slot[data-block-event="block-loss"]::before{
+  content:"";
+  position:absolute;
+  z-index:4;
+  left:49%;
+  bottom:20%;
+  width:43%;
+  height:47%;
+  pointer-events:none;
+  clip-path:polygon(12% 8%,79% 0,100% 21%,91% 74%,43% 100%,0 77%);
+  background:
+    linear-gradient(132deg,transparent 0 20%,#fffefaaf 21% 23%,transparent 24% 67%,#e9fffa91 68% 70%,transparent 71%),
+    linear-gradient(145deg,#f5fff4c9,#8dc6d6a6 48%,#5b91b7a8);
+  box-shadow:inset 0 0 0 4px #fffef1,0 0 14px #e8fff9;
+  filter:drop-shadow(0 2px 3px #174b66a3);
+  transform-origin:42% 87%;
+}
+.game-shell[data-screen="combat"] .ally-slot[data-block-event="block"]::before{
+  animation:player-shield-form .38s ease-out both;
+}
+.game-shell[data-screen="combat"] .ally-slot[data-block-event="block-loss"]::before{
+  animation:player-shield-break .42s ease-in both;
+}
+.game-shell[data-screen="combat"] .ally-slot[data-block-event="block-loss"]::after{
+  content:"";
+  position:absolute;
+  z-index:5;
+  left:62%;
+  bottom:28%;
+  width:28%;
+  height:30%;
+  pointer-events:none;
+  background:linear-gradient(110deg,transparent 44%,#f7ffff 45% 49%,transparent 50% 62%,#f7ffff 63% 66%,transparent 67%);
+  clip-path:polygon(13% 0,100% 9%,73% 44%,96% 62%,31% 100%,0 77%,42% 46%);
+  animation:player-shield-crack .42s ease-in both;
+}
+@keyframes player-shield-form{from{opacity:0;transform:translateY(14px) scale(.72)}to{opacity:1;transform:none}}
+@keyframes player-shield-break{from{opacity:1;transform:none}to{opacity:0;transform:translate(14px,9px) rotate(7deg) scale(.83)}}
+@keyframes player-shield-crack{from{opacity:1;transform:none}to{opacity:0;transform:translate(15px,12px)}}
+.game-shell[data-effects="quiet"] .ally-slot::before,
+.game-shell[data-effects="quiet"] .ally-slot::after{animation:none!important;transition:none!important}
+.game-shell[data-effects="quiet"] .ally-slot[data-block-event="block-loss"]::before,
+.game-shell[data-effects="quiet"] .ally-slot[data-block-event="block-loss"]::after{display:none}
+@media(prefers-reduced-motion:reduce){
+  .game-shell .ally-slot::before,.game-shell .ally-slot::after{animation:none!important;transition:none!important}
+  .game-shell .ally-slot[data-block-event="block-loss"]::before,
+  .game-shell .ally-slot[data-block-event="block-loss"]::after{display:none}
+}

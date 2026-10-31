@@ -25,6 +25,7 @@ import "./actor-motion.css";
 import "./literature-rig.css";
 
 import "./enemy-action-art.css";
+import "./player-block-shield.css";
 
 
 const root = document.querySelector<HTMLElement>("#app");

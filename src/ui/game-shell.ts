@@ -104,6 +104,8 @@ export class GameShell {
     this.hero.alt = hero.alt;
     this.hero.style.cssText = hero.style.cssText;
     this.actor.style.cssText = slot.style.cssText;
+    this.actor.dataset.playerBlock = slot.dataset.playerBlock ?? "0";
+    this.actor.dataset.blockEvent = slot.dataset.blockEvent ?? "none";
     if (slot.dataset.actorMotion) this.actor.dataset.actorMotion = slot.dataset.actorMotion;
     else delete this.actor.dataset.actorMotion;
     if (slot.dataset.actorRig) this.actor.dataset.actorRig = slot.dataset.actorRig;
@@ -266,6 +268,8 @@ export class GameShell {
   }
 
   private releaseBattleRig(): void {
+    delete this.actor.dataset.playerBlock;
+    delete this.actor.dataset.blockEvent;
     delete this.actor.dataset.actorMotion;
     delete this.actor.dataset.actorRig;
     delete this.actor.dataset.rigReady;
