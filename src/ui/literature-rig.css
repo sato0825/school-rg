@@ -1,5 +1,6 @@
 /* Six independently editable bitmap layers, anchored to the GameShell actor. */
-.game-shell .ally-slot[data-actor-rig="literature-v1"]>.hero-art{opacity:0!important;animation:none!important}
+.game-shell .ally-slot[data-actor-rig="literature-v1"][data-rig-ready="true"]>.hero-art{opacity:0!important;animation:none!important}
+.game-shell .ally-slot[data-actor-rig="literature-v1"]:not([data-rig-ready="true"])>.hero-rig{visibility:hidden}
 .game-shell .ally-slot[data-actor-rig="literature-v1"]>.hero-motion-frame{display:none}
 .game-shell .hero-rig{
   position:absolute;z-index:2;left:50%;bottom:-4%;height:min(47vw,102%);

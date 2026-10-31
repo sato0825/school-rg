@@ -16,6 +16,10 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     await expect(actor).toHaveAttribute("data-actor-motion", "idle");
     await expect(actor).toHaveAttribute("data-actor-rig", "literature-v1");
     await expect(actor.locator(".hero-rig .rig-part")).toHaveCount(7);
+    await expect(actor).toHaveAttribute("data-rig-ready", "true");
+    const rigNode = await actor.locator(".hero-rig").elementHandle();
+    await page.clock.runFor(200);
+    expect(await actor.locator(".hero-rig").evaluate((node, previous) => node === previous, rigNode)).toBe(true);
     expect(await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node, "::before").animationName)).toBe("rig-left-contact");
     await page.keyboard.type("outline");
 
@@ -30,6 +34,24 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     await expect(actor.locator(".hero-art")).toHaveAttribute("src", /literature-idle-candidate-v1/);
   });
 }
+
+test("the complete portrait remains visible until every rig layer decodes", async ({ page }) => {
+  await page.route("**/literature-rig-parts-v1/*.png", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    await route.continue();
+  });
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  await page.getByRole("button", { name: /文芸部/ }).click();
+  await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
+  const actor = page.locator(".game-shell .ally-slot").first();
+  await expect(actor).not.toHaveAttribute("data-rig-ready", "true");
+  expect(await actor.locator(".hero-art").evaluate((node) => getComputedStyle(node).opacity)).toBe("1");
+  expect(await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node).visibility)).toBe("hidden");
+  await expect(actor).toHaveAttribute("data-rig-ready", "true");
+  expect(await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node).visibility)).toBe("visible");
+});
 
 test("reduced motion keeps the event pose as a still with no overlay animation", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });

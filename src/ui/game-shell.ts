@@ -58,6 +58,8 @@ export class GameShell {
     const stage = next?.querySelector<HTMLElement>(".stage");
     const slot = stage?.querySelector<HTMLElement>(".ally-slot");
     const hero = slot?.querySelector<HTMLImageElement>(".hero-art");
+    const nextRig = slot?.querySelector<HTMLElement>(".hero-rig");
+    const currentRig = this.actor.querySelector<HTMLElement>(".hero-rig");
     const input = next?.querySelector<HTMLInputElement>(".typing-input");
     const control = next?.querySelector<HTMLElement>(".control-deck");
     const header = next?.querySelector<HTMLElement>(".topbar");
@@ -85,10 +87,37 @@ export class GameShell {
     else delete this.actor.dataset.actorMotion;
     if (slot.dataset.actorRig) this.actor.dataset.actorRig = slot.dataset.actorRig;
     else delete this.actor.dataset.actorRig;
-    slot.replaceWith(this.actor);
-    this.actor.replaceChildren(this.hero, ...[...slot.childNodes].filter((child) => child !== hero));
-    this.overlay.remove();
-    this.stage.replaceChildren(...stage.childNodes, this.overlay);
+    const currentAllyGroup = this.actor.parentElement;
+    const nextAllyGroup = slot.parentElement;
+    if (!currentAllyGroup?.classList.contains("ally-group") || !nextAllyGroup?.classList.contains("ally-group")) throw new Error("Missing persistent ally group");
+    if (nextRig && currentRig && nextRig.dataset.rigId === currentRig.dataset.rigId) {
+      // Keep decoded images and animation phase across timer/input redraws.
+      currentRig.style.cssText = nextRig.style.cssText;
+      const currentNameplate = this.actor.querySelector<HTMLElement>(".hero-nameplate");
+      const nextNameplate = slot.querySelector<HTMLElement>(".hero-nameplate");
+      if (currentNameplate && nextNameplate) currentNameplate.innerHTML = nextNameplate.innerHTML;
+    } else {
+      delete this.actor.dataset.rigReady;
+      this.actor.replaceChildren(this.hero, ...[...slot.childNodes].filter((child) => child !== hero));
+    }
+    const rig = this.actor.querySelector<HTMLElement>(".hero-rig");
+    if (rig && this.actor.dataset.rigReady !== "true") {
+      const images = [...rig.querySelectorAll<HTMLImageElement>(".rig-part")];
+      if (images.every((image) => typeof image.decode === "function")) {
+        void Promise.all(images.map((image) => image.decode())).then(() => {
+          if (this.actor.contains(rig)) this.actor.dataset.rigReady = "true";
+        }).catch(() => { /* Keep the complete standing portrait if any layer fails. */ });
+      }
+    }
+    // Keep the actor attached to the live stage. Detaching it restarts all limb animations.
+    for (const child of [...currentAllyGroup.children]) if (child !== this.actor) child.remove();
+    for (const child of [...nextAllyGroup.children]) if (child !== slot) currentAllyGroup.append(child);
+    for (const child of [...this.stage.childNodes]) if (child !== currentAllyGroup && child !== this.overlay) child.remove();
+    let beforeAllyGroup = true;
+    for (const child of [...stage.childNodes]) {
+      if (child === nextAllyGroup) { beforeAllyGroup = false; continue; }
+      this.stage.insertBefore(child, beforeAllyGroup ? currentAllyGroup : this.overlay);
+    }
     input.replaceWith(this.input);
     this.input.removeAttribute("aria-label");
     this.input.setAttribute("aria-describedby", input.getAttribute("aria-describedby") ?? "");
