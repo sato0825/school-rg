@@ -35,6 +35,8 @@ describe("art production checks", () => {
   it("accepts separate editable vectors and rejects a flattened or externally linked SVG", () => {
     const source = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><g id="face"><circle cx="8" cy="8" r="4"/></g><g id="body"><path d="M4 8 L12 8 L8 24 Z"/></g></svg>`;
     expect(validateSvgSource(source, ["face", "body"])).toBe(2);
+    const localGradient = source.replace('<g id="face">', '<defs><linearGradient id="ink"><stop offset="0" stop-color="#123"/></linearGradient></defs><g id="face" fill="url(\'#ink\')">');
+    expect(validateSvgSource(localGradient, ["face", "body"])).toBe(2);
     expect(() => validateSvgSource(source, ["face", "arm"])).toThrow(/part missing/);
     expect(() => validateSvgSource(source.replace("</svg>", '<image href="data:image/png;base64,AA"/></svg>'), ["face", "body"])).toThrow(/flattened/);
     expect(() => validateSvgSource(source.replace('d="M4 8 L12 8 L8 24 Z"', 'd="M4 8 L12 8 L8 24 Z" fill="url(https://example.org/ink.svg)"'), ["face", "body"])).toThrow(/external SVG URL/);

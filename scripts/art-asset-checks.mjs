@@ -92,7 +92,11 @@ export function validateSvgSource(source, editableParts) {
     assert(!forbidden.has(element.localName), `flattened or external SVG element: ${element.localName}`);
     for (const attribute of element.attributes) {
       if (attribute.localName === "href") assert(attribute.value.startsWith("#"), `external SVG reference: ${attribute.value}`);
-      if (/url\(/i.test(attribute.value)) assert(!/url\(\s*['\"]?(?!#)/i.test(attribute.value), `external SVG URL: ${attribute.value}`);
+      if (/url\(/i.test(attribute.value)) {
+        const urls = [...attribute.value.matchAll(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi)];
+        assert(urls.length === (attribute.value.match(/url\(/gi) ?? []).length
+          && urls.every((match) => match[2].startsWith("#")), `external SVG URL: ${attribute.value}`);
+      }
       assert(!/^on/i.test(attribute.localName), `SVG event handler: ${attribute.localName}`);
     }
   }
