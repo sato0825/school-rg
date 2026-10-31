@@ -61,6 +61,19 @@ export function createTypingState(cards: readonly TypableCard[]): TypingState {
   };
 }
 
+/** Exact duplicate choices that cannot be a prefix of a longer card word. */
+export function exactDuplicateChoices(
+  state: TypingState,
+  cards: readonly TypableCard[],
+  config: GameConfig,
+): string[] {
+  if (!state.buffer) return [];
+  const candidates = cards.filter((card) => normalizedWord(card.word, config).startsWith(state.buffer));
+  if (candidates.some((card) => normalizedWord(card.word, config) !== state.buffer)) return [];
+  const exact = candidates.filter((card) => normalizedWord(card.word, config) === state.buffer);
+  return exact.length > 1 ? exact.map((card) => card.instanceId) : [];
+}
+
 /** Recompute from the current hand; removed cards cannot remain candidates. */
 export function syncTypingHand(
   state: TypingState,

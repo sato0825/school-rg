@@ -28,6 +28,7 @@ import { createAudioFeedback } from "./audio.js";
 import { imeLatinKey } from "./ime-key.js";
 import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
 import { GameShell } from "./game-shell.js";
+import { exactDuplicateChoices } from "../domain/typing.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
@@ -427,6 +428,25 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       imeNeedsRecovery = false;
     }
     if (/^[a-z]$/i.test(key) && view.imeNotice) setImeNotice("");
+    if (!event.repeat && !run.combat.potionControl?.active && requireSetting(config.sameNameCardPolicy) === "select_instance" && /^[0-9]$/.test(key)) {
+      const hand = run.combat.hand.map((instanceId) => {
+        const cardId = run.combat!.cards.find((card) => card.instanceId === instanceId)?.cardId;
+        const word = demoContent.cards.find((card) => card.id === cardId)?.input.text;
+        return { instanceId, word: word ?? "" };
+      });
+      const duplicateIds = exactDuplicateChoices(run.combat.typing, hand, config);
+      const handIndex = key === "0" ? 9 : Number(key) - 1;
+      const instanceId = run.combat.hand[handIndex];
+      if (instanceId && duplicateIds.includes(instanceId)) {
+        event.preventDefault();
+        run = selectTypedCard(run, instanceId, clock, config, demoContent, useCard, disposition);
+        settleIfFinished();
+        render();
+        if (session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT") root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
+        enemyPhase();
+        return;
+      }
+    }
     if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
     const focusTypingInput = event.target instanceof HTMLButtonElement && key.length === 1;
     if (focusTypingInput) event.target.blur();
