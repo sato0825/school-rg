@@ -1,0 +1,23 @@
+/* Keep the idle image in place while a short action pose enters and leaves.
+ * Only the actor artwork and its contact shadow move; the stage has no shake. */
+.stage .hero-art{position:relative;z-index:2}
+.stage .hero-idle-underlay{position:absolute;z-index:1;bottom:0;width:100%;height:min(46vw,98%);max-height:490px;object-fit:contain;object-position:center bottom;transform-origin:center bottom;pointer-events:none;animation:hero-idle 3100ms ease-in-out infinite,hero-cede var(--actor-action-ms) linear both}
+.stage .hero-art.act{animation:hero-cast-attack var(--actor-action-ms) ease-out both}
+.stage .hero-art.act.support{animation-name:hero-cast-support}
+.stage .hero-art.react{animation:hero-recoil var(--actor-action-ms) ease-out both}
+.stage .hero-shadow{z-index:0;transform-origin:center center}
+.stage .hero-shadow.act{animation:shadow-cast-attack var(--actor-action-ms) ease-out both}
+.stage .hero-shadow.act.support{animation-name:shadow-cast-support}
+.stage .hero-shadow.react{animation:shadow-recoil var(--actor-action-ms) ease-out both}
+
+@keyframes hero-cede{0%{opacity:1}18%{opacity:.15}76%{opacity:.15}100%{opacity:1}}
+@keyframes hero-cast-attack{0%{opacity:0;transform:translate(-5px,2px) scale(.98)}18%{opacity:1;transform:translate(-3px,1px)}52%{opacity:1;transform:translate(22px,-10px) rotate(-2deg)}76%{opacity:1;transform:translate(14px,-5px)}100%{opacity:0;transform:translate(2px,0)}}
+@keyframes hero-cast-support{0%{opacity:0;transform:translateY(3px) scale(.98)}18%{opacity:1;transform:translateY(1px)}52%{opacity:1;transform:translateY(-10px) rotate(-1deg)}76%{opacity:1;transform:translateY(-7px)}100%{opacity:0;transform:translateY(0)}}
+@keyframes hero-recoil{0%{opacity:0;transform:translateX(0)}17%{opacity:1;transform:translateX(0)}43%{opacity:1;transform:translate(-13px,2px) rotate(2deg)}74%{opacity:1;transform:translate(-7px,1px)}100%{opacity:0;transform:translateX(0)}}
+@keyframes shadow-cast-attack{0%,100%{transform:translateX(0) scale(1);opacity:1}52%{transform:translateX(10px) scale(.8);opacity:.72}}
+@keyframes shadow-cast-support{0%,100%{transform:scale(1);opacity:1}52%{transform:scale(.84);opacity:.7}}
+@keyframes shadow-recoil{0%,100%{transform:translateX(0) scale(1)}43%{transform:translateX(-5px) scale(1.08)}}
+
+.game[data-effects="quiet"] .hero-idle-underlay{display:none}
+.game[data-effects="quiet"] .hero-shadow{animation:none!important}
+@media(prefers-reduced-motion:reduce){.hero-idle-underlay{display:none}.stage .hero-shadow{animation:none!important}}
