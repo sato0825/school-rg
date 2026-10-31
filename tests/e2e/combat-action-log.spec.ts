@@ -38,10 +38,13 @@ test("timeout and enemy phase entries stay ordered with the next turn", async ({
   await page.getByRole("button", { name: /文芸部/ }).click();
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).first().click();
   await page.clock.runFor(11_000);
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "戦闘ログ" }).click();
   const labels = await page.locator(".combat-log-entry strong").allTextContents();
   expect(labels.slice(0, 5)).toEqual(["入力ターン開始", "入力時間終了", "プレイヤーターン終了", "敵フェーズ開始", expect.stringContaining("·")]);
   expect(labels).toContain("敵フェーズ終了");
   expect(labels.at(-1)).toBe("入力ターン開始");
   await expect(page.locator('.combat-log-entry[data-kind="turn"]').first()).toContainText("入力時間 10秒");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  await expect(page.getByRole("button", { name: "戦闘に戻る" })).toBeVisible();
 });
