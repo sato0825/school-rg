@@ -19,7 +19,7 @@ import { renderClubSelect, renderCompendium, renderRunEvent, renderRunMap, rende
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
 import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, MAX_ASCENSION_LEVEL } from "../domain/ascension.js";
-import { finishPlaytest, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
+import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
 import { createAudioFeedback } from "./audio.js";
 
@@ -90,7 +90,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   const startCombat = () => {
     preloadClubArt(run.clubId);
     view.cardFx = null;
-    if (metrics) metrics = recordPlaytestBattle(metrics, run.map.currentNodeId);
+    if (metrics) metrics = recordPlaytestBattle(metrics, run);
     run = fireRelic(run, "combat_start");
     run = beginPlayerTurn(run, clock, config, demoContent);
     run = fireRelic(run, "turn_start");
@@ -126,6 +126,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       toggle.setAttribute("aria-label", audio.enabled ? "効果音をオフにする" : "効果音をオンにする");
       toggle.textContent = audio.enabled ? "音 ON" : "音 OFF";
       header.append(toggle);
+      if (metrics && frontScreen === null && session.screen !== "won" && session.screen !== "lost") {
+        const exportButton = document.createElement("button");
+        exportButton.type = "button";
+        exportButton.className = "playtest-export";
+        exportButton.dataset.action = "export-playtest";
+        exportButton.textContent = "計測JSONを保存";
+        header.append(exportButton);
+      }
     }
     persist();
   };
@@ -134,6 +142,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (session.screen !== "combat" || (run.combat?.phase !== "WON" && run.combat?.phase !== "LOST")) return;
     audio.play(run.combat.phase === "WON" ? "win" : "lose");
     run = fireRelic(run, "combat_end");
+    if (metrics) { observeMetrics(); metrics = finishPlaytestBattle(metrics, run, run.combat!.phase === "WON" ? "won" : "lost"); }
     session = settleRunCombat({ ...session, run }, demoContent);
     run = session.run;
     if (metrics && (session.screen === "won" || session.screen === "lost")) metrics = finishPlaytest(metrics, session.screen, clock.nowMs());
@@ -289,16 +298,18 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (frontScreen !== null || restoreError) return;
       if (restoreError) return;
+      if (action === "export-playtest" && metrics) {
+        persist();
+        const blob = new Blob([JSON.stringify(metrics.record, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `school-rg-playtest-${metrics.record.runId}.json`;
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(url), 0);
+        return;
+      }
       if (session.screen === "won" || session.screen === "lost") {
-        if (action === "export-playtest" && metrics) {
-          const blob = new Blob([JSON.stringify(metrics.record, null, 2)], { type: "application/json" });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = `school-rg-playtest-${metrics.record.runId}.json`;
-          link.click();
-          window.setTimeout(() => URL.revokeObjectURL(url), 0);
-        }
         return;
       }
       if (session.screen === "map" && action === "enter-node") {
@@ -435,6 +446,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     } catch (error) { handleError(error); }
   }, 80);
   const saveTimer = window.setInterval(persist, 1_000);
+  if (metrics && session.screen === "combat" && run.combat) metrics = recordPlaytestBattle(metrics, run);
   if (session.screen === "combat" && run.combat?.phase === "PLAYER_START") startCombat();
   if (session.screen === "combat") preloadClubArt(run.clubId);
   render();
