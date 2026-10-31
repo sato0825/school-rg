@@ -74,8 +74,12 @@ test("an available route can be selected by touch at iPad width", async ({ brows
     await page.goto("/?shortRun=1&seed=42");
     await page.getByRole("button", { name: "ランを始める" }).tap();
     await page.getByRole("button", { name: /文芸部/ }).tap();
-    await page.locator(".route-scene .map-node.available").first().tap();
-    await expect(page.locator(".stage")).toBeVisible();
+    const next = page.locator(".route-scene .map-node.available").first();
+    const nextId = await next.getAttribute("data-id");
+    await next.tap();
+    await expect(page.locator(".route-scene")).toHaveCount(0);
+    const currentId = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.map.currentNodeId);
+    expect(currentId).toBe(nextId);
   } finally {
     await context.close();
   }
