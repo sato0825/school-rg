@@ -23,11 +23,13 @@ const candidate = (cardId: string, version: string, fileUrl: string, sourceIssue
 /** Small review set only. Missing IDs intentionally have no invented illustration. */
 export const candidateCardArtCatalog: CardArtCatalog = Object.freeze({
   "BASE-001": candidate("BASE-001", "issue242-v2", new URL("../assets/cards/issue261/base-strike-candidate-v2.png", import.meta.url).href, 242),
+  "BASE-003": candidate("BASE-003", "issue275-v2", new URL("../assets/cards/issue261/base-heavy-strike-candidate-v2.png", import.meta.url).href, 275),
   "BASE-007": candidate("BASE-007", "issue242-v2", new URL("../assets/cards/issue261/base-draw-candidate-v2.png", import.meta.url).href, 242),
   "BASE-011": candidate("BASE-011", "issue242-v2", new URL("../assets/cards/issue261/base-sweep-candidate-v2.png", import.meta.url).href, 242),
   "LIT-001": candidate("LIT-001", "issue246-v1", new URL("../assets/cards/issue261/lit-jot-candidate-v1.png", import.meta.url).href, 246),
   "LIT-002": candidate("LIT-002", "issue255-v1", new URL("../assets/cards/issue261/lit-leaf-candidate-v1.png", import.meta.url).href, 255),
   "LIT-003": candidate("LIT-003", "issue242-v2", new URL("../assets/cards/issue261/lit-verse-candidate-v2.png", import.meta.url).href, 242),
+  "LIT-004": candidate("LIT-004", "issue242-v1", new URL("../assets/cards/issue261/lit-outline-candidate-v1.png", import.meta.url).href, 242),
   "SCI-001": candidate("SCI-001", "issue255-v1", new URL("../assets/cards/issue261/sci-sample-candidate-v1.png", import.meta.url).href, 255),
   "SCI-003": candidate("SCI-003", "issue246-v2", new URL("../assets/cards/issue261/sci-reaction-candidate-v2.png", import.meta.url).href, 246),
   "KEN-001": candidate("KEN-001", "issue255-v2", new URL("../assets/cards/issue261/ken-parry-candidate-v2.png", import.meta.url).href, 255),

@@ -10,6 +10,9 @@
 .game-shell .topbar .run-player-hud{flex:none;gap:16px;margin-right:auto}
 .game-shell .topbar .run-gold,.game-shell .topbar .run-deck{font-size:12px;font-weight:900;white-space:nowrap}
 .game-shell .topbar .pause-button,.game-shell .topbar .battle-guide{border:1px solid #98b4bc;border-radius:5px;background:#f5faf6;color:#254b5b;font-size:11px}
+.game-shell .topbar .battle-guide{min-width:33px;padding:5px 7px;font-size:0}
+.game-shell .topbar .battle-guide::before{content:"•••";font-size:13px;letter-spacing:1px}
+.game-shell .battle-help .stimulus-toggle,.game-shell .battle-help .audio-toggle{display:inline-flex;margin:7px 7px 0 0;padding:6px 9px;font-size:11px}
 .game-shell .stage{background-position:center 56%}
 .game-shell .stage-vignette{background:linear-gradient(180deg,#142d4114 0%,transparent 38%,#24425755 100%)}
 .game-shell .hero-nameplate{bottom:5%;border-left-color:#78a5ab;background:#1d4050e6}
@@ -32,7 +35,10 @@
 .game-shell .hand>.card.dim{opacity:.72;filter:none}
 .game-shell .hand>.card.candidate{outline:2px solid #f0e1bd;outline-offset:2px}
 .game-shell .potion-row{max-width:1280px;margin:0 auto}
-.game-shell .enemy-slot .intent-ticket{display:none}
+.game-shell .enemy-slot .enemy-hud .intent-ticket{position:static;display:block;width:100%;min-height:0;max-width:none;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:#dcece9;white-space:nowrap;text-align:left;line-height:1}
+.game-shell .enemy-slot .enemy-hud .intent-copy{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.game-shell .enemy-slot .enemy-hud .intent-copy small{display:inline;color:#b9d4d4;font-size:10px;letter-spacing:0}
+.game-shell .enemy-slot .enemy-hud .intent-copy strong{color:#f3f8ef;font-size:11px}
 .game-shell .enemy-slot .enemy-hud{width:min(250px,100%);gap:5px;padding:6px 8px;border:1px solid #a5c0c4;border-radius:4px;background:#183747ee;box-shadow:0 5px 13px #1025347a}
 .game-shell .enemy-hud-head strong{flex:1;text-align:left;color:#f2f6f1}
 .game-shell .enemy-tier{display:grid;flex:none;place-items:center;width:20px;height:20px;border:1px solid #a9c3c7;border-radius:4px;color:#edf6f2;font-size:13px;line-height:1}
@@ -96,3 +102,36 @@
  .game-shell[data-screen="map"] .map-panel{width:min(590px,70%)}
 }
 @media(prefers-reduced-motion:reduce){.game-shell .hero-art,.game-shell .enemy-art,.game-shell .card,.game-shell .enemy-health-fill,.game-shell .time-fill{animation:none!important;transition:none!important}}
+
+/* The stage remains fixed through combat, reward and route; the rail floats on it. */
+.game-shell,.game-shell[data-screen="reward"],.game-shell[data-screen="map"]{grid-template-rows:62px minmax(0,1fr)}
+.game-shell .stage{grid-row:2;min-height:0}
+.game-shell .stage .ally-group,.game-shell .stage .enemy-group{bottom:300px}
+.game-shell .control-deck{position:absolute;z-index:9;right:0;bottom:0;left:0;height:300px}
+.game-shell[data-screen="reward"] .control-deck,.game-shell[data-screen="map"] .control-deck{display:block;visibility:hidden}
+.game-shell .enemy-roster{bottom:308px}
+.game-shell .hand{height:171px;min-height:171px}
+.game-shell .hand>.card[data-card-kind]{height:160px;min-height:160px}
+.game-shell .hand>.card .card-effect{font-size:12px;line-height:1.17}
+.game-shell .card-art{flex-basis:57px;margin:3px 0}
+.game-shell .typing-row{margin:3px auto 2px}
+.game-shell .potion-row{height:31px;margin-bottom:0}
+.game-shell .potion-mode{padding:4px 6px}
+.game-shell .potion{padding:2px 5px}
+.game-shell .battle-message{min-height:0;margin:0 auto;font-size:10px}
+.game-shell[data-screen="map"] .map-panel{width:min(540px,57%);height:auto;max-height:84%;background:#eaf1e4c2;backdrop-filter:blur(6px)}
+.game-shell[data-screen="map"] .map-intro{min-height:52px;padding:8px 17px;border-bottom:1px solid #a5b7ac;background:#edf3eacc}
+.game-shell[data-screen="map"] .map-intro>span,.game-shell[data-screen="map"] .map-copy>span,.game-shell[data-screen="map"] .map-progress,.game-shell[data-screen="map"] .map-stats{display:none}
+.game-shell[data-screen="map"] .map-scroll{flex:initial;min-height:0;max-height:65vh;background:repeating-linear-gradient(180deg,#8fa99b2d 0 1px,transparent 1px 48px),#f5f6edbf}
+.game-shell[data-screen="map"] .map-compendium{top:7px}
+.game-shell[data-screen="reward"] .reward-panel{background:#eaf1e7d9;backdrop-filter:blur(7px)}
+@media(max-width:1100px){
+ .game-shell,.game-shell[data-screen="reward"],.game-shell[data-screen="map"]{grid-template-rows:70px minmax(0,1fr)}
+ .game-shell .stage .ally-group,.game-shell .stage .enemy-group{bottom:300px}
+ .game-shell .control-deck{height:300px}
+ .game-shell .enemy-roster{bottom:308px}
+ .game-shell .hand{height:171px;min-height:171px}
+ .game-shell .hand>.card[data-card-kind]{height:160px;min-height:160px}
+ .game-shell .hand>.card .card-effect{font-size:12px}
+ .game-shell[data-screen="map"] .map-panel{width:min(540px,60%)}
+}
