@@ -1,0 +1,89 @@
+[
+  {
+    "id": "LIT-004",
+    "version": "v2",
+    "path": "docs/art/production/issue296/assets/card-lit-outline-v2.png",
+    "sha256": "a410a5b5f871d062096a2b6500bb8cd61ddd41ee50457d0f9e20303444db3d80",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-93e84443-4a35-4959-a65e-61b17d457704.png",
+    "promptRef": "prompt-v2.json",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "rightsReview": "pending",
+    "visualReview": "real-size board reviewed",
+    "selectionDecision": "paper outline legible but too flat versus neighboring painted objects"
+  },
+  {
+    "id": "LIT-004",
+    "version": "candidate-v1",
+    "path": "docs/art/production/issue296/reference/card-outline-candidate-v1.png",
+    "sha256": "0b70adc795c71b1c3f63c7140f97f529d8575b029711fa31cf98e196ab75df16",
+    "sourceFile": "/Users/mikoto/Documents/Codex/2026-10-30/codex-school-rg-github-sato0825-school/work/school-rg-screen-concept-242/docs/design/issue242-assets/card-outline-candidate-v1.png",
+    "promptRef": "issue242",
+    "state": "comparison-only",
+    "editableSource": null,
+    "seed": null,
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "LIT-003",
+    "version": "candidate-v1",
+    "path": "docs/art/production/issue296/reference/card-verse-candidate-v1.png",
+    "sha256": "9d455c46568dc174b1454608be5637af9e711558f861d38619b1993ce4655545",
+    "sourceFile": "/Users/mikoto/Documents/Codex/2026-10-30/codex-school-rg-github-sato0825-school/work/school-rg-screen-concept-242/docs/design/issue242-assets/card-verse-candidate-v1.png",
+    "promptRef": "issue242",
+    "state": "comparison-only",
+    "editableSource": null,
+    "seed": null,
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "LIT-005",
+    "version": "candidate-v1",
+    "path": "docs/art/production/issue296/reference/card-draw-candidate-v1.png",
+    "sha256": "c4f704f27871abf3a4c6da82a80d51160bb958d366d65974411389ea5ca1cf65",
+    "sourceFile": "/Users/mikoto/Documents/Codex/2026-10-30/codex-school-rg-github-sato0825-school/work/school-rg-screen-concept-242/docs/design/issue242-assets/card-draw-candidate-v1.png",
+    "promptRef": "issue242",
+    "state": "comparison-only",
+    "editableSource": null,
+    "seed": null,
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "LIT-004",
+    "version": "v3",
+    "path": "docs/art/production/issue296/assets/card-lit-outline-v3.png",
+    "sha256": "60fd4cfd2c5fb31d591a3a9c774b83bbdf32639fc09a3fe1aeb47080a08bf4ad",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-73413390-d536-4e0f-89cb-5fd33c4dde83.png",
+    "promptRef": "prompt-v3.json",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "rightsReview": "pending",
+    "visualReview": "actual-size board reviewed",
+    "selectionDecision": "replaces photographic desk with painted notebook; distinguishable at hand, reward and 48px; formal adoption pending"
+  }
+]

@@ -969,6 +969,20 @@
             "version": "candidate-v1",
             "source": "docs/design/issue242-assets/card-outline-candidate-v1.png",
             "state": "unmerged-preview"
+          },
+          {
+            "issue": 296,
+            "version": "v2",
+            "source": "docs/art/production/issue296/assets/card-lit-outline-v2.png",
+            "state": "superseded-candidate",
+            "sha256": "a410a5b5f871d062096a2b6500bb8cd61ddd41ee50457d0f9e20303444db3d80"
+          },
+          {
+            "issue": 296,
+            "version": "v3",
+            "source": "docs/art/production/issue296/assets/card-lit-outline-v3.png",
+            "state": "preferred-draft",
+            "sha256": "60fd4cfd2c5fb31d591a3a9c774b83bbdf32639fc09a3fe1aeb47080a08bf4ad"
           }
         ]
       }

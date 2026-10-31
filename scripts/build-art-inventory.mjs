@@ -22,7 +22,10 @@ const wave4 = ["assets-batch-a.json", "assets-batch-b.json", "revision-assets.js
   .flatMap((file) => JSON.parse(fs.readFileSync(path.join(wave4Dir, file), "utf8")));
 const relicDir = path.join(root, "docs/art/production/issue291");
 const relicWave1 = JSON.parse(fs.readFileSync(path.join(relicDir, "assets-v1.json"), "utf8"));
-const allProducedAssets = [...wave1.map((asset) => ({ ...asset, issue: 255 })), ...wave2.map((asset) => ({ ...asset, issue: 269 })), ...heavyStrike.map((asset) => ({ ...asset, issue: 275 })), ...wave3.map((asset) => ({ ...asset, issue: 277 })), ...wave4.map((asset) => ({ ...asset, issue: 284 })), ...relicWave1.map((asset) => ({ ...asset, issue: 291 }))];
+const outlineDir = path.join(root, "docs/art/production/issue296");
+const outlineRevisions = JSON.parse(fs.readFileSync(path.join(outlineDir, "provenance.json"), "utf8"))
+  .filter((asset) => asset.version === "v2" || asset.version === "v3");
+const allProducedAssets = [...wave1.map((asset) => ({ ...asset, issue: 255 })), ...wave2.map((asset) => ({ ...asset, issue: 269 })), ...heavyStrike.map((asset) => ({ ...asset, issue: 275 })), ...wave3.map((asset) => ({ ...asset, issue: 277 })), ...wave4.map((asset) => ({ ...asset, issue: 284 })), ...relicWave1.map((asset) => ({ ...asset, issue: 291 })), ...outlineRevisions.map((asset) => ({ ...asset, issue: 296 }))];
 if (new Set(allProducedAssets.map((asset) => `${asset.id}:${asset.version}`)).size !== allProducedAssets.length) throw new Error("duplicate produced asset ID/version");
 for (const asset of allProducedAssets) {
   const actual = createHash("sha256").update(fs.readFileSync(path.join(root, asset.path))).digest("hex");
