@@ -14,8 +14,10 @@ Status: Draft integration tree. This is not final visual, art or device acceptan
 | 7 | #306 audio | `2f4ae7c` | Combined the treasure acquisition sound with its 340ms local visual feedback; owner's focused 26/26 and CI passed |
 | 8 | #307 visual Intent | `b60e87f`, then `a1d58d4` | Retained stage place metadata and added selected target trajectory to the battle stage. `a1d58d4` hides the preview trajectory while a card resolves; owning focused 4/4 passed, newer CI pending. Candidate visuals remain unaccepted. |
 | 9 | #311 relic/potion visuals | `22e08e8` | Combined item art and detail/activation in `app.ts`/`battle-view.ts`/`main.ts` while retaining sound activation and selected target trajectory; owner check passed (119 unit, 163 integration, 155 E2E), owning CI passed. Candidate art remains unaccepted. |
+| 10 | #320 literature rig and effects continuity | `4cbaa57` | Merged after its check/Windows CI passed. Combined the asset register entries, `battle-view.ts` rig markup with stage place/target trajectory/item overlay, `game-shell.ts` quiet initialization with existing view/config, and both sets of CSS imports. Typecheck passed; combined runtime QA pending. Candidate rig remains unaccepted. |
+| 11 | #335 additional card art | `1a0aff1` | Merged without conflict after its owning CI passed. Candidate coverage reaches 56/84 IDs; combined runtime QA pending. |
 
-Later candidate branches include #334 four location prop images, #320 character rig and #335 additional card art. They are separate from this core integration gate until their own branches settle. Do not count a source's earlier passing CI as a pass for this combined tree.
+Do not count a source's earlier passing CI as a pass for this combined tree. The gate through order 9 is the validated core; orders 10-11 are a follow-up integration phase that requires its own combined-tree check.
 
 ## Combined-tree verification
 
@@ -27,4 +29,4 @@ Combined screenshots are in the task `outputs/` directory under `issue319-integr
 
 The same code also passed the focused five-enemy interaction case at 1440; `outputs/issue319-integrated-five-enemies-1440.png` shows the repeated test enemy and visible target HP/Intent. `outputs/issue319-integrated-three-allies-{1440,1024}.png` shows a three-ally layout preview: slots two and three are explicit placeholders without battle rules or character art, so this is layout evidence only. The associated live `issue170-five-enemies-v6-1440x900.png` capture was refreshed on this combined branch. These captures do not establish first-time readability or a complete companion system.
 
-Later candidates #334 (four location props; held because its CI found a real Act 2 loss), #320 (character rig and effect propagation), #335 (additional card art) and #324 (one enemy action painting) are outside this validated core HEAD. They require a new combined-tree gate if included.
+Later candidates #334 (four location props; held because its CI found a real Act 2 loss) and #324 (one enemy action painting, current CI failed) remain outside this tree. #320/#335 have been included in follow-up HEAD `655c33f` and are not covered by the core pass above. The added rig is only for 文芸部; the other four clubs still use whole-body candidates, and the remaining 28 card IDs have no candidate painting.
