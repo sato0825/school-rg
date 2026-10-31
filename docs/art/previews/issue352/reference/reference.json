@@ -1,0 +1,30 @@
+[
+  {
+    "path": "docs/art/previews/issue352/reference/issue327-combat-1024-candidate-v1.png",
+    "sourcePath": "docs/art/previews/issue327-combat-1024-candidate-v1.png",
+    "sourcePR": 337,
+    "sha256": "4f8c9dd3b9a2a5cd4c2b30ae25067aa0f92585664f3015890420035f4ec11350",
+    "referenceOnly": true
+  },
+  {
+    "path": "docs/art/previews/issue352/reference/issue327-combat-1440-candidate-v1.png",
+    "sourcePath": "docs/art/previews/issue327-combat-1440-candidate-v1.png",
+    "sourcePR": 337,
+    "sha256": "5eb4001e68e6cea8484689ffabc97f7ad9a252ebb5c344faae0b8642176a9c80",
+    "referenceOnly": true
+  },
+  {
+    "path": "docs/art/previews/issue352/reference/issue327-reward-1024-candidate-v1.png",
+    "sourcePath": "docs/art/previews/issue327-reward-1024-candidate-v1.png",
+    "sourcePR": 337,
+    "sha256": "12ae098127519a2663fcb22adcae429299b33b99c48411bfba717e3468d7e952",
+    "referenceOnly": true
+  },
+  {
+    "path": "docs/art/previews/issue352/reference/issue327-reward-1440-candidate-v1.png",
+    "sourcePath": "docs/art/previews/issue327-reward-1440-candidate-v1.png",
+    "sourcePR": 337,
+    "sha256": "02179ad849c6d39b5c640ae90bd6011b47f93d91968d5d47edd4bff1bfd6094f",
+    "referenceOnly": true
+  }
+]
