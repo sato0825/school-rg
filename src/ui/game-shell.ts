@@ -2,6 +2,8 @@ import type { RunState } from "../domain/schema.js";
 import type { ContentRegistry } from "../domain/schema.js";
 import type { BattleView } from "./battle-view.js";
 import { stageUrlForRun } from "./stage-presentation.js";
+import { createLossNote, defeatCandidateByClubId, lossHeader, type LossNoteOptions } from "./loss-view.js";
+import type { RunSession } from "../domain/run-flow.js";
 
 /** The stage and actor belong to the run, rather than to an individual screen. */
 export class GameShell {
@@ -114,5 +116,26 @@ export class GameShell {
     const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
     meta.textContent = `ACT ${run.act} · ${node?.floor ?? 0}F · ${screen === "reward" ? "戦闘報酬" : "経路選択"}`;
     this.header.append(meta);
+  }
+
+  showLoss(session: RunSession, content: ContentRegistry, lowStimulus: boolean, options: LossNoteOptions): void {
+    const wasLoss = this.main.dataset.screen === "lost";
+    const { run } = session;
+    this.main.dataset.screen = "lost";
+    this.main.dataset.club = run.clubId;
+    this.main.dataset.effects = lowStimulus ? "quiet" : "standard";
+    this.stage.dataset.act = String(run.act);
+    this.input.disabled = true;
+    this.input.value = "";
+    this.hero.className = "hero-art loss-pose";
+    this.hero.src = defeatCandidateByClubId[run.clubId] ?? this.hero.src;
+    const club = content.clubs.find((item) => item.id === run.clubId)?.name ?? "部活動";
+    this.hero.alt = `${club}の生徒の敗北姿勢（制作候補）`;
+    this.actor.querySelector(".hero-nameplate")!.textContent = club;
+    this.header.classList.add("run-header");
+    this.header.replaceChildren(lossHeader(run, content));
+    const note = createLossNote(session, content, options);
+    this.overlay.replaceChildren(note);
+    if (!wasLoss) note.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
   }
 }
