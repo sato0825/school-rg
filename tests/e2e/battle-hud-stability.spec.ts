@@ -100,7 +100,7 @@ test("a typed status card marks the affected enemy in the stage", async ({ page 
   await expect(page.locator(".card-word").filter({ hasText: "sample" })).toBeVisible();
   await page.keyboard.type("sample");
   await expect(page.locator(".result-fx-mark[data-kind=debuff]")).toContainText("毒 +3");
-  await expect(page.locator(".enemy-status")).toContainText("毒 3");
+  await expect(page.locator(".enemy-status [data-status=poison]")).toHaveAttribute("aria-label", /毒 3/);
   if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") await page.screenshot({ path: "docs/art/previews/issue177-status-response-1024.png" });
 });
 
@@ -173,13 +173,13 @@ for (const { count, width, height } of [{ count: 3, width: 1024, height: 768 }, 
     const saved = serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard");
     await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
     await page.goto("/");
-    await page.keyboard.type("sample");
     await page.locator(".enemy-roster-button").first().click();
+    await page.keyboard.type("sample");
     await expect(page.locator(".result-fx-mark[data-kind=debuff]")).toContainText("毒 +3");
-    await expect(page.locator(".enemy-detail-status").first()).toContainText("毒");
     const statusMark = await page.locator(".result-fx-mark[data-kind=debuff]").boundingBox();
     const roster = await page.locator(".enemy-roster").boundingBox();
     expect(statusMark!.y + statusMark!.height).toBeLessThanOrEqual(roster!.y);
+    await expect(page.locator(".enemy-detail-status").first()).toContainText("毒");
     await page.keyboard.type("sweep");
     await expect(page.locator(".result-fx-mark[data-kind=damage]")).toHaveCount(count);
     await page.clock.runFor(140);
@@ -200,7 +200,7 @@ for (const { count, width, height } of [{ count: 3, width: 1024, height: 768 }, 
 }
 
 test("impact cues remain legible on the three late-Act stages at PC and iPad sizes", async ({ context }) => {
-  for (const act of [1, 2, 3]) {
+  for (const act of [1, 2, 3] as const) {
     const base = createRunSession(42, "science-demo", demoContent);
     const current = base.run.map.nodes.find((node) => node.act === act && node.floor >= 7 && node.floor < 12 && node.nextIds.some((id) => {
       const next = base.run.map.nodes.find((candidate) => candidate.id === id);
