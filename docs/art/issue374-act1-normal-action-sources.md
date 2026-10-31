@@ -14,6 +14,18 @@ Reference: `src/assets/enemies/late-pass-candidate-v1.png`. Keep the torn cream 
 
 All three are 1312×1199 RGBA PNG with alpha 0–255. They were edited separately from the same idle reference with built-in imagegen. Prompts held identity/lighting/camera and requested a single isolated enemy without floor, stage, UI, numeric values or StS2 reference. Source images remain in the versioned repository; the generated originals remain in Codex generated-images storage. Attack and Weak are deliberately different silhouettes, but this is an artist review, not proof of first-sight understanding at 70 px. Exact effect values stay in HUD/AX.
 
+## Lost homework
+
+Reference: `src/assets/enemies/lost-homework-candidate-v1.png`. Preserve the bound cream-and-blue answer-paper bundle, amber eyes, pale leaf marks, blue binding loop, pencil legs and camera.
+
+| Intent/event | Source | SHA-256 | Shape contract |
+| --- | --- | --- | --- |
+| `homework-intent-hit` / damage 4 | `src/assets/enemies/actions/lost-homework-attack-candidate-v1.png` | `b3fe0a68f926097bf97eada376cce1b807a7cc295e5fa96026d50e708e293b1f` | One broad pointed answer sheet thrusts left; legs brace. |
+| `homework-intent-weak` / player Weak 1 | `src/assets/enemies/actions/lost-homework-debuff-candidate-v1.png` | `d84c70553a3b2b70b7c99806626e5302651925bef36edd5b902a832df02d8a3f` | Several thin sheets fan outward as a disorienting cloud. |
+| Card damage / hit | `src/assets/enemies/actions/lost-homework-hit-candidate-v1.png` | `9f98fb76d8f48c5bdbab82aec233f6e47e27ddf1cf3997ac08f46a0581de3f89` | Bundle folds low, eyes squeeze, loose corners jump up. |
+
+The three PNGs were generated as separate transparent edits from the same idle target using built-in imagegen. They are whole-body poses, not independently adjustable paper/leg parts. The effect/target and all numbers stay in live UI/AX. At 70 px, the fan may still be confused with a paper attack; this needs an unfamiliar-player comparison.
+
 ## Unmade in this issue
 
-`lost-homework`, `hall-mop`, and `folded-school-map` still need their Intent-specific poses, hit reactions, source records, runtime mapping, GameShell screenshots and first-sight/iPad checks. Do not close #374 based on the late-pass subset.
+`hall-mop` and `folded-school-map` still need their Intent-specific poses, hit reactions and source records. All four enemies still need runtime mapping, GameShell screenshots and first-sight/iPad checks. Do not close #374 based on source pose production.
