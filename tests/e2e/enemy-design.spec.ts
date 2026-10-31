@@ -41,6 +41,13 @@ test("all 25 enemy candidates decode and keep battle controls readable across th
     if (process.env.SCHOOL_RG_CAPTURE_ENEMY_ART === "1" && ["paper-heap", "night-announcement", "lab-ventilation", "last-bus"].includes(enemyId)) {
       await scene.screenshot({ path: `docs/art/previews/issue140-${enemyId}-${width}-20261031.png`, fullPage: true });
     }
+    if (enemyId === "lost-and-found" && process.env.SCHOOL_RG_CAPTURE_LOST_FOUND_ART === "1") {
+      await scene.screenshot({ path: "docs/art/previews/issue155-lost-and-found-390-20261031.png", fullPage: true });
+      await scene.setViewportSize({ width: 1280, height: 844 });
+      await expect(scene.locator(".intent-ticket")).toBeInViewport();
+      await expect(scene.locator(".typing-buffer")).toBeInViewport();
+      await scene.screenshot({ path: "docs/art/previews/issue155-lost-and-found-1280-20261031.png", fullPage: true });
+    }
     await scene.close();
   }
 });
