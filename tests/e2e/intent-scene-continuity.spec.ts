@@ -40,8 +40,14 @@ for (const width of [1024, 1440] as const) for (const quiet of [false, true] as 
     await expect(page.locator(".enemy-roster-button")).toHaveCount(5);
     await expect(page.locator('.enemy-slot .intent-body-cue[data-kind="attack"]')).toHaveCount(5);
     await expect(page.locator('.enemy-slot .intent-body-cue[data-kind="block"]')).toHaveCount(5);
+    await expect(page.locator(".intent-trajectory")).toHaveCount(0);
+    await page.locator(".enemy-roster-button").first().click();
+    await expect(page.locator(".intent-trajectory")).toHaveCount(1);
+    await expect(page.locator(".intent-trajectory")).toHaveAttribute("aria-hidden", "true");
+    expect(await geometry()).toEqual(before);
     await page.keyboard.type("sweep");
     await expect(page.locator(".enemy-slot")).toHaveCount(1);
+    await expect(page.locator(".intent-trajectory")).toHaveCount(0);
     expect(await geometry()).toEqual(before);
     const remainingMs = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
     await page.clock.runFor(remainingMs + 80);
