@@ -32,7 +32,7 @@ export function createLossNote(session: RunSession, content: ContentRegistry, op
   heading.tabIndex = -1;
   const eyebrow = document.createElement("span");
   eyebrow.className = "loss-note-eyebrow";
-  eyebrow.textContent = "✦　書きとめた活動記録";
+  eyebrow.textContent = "✦　敗北 · 活動記録";
   const lastDamage = run.lastCombatLog?.entries.filter((entry) => entry.playerHpDelta < 0).at(-1);
   const damage = document.createElement("p");
   damage.className = "loss-note-damage";

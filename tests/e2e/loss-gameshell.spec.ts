@@ -32,6 +32,7 @@ test("last enemy action reaches HP zero without replacing the stage or actor", a
   });
   for (let turn = 0; turn < 30 && !(await page.locator('.game-shell[data-screen="lost"]').count()); turn++) await page.clock.runFor(11_000);
   await expect(page.getByRole("heading", { name: "敗北" })).toHaveText("今日はここまで");
+  await expect(page.locator(".loss-note-eyebrow")).toContainText("敗北");
   await expect(page.getByRole("button", { name: "効果音をオンにする" })).toBeVisible();
   await expect(page.locator(".game-shell .hero-art")).toHaveAttribute("src", /literature-defeat-candidate-v1/);
   await expect(page.locator(".game-shell .typing-input")).toBeDisabled();
