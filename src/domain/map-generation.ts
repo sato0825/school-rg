@@ -1,5 +1,5 @@
 import { requireSetting } from "./config.js";
-import { createRandomState, randomInt, shuffle, type RandomState } from "./random.js";
+import { createRandomState, randomInt, type RandomState } from "./random.js";
 import type { MapNode, RunState } from "./schema.js";
 
 export type EncounterKind = Extract<MapNode["kind"], "combat" | "elite" | "event" | "shop" | "rest" | "treasure">;
@@ -23,6 +23,8 @@ export const DEFAULT_MAP_OPTIONS: MapGenerationOptions = {
 };
 
 const ENCOUNTER_KINDS: EncounterKind[] = ["combat", "elite", "event", "shop", "rest", "treasure"];
+/** Provisional route density for #181: one adjacent branch between ordinary floors. */
+const BRANCHES_PER_FLOOR = 1;
 
 function validateOptions(options: MapGenerationOptions): number {
   if (!Number.isSafeInteger(options.floorsPerAct) || options.floorsPerAct < 1 || options.floorsPerAct > 100) {
@@ -74,14 +76,19 @@ export function generateRunMap(seed: number, options: MapGenerationOptions = DEF
       nodes.push(...current);
       if (previous.length === 1) previous[0]!.nextIds = current.map((node) => node.id);
       else {
-        const permutation = shuffle(state, current.map((_, lane) => lane));
-        state = permutation.state;
+        // A same-lane spine keeps each node live. A single local fork gives a
+        // real choice without the crossing, almost-complete mesh of old maps.
         for (let lane = 0; lane < previous.length; lane++) {
-          const primary = permutation.items[lane]!;
-          const secondDraw = randomInt(state, current.length - 1);
-          state = secondDraw.state;
-          const secondary = secondDraw.value >= primary ? secondDraw.value + 1 : secondDraw.value;
-          previous[lane]!.nextIds = [current[primary]!.id, current[secondary]!.id];
+          previous[lane]!.nextIds = [current[lane]!.id];
+        }
+        for (let branch = 0; branch < BRANCHES_PER_FLOOR; branch++) {
+          const gap = randomInt(state, current.length - 1);
+          state = gap.state;
+          const direction = randomInt(state, 2);
+          state = direction.state;
+          const source = gap.value + direction.value;
+          const target = gap.value + (1 - direction.value);
+          previous[source]!.nextIds.push(current[target]!.id);
         }
       }
       previous = current;

@@ -45,6 +45,27 @@ describe("seeded three-Act map DAG", () => {
     expect(() => generateRunMap(7, { ...valid, kindWeights: { ...valid.kindWeights, event: -1 } })).toThrow(RangeError);
   });
 
+  it("uses a sparse local fork instead of crossing every lane between floors", () => {
+    for (let seed = 0; seed < 100; seed++) {
+      const map = generateRunMap(seed);
+      for (let act = 1; act <= 3; act++) {
+        for (let floor = 1; floor < 12; floor++) {
+          const from = map.nodes.filter((node) => node.act === act && node.floor === floor);
+          const to = map.nodes.filter((node) => node.act === act && node.floor === floor + 1);
+          const edges = from.flatMap((node, lane) => node.nextIds.map((nextId) => ({ lane, nextLane: to.findIndex((target) => target.id === nextId) })));
+          expect(edges).toHaveLength(5);
+          expect(edges.every(({ lane, nextLane }) => nextLane >= 0 && Math.abs(lane - nextLane) <= 1)).toBe(true);
+          expect(from.filter((node) => node.nextIds.length === 2)).toHaveLength(1);
+          expect(edges.filter(({ lane, nextLane }) => lane === nextLane)).toHaveLength(4);
+          expect(from.every((node, lane) => node.nextIds[0] === to[lane]!.id)).toBe(true);
+          for (let left = 0; left < edges.length; left++) for (let right = left + 1; right < edges.length; right++) {
+            expect(edges[left]!.lane < edges[right]!.lane && edges[left]!.nextLane > edges[right]!.nextLane).toBe(false);
+          }
+        }
+      }
+    }
+  }, 20_000);
+
   it("permits only listed next nodes and blocks movement during combat", () => {
     const map = generateRunMap(42, { floorsPerAct: 2, lanes: 3, kindWeights: { combat: 1, elite: 0, event: 0, shop: 0, rest: 0, treasure: 0 } });
     const run = { ...createDemoBattle(), map: { nodes: map.nodes, currentNodeId: map.currentNodeId }, combat: null };
