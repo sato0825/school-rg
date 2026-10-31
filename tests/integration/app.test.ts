@@ -27,7 +27,8 @@ describe("run and typing combat HUD", () => {
     expect(root.textContent).toContain("山札 5");
     expect(root.textContent).toContain("捨て札 0");
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "z", bubbles: true }));
-    expect(root.querySelector(".typing-buffer")?.textContent).toContain("下の手札から英単語を入力");
+    expect(root.querySelector(".typing-visual")?.textContent).toBe("");
+    expect(root.querySelector<HTMLInputElement>(".typing-input")?.hasAttribute("placeholder")).toBe(false);
     unmount();
   });
 

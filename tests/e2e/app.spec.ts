@@ -208,7 +208,8 @@ test("renders the combat HUD and accepts direct keyboard input", async ({ page }
   expect(seconds).toBeGreaterThan(0);
   expect(seconds).toBeLessThanOrEqual(10);
   await page.keyboard.press("z");
-  await expect(page.locator(".typing-buffer .placeholder")).toBeVisible();
+  await expect(page.locator(".typing-visual")).toHaveText("");
+  await expect(page.locator(".typing-input")).not.toHaveAttribute("placeholder");
   await page.keyboard.type("heavy strike");
   await expect(page.locator(".enemy-hud")).toContainText("10/24");
   await expect(page.locator(".card")).toHaveCount(4);
