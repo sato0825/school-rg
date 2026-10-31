@@ -1,0 +1,18 @@
+/* #340 candidate-only footprint: preserve the empty passage and ground the props. */
+.game-shell[data-stage-wing-preview="on"] .stage[data-stage-place="auditorium-stage-wing"] .location-scene[data-location="shop"] .location-prop {
+  top: 28%; left: 52%; width: 27%; height: 26%;
+}
+.game-shell[data-stage-wing-preview="on"] .stage[data-stage-place="auditorium-stage-wing"] .location-scene[data-location="rest"] .location-prop {
+  top: 36%; left: 52%; width: 26%; height: 18%;
+}
+.game-shell[data-stage-wing-preview="on"] .stage[data-stage-place="auditorium-stage-wing"] .location-prop-shop .shop-awning {
+  display: none;
+}
+@media (max-width: 1100px) {
+  .game-shell[data-stage-wing-preview="on"] .stage[data-stage-place="auditorium-stage-wing"] .location-scene[data-location="shop"] .location-prop {
+    top: 30%; left: 48%; width: 31%; height: 24%;
+  }
+  .game-shell[data-stage-wing-preview="on"] .stage[data-stage-place="auditorium-stage-wing"] .location-scene[data-location="rest"] .location-prop {
+    top: 36%; left: 48%; width: 29%; height: 18%;
+  }
+}
