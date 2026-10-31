@@ -142,13 +142,13 @@
     "priorSha256": "3f8d888dec4bad26b5382af2cacae64866f66f37bd508824d25142249f950f77",
     "promptRef": "revision-prompts.md#BASE-017-v4",
     "styleReference": "docs/art/production/issue338/assets/card-base-barrier-v1.png",
-    "state": "candidate",
+    "state": "preferred-draft",
     "editableSource": null,
     "seed": null,
     "generator": "built-in image_gen__imagegen",
     "generatedAt": "2026-10-31",
     "rightsReview": "pending",
-    "visualReview": "pending real-size QA",
-    "selectionDecision": "new timetable strip distinctly differs from delay timer; pending game hand QA"
+    "visualReview": "1024-1440 contact hand/reward and 112x57/48px gray/art-text static QA",
+    "selectionDecision": "distinct timetable strip from BASE-023 timer; runtime adjacent-hand verification pending; formal adoption pending"
   }
 ]
