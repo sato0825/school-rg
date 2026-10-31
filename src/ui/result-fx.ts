@@ -5,7 +5,7 @@ export type ResultFxMark = { xPercent: number; kind: "damage" | "heal" | "block"
 export type ResultFx = { startedAtMs: number; marks: readonly ResultFxMark[] };
 
 const statusVisual: Record<string, { name: string; kind: "buff" | "debuff" }> = {
-  strength: { name: "力", kind: "buff" }, barrier: { name: "結界", kind: "buff" },
+  strength: { name: "力", kind: "buff" }, dexterity: { name: "敏捷", kind: "buff" }, barrier: { name: "結界", kind: "buff" },
   focus: { name: "集中", kind: "buff" }, thorns: { name: "反撃", kind: "buff" },
   weak: { name: "弱体", kind: "debuff" }, vulnerable: { name: "脆弱", kind: "debuff" },
   frail: { name: "虚弱", kind: "debuff" }, poison: { name: "毒", kind: "debuff" },
