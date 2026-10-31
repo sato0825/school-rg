@@ -19,7 +19,7 @@ function cardThumbnail(cardId: string): string {
 
 function choiceButton(action: string, id: string, symbol: string, kind: string, name: string, detail: string, outcome: string, disabledReason = "", image = ""): string {
   const disabled = Boolean(disabledReason);
-  return `<button type="button" class="location-choice" data-action="${action}" data-id="${escapeHtml(id)}" ${disabled ? "disabled" : ""} aria-label="${escapeHtml(`${name}。${detail}。${disabled ? disabledReason : outcome}`)}"><span class="location-choice-icon" aria-hidden="true">${image || symbol}</span><span class="location-choice-copy"><small>${escapeHtml(kind)}</small><strong>${escapeHtml(name)}</strong><span>${escapeHtml(detail)}</span></span><b class="location-choice-outcome" data-unavailable="${disabled}">${escapeHtml(disabledReason || outcome)}</b></button>`;
+  return `<button type="button" class="location-choice" data-action="${action}" data-id="${escapeHtml(id)}" ${disabled ? "disabled" : ""}><span class="location-choice-icon" aria-hidden="true">${image || symbol}</span><span class="location-choice-copy"><small>${escapeHtml(kind)}</small><strong>${escapeHtml(name)}</strong><span>${escapeHtml(detail)}</span></span><b class="location-choice-outcome" data-unavailable="${disabled}">${escapeHtml(disabledReason || outcome)}</b></button>`;
 }
 
 function eventEffect(effect: EventEffect, content: ContentRegistry): string {
