@@ -119,12 +119,29 @@ export class GameShell {
       if (child === nextAllyGroup) { beforeAllyGroup = false; continue; }
       this.stage.insertBefore(child, beforeAllyGroup ? currentAllyGroup : this.overlay);
     }
-    input.replaceWith(this.input);
+    const currentTypingRow = this.control.querySelector<HTMLElement>(".typing-row");
+    const nextTypingRow = control.querySelector<HTMLElement>(".typing-row");
+    if (currentTypingRow && nextTypingRow) {
+      // Preserve the focused input while the clock, hand, and typing feedback redraw.
+      for (const selector of [".typing-caption", ".typing-visual", ".typing-input-help", ".ime-notice", ".typing-hint"]) {
+        const current = currentTypingRow.querySelector<HTMLElement>(selector);
+        const incoming = nextTypingRow.querySelector<HTMLElement>(selector);
+        if (current && incoming) current.innerHTML = incoming.innerHTML;
+      }
+      for (const child of [...this.control.childNodes]) if (child !== currentTypingRow) child.remove();
+      let beforeTypingRow = true;
+      for (const child of [...control.childNodes]) {
+        if (child === nextTypingRow) { beforeTypingRow = false; continue; }
+        this.control.insertBefore(child, beforeTypingRow ? currentTypingRow : null);
+      }
+    } else {
+      input.replaceWith(this.input);
+      this.control.replaceChildren(...control.childNodes);
+    }
     this.input.removeAttribute("aria-label");
     this.input.setAttribute("aria-describedby", input.getAttribute("aria-describedby") ?? "");
     this.input.value = input.value;
     this.input.disabled = input.disabled;
-    this.control.replaceChildren(...control.childNodes);
     this.main.querySelector("#battle-help")?.remove();
     this.main.querySelector(".result-backdrop")?.remove();
     this.main.querySelector(".battle-map-overlay")?.remove();
