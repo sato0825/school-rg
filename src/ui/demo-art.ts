@@ -1,6 +1,7 @@
 import type { BattleArt } from "./battle-view.js";
 import { clubPresentation } from "./club-presentation.js";
 import { enemyCandidateUrlById } from "./enemy-presentation.js";
+import { stageCandidateUrlByAct } from "./stage-presentation.js";
 
 /** Remaining enemies use this placeholder until #29/#68 supply distinct reviewed art. */
 const placeholderEnemyUrl = new URL("../assets/enemy-paper-v1.png", import.meta.url).href;
@@ -8,6 +9,7 @@ const placeholderEnemyUrl = new URL("../assets/enemy-paper-v1.png", import.meta.
 /** Demo presentation is kept outside battle logic so later club and enemy art can replace it. */
 export const demoBattleArt: BattleArt = {
   stageUrl: new URL("../assets/stage-hallway-v1.png", import.meta.url).href,
+  stageUrlByAct: stageCandidateUrlByAct,
   heroUrl: clubPresentation["literature-demo"].idle,
   heroUrlByClubId: Object.fromEntries(Object.entries(clubPresentation).map(([id, art]) => [id, art.idle])),
   heroPosesByClubId: Object.fromEntries(Object.entries(clubPresentation).map(([id, art]) => [id, { idle: art.idle, activate: art.activate, hit: art.hit }])),
