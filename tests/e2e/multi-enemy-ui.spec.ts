@@ -119,5 +119,19 @@ for (const width of [1024, 1440] as const) test(`five different enemies show eve
   await roster.nth(0).click();
   await expect(roster.nth(0)).toHaveAttribute("aria-pressed", "true");
   await expect(roster.nth(0).locator(".enemy-detail")).toBeVisible();
+  const detailOrigin = await roster.nth(0).locator(".enemy-detail").boundingBox();
+  expect(detailOrigin).not.toBeNull();
+  expect(detailOrigin!.y).toBeLessThan(90);
+  for (let index = 1; index < 5; index += 1) {
+    await roster.nth(index).click();
+    await expect(roster.nth(index)).toHaveAttribute("aria-pressed", "true");
+    const detail = roster.nth(index).locator(".enemy-detail");
+    await expect(detail).toBeVisible();
+    const box = await detail.boundingBox();
+    expect(box).not.toBeNull();
+    expect(Math.abs(box!.x - detailOrigin!.x)).toBeLessThan(1);
+    expect(Math.abs(box!.y - detailOrigin!.y)).toBeLessThan(1);
+  }
+  await roster.nth(0).click();
   if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1") await page.screenshot({ path: `docs/art/previews/issue261-five-enemies-selected-${width}-candidate-v3.png` });
 });
