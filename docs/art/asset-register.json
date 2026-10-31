@@ -968,6 +968,54 @@
       "generator": "built-in imagegen; model version not exposed",
       "editableSource": null,
       "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act1-paper-library-candidate-v1",
+      "file": "src/assets/stages/act1-paper-library-candidate-v1.png",
+      "sha256": "6df77d883969c6aff1f1e0a34cceccfeaa8265b8f8ae4729049934908dc8df88",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 1,
+      "referenceId": "act1-paper-atrium-candidate-v1",
+      "promptFile": "docs/art/prompts/issue266-paper-stage-representatives-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act2-paper-physics-candidate-v1",
+      "file": "src/assets/stages/act2-paper-physics-candidate-v1.png",
+      "sha256": "4e1fd9a65fca244af46586e695eb21e0681ca75c59e6820fc80617e6121d508e",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 2,
+      "referenceId": "act1-paper-atrium-candidate-v1",
+      "promptFile": "docs/art/prompts/issue266-paper-stage-representatives-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act3-paper-auditorium-stage-candidate-v1",
+      "file": "src/assets/stages/act3-paper-auditorium-stage-candidate-v1.png",
+      "sha256": "c6066e954ebbbcbef3cd4b90c678c72f24e687b2fbb20aed611599e653340c71",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 3,
+      "referenceId": "act1-paper-atrium-candidate-v1",
+      "promptFile": "docs/art/prompts/issue266-paper-stage-representatives-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
     }
   ]
 }
