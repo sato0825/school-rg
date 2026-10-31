@@ -62,7 +62,7 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
 test("title, compendium, club selection, map and battle controls work by keyboard", async ({ page }) => {
   await page.goto("/?shortRun=1&seed=42");
   await expect(page.getByRole("heading", { name: "放課後を、打ち抜く。" })).toBeVisible();
-  await page.getByRole("button", { name: "図鑑を見る" }).focus();
+  await page.getByRole("button", { name: "遊び方と図鑑" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "カード名をタイプして行動" })).toBeVisible();
   await expect(page.locator(".compendium-list details")).toHaveCount(5);
@@ -1149,4 +1149,24 @@ test("the combat guide pauses input time and restores the previous pause state",
   expect(await time.innerText()).toBe(pausedAt);
   await page.locator("[data-action=toggle-audio]").click();
   await expect(page.locator("[data-action=toggle-audio]")).toHaveAttribute("aria-pressed", "false");
+});
+
+test("default club selection shows five distinct characters and chosen battle art", async ({ page }) => {
+  const requested: string[] = [];
+  page.on("request", (request) => { if (request.url().includes("candidate-")) requested.push(request.url()); });
+  await page.goto("/?shortRun=1&seed=42");
+  await page.getByRole("button", { name: "ランを始める" }).click();
+  const portraits = page.locator(".club-choice img");
+  await expect(portraits).toHaveCount(5);
+  await portraits.evaluateAll((images) => Promise.all(images.map((image) => (image as HTMLImageElement).decode())));
+  const urls = await portraits.evaluateAll((images) => images.map((image) => (image as HTMLImageElement).src));
+  expect(new Set(urls).size).toBe(5);
+  expect(await portraits.evaluateAll((images) => images.every((image) => (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  expect(requested.filter((url) => /activate-candidate|hit-candidate/.test(url))).toHaveLength(0);
+  await page.getByRole("button", { name: /科学部/ }).click();
+  await enterNextNode(page);
+  await expect(page.locator(".game")).toHaveAttribute("data-club", "science-demo");
+  await expect(page.locator(".hero-art")).toHaveAttribute("src", /serious-student-idle-candidate/);
+  await page.locator(".hero-art").evaluate((image) => (image as HTMLImageElement).decode());
+  expect(await page.locator(".hero-art").evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
 });
