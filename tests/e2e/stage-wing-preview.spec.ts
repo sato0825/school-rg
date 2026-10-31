@@ -4,13 +4,14 @@ import { createRunSession } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
 
 const samples = [
-  { name: "shop", fromId: "a3-f10-n1", targetId: "a3-f11-n1", kind: "shop", prop: "school-shop-candidate-v1" },
-  { name: "rest", fromId: "a3-f11-n1", targetId: "a3-f12-n2", kind: "rest", prop: "rest-bench-candidate-v1" },
+  { name: "shop", seed: 97, fromId: "a3-f10-n1", targetId: "a3-f11-n1", kind: "shop", prop: "school-shop-candidate-v1" },
+  { name: "rest", seed: 97, fromId: "a3-f11-n1", targetId: "a3-f12-n2", kind: "rest", prop: "rest-bench-candidate-v1" },
+  { name: "event", seed: 42, fromId: "a3-f10-n0", targetId: "a3-f11-n0", kind: "event", prop: "event-board-candidate-v1" },
 ] as const;
 
 test("#340 compares stage-wing geography with #304 props on same saved Act 3 nodes", async ({ browser }) => {
   for (const sample of samples) {
-    const base = createRunSession(97, "literature-demo", demoContent);
+    const base = createRunSession(sample.seed, "literature-demo", demoContent);
     const from = base.run.map.nodes.find((node) => node.id === sample.fromId)!;
     const target = base.run.map.nodes.find((node) => node.id === sample.targetId)!;
     expect(from.nextIds).toContain(target.id);
@@ -45,7 +46,7 @@ test("#340 compares stage-wing geography with #304 props on same saved Act 3 nod
           await page.screenshot({ path: `docs/design/previews/issue340-act3-${sample.name}-${concept}-${width}.png`, fullPage: true });
         }
         if (sample.kind === "shop") await page.locator('[data-action="buy-offer"]:not(:disabled)').first().click();
-        else await page.locator('[data-action="rest-heal"]').click();
+        if (sample.kind === "rest") await page.locator('[data-action="rest-heal"]').click();
         await expect(stage).toHaveAttribute("data-stage-art", artId);
         expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
         await context.close();

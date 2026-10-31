@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { demoContent } from "../../src/content/demo-battle.js";
 import { createRunSession } from "../../src/domain/run-flow.js";
 import { demoBattleArt } from "../../src/ui/demo-art.js";
@@ -21,4 +22,27 @@ it("keeps one candidate stage wing only on Act 3 floor 11/12 and preserves the s
     expect(stageWingPreviewForRun(base, JSON.parse(JSON.stringify(atNode)), true)).toEqual(preview);
   }
   expect(JSON.stringify(run)).toBe(before);
+});
+
+it("reduces repeated plates by two transitions on both audited seed routes", () => {
+  const fixture = JSON.parse(readFileSync(new URL("../fixtures/issue315-stage-routes.json", import.meta.url), "utf8")) as {
+    routes: { seed: number; visits: { id: string; kind: string }[] }[];
+  };
+  for (const route of fixture.routes) {
+    const run = createRunSession(route.seed, "literature-demo", demoContent).run;
+    const before: string[] = [];
+    const wing: string[] = [];
+    for (const visit of route.visits) {
+      const node = run.map.nodes.find((item) => item.id === visit.id)!;
+      expect(node.kind).toBe(visit.kind);
+      const atNode = { ...run, act: node.act, map: { ...run.map, currentNodeId: node.id } };
+      const base = subscenePreviewForRun(demoBattleArt, atNode, "local");
+      before.push(base.artId!);
+      wing.push(stageWingPreviewForRun(base, atNode, true).artId!);
+    }
+    const repeats = (sequence: string[]) => sequence.slice(1).filter((value, index) => value === sequence[index]).length;
+    expect(before).toHaveLength(42);
+    expect(repeats(before)).toBe(30);
+    expect(repeats(wing)).toBe(28);
+  }
 });
