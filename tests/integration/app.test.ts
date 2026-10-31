@@ -65,7 +65,7 @@ describe("run and typing combat HUD", () => {
 
   it("keeps focus and the accessible value through typing, cancellation, and potion mode", () => {
     const root = document.querySelector<HTMLElement>("#app")!;
-    const unmount = mountApp(root);
+    const unmount = mountApp(root, { read: () => null, write: () => undefined });
     root.querySelector<HTMLButtonElement>("[data-action=open-clubs]")?.click();
     root.querySelector<HTMLButtonElement>("[data-action=choose-club]")?.click();
     root.querySelector<HTMLButtonElement>(".map-node.available[aria-label*='戦闘']")?.click();
