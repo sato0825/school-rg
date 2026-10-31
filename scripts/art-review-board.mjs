@@ -1,5 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
+import console from "node:console";
 import { dirname, relative, resolve } from "node:path";
+import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
