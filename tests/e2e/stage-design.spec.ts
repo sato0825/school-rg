@@ -4,7 +4,7 @@ import { createRunSession } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
 import type { MapNode } from "../../src/domain/schema.js";
 
-const plates = ["act1-paper-atrium-candidate-v1", "act2-science-wing-candidate-v1", "act3-auditorium-foyer-candidate-v1"];
+const plates = ["act1-paper-atrium-candidate-v1", "act2-paper-science-entry-candidate-v2", "act3-paper-auditorium-plaza-candidate-v1"];
 
 test("each Act uses its own school plate on map and in typed combat at desktop and narrow widths", async ({ context }) => {
   for (const act of [1, 2, 3] as const) {
