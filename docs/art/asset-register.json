@@ -952,6 +952,22 @@
       "generator": "built-in imagegen; model version not exposed",
       "editableSource": null,
       "rights": "original generated candidate for school-rg"
+    },
+    {
+      "id": "act1-paper-atrium-candidate-v1",
+      "file": "src/assets/stages/act1-paper-atrium-candidate-v1.png",
+      "sha256": "9426ff9c032e1cfb8778ba4e38d5e153f8ac9cad19770b1f7b704a17ec491615",
+      "width": 1672,
+      "height": 941,
+      "alpha": "opaque",
+      "status": "candidate",
+      "role": "environment-plate",
+      "act": 1,
+      "referenceId": "stage-hallway-v1",
+      "promptFile": "docs/art/prompts/issue249-paper-atrium-v1.md",
+      "generator": "built-in imagegen; model version not exposed",
+      "editableSource": null,
+      "rights": "original generated candidate for school-rg"
     }
   ]
 }
