@@ -575,10 +575,16 @@ for (const [act, kind, enemyId, name] of [
       })).toBeGreaterThan(1_000);
       await expect(page.locator(".intent-ticket")).toBeInViewport();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      if (process.env.SCHOOL_RG_CAPTURE_RUN_ENEMIES === "1") {
+        await page.screenshot({ path: `docs/art/previews/issue203-${enemyId}-1024.png` });
+      }
       await page.setViewportSize({ width: 1440, height: 900 });
       await expect(art).toBeInViewport();
       await expect(page.locator(".intent-ticket")).toBeInViewport();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      if (process.env.SCHOOL_RG_CAPTURE_RUN_ENEMIES === "1") {
+        await page.screenshot({ path: `docs/art/previews/issue203-${enemyId}-1440.png` });
+      }
     }
     if (["school-gate", "library-index", "last-bus"].includes(enemyId)) {
       await page.setViewportSize({ width: 390, height: 844 });
