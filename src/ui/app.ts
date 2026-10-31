@@ -151,6 +151,12 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
+    const mapScroll = root.querySelector<HTMLElement>(".map-scroll");
+    const currentFloor = root.querySelector<HTMLElement>(".map-node.current")?.closest<HTMLElement>(".map-floor");
+    if (mapScroll && currentFloor) {
+      const delta = currentFloor.getBoundingClientRect().top - mapScroll.getBoundingClientRect().top - 36;
+      mapScroll.scrollTop = Math.max(0, mapScroll.scrollTop + delta);
+    }
     if (restoreTypingFocus && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
     if (restoreCombatLogFocus) root.querySelector<HTMLButtonElement>('[data-action="front-back"]')?.focus();
     const header = root.querySelector(".topbar, .run-header");
