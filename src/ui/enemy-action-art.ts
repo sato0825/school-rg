@@ -19,6 +19,24 @@ export const enemyActionArtById: Readonly<Record<string, EnemyActionArt>> = {
     },
     hit: new URL("../assets/enemies/actions/paper-heap-hit-candidate-v2.png", import.meta.url).href,
   },
+  "night-announcement": {
+    artId: "enemy-night-announcement-action",
+    version: "candidate-v1",
+    intents: {
+      "announcement-intent-hit": { pose: "attack", url: new URL("../assets/enemies/actions/night-announcement-attack-candidate-v1.png", import.meta.url).href },
+      "announcement-intent-frail": { pose: "status", url: new URL("../assets/enemies/actions/night-announcement-frail-candidate-v1.png", import.meta.url).href },
+    },
+    hit: new URL("../assets/enemies/actions/night-announcement-hit-candidate-v1.png", import.meta.url).href,
+  },
+  "window-shadow": {
+    artId: "enemy-window-shadow-action",
+    version: "candidate-v1",
+    intents: {
+      "window-intent-focus": { pose: "buff", url: new URL("../assets/enemies/actions/window-shadow-focus-candidate-v1.png", import.meta.url).href },
+      "window-intent-hit": { pose: "attack", url: new URL("../assets/enemies/actions/window-shadow-attack-candidate-v1.png", import.meta.url).href },
+    },
+    hit: new URL("../assets/enemies/actions/window-shadow-hit-candidate-v1.png", import.meta.url).href,
+  },
 };
 
 /** A missing asset remains idle; it must never borrow another enemy's pose. */
