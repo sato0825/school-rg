@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IME key event probe</title>
+<style>
+  body{font:16px/1.5 system-ui,sans-serif;max-width:850px;margin:24px auto;padding:0 16px}
+  input{display:block;width:100%;padding:12px;font:20px monospace}
+  pre{white-space:pre-wrap;overflow-wrap:anywhere;min-height:250px;background:#132332;color:#ecf4ef;padding:12px}
+</style>
+<h1>IME key event probe</h1>
+<p>実験用。入力欄でキーを押し、キー値・物理位置・composition・確定文字を記録します。</p>
+<label>実OSで入力する欄<input id="probe" autocomplete="off" spellcheck="false"></label>
+<p id="layout" role="status">Keyboard Layout Map を確認中…</p>
+<pre id="events" aria-live="polite"></pre>
+<script type="module">
+  const field = document.querySelector('#probe');
+  const events = document.querySelector('#events');
+  const layout = document.querySelector('#layout');
+  let map = null;
+  try {
+    map = await navigator.keyboard?.getLayoutMap?.() ?? null;
+    layout.textContent = map
+      ? `Layout Map: KeyA=${JSON.stringify(map.get('KeyA'))}, KeyQ=${JSON.stringify(map.get('KeyQ'))}, KeyY=${JSON.stringify(map.get('KeyY'))}, KeyZ=${JSON.stringify(map.get('KeyZ'))}`
+      : 'Layout Map: unavailable';
+  } catch (error) {
+    layout.textContent = `Layout Map: ${error?.name ?? 'error'}`;
+  }
+  const print = (event) => {
+    const line = JSON.stringify({ type:event.type, key:event.key, code:event.code, map:map?.get(event.code), composing:event.isComposing, inputType:event.inputType, data:event.data, value:field.value });
+    events.textContent += `${line}\n`;
+    events.scrollTop = events.scrollHeight;
+  };
+  for (const type of ['keydown','keyup','beforeinput','input','compositionstart','compositionupdate','compositionend']) field.addEventListener(type, print);
+</script>
+</html>
