@@ -31,7 +31,7 @@
   .enemy-roster-value{margin-left:auto;font-size:11px}
   .enemy-roster-value small{font-size:8px}
   .enemy-roster-bar{height:8px}
-  .enemy-roster-button .enemy-detail{width:min(190px,50vw)}
+  .enemy-roster-button .enemy-detail{width:min(230px,62vw)}
   .enemy-art-number{top:22%;width:21px;height:21px;font-size:11px}
   .enemy-detail-heading{display:flex;align-items:baseline;gap:6px;min-width:0}
   .enemy-detail-heading>span{flex:none;color:#a43c56;font-size:10px;font-weight:900}

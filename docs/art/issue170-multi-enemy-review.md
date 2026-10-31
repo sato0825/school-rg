@@ -10,12 +10,16 @@
 | 行動の種類 | 記号と短い種別名 |
 | 行動・状態の意味 | フォーカス時の詳細札、スクリーンリーダー名 |
 
-![390px・5体編成](previews/issue170-five-enemies-v5-390.png)
+![390×800px・5体編成・長文ストレス検証](previews/issue170-five-enemies-v6-390x800-stress.png)
 
-![1440px・5体編成](previews/issue170-five-enemies-v5-1440.png)
+![390×844px・5体編成・長文ストレス検証](previews/issue170-five-enemies-v6-390x844-stress.png)
 
-検証: `npm run lint`、`npm run typecheck`、`npx vitest run tests/integration/multi-enemy-ui.test.ts`（3件）、`SCHOOL_RG_CAPTURE_MULTI=1 SCHOOL_RG_E2E_PORT=4194 npx playwright test tests/e2e/multi-enemy-ui.spec.ts`（4件）。390pxでは3/4/5体、1440pxでは5体を確認。5体編成で敵を選んで `strike` を入力し、対象のHP減少も確認した。全体検証は親Issueへの統合後に実施する。
+![1440×900px・5体編成](previews/issue170-five-enemies-v6-1440x900.png)
 
-初回描画とタイマー更新で時間単位が異なっていたため、更新経路も「秒」にそろえ、meterの値も更新する。v5はこの作業ツリーを配信する専用のViteポート4194で撮影し、配信ソースに `<small> 秒</small>` が含まれることを照合した。v3/v4画像は修正前の記録として保持し、レビューにはv5を使用する。
+立ち絵には一覧と同じ番号を常時表示する。v6のモバイル画像は、敵名と状態欄をテスト内で意図的に長くした表示検証用画像で、実コンテンツではない。390×800/844pxの両方で詳細札がステージ内に収まり、内部スクロールや文字の切断が生じないことを確認した。
+
+検証: `npm run lint`、`npm run typecheck`、`npx vitest run tests/integration/multi-enemy-ui.test.ts`（3件）、`SCHOOL_RG_CAPTURE_MULTI=1 SCHOOL_RG_E2E_PORT=4194 npx playwright test tests/e2e/multi-enemy-ui.spec.ts`（5件）。390pxでは3/4/5体、800/844px高、1440pxでは5体を確認。5体編成で敵を選び、`strike` 入力で対象のHPが減ることと、一覧ボタンでの入力開始後にフォーカスが入力欄へ移ることを確認した。全体検証は親Issueへの統合後に実施する。
+
+初回描画とタイマー更新で時間単位が異なっていたため、更新経路も「秒」にそろえ、meterの値も更新する。v6はこの作業ツリーを配信する専用のViteポート4194で撮影した。v3/v4/v5画像は以前の表示記録として保持し、レビューにはv6を使用する。
 
 敵絵と背景は現在の制作候補であり、最終アートの採用判断は #29 のゲートに属する。

@@ -65,6 +65,8 @@ for (const [count, width, height] of [[3, 390, 844], [4, 390, 844], [5, 390, 800
       const stressed = await roster.last().locator(".enemy-detail").boundingBox();
       expect(stressed!.y).toBeGreaterThanOrEqual(stage!.y - 1);
       expect(stressed!.y + stressed!.height).toBeLessThanOrEqual(stage!.y + stage!.height + 1);
+      const detailOverflow = await roster.last().locator(".enemy-detail").evaluate((element) => element.scrollHeight - element.clientHeight);
+      expect(detailOverflow).toBeLessThanOrEqual(1);
       if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1" && count === 5) await page.screenshot({ path: `docs/art/previews/issue170-five-enemies-v6-${width}x${height}-stress.png` });
     } else if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1" && count === 5) await page.screenshot({ path: `docs/art/previews/issue170-five-enemies-v6-${width}x${height}.png` });
     await roster.nth(1).click();
