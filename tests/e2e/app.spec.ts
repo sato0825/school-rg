@@ -313,6 +313,9 @@ test("music chains timed cards by direct input at iPad width after a save reload
   expect(Number(await page.locator(".enemy-health-track").first().getAttribute("aria-valuenow"))).toBe(enemyBefore - 6);
   expect(Number.parseFloat(await page.locator("[data-role=time]").innerText())).toBeGreaterThan(6);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  if (process.env.SCHOOL_RG_CAPTURE_MUSIC === "1") {
+    await page.screenshot({ path: "docs/content/previews/issue76-music-chain-ipad-20261031.png", fullPage: true });
+  }
 });
 
 test("a new club pool card remains readable and activates on a narrow battle screen", async ({ page }) => {
