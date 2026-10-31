@@ -19,6 +19,7 @@ import { extraConsumableEffects, extraPotions, extraRelicRules, extraRelics } fr
 import { extraEvents } from "./extra-events.js";
 import { extraEnemies, extraEnemyAi, extraEnemyEffects, extraEnemyIntents } from "./extra-enemies.js";
 import { extraBosses, extraBossAi, extraBossEffects, extraBossIntents } from "./extra-bosses.js";
+import { runEnemies, runEnemyAi, runEnemyEffects, runEnemyIntents } from "./run-enemies.js";
 
 /** One complete combat encounter for #14. Full run content belongs to #15–#24. */
 export const demoContent: ContentRegistry = parseContentRegistry({
@@ -56,6 +57,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     ...variantEnemyEffects,
     ...extraEnemyEffects,
     ...extraBossEffects,
+    ...runEnemyEffects,
   ],
   cards: [...baseCardDefinitions, ...literatureCardDefinitions, ...scienceCardDefinitions, ...kendoCardDefinitions, ...musicCardDefinitions, ...artCardDefinitions],
   intents: [
@@ -81,6 +83,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     ...variantEnemyIntents,
     ...extraEnemyIntents,
     ...extraBossIntents,
+    ...runEnemyIntents,
   ],
   enemies: [
     { id: "paper-heap", name: "答案のかたまり", maxHp: 26, intentIds: ["paper-intent-hit", "paper-intent-guard"] },
@@ -96,6 +99,7 @@ export const demoContent: ContentRegistry = parseContentRegistry({
     ...variantEnemies,
     ...extraEnemies,
     ...extraBosses,
+    ...runEnemies,
   ],
   relics: [
     { id: "library-bookmark", name: "図書室のしおり", triggerIds: ["bookmark-acquired", "bookmark-turn", "bookmark-skill"], effectIds: [] },
@@ -219,6 +223,7 @@ export const demoEnemyAi: EnemyAiRegistry = {
   ...variantEnemyAi,
   ...extraEnemyAi,
   ...extraBossAi,
+  ...runEnemyAi,
 };
 
 /** Provisional content values; the reusable hook dispatcher lives in the domain. */
@@ -251,9 +256,9 @@ export const demoRelicRules: RelicRule[] = [
 export const demoEncounterTable: EncounterTable = {
   selectionPolicy: "cycle", // Provisional #144 variety policy; final encounter weights belong to #68.
   byAct: {
-    1: { combat: ["paper-heap", "late-pass", "lost-homework"], elite: [{ id: "hall-and-scrap", enemyIds: ["hall-monitor", "paper-scrap"] }, "notice-board", "school-gate"], boss: ["final-exam", "gym-scoreboard"] },
-    2: { combat: ["chalk-cloud", "safety-sign", "lab-magnet"], elite: ["library-cart", "stairwell-echo", "library-index"], boss: ["club-auditor", "lab-ventilation"] },
-    3: { combat: ["night-announcement", "window-shadow", "empty-desk"], elite: ["lost-and-found", "night-locker", "last-bus"], boss: ["closing-bell", "graduation-curtain"] },
+    1: { combat: ["paper-heap", "late-pass", "lost-homework", "hall-mop", "folded-school-map"], elite: [{ id: "hall-and-scrap", enemyIds: ["hall-monitor", "paper-scrap"] }, "notice-board", "school-gate"], boss: ["final-exam", "gym-scoreboard"] },
+    2: { combat: ["chalk-cloud", "safety-sign", "lab-magnet", "beaker-mist", "lab-coil"], elite: ["library-cart", "stairwell-echo", "library-index"], boss: ["club-auditor", "lab-ventilation"] },
+    3: { combat: ["night-announcement", "window-shadow", "empty-desk", "stage-spotlight", "archive-clock"], elite: ["lost-and-found", "night-locker", "last-bus"], boss: ["closing-bell", "graduation-curtain"] },
   },
 };
 

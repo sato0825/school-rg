@@ -8,16 +8,16 @@ import { deserializeRunSession, serializeRunSession } from "../../src/domain/sav
 import type { MapNode } from "../../src/domain/schema.js";
 
 const expected = {
-  1: { combat: ["paper-heap", "late-pass"], elite: ["hall-monitor", "notice-board"] },
-  2: { combat: ["chalk-cloud", "safety-sign"], elite: ["library-cart", "stairwell-echo"] },
-  3: { combat: ["night-announcement", "window-shadow"], elite: ["lost-and-found", "night-locker"] },
+  1: { combat: ["paper-heap", "late-pass", "lost-homework", "hall-mop", "folded-school-map"], elite: ["hall-monitor", "notice-board", "school-gate"] },
+  2: { combat: ["chalk-cloud", "safety-sign", "lab-magnet", "beaker-mist", "lab-coil"], elite: ["library-cart", "stairwell-echo", "library-index"] },
+  3: { combat: ["night-announcement", "window-shadow", "empty-desk", "stage-spotlight", "archive-clock"], elite: ["lost-and-found", "night-locker", "last-bus"] },
 } as const;
 
 describe("Act encounter variety", () => {
   for (const act of [1, 2, 3] as const) for (const kind of ["combat", "elite"] as const) {
-    it(`reaches both Act ${act} ${kind} candidates with replayable Intents and saves`, () => {
+    it(`reaches all Act ${act} ${kind} candidates with replayable Intents and saves`, () => {
       const found = new Set<string>();
-      for (let seed = 0; seed < 100 && found.size < 2; seed++) {
+      for (let seed = 0; seed < 200 && found.size < expected[act][kind].length; seed++) {
         const start = createRunSession(seed, "literature-demo", demoContent);
         const from: MapNode = { id: "test-start", act, floor: 0, kind: "start", nextIds: ["test-fight"] };
         const fight: MapNode = { id: "test-fight", act, floor: 1, kind, nextIds: [] };
