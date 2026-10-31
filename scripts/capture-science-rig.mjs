@@ -1,15 +1,16 @@
 import { chromium } from "@playwright/test";
 import process from "node:process";
-import { mkdir, copyFile } from "node:fs/promises";
+import { mkdir, copyFile, mkdtemp } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const baseURL = process.env.SCHOOL_RG_CAPTURE_URL ?? "http://127.0.0.1:4197";
 const output = resolve("docs/art/previews/issue233-v5");
 await mkdir(output, { recursive: true });
+const videoRaw = await mkdtemp(resolve("../issue233-video-raw-"));
 const browser = await chromium.launch();
 try {
   for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900 }]) {
-    const context = await browser.newContext({ viewport, recordVideo: { dir: output, size: viewport } });
+    const context = await browser.newContext({ viewport, recordVideo: { dir: videoRaw, size: viewport } });
     const page = await context.newPage();
     await page.clock.install();
     await page.goto(`${baseURL}/?shortRun=1&seed=42`);

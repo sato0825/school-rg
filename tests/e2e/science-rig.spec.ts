@@ -24,6 +24,13 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     expect(await actor.locator('[data-part="left-leg"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("science-observe-left-leg");
     expect(await actor.locator('[data-part="right-leg"]').evaluate((node) => getComputedStyle(node).animationName)).toBe("science-observe-right-leg");
     await page.clock.runFor(200);
+    const legPoseA = await actor.locator('[data-part="left-leg"]').evaluate((node) => getComputedStyle(node).transform);
+    const shadowPoseA = await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node, "::before").transform);
+    await page.clock.runFor(1_600);
+    const legPoseB = await actor.locator('[data-part="left-leg"]').evaluate((node) => getComputedStyle(node).transform);
+    const shadowPoseB = await actor.locator(".hero-rig").evaluate((node) => getComputedStyle(node, "::before").transform);
+    expect(legPoseB).not.toBe(legPoseA);
+    expect(shadowPoseB).not.toBe(shadowPoseA);
     expect(await actor.locator(".hero-rig").evaluate((node, previous) => node === previous, rigNode)).toBe(true);
     const word = (await page.locator(".card-word").first().textContent())!.trim();
     await page.keyboard.type(word);
