@@ -6,8 +6,8 @@ import { chooseRunEventChoice, createRunSession, enterRunNode } from "../../src/
 import { deserializeRunSession, serializeRunSession } from "../../src/domain/save.js";
 import type { MapNode } from "../../src/domain/schema.js";
 
-function eventSession(act: 1 | 2 | 3, eventId?: string) {
-  const base = createRunSession(42, "literature-demo", demoContent);
+function eventSession(act: 1 | 2 | 3, eventId?: string, clubId = "literature-demo") {
+  const base = createRunSession(42, clubId, demoContent);
   const start: MapNode = { id: `a${act}-start`, act, floor: 0, kind: "start", nextIds: [`a${act}-event`] };
   const node: MapNode = { id: `a${act}-event`, act, floor: 1, kind: "event", nextIds: [] };
   const session = { ...base, run: { ...base.run, act, map: { currentNodeId: start.id, nodes: [start, node] } }, completedNodeIds: [start.id] };
@@ -16,17 +16,17 @@ function eventSession(act: 1 | 2 | 3, eventId?: string) {
 }
 
 describe("expanded Act events", () => {
-  it("draws all four distinct events per Act reproducibly and survives save/load", () => {
+  it("draws all five distinct events per Act reproducibly and survives save/load", () => {
     for (const act of [1, 2, 3] as const) {
-      expect(new Set(demoEventPools[act]).size).toBe(4);
+      expect(new Set(demoEventPools[act]).size).toBe(5);
       const opened = eventSession(act);
       expect(demoEventPools[act]).toContain(opened.run.event?.eventId);
       expect(eventSession(act)).toEqual(opened);
       const saved = serializeRunSession(opened, demoContent, { nowMs: () => 0 }, () => "discard");
       expect(deserializeRunSession(saved, demoContent, { nowMs: () => 1000 })).toEqual(opened);
     }
-    expect(extraEvents).toHaveLength(6);
-    expect(new Set(extraEvents.map((event) => event.id)).size).toBe(6);
+    expect(extraEvents).toHaveLength(9);
+    expect(new Set(extraEvents.map((event) => event.id)).size).toBe(9);
   });
 
   it("guards HP, gold and potion costs without consuming the event on failed choices", () => {
@@ -75,5 +75,41 @@ describe("expanded Act events", () => {
         expect(result.run.combat?.enemies[0]?.enemyId).toBe(item.enemy);
       } else expect(result.screen).toBe("map");
     }
+  });
+
+  it("edits a selected deck instance in each Act and preserves the result after save/load", () => {
+    const cases = [
+      { act: 1 as const, eventId: "classroom-proofreading", choiceId: "upgrade", cost: 14, kind: "upgrade" },
+      { act: 2 as const, eventId: "archive-return-slip", choiceId: "remove", cost: 18, kind: "remove" },
+      { act: 3 as const, eventId: "festival-layout-desk", choiceId: "upgrade", cost: 22, kind: "upgrade" },
+      { act: 3 as const, eventId: "festival-layout-desk", choiceId: "remove", cost: 25, kind: "remove" },
+    ];
+    for (const club of demoContent.clubs) for (const item of cases) {
+      const opened = eventSession(item.act, item.eventId, club.id);
+      const target = opened.run.deck[0]!;
+      const edited = chooseRunEventChoice(opened, item.choiceId, demoContent, demoEnemyAi, undefined, target.instanceId);
+      expect(edited.screen).toBe("map");
+      expect(edited.run.gold).toBe(opened.run.gold - item.cost);
+      expect(edited.run.deck.length).toBe(opened.run.deck.length - (item.kind === "remove" ? 1 : 0));
+      expect(edited.run.deck.find((card) => card.instanceId === target.instanceId)?.upgraded).toBe(item.kind === "upgrade" ? true : undefined);
+      const saved = serializeRunSession(edited, demoContent, { nowMs: () => 0 }, () => "discard");
+      expect(deserializeRunSession(saved, demoContent, { nowMs: () => 1000 })).toEqual(edited);
+    }
+  });
+
+  it("rejects missing, unavailable or last-card targets before charging the player", () => {
+    const upgrade = eventSession(1, "classroom-proofreading");
+    expect(() => chooseRunEventChoice(upgrade, "upgrade", demoContent, demoEnemyAi)).toThrow(/invalid event card target/);
+    expect(() => chooseRunEventChoice(upgrade, "upgrade", demoContent, demoEnemyAi, undefined, "missing-card")).toThrow(/invalid event card target/);
+    const upgraded = { ...upgrade, run: { ...upgrade.run, deck: upgrade.run.deck.map((card) => ({ ...card, upgraded: true })) } };
+    expect(availableEventChoices(upgraded.run, demoContent).find((item) => item.choice.id === "upgrade")?.available).toBe(false);
+    const poor = { ...upgrade, run: { ...upgrade.run, gold: 0 } };
+    expect(() => chooseRunEventChoice(poor, "upgrade", demoContent, demoEnemyAi, undefined, poor.run.deck[0]!.instanceId)).toThrow(/conditions/);
+    const removal = eventSession(2, "archive-return-slip");
+    const oneCard = { ...removal, run: { ...removal.run, deck: removal.run.deck.slice(0, 1) } };
+    expect(availableEventChoices(oneCard.run, demoContent).find((item) => item.choice.id === "remove")?.available).toBe(false);
+    expect(() => chooseRunEventChoice(oneCard, "remove", demoContent, demoEnemyAi, undefined, oneCard.run.deck[0]!.instanceId)).toThrow(/conditions/);
+    expect(() => chooseRunEventChoice(upgrade, "leave", demoContent, demoEnemyAi, undefined, upgrade.run.deck[0]!.instanceId)).toThrow(/unexpected event card target/);
+    expect(upgrade.run.gold).toBe(50);
   });
 });
