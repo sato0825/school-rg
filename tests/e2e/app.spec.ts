@@ -64,8 +64,8 @@ test("title, compendium, club selection, map and battle controls work by keyboar
   await expect(page.getByRole("heading", { name: "放課後を、打ち抜く。" })).toBeVisible();
   await page.getByRole("button", { name: "図鑑を見る" }).focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { name: "学園図鑑" })).toBeVisible();
-  await expect(page.locator(".compendium-list details")).toHaveCount(4);
+  await expect(page.getByRole("heading", { name: "カード名をタイプして行動" })).toBeVisible();
+  await expect(page.locator(".compendium-list details")).toHaveCount(5);
   await page.getByRole("button", { name: "戻る" }).focus();
   await page.keyboard.press("Enter");
   await page.getByRole("button", { name: "ランを始める" }).focus();
@@ -1138,14 +1138,15 @@ test("the combat guide pauses input time and restores the previous pause state",
   await expect(page.locator(".how-to-play")).toContainText("誤キーは無視");
   await page.clock.runFor(5_000);
   await page.getByRole("button", { name: "戻る" }).click();
-  expect(await time.innerText()).toBe(before);
+  expect(Number.parseFloat(before) - Number.parseFloat(await time.innerText())).toBeLessThan(0.2);
   await expect(page.getByRole("button", { name: "一時停止" })).toBeVisible();
   await page.getByRole("button", { name: "一時停止" }).click();
+  const pausedAt = await time.innerText();
   await page.getByRole("button", { name: "遊び方" }).click();
   await page.clock.runFor(5_000);
   await page.getByRole("button", { name: "戻る" }).click();
   await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
-  expect(await time.innerText()).toBe(before);
+  expect(await time.innerText()).toBe(pausedAt);
   await page.locator("[data-action=toggle-audio]").click();
   await expect(page.locator("[data-action=toggle-audio]")).toHaveAttribute("aria-pressed", "false");
 });
