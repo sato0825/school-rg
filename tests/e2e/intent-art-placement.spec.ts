@@ -56,6 +56,23 @@ for (const width of [1024, 1440]) {
         if (process.env.SCHOOL_RG_CAPTURE_INTENT === "1" && (count <= 2 || count === 5)) {
           await page.screenshot({ path: `docs/art/previews/issue218-${id}-${count}-${width}.png`, fullPage: true });
         }
+        await page.keyboard.type("weep");
+        const damageMarks = page.locator(".result-fx-mark[data-kind=damage]");
+        await expect(damageMarks).toHaveCount(count);
+        const marks = await damageMarks.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().toJSON()));
+        for (const mark of marks) {
+          expect(mark.y).toBeGreaterThan(stage!.y);
+          expect(mark.y + mark.height).toBeLessThan(stage!.y + stage!.height);
+        }
+        if (count <= 2) {
+          const ticketBottom = await page.locator(".enemy-slot .intent-ticket").evaluateAll((nodes) =>
+            Math.max(...nodes.map((node) => node.getBoundingClientRect().bottom)));
+          expect(marks.every((mark) => mark.y > ticketBottom + 4)).toBe(true);
+        }
+        if (process.env.SCHOOL_RG_CAPTURE_INTENT === "1" && ((id === "beaker-mist" && count === 1) || (id === "stage-spotlight" && count === 5))) {
+          await damageMarks.first().evaluate((node) => node.getAnimations().forEach((animation) => { animation.currentTime = 170; }));
+          await page.screenshot({ path: `docs/art/previews/issue218-${id}-${count}-${width}-impact.png`, fullPage: true });
+        }
       });
     }
   }
