@@ -158,8 +158,9 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   const setMotion = (motion: BattleView["motion"]) => { view.motion = motion; view.motionStartedAtMs = motion ? clock.nowMs() : null; };
   const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState => {
     const result = emitRelicEvent(state, kind, demoRelicRules, demoContent, detail);
-    if (state.combat && result.trace.length) {
-      const cue = { relicIds: [...new Set(result.trace.map((item) => item.relicId))], outcome: itemOutcome(state, result.run), startedAtMs: clock.nowMs() };
+    const outcome = itemOutcome(state, result.run);
+    if (state.combat && result.trace.length && outcome !== "数値変化なし") {
+      const cue = { relicIds: [...new Set(result.trace.map((item) => item.relicId))], outcome, startedAtMs: clock.nowMs() };
       view.relicCue = cue;
       const currentGeneration = generation;
       window.setTimeout(() => {

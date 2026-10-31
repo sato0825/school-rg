@@ -98,7 +98,7 @@ export function relicInventoryMarkup(ids: readonly string[], content: ContentReg
 
 export function relicDetailMarkup(id: string, content: ContentRegistry): string {
   const name = content.relics.find((item) => item.id === id)?.name ?? id;
-  return `<aside class="relic-inspect" role="region" aria-label="${html(name)}の効果">${relicObjectMarkup(id, "relic-inspect-art")}<div><strong>${html(name)}</strong><p>${html(relicRuleText[id] ?? "効果詳細は未登録")}</p></div></aside>`;
+  return `<aside class="relic-inspect" role="region" aria-label="${html(name)}の効果">${relicObjectMarkup(id, "relic-inspect-art")}<div><strong>${html(name)}</strong><small>試作絵 · 未採用</small><p>${html(relicRuleText[id] ?? "効果詳細は未登録")}</p></div></aside>`;
 }
 
 export function potionInventoryMarkup(ids: readonly string[], content: ContentRegistry): string {
