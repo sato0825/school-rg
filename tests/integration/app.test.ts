@@ -1,6 +1,9 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mountApp } from "../../src/ui/app.js";
+import { demoContent } from "../../src/content/demo-battle.js";
+import { createRunSession } from "../../src/domain/run-flow.js";
+import { serializeRunSession } from "../../src/domain/save.js";
 
 describe("run and typing combat HUD", () => {
   beforeEach(() => {
@@ -41,5 +44,25 @@ describe("run and typing combat HUD", () => {
     expect(root.querySelector("[data-action=toggle-audio]")?.getAttribute("aria-pressed")).toBe("false");
     unmountAgain();
     window.localStorage.removeItem("school-rg-audio-v1");
+  });
+
+  it("reports a failed history write without changing the saved run", () => {
+    const root = document.querySelector<HTMLElement>("#app")!;
+    const start = createRunSession(42, "literature-demo", demoContent);
+    const boss = start.run.map.nodes.find((node) => node.act === 3 && node.kind === "boss")!;
+    const terminal = { ...start, runId: "saved-run", screen: "won" as const,
+      run: { ...start.run, act: 3 as const, map: { ...start.run.map, currentNodeId: boss.id } },
+      completedNodeIds: [...start.completedNodeIds, boss.id] };
+    const saved = serializeRunSession(terminal, demoContent, { nowMs: () => 0 }, () => "discard");
+    let writes = 0;
+    const unmount = mountApp(root, { read: () => saved, write: () => undefined },
+      { read: () => null, write: () => undefined }, { read: () => null, write: () => undefined },
+      { read: () => null, write: () => { writes++; throw new Error("quota exceeded"); } });
+    expect(writes).toBe(1);
+    expect(root.querySelector(".history-error")?.textContent).toContain("保存または読込できません");
+    root.querySelector<HTMLButtonElement>("[data-action=open-history]")!.click();
+    expect(root.querySelector(".history-error")?.textContent).toContain("再読込後に残らない");
+    expect(root.textContent).toContain("完走 1");
+    unmount();
   });
 });

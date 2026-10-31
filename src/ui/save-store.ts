@@ -17,7 +17,7 @@ export function browserHistoryStore(): SaveStore {
       write: (value) => storage.setItem(HISTORY_SAVE_KEY, value),
     };
   } catch {
-    return { read: () => null, write: () => undefined };
+    return { read: () => { throw new Error("run history storage unavailable"); }, write: () => { throw new Error("run history storage unavailable"); } };
   }
 }
 
