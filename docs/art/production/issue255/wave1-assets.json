@@ -1,0 +1,122 @@
+[
+  {
+    "id": "LIT-002",
+    "version": "v1",
+    "path": "docs/art/production/issue255/assets/card-lit-leaf-v1.png",
+    "sha256": "0eff5aafe9744f416157a313496364dc17d6aff0d735e6b8ec25651feaee64fa",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-99c4a6ca-a467-4b62-96bc-a9377cc992f1.png",
+    "promptRef": "wave1-prompts.json#LIT-002",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "SCI-001",
+    "version": "v1",
+    "path": "docs/art/production/issue255/assets/card-sci-sample-v1.png",
+    "sha256": "bab11abcf1682029e7f040f5dc226fa42ed4e3b98145dd939f28237821122d8b",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-fd73def5-1651-4f31-80c0-fb4302cc853f.png",
+    "promptRef": "wave1-prompts.json#SCI-001",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "KEN-001",
+    "version": "v1",
+    "path": "docs/art/production/issue255/assets/card-ken-parry-v1.png",
+    "sha256": "e3e82a2ce6a73f5228c0884bf887a5960d19eb1adbc795ef1630417c4257d0ff",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-65f23982-736e-422d-a139-90bd691591dd.png",
+    "promptRef": "wave1-prompts.json#KEN-001",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "MUS-001",
+    "version": "v1",
+    "path": "docs/art/production/issue255/assets/card-mus-tempo-v1.png",
+    "sha256": "eaa2da40fdd6ae2b6e47fcfd7e95bd20bd0023e02d8ce9206d3fbed4cfdef555",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-0811079a-84c4-499d-90be-8e0a7369ed6a.png",
+    "promptRef": "wave1-prompts.json#MUS-001",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "ART-002",
+    "version": "v1",
+    "path": "docs/art/production/issue255/assets/card-art-frame-v1.png",
+    "sha256": "346067c76847ee07a4fd2634dad0976baf61c603cf3ecbb46f7153d5c65c8d68",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-041a7ee8-ebe8-4e55-89ac-b65bb977bf63.png",
+    "promptRef": "wave1-prompts.json#ART-002",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  },
+  {
+    "id": "KEN-001",
+    "version": "v2",
+    "path": "docs/art/production/issue255/assets/card-ken-parry-v2.png",
+    "sha256": "1ae1a5421852652f8f05fef3dd574debd28e3cafa8aa636adcc9fbd4478ff9bf",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-c1965ac4-0aea-43b7-9160-bede0febfdf7.png",
+    "promptRef": "wave1-prompts.json#card-ken-parry-v2",
+    "state": "draft-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending"
+  }
+]

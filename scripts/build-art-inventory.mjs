@@ -1,11 +1,19 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import ts from "typescript";
 
 const root = path.resolve(import.meta.dirname, "..");
 const content = path.join(root, "src/content");
 const output = path.join(root, "docs/art/production/issue255");
 const candidates = JSON.parse(fs.readFileSync(path.join(output, "existing-candidates.json"), "utf8"));
+const wave1 = JSON.parse(fs.readFileSync(path.join(output, "wave1-assets.json"), "utf8"));
+if (new Set(wave1.map((asset) => `${asset.id}:${asset.version}`)).size !== wave1.length) throw new Error("duplicate wave-one asset IDs");
+for (const asset of wave1) {
+  const actual = createHash("sha256").update(fs.readFileSync(path.join(root, asset.path))).digest("hex");
+  if (actual !== asset.sha256) throw new Error(`asset hash mismatch: ${asset.id}`);
+  candidates[asset.id] = [...(candidates[asset.id] ?? []), { issue: 255, version: asset.version, source: asset.path, state: asset.state, sha256: asset.sha256 }];
+}
 
 function value(node) {
   if (!node) return null;
@@ -80,7 +88,7 @@ const potions = [...getObjectArray(demo, "potions"), ...getArray(extra, "extraPo
   target: item.target, effectKinds: item.effectIds, source: item.id?.startsWith("potion-") && ["potion-guard", "potion-splash", "potion-tea"].includes(item.id) ? "src/content/extra-consumables.ts" : "src/content/demo-battle.ts", rarity: null,
 }));
 const items = [...cards, ...relics, ...potions].map((entry) => ({
-  ...entry, art: { state: "missing", acceptedVersion: null, editableSource: null, candidateRefs: candidates[entry.id] ?? [] },
+  ...entry, art: { state: candidates[entry.id]?.length ? "candidate" : "missing", acceptedVersion: null, editableSource: null, candidateRefs: candidates[entry.id] ?? [] },
 }));
 const counts = { cards: cards.length, relics: relics.length, potions: potions.length, total: items.length };
 if (counts.cards !== 84 || counts.relics !== 11 || counts.potions !== 6) throw new Error(`content counts changed: ${JSON.stringify(counts)}`);
