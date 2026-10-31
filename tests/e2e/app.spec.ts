@@ -288,6 +288,8 @@ test("music chains timed cards by direct input at iPad width after a save reload
     combat.discardPile = [];
     combat.exhaustPile = [];
     combat.resolvingPile = [];
+    combat.typing = { buffer: "", candidateCardInstanceIds: [tempo], selectedCardInstanceId: null,
+      progress: 0, targetEnemyInstanceId: null, targetHandInstanceId: null };
     combat.clock.remainingMs = 10_000;
     localStorage.setItem("school-rg-run-v1", JSON.stringify(saved));
   });
