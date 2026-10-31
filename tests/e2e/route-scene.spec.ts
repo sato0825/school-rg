@@ -13,7 +13,9 @@ for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
     const won = { ...combat, run: { ...combat.run, combat: { ...combat.run.combat!, phase: "WON" as const, enemies: combat.run.combat!.enemies.map((enemy) => ({ ...enemy, hp: 0 })) } } };
     const reward = settleRunCombat(won, demoContent);
     const saved = serializeRunSession(reward, demoContent, { nowMs: () => 0 }, () => "discard");
-    await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+    await page.addInitScript((value) => {
+      if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", value);
+    }, saved);
     await page.goto("/");
 
     const rewardStage = page.locator(".reward-scene");
@@ -31,13 +33,14 @@ for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
     await expect(route.locator(".reward-scene-hero")).toHaveAttribute("src", heroSource!);
     await expect(route.locator(".map-node.current")).toHaveAttribute("aria-current", "location");
     const available = route.locator(".map-node.available");
-    await expect(available).toHaveCount(availableRunNodes(chooseRunReward(reward, reward.rewardCardIds[0]!)).length);
+    const availableCount = availableRunNodes(chooseRunReward(reward, reward.rewardCardIds[0]!)).length;
+    await expect(available).toHaveCount(availableCount);
     const alpha = await route.locator(".route-scene-overlay").evaluate((element) => Number(getComputedStyle(element).backgroundColor.match(/rgba?\([^,]+,[^,]+,[^,]+,\s*([\d.]+)/)?.[1] ?? 1));
     expect(alpha).toBeLessThan(1);
     if (process.env.SCHOOL_RG_CAPTURE_ROUTE === "1") await page.screenshot({ path: `docs/art/previews/issue230-route-${width}.png` });
 
     await page.reload();
-    await expect(page.locator(".route-scene .map-node.available")).toHaveCount(await available.count());
+    await expect(page.locator(".route-scene .map-node.available")).toHaveCount(availableCount);
     await page.locator(".map-node.available").first().focus();
     await page.keyboard.press("Enter");
     await expect(page.locator(".route-scene")).toHaveCount(0);
