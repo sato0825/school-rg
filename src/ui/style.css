@@ -39,6 +39,7 @@
 .playtest-stats{margin:9px 0 2px;padding:7px 10px;display:inline-block;border:1px solid #9ab4c1;border-radius:4px;background:#f4fbf9;color:#31556b;font-size:12px;font-weight:700}
 .playtest-result{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px;margin:17px 0;padding:10px;border:1px solid #9ab4c1;background:#f4fbf9;color:#31556b;font-size:12px}.playtest-result strong{font-size:16px}.playtest-result button{padding:7px 10px;border:1px solid #7898ab;border-radius:4px;background:#fff;color:#274e64;font-weight:800;cursor:pointer}
 .playtest-export{flex:none;padding:8px 10px;border:1px solid #7898ab;border-radius:5px;background:#f4fbf9;color:#274e64;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}.playtest-export:hover,.playtest-export:focus-visible{background:#dcecf2;outline-color:#426f9b}@media(max-width:760px){.playtest-export{padding:5px 6px;font-size:9px}}
+.hand-guide{display:none}@media(max-width:760px){.hand-guide{display:flex;justify-content:space-between;padding:0 4px 4px;color:#b9d0df;font-size:9px;font-weight:800}.hand-guide span{color:#eef5f6}.hand{scrollbar-width:thin;scrollbar-color:#a7c3d2 #28475b}}
 
 /* Stage positions are shared by the live single ally and the optional layout preview. */
 .stage .ally-group,.stage .enemy-group{display:block;padding:0}

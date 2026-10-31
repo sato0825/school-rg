@@ -26,10 +26,15 @@ for (const [clubId, cardId, word] of samples) {
     const saved = serializeRunSession({ ...entered, run }, demoContent, { nowMs: () => 0 }, () => "discard");
     await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
     await page.goto("/?seed=42");
+    await expect(page.locator(".hand-guide")).toContainText("横に送って確認");
+    await page.locator(".hand").hover();
+    await page.mouse.wheel(900, 0);
     await expect(page.locator(".card-word").filter({ hasText: word })).toBeInViewport();
     await expect(page.locator(".typing-buffer")).toBeInViewport();
     await page.getByRole("button", { name: "再開" }).click();
-    await page.keyboard.type(word);
+    await page.keyboard.type(word[0]!);
+    await expect(page.locator(".card-word").filter({ hasText: word })).toBeInViewport();
+    await page.keyboard.type(word.slice(1));
     await expect(page.locator(".battle-message")).toContainText(word);
     const current = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run);
     expect(current.combat.hand).not.toContain(created.instanceId);
