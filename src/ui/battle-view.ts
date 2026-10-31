@@ -6,7 +6,8 @@ import type { CardFx } from "./card-fx.js";
 import type { ResultFx } from "./result-fx.js";
 import { cardArtForId } from "./card-art.js";
 import { describeEnemyIntent, type IntentVisualStep } from "./intent-visual.js";
-import { DEFAULT_GAME_CONFIG, type GameConfig } from "../domain/config.js";
+import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
+import { exactDuplicateChoices } from "../domain/typing.js";
 import { identityForClub } from "../content/character-identities.js";
 
 export type BattleArt = StageArt & {
@@ -140,7 +141,13 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
   const potionTargetHint = selectedPotionId && run.potionIds[Number(selectedPotionId.slice(7))] && content.potions.find((potion) => potion.id === run.potionIds[Number(selectedPotionId.slice(7))])?.target === "enemy" && !potionControl?.typing.targetEnemyInstanceId ? "対象の敵を選択" : null;
   const pendingHandTarget = selected && hand.find((entry) => entry.instanceId === selected)?.card.target === "hand";
   const pendingEnemyTarget = selected && hand.find((entry) => entry.instanceId === selected)?.card.target === "enemy" && !combat.typing.targetEnemyInstanceId && combat.enemies.filter((enemy) => enemy.hp > 0).length > 1;
-  const typingHint = pendingHandTarget ? "対象にする手札を選んでください" : combat.typing.buffer && combat.typing.candidateCardInstanceIds.length > 1 ? `候補 ${combat.typing.candidateCardInstanceIds.length}枚 · 使うカードを選択` : pendingEnemyTarget ? "攻撃対象の敵を選択" : "";
+  const duplicateIds = !potionActive && requireSetting(config.sameNameCardPolicy) === "select_instance"
+    ? exactDuplicateChoices(combat.typing, hand.map(({ instanceId, card }) => ({ instanceId, word: card.input.text })), config)
+    : [];
+  const duplicateSet = new Set(duplicateIds);
+  const typingHint = pendingHandTarget ? "対象にする手札を選んでください" : duplicateIds.length > 1
+    ? `同じ入力語 ${duplicateIds.length}枚 · 手札の番号キーで選択`
+    : combat.typing.buffer && combat.typing.candidateCardInstanceIds.length > 1 ? `候補 ${combat.typing.candidateCardInstanceIds.length}枚 · 使うカードを選択` : pendingEnemyTarget ? "攻撃対象の敵を選択" : "";
   const remaining = (combat.clock.remainingMs / 1_000).toFixed(1);
   const timeRatio = Math.max(0, Math.min(100, combat.clock.remainingMs / view.baseTurnMs * 100));
   const playerHpRatio = Math.max(0, Math.min(100, run.player.hp / run.player.maxHp * 100));
@@ -182,7 +189,7 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
     </${slotTag}>`;
   }).join("");
   const previewAllies = layout.allies.slice(1).map((slot, index) => `<div class="ally-slot mock-ally" style="--slot-x:${slot.xPercent}%" aria-hidden="true"><div class="mock-ally-body"><span>仮配置 ${index + 2}</span></div></div>`).join("");
-  const cards = hand.map(({ instanceId, card }, index) => { const art = cardArtForId(card.id); return `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-card-kind="${card.type}" data-long-word="${card.input.text.length > 10}" data-action="card" data-id="${instanceId}" data-art-id="${html(art.artId)}" data-art-version="${html(art.version)}" aria-pressed="${selected === instanceId}" aria-label="${html(card.input.text)} ${html(describeCard(card, content))}${selected === instanceId ? "（選択中）" : ""}">
+  const cards = hand.map(({ instanceId, card }, index) => { const art = cardArtForId(card.id); const choiceKey = index === 9 ? "0" : String(index + 1); return `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-card-kind="${card.type}" data-long-word="${card.input.text.length > 10}" data-action="card" data-id="${instanceId}" data-art-id="${html(art.artId)}" data-art-version="${html(art.version)}" aria-pressed="${selected === instanceId}" ${duplicateSet.has(instanceId) ? `aria-keyshortcuts="${choiceKey}"` : ""} aria-label="${html(card.input.text)} ${html(describeCard(card, content))}${duplicateSet.has(instanceId) ? `、番号 ${choiceKey} で選択` : ""}${selected === instanceId ? "（選択中）" : ""}">
     <span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-kind">${html(cardTypeNames[card.type] ?? card.type)}</span><span class="card-sigil" aria-hidden="true"></span>
     <span class="card-art" data-art-state="${art.state}" aria-hidden="true">${art.url ? `<img src="${html(art.url)}" alt="" />` : ""}</span><strong class="card-word">${wordMarkup(card.input.text, combat.typing.buffer)}</strong><span class="card-effect">${html(describeCard(card, content))}</span>
   </button>`; }).join("");
