@@ -5,6 +5,7 @@ import type { RunSession } from "../domain/run-flow.js";
 import type { ContentRegistry, EventChoice, EventEffect, RunState } from "../domain/schema.js";
 import { describeCard } from "./battle-view.js";
 import { cardArtForId } from "./card-art.js";
+import { potionEffectText, potionObjectMarkup, relicObjectMarkup, relicRuleText } from "./item-art.js";
 
 type LocationScreen = Extract<RunSession["screen"], "treasure" | "shop" | "rest" | "event">;
 
@@ -56,8 +57,10 @@ function treasureChoices(session: RunSession, content: ContentRegistry, config: 
   return treasure.offers.map((offer, index) => {
     const item = offer.kind === "relic" ? content.relics.find((relic) => relic.id === offer.contentId) : content.potions.find((potion) => potion.id === offer.contentId);
     if (!item) throw new Error(`unknown treasure content: ${offer.contentId}`);
-    const detail = offer.kind === "relic" ? "ラン中に効果を発揮" : `入力語 ${content.potions.find((potion) => potion.id === offer.contentId)!.input.text}`;
-    return choiceButton("treasure-offer", offer.offerId, offer.kind === "relic" ? "✦" : "✚", offer.kind === "relic" ? "レリック" : "ポーション", item.name, detail, "受け取る", offer.kind === "potion" && full ? "所持枠が満杯" : "", "", index);
+    const detail = offer.kind === "relic" ? relicRuleText[offer.contentId] ?? "効果詳細は未登録"
+      : `入力語 ${content.potions.find((potion) => potion.id === offer.contentId)!.input.text} · ${potionEffectText(offer.contentId, content)}`;
+    const image = offer.kind === "relic" ? relicObjectMarkup(offer.contentId) : potionObjectMarkup(offer.contentId);
+    return choiceButton("treasure-offer", offer.offerId, "", offer.kind === "relic" ? "レリック" : "ポーション", item.name, detail, "受け取る", offer.kind === "potion" && full ? "所持枠が満杯" : "", image, index);
   }).join("");
 }
 
@@ -76,13 +79,13 @@ function shopChoices(session: RunSession, content: ContentRegistry, config: Game
     const relic = content.relics.find((item) => item.id === offer.contentId);
     if (!relic) throw new Error(`unknown shop relic: ${offer.contentId}`);
     const reason = offer.purchased ? "購入済み" : run.relicIds.includes(offer.contentId) ? "所持済み" : run.gold < offer.price ? "所持金不足" : "";
-    return choiceButton("buy-relic", offer.offerId, "✦", "レリック", relic.name, "ラン中に効果を発揮", `${offer.price}G`, reason);
+    return choiceButton("buy-relic", offer.offerId, "", "レリック", relic.name, relicRuleText[relic.id] ?? "効果詳細は未登録", `${offer.price}G`, reason, relicObjectMarkup(relic.id));
   });
   const potions = shop.potionOffers.map((offer) => {
     const potion = content.potions.find((item) => item.id === offer.contentId);
     if (!potion) throw new Error(`unknown shop potion: ${offer.contentId}`);
     const reason = offer.purchased ? "購入済み" : full ? "所持枠が満杯" : run.gold < offer.price ? "所持金不足" : "";
-    return choiceButton("buy-potion", offer.offerId, "✚", "ポーション", potion.name, `入力語 ${potion.input.text}`, `${offer.price}G`, reason);
+    return choiceButton("buy-potion", offer.offerId, "", "ポーション", potion.name, `入力語 ${potion.input.text} · ${potionEffectText(potion.id, content)}`, `${offer.price}G`, reason, potionObjectMarkup(potion.id));
   });
   const removalReason = shop.removalUsed ? "この購買では削除済み" : run.deck.length <= 1 ? "最後の1枚は削除不可" : run.gold < shop.removalPrice ? "所持金不足" : "";
   const removal = run.deck.map((instance) => {
@@ -107,10 +110,13 @@ function restChoices(session: RunSession, content: ContentRegistry): string {
 function eventChoices(session: RunSession, content: ContentRegistry, config: GameConfig): string {
   return availableEventChoices(session.run, content, config).map(({ choice, available }) => {
     const effects = choice.effects.map((effect) => eventEffect(effect, content)).join(" · ");
+    const itemEffect = choice.effects.find((effect) => effect.kind === "add_relic" || effect.kind === "add_potion");
+    const image = itemEffect?.kind === "add_relic" ? relicObjectMarkup(itemEffect.relicId)
+      : itemEffect?.kind === "add_potion" ? potionObjectMarkup(itemEffect.potionId) : "";
     const title = choice.label.split(" · ")[0]!.replace(/^\d+Gで/, "");
     const targets = eventChoiceTargets(session.run, choice);
     const reason = available ? "" : eventUnavailableReason(session.run, choice, config);
-    if (!targets || !available) return choiceButton("event-choice", choice.id, "✦", "選択", title, effects, "決める", reason);
+    if (!targets || !available) return choiceButton("event-choice", choice.id, image ? "" : "✦", "選択", title, effects, "決める", reason, image);
     const radios = targets.map((instance, index) => {
       const card = content.cards.find((item) => item.id === instance.cardId);
       if (!card) throw new Error(`unknown event target: ${instance.cardId}`);
@@ -122,8 +128,13 @@ function eventChoices(session: RunSession, content: ContentRegistry, config: Gam
 
 function sceneProp(screen: LocationScreen, run: RunState, eventTitle = "校内イベント"): string {
   switch (screen) {
-    case "treasure": return `<div class="location-prop-locker" aria-hidden="true"><div class="locker-label">資料保管庫</div><div class="locker-open">${run.treasure?.offers.map((offer, index) => `<span data-offer-index="${index}">${offer.kind === "relic" ? "✦" : "✚"}</span>`).join("") ?? ""}</div><div class="locker-lid"></div></div>`;
-    case "shop": return `<div class="location-prop-shop" aria-hidden="true"><div class="shop-awning">校内購買</div><div class="shop-display"><span>▣</span><span>▣</span><span>✦</span><span>✚</span></div><div class="shop-counter"></div></div>`;
+    case "treasure": return `<div class="location-prop-locker" aria-hidden="true"><div class="locker-label">資料保管庫</div><div class="locker-open">${run.treasure?.offers.map((offer, index) => `<span data-offer-index="${index}">${offer.kind === "relic" ? relicObjectMarkup(offer.contentId) : potionObjectMarkup(offer.contentId)}</span>`).join("") ?? ""}</div><div class="locker-lid"></div></div>`;
+    case "shop": {
+      const stock = [...(run.shop?.offers.map((offer) => cardThumbnail(offer.cardId)) ?? []),
+        ...(run.shop?.relicOffers.map((offer) => relicObjectMarkup(offer.contentId)) ?? []),
+        ...(run.shop?.potionOffers.map((offer) => potionObjectMarkup(offer.contentId)) ?? [])];
+      return `<div class="location-prop-shop" aria-hidden="true"><div class="shop-awning">校内購買</div><div class="shop-display">${stock.slice(0, 4).map((image) => `<span>${image}</span>`).join("")}</div><div class="shop-counter"></div></div>`;
+    }
     case "rest": return `<div class="location-prop-rest" aria-hidden="true"><div class="rest-bench"></div><div class="rest-seat"></div><div class="rest-notebook">▤</div></div>`;
     case "event": return `<div class="location-prop-event" aria-hidden="true"><div class="event-board"><span>${escapeHtml(eventTitle)}</span><i>✦</i><b>?</b></div></div>`;
   }

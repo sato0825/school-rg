@@ -7,6 +7,7 @@ import type { RunSession } from "../domain/run-flow.js";
 import { identityForClub } from "../content/character-identities.js";
 import { createVictoryNote, victoryCandidateByClubId, victoryHeader, type VictoryNoteOptions } from "./victory-view.js";
 import { DEFAULT_GAME_CONFIG, requireSetting, type GameConfig } from "../domain/config.js";
+import { potionInventoryMarkup, relicDetailMarkup, relicInventoryMarkup } from "./item-art.js";
 
 /** The stage and actor belong to the run, rather than to an individual screen. */
 export class GameShell {
@@ -19,6 +20,7 @@ export class GameShell {
   private readonly header: HTMLElement;
   private readonly overlay: HTMLElement;
   private readonly content: ContentRegistry;
+  private readonly view: BattleView;
   private readonly art: StageArt;
   private readonly config: GameConfig;
   private stageNodeId: string | null = null;
@@ -43,6 +45,7 @@ export class GameShell {
     this.header = header;
     this.overlay = document.createElement("div");
     this.content = content;
+    this.view = view;
     this.art = view.art;
     this.config = config;
     this.overlay.className = "game-shell-overlay";
@@ -123,6 +126,9 @@ export class GameShell {
     const panel = rendered.querySelector<HTMLElement>(screen === "reward" ? ".reward-panel" : screen === "map" ? ".map-panel" : ".location-scene");
     if (!panel) throw new Error(`Missing ${screen} panel`);
     this.overlay.replaceChildren(panel);
+    if (this.view.selectedRelicId && run.relicIds.includes(this.view.selectedRelicId)) {
+      this.overlay.insertAdjacentHTML("beforeend", relicDetailMarkup(this.view.selectedRelicId, this.content));
+    }
     this.main.dataset.screen = screen;
     this.input.disabled = true;
     this.control.inert = true;
@@ -142,7 +148,7 @@ export class GameShell {
     hp.className = "player-hud run-player-hud";
     hp.setAttribute("aria-label", `${this.content.clubs.find((club) => club.id === run.clubId)?.name ?? "主人公"}の状態`);
     const ratio = Math.max(0, Math.min(100, run.player.hp / run.player.maxHp * 100));
-    hp.innerHTML = `<span class="player-health"><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><span class="player-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span class="player-health-fill" style="width:${ratio}%"></span></span></span><span class="run-gold" aria-label="所持金 ${run.gold}">◉ ${run.gold}</span><span class="run-deck" aria-label="デッキ ${run.deck.length}枚">▣ ${run.deck.length}</span>${screen !== "map" && screen !== "reward" ? `<span class="run-potions" aria-label="ポーション ${run.potionIds.length}/${requireSetting(this.config.potionSlots)}枠">✚ ${run.potionIds.length}/${requireSetting(this.config.potionSlots)}</span>` : ""}`;
+    hp.innerHTML = `<span class="player-health"><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><span class="player-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span class="player-health-fill" style="width:${ratio}%"></span></span></span><span class="run-gold" aria-label="所持金 ${run.gold}">◉ ${run.gold}</span><span class="run-deck" aria-label="デッキ ${run.deck.length}枚">▣ ${run.deck.length}</span>${relicInventoryMarkup(run.relicIds, this.content, this.view.selectedRelicId)}<span class="run-potions" aria-label="ポーション ${run.potionIds.length}/${requireSetting(this.config.potionSlots)}枠">${potionInventoryMarkup(run.potionIds, this.content)}</span>`;
     this.header.append(hp);
   }
 

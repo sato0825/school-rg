@@ -30,6 +30,7 @@ import { imeLatinKey } from "./ime-key.js";
 import { battleMapOverlayMarkup } from "./battle-map-overlay.js";
 import { GameShell } from "./game-shell.js";
 import { defeatCandidateByClubId } from "./loss-view.js";
+import { potionObjectMarkup, relicObjectMarkup } from "./item-art.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
@@ -125,10 +126,79 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   let gameShell: GameShell | null = null;
   let locationTransitioning = false;
   let locationFeedback: string | null = null;
+  let locationFeedbackItem: { kind: "relic" | "potion"; id: string } | null = null;
   let generation = 0;
+  const acquiredItem = (before: RunState, after: RunState): { kind: "relic" | "potion"; id: string } | null => {
+    const relicId = after.relicIds.find((id) => after.relicIds.filter((candidate) => candidate === id).length > before.relicIds.filter((candidate) => candidate === id).length);
+    if (relicId) return { kind: "relic", id: relicId };
+    const potionId = after.potionIds.find((id) => after.potionIds.filter((candidate) => candidate === id).length > before.potionIds.filter((candidate) => candidate === id).length);
+    return potionId ? { kind: "potion", id: potionId } : null;
+  };
+  const showLocationResult = (scene: Element | null): void => {
+    if (!scene || !locationFeedback || !locationFeedbackItem) return;
+    const toast = document.createElement("div");
+    toast.className = "location-item-result";
+    toast.setAttribute("role", "status");
+    toast.innerHTML = locationFeedbackItem.kind === "relic" ? relicObjectMarkup(locationFeedbackItem.id) : potionObjectMarkup(locationFeedbackItem.id);
+    const label = document.createElement("span");
+    label.textContent = locationFeedback;
+    toast.append(label);
+    scene.append(toast);
+  };
+  const itemOutcome = (before: RunState, after: RunState): string => {
+    const changes: string[] = [];
+    const statusName: Record<string, string> = { strength: "力", dexterity: "敏捷", focus: "集中", thorns: "反撃", barrier: "結界", weak: "弱体", vulnerable: "脆弱", frail: "虚弱", poison: "毒" };
+    if (after.player.hp !== before.player.hp) changes.push(`HP ${after.player.hp > before.player.hp ? "+" : ""}${after.player.hp - before.player.hp}`);
+    if (after.player.block !== before.player.block) changes.push(`ブロック ${after.player.block > before.player.block ? "+" : ""}${after.player.block - before.player.block}`);
+    if (after.gold !== before.gold) changes.push(`${after.gold > before.gold ? "+" : ""}${after.gold - before.gold}G`);
+    const timeDelta = (after.combat?.clock.remainingMs ?? 0) - (before.combat?.clock.remainingMs ?? 0);
+    if (timeDelta > 0) changes.push(`入力時間 約+${(timeDelta / 1_000).toFixed(1)}秒`);
+    for (const [status, count] of Object.entries(after.combat?.statuses.player ?? {})) {
+      const delta = count - (before.combat?.statuses.player[status] ?? 0);
+      if (delta > 0) changes.push(`${statusName[status] ?? status} +${delta}`);
+    }
+    for (const enemy of before.combat?.enemies ?? []) {
+      const next = after.combat?.enemies.find((item) => item.instanceId === enemy.instanceId);
+      if (next && next.hp < enemy.hp) changes.push(`${demoContent.enemies.find((item) => item.id === enemy.enemyId)?.name ?? "敵"} −${enemy.hp - next.hp}HP`);
+    }
+    return changes.join(" · ") || "数値変化なし";
+  };
   const setMotion = (motion: BattleView["motion"]) => { view.motion = motion; view.motionStartedAtMs = motion ? clock.nowMs() : null; };
-  const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState =>
-    emitRelicEvent(state, kind, demoRelicRules, demoContent, detail).run;
+  const fireRelic = (state: RunState, kind: RelicEventKind, detail: Omit<RelicEvent, "id" | "kind"> = {}): RunState => {
+    const result = emitRelicEvent(state, kind, demoRelicRules, demoContent, detail);
+    const outcome = itemOutcome(state, result.run);
+    if (state.combat && result.trace.length && outcome !== "数値変化なし") {
+      const cue = { relicIds: [...new Set(result.trace.map((item) => item.relicId))], outcome, startedAtMs: clock.nowMs() };
+      view.relicCue = cue;
+      const currentGeneration = generation;
+      window.setTimeout(() => {
+        if (generation === currentGeneration && view.relicCue === cue) {
+          view.relicCue = null;
+          if (session.screen === "combat") render();
+        }
+      }, 1200);
+    }
+    return result.run;
+  };
+  const markPotionUse = (before: RunState, after: RunState): void => {
+    if (!before.combat || !after.combat || before.potionIds.length <= after.potionIds.length) return;
+    const id = before.potionIds.find((candidate) =>
+      before.potionIds.filter((item) => item === candidate).length > after.potionIds.filter((item) => item === candidate).length);
+    if (!id) return;
+    const cue = { potionId: id, outcome: itemOutcome(before, after), startedAtMs: clock.nowMs() };
+    view.potionCue = cue;
+    const resultCue = resultFxForTransition(before, after, view.layoutPreviewAllies ?? 1, clock.nowMs());
+    view.resultFx = resultCue;
+    view.message = `${demoContent.potions.find((item) => item.id === id)?.name ?? id}を使用`;
+    const currentGeneration = generation;
+    window.setTimeout(() => {
+      if (generation === currentGeneration && view.potionCue === cue) {
+        view.potionCue = null;
+        if (view.resultFx === resultCue) view.resultFx = null;
+        if (session.screen === "combat") render();
+      }
+    }, 1200);
+  };
   const metricsActive = () => frontScreen === null && !restoreError && session.screen !== "won" && session.screen !== "lost"
     && document.visibilityState === "visible" && !(run.combat?.clock.paused ?? false);
   const observeMetrics = () => { if (metrics) metrics = observePlaytest(metrics, clock.nowMs(), metricsActive()); };
@@ -146,6 +216,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     preloadClubArt(run.clubId);
     view.cardFx = null;
     view.resultFx = null;
+    view.potionCue = null;
+    view.selectedRelicId = null;
     view.dyingEnemyInstanceIds = [];
     if (metrics) metrics = recordPlaytestBattle(metrics, run);
     run = fireRelic(run, "combat_start");
@@ -272,6 +344,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (current && scroll) scroll.scrollTop = battleMapScrollTop ?? Math.max(0, current.offsetTop - scroll.clientHeight / 2 + current.clientHeight / 2);
     }
     if (frontScreen === null && (session.screen === "treasure" || session.screen === "shop" || session.screen === "rest" || session.screen === "event")) {
+      if (session.screen === "shop" || session.screen === "event") showLocationResult(root.querySelector(".location-scene"));
       const buttons = [...root.querySelectorAll<HTMLButtonElement>(".location-scene button[data-action], .topbar button[data-action]")];
       const same = buttons.find((button) => !button.disabled && button.dataset.action === locationFocused?.action && button.dataset.id === locationFocused?.id);
       if (same) same.focus({ preventScroll: true });
@@ -282,6 +355,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       toast.className = "location-result-toast";
       toast.setAttribute("role", "status");
       toast.textContent = locationFeedback;
+      if (locationFeedbackItem) toast.insertAdjacentHTML("afterbegin", locationFeedbackItem.kind === "relic" ? relicObjectMarkup(locationFeedbackItem.id) : potionObjectMarkup(locationFeedbackItem.id));
       root.querySelector(".stage")?.append(toast);
     }
     persist();
@@ -358,6 +432,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     audio.play("enemy");
     setMotion("enemy");
     view.resultFx = null;
+    view.potionCue = null;
     view.message = "敵が予告した行動を実行します。";
     render();
     const currentGeneration = generation;
@@ -395,6 +470,9 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     setMotion(null);
     view.cardFx = null;
     view.resultFx = null;
+    view.relicCue = null;
+    view.potionCue = null;
+    view.selectedRelicId = null;
     view.dyingEnemyInstanceIds = [];
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
@@ -413,9 +491,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
 
   function submitInputKey(key: string, repeat: boolean, isComposing: boolean): void {
     try {
+      const before = run;
       if (key === requireSetting(config.potionModeKey)) run = setPotionInputActive(run, !run.combat!.potionControl?.active, clock, demoContent, disposition);
       else if (run.combat!.potionControl?.active) run = submitPotionKey(run, { key, repeat, isComposing }, clock, config, demoContent, disposition);
       else run = submitPlayerKey(run, { key, repeat, isComposing }, clock, config, demoContent, useCard, disposition);
+      markPotionUse(before, run);
       settleIfFinished();
       render();
       enemyPhase();
@@ -535,6 +615,12 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (action === "open-battle-map") { openBattleMap(); return; }
       if (action === "close-battle-map") { closeBattleMap(); return; }
       if (action === "toggle-audio") { audio.toggle(); audio.activate(); render(); return; }
+      if (action === "relic-detail" && frontScreen === null && run.relicIds.includes(id)) {
+        view.selectedRelicId = view.selectedRelicId === id ? null : id;
+        render();
+        Array.from(root.querySelectorAll<HTMLButtonElement>('[data-action="relic-detail"]')).find((item) => item.dataset.id === id)?.focus();
+        return;
+      }
       if (action === "new-run" || action === "restart") { restart(); return; }
       if (action === "open-clubs" && frontScreen === "title") { frontScreen = "clubs"; render(); return; }
       if (action === "open-history" && (frontScreen === "title" || (frontScreen === null && (session.screen === "won" || session.screen === "lost")))) {
@@ -607,6 +693,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (session.screen === "map" && action === "enter-node") {
         locationFeedback = null;
+        locationFeedbackItem = null;
         observeMetrics();
         session = enterRunNode(session, id, demoContent, demoEnemyAi, demoRunContentTables);
         run = session.run;
@@ -626,6 +713,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       if (session.screen === "treasure" && (action === "treasure-offer" || action === "skip-treasure")) {
         const chosenName = action === "treasure-offer" ? button.querySelector("strong")?.textContent ?? "品" : null;
+        const beforeChoice = run;
         const relicCount = run.relicIds.length;
         session = chooseRunTreasure(session, action === "skip-treasure" ? null : id, demoContent, config);
         run = session.run;
@@ -633,6 +721,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         if (action === "treasure-offer") audio.play("reward");
         if (chosenName) {
           locationFeedback = `${chosenName}を受け取った`;
+          locationFeedbackItem = acquiredItem(beforeChoice, run);
           persist();
           locationTransitioning = true;
           const scene = button.closest<HTMLElement>(".location-scene");
@@ -650,17 +739,21 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         return;
       }
       if (session.screen === "event" && action === "event-choice") {
+        const beforeChoice = run;
         const relicCount = run.relicIds.length;
         const targetCardInstanceId = button.closest(".event-target-choice")?.querySelector<HTMLInputElement>("input[type=radio]:checked")?.value;
         session = chooseRunEventChoice(session, id, demoContent, demoEnemyAi, config, targetCardInstanceId);
         run = session.run;
         for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
+        locationFeedbackItem = acquiredItem(beforeChoice, run);
+        locationFeedback = locationFeedbackItem ? `${(locationFeedbackItem.kind === "relic" ? demoContent.relics : demoContent.potions).find((item) => item.id === locationFeedbackItem!.id)?.name ?? locationFeedbackItem.id}を受け取った` : null;
         if (session.screen === "combat") startCombat();
         view.message = "";
         render();
         return;
       }
       if (session.screen === "shop") {
+        const beforeChoice = run;
         if (action === "buy-offer") { session = buyRunShopCard(session, id); view.message = "カードを購入しました。"; }
         else if (action === "buy-relic") {
           session = buyRunShopRelic(session, id, demoContent);
@@ -672,6 +765,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         else if (action === "remove-shop-card") { session = removeRunShopCard(session, id); view.message = "カードを削除しました。"; }
         else if (action === "leave-shop") session = leaveRunShop(session);
         run = session.run;
+        locationFeedbackItem = acquiredItem(beforeChoice, run);
+        locationFeedback = locationFeedbackItem ? `${(locationFeedbackItem.kind === "relic" ? demoContent.relics : demoContent.potions).find((item) => item.id === locationFeedbackItem!.id)?.name ?? locationFeedbackItem.id}を購入した` : null;
         render();
         return;
       }
@@ -682,6 +777,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         return;
       }
       if (session.screen !== "combat") return;
+      const beforeCombatAction = run;
       if (action === "potion-mode" && run.combat?.phase === "PLAYER_INPUT") {
         run = setPotionInputActive(run, !run.combat.potionControl?.active, clock, demoContent, disposition);
       } else if (action === "discard-potion" && run.combat?.phase === "PLAYER_INPUT") {
@@ -717,6 +813,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         view.selectedDebuff = id;
         view.message = "解除する状態を選びました。";
       }
+      if (action === "potion" || action === "enemy") markPotionUse(beforeCombatAction, run);
       settleIfFinished();
       render();
       if (action === "pause") root.querySelector<HTMLButtonElement>('[data-action="pause"]')?.focus();
