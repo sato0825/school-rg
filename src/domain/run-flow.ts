@@ -159,9 +159,9 @@ export function settleRunCombat(session: RunSession, content: ContentRegistry, e
   return { ...session, run: { ...rewardedRun, rngState: offered.state }, screen: "reward", rewardCardIds: offered.cardIds };
 }
 
-export function chooseRunEventChoice(session: RunSession, choiceId: string, content: ContentRegistry, ai: EnemyAiRegistry, config: GameConfig = DEFAULT_GAME_CONFIG): RunSession {
+export function chooseRunEventChoice(session: RunSession, choiceId: string, content: ContentRegistry, ai: EnemyAiRegistry, config: GameConfig = DEFAULT_GAME_CONFIG, targetCardInstanceId?: string): RunSession {
   if (session.screen !== "event") throw new Error("expected event screen");
-  const result = resolveEventChoice(session.run, choiceId, content, config);
+  const result = resolveEventChoice(session.run, choiceId, content, config, targetCardInstanceId);
   if (result.run.player.hp === 0) return { ...session, run: result.run, screen: "lost" };
   if (result.battleEnemyId) return { ...session, run: createEncounter(result.run, result.battleEnemyId, content, ai), screen: "combat" };
   const nodeId = result.run.map.currentNodeId;
