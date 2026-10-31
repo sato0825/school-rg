@@ -13,8 +13,8 @@ export type ActorMotionClip = Readonly<{
 }>;
 
 export const actorMotionClips: Readonly<Record<ActorMotionKind, ActorMotionClip>> = {
-  "card-use": { kind: "card-use", durationMs: MOTION_MS.hero, pose: "activate", contactMs: 190 },
-  hit: { kind: "hit", durationMs: MOTION_MS.hit, pose: "hit", contactMs: 140 },
+  "card-use": { kind: "card-use", durationMs: MOTION_MS.hero, pose: "activate", contactMs: 0 },
+  hit: { kind: "hit", durationMs: MOTION_MS.hit, pose: "hit", contactMs: 0 },
 };
 
 /** The canvas and foot anchor are a review contract, not proof that candidate feet coincide. */

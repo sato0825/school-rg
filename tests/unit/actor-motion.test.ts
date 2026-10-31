@@ -11,6 +11,8 @@ describe("candidate actor motion timeline", () => {
     expect(Object.keys(literatureMotionCandidate.poseIds)).toEqual(["idle", "activate", "hit"]);
     expect(actorMotionClips["card-use"].durationMs).toBe(380);
     expect(actorMotionClips.hit.durationMs).toBe(420);
+    expect(actorMotionClips["card-use"].contactMs).toBe(0);
+    expect(actorMotionClips.hit.contactMs).toBe(0);
   });
 
   it("selects the card and hit pose at the event timestamp, preserving elapsed phase after redraw", () => {
