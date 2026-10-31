@@ -1,0 +1,16 @@
+/* Import after card-design.css when the state-driven card markup contains .card-art. */
+.game-shell .hand>.card[data-card-kind]{height:174px;min-height:174px;flex-basis:clamp(138px,11.5vw,172px);padding:8px 10px 10px;overflow:hidden}
+.game-shell .hand{height:190px;min-height:190px;align-items:flex-start}
+.game-shell .card-art{position:relative;z-index:1;display:block;flex:0 0 66px;min-height:0;margin:5px 0 5px;overflow:hidden;border:1px solid #aac1c6;border-radius:4px;background:#d6e6e6}
+.game-shell .card-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.88)}
+.game-shell .card-art[data-art-state="missing"]{display:grid;place-items:center;background:linear-gradient(150deg,#e9eeea,#c4d8d8)}
+.game-shell .card-art[data-art-state="missing"]::before{content:'◇';font-size:27px;font-weight:300;color:#7397a2}
+.game-shell .hand>.card .card-kind{flex:none;font-size:10px}
+.game-shell .hand>.card .card-word{margin:1px 0 auto;font-size:clamp(17px,1.55vw,22px);line-height:1.05}
+.game-shell .hand>.card .card-effect{flex:none;min-height:25px;max-height:34px;margin:4px 0 0;padding-top:5px;overflow:hidden;font-size:10px;line-height:1.2}
+.game-shell .reward-card[data-card-kind]{min-height:205px}
+.game-shell .reward-card .card-art{flex-basis:86px;margin:3px 0}
+.game-shell .reward-card .card-art img{object-fit:cover}
+.game-shell .reward-card .card-art[data-art-state="missing"]::before{font-size:34px}
+@media(max-width:1100px){.game-shell .hand{height:185px;min-height:185px}.game-shell .hand>.card[data-card-kind]{height:170px;min-height:170px;flex-basis:132px}.game-shell .hand>.card .card-word{font-size:18px}.game-shell .hand>.card .card-effect{font-size:10px}.game-shell .card-art{flex-basis:61px}}
+@media(prefers-reduced-motion:reduce){.game-shell .card-art img{filter:none}}

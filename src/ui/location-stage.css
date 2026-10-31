@@ -1,0 +1,127 @@
+.game-shell[data-screen="treasure"] .game-shell-overlay,
+.game-shell[data-screen="shop"] .game-shell-overlay,
+.game-shell[data-screen="rest"] .game-shell-overlay,
+.game-shell[data-screen="event"] .game-shell-overlay {
+  background: linear-gradient(90deg, transparent 0%, #17394a10 45%, #14394a31 100%);
+}
+
+.game-shell[data-screen="treasure"] .control-deck,
+.game-shell[data-screen="shop"] .control-deck,
+.game-shell[data-screen="rest"] .control-deck,
+.game-shell[data-screen="event"] .control-deck { visibility: hidden; }
+
+.game-shell .location-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  color: #1a4352;
+}
+.game-shell .location-prop {
+  position: absolute;
+  top: 26%;
+  left: 45%;
+  width: 47%;
+  height: 53%;
+  pointer-events: none;
+  filter: drop-shadow(7px 12px 8px #17384977);
+}
+.game-shell .location-choices {
+  position: absolute;
+  right: 5%;
+  bottom: 7%;
+  width: min(650px, 47%);
+  max-height: 48%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.game-shell .location-heading { flex: none; margin: 0 0 9px 8px; text-shadow: 0 2px 7px #274457; }
+.game-shell .location-heading small { color: #f4f8ed; font-size: 11px; font-weight: 900; letter-spacing: .12em; }
+.game-shell .location-heading h2 { margin: 2px 0 4px; color: white; font-size: 24px; }
+.game-shell .location-heading p { display: inline-block; margin: 0; padding: 3px 8px; border-left: 3px solid #8ab4ba; background: #e7f1e7de; font-size: 12px; font-weight: 900; text-shadow: none; }
+.game-shell .location-choice-list { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 2px 7px 7px 2px; }
+.game-shell .location-choice-list:has(> .location-choice) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.game-shell .location-shelf { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.game-shell .location-choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  min-height: 78px;
+  padding: 9px;
+  border: 2px solid #9dbbbd;
+  border-radius: 6px;
+  background: #eaf2e8ed;
+  box-shadow: 3px 4px 0 #28536388;
+  color: #1e4552;
+  cursor: pointer;
+  text-align: left;
+}
+.game-shell .location-choice:hover:not(:disabled), .game-shell .location-choice:focus-visible { border-color: #3e8797; background: #f8fcf4; transform: translateY(-2px); }
+.game-shell .location-choice:focus-visible, .game-shell .location-exit:focus-visible, .game-shell .location-drawer summary:focus-visible, .game-shell .location-event-target button:focus-visible { outline: 3px solid #245f85; outline-offset: 3px; }
+.game-shell .location-choice:disabled { cursor: not-allowed; background: #e7ebe5d6; box-shadow: none; }
+.game-shell .location-choice-icon { flex: none; display: grid; place-items: center; width: 45px; height: 51px; border: 2px solid #91b2b6; border-radius: 5px; background: #f9fbef; color: #8d739b; font-size: 26px; }
+.game-shell .location-card-art { display: grid; place-items: center; width: 100%; height: 100%; overflow: hidden; font-size: 23px; }
+.game-shell .location-card-art img { width: 100%; height: 100%; object-fit: cover; }
+.game-shell .location-choice-copy { display: grid; gap: 2px; min-width: 0; }
+.game-shell .location-choice-copy small { color: #477c87; font-size: 10px; font-weight: 900; }
+.game-shell .location-choice-copy strong { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.game-shell .location-choice-copy span { display: -webkit-box; overflow: hidden; font-size: 10px; line-height: 1.3; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.game-shell .location-choice-outcome { align-self: flex-end; margin-left: auto; color: #9d3e5c; font-size: 11px; white-space: nowrap; }
+.game-shell .location-choice-outcome[data-unavailable="true"] { color: #536c78; }
+.game-shell .location-exit { align-self: flex-end; min-height: 44px; margin: 6px 7px 0 0; padding: 7px 13px; border: 1px solid #a1c0bd; border-radius: 5px; background: #e7f1e8ed; color: #234b5a; font-size: 12px; font-weight: 900; cursor: pointer; }
+.game-shell .location-message { min-height: 0; margin: 4px 8px 0; color: #eef9f2; font-size: 12px; font-weight: 900; text-shadow: 0 2px 5px #25495b; }
+.game-shell .location-message:empty { display: none; }
+.game-shell .location-drawer { margin-top: 8px; border: 1px solid #a0bec1; border-radius: 6px; background: #e5efe9ed; }
+.game-shell .location-drawer summary { min-height: 44px; padding: 10px; color: #214f5c; cursor: pointer; font-size: 12px; font-weight: 900; }
+.game-shell .location-drawer summary b { margin-left: 8px; color: #a34b63; }
+.game-shell .location-drawer summary small { display: inline-block; margin-left: 8px; color: #536b76; }
+.game-shell .location-deck-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; max-height: 180px; overflow-y: auto; padding: 7px; }
+.game-shell .location-event-description { max-height: 65px; overflow-y: auto; margin: 0 8px 8px; padding: 7px 10px; border-left: 3px solid #a0bbc2; background: #e8f2eae8; font-size: 11px; line-height: 1.5; }
+.game-shell .location-event-target { padding: 8px; border: 2px solid #a0bcc0; border-radius: 6px; background: #e9f2e9ed; }
+.game-shell .location-event-target > strong, .game-shell .location-event-target > span { display: block; font-size: 11px; }
+.game-shell .location-target-list { display: flex; gap: 5px; max-height: 85px; overflow-x: auto; padding: 4px; }
+.game-shell .location-target-card { flex: none; display: flex; align-items: center; gap: 4px; min-width: 95px; min-height: 44px; padding: 4px; border: 1px solid #9ab7bb; background: #f6f8ed; font-size: 11px; cursor: pointer; }
+.game-shell .location-target-card:has(input:checked) { outline: 2px solid #ae526b; }
+.game-shell .location-target-card .location-card-art { width: 32px; height: 36px; }
+.game-shell .location-event-target button { min-height: 44px; margin-top: 5px; padding: 5px 12px; border: 1px solid #8babb5; border-radius: 5px; background: #fff; color: #214859; font-weight: 900; cursor: pointer; }
+
+/* Candidate illustrations are isolated from the interaction and state model. */
+.game-shell .location-prop-locker,
+.game-shell .location-prop-shop,
+.game-shell .location-prop-rest,
+.game-shell .location-prop-event { position: absolute; inset: 0; }
+.game-shell .location-prop-art { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 9px 7px #162f3f55); }
+.game-shell[data-screen="shop"] .location-prop { left: 27%; width: 31%; }
+.game-shell[data-screen="shop"] .location-choices { max-height: 55%; }
+.game-shell[data-screen="shop"] .location-choice { min-height: 64px; padding: 6px; }
+.game-shell .locker-open { position: absolute; left: 39%; top: 41%; width: 37%; height: 31%; display: flex; align-items: center; justify-content: space-around; }
+.game-shell .locker-open span { width: 35%; height: 55%; border-radius: 50%; opacity: 0; }
+.game-shell .location-scene[data-claiming="true"] .location-choice:not(.is-claiming) { opacity: .55; }
+.game-shell .location-choice.is-claiming { border-color: #b05876; background: #fffaf1; box-shadow: 0 0 0 4px #f3e6b8aa, 3px 4px 0 #28536388; }
+.game-shell .locker-open span.is-claiming { opacity: 1; background: #f8e4a066; box-shadow: 0 0 24px 18px #f8dd99aa; animation: location-claim-lift 340ms ease-out both; }
+.game-shell .location-prop-locker:has(.is-claiming) .location-prop-art { filter: drop-shadow(0 8px 7px #162f3f55) drop-shadow(0 0 11px #f7e5ad99); }
+.game-shell .location-result-toast { position: absolute; z-index: 10; left: 17%; bottom: 18%; max-width: 32%; padding: 10px 14px; border: 2px solid #e2d39e; border-radius: 7px; background: #f8f4dfec; color: #284f5f; font-size: 13px; font-weight: 900; box-shadow: 3px 5px 0 #31536777; pointer-events: none; }
+@keyframes location-claim-lift { from { transform: translateY(0) scale(1); } 50% { transform: translateY(-18px) scale(1.1); } to { transform: translateY(-9px) scale(1.04); } }
+
+@media (max-width: 1100px) {
+  .game-shell .location-prop { top: 26%; left: 47%; width: 48%; height: 53%; }
+  .game-shell .location-choices { right: 3%; bottom: 5%; width: 57%; max-height: 51%; }
+  .game-shell .location-heading h2 { font-size: 21px; }
+  .game-shell .location-choice { min-height: 69px; padding: 6px; }
+  .game-shell .location-choice-icon { width: 37px; height: 42px; font-size: 21px; }
+  .game-shell .location-choice-copy strong { font-size: 12px; }
+  .game-shell .location-choice-copy span { font-size: 9px; }
+  .game-shell .location-choice-outcome { font-size: 9px; }
+  .game-shell .location-shelf, .game-shell .location-choice-list:has(> .location-choice) { gap: 5px; }
+  .game-shell .location-event-description { max-height: 50px; }
+  .game-shell[data-screen="shop"] .location-prop { top: 31%; left: 27%; width: 33%; height: 53%; }
+  .game-shell[data-screen="shop"] .location-choices { bottom: 4%; width: 48%; max-height: 70%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-shell .location-choice { transform: none !important; transition: none !important; }
+  .game-shell .locker-open span.is-claiming { animation: none !important; }
+}
+.game-shell .location-scene[data-low-stimulus="true"] .locker-open span.is-claiming { animation: none; }

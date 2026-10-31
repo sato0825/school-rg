@@ -1,16 +1,23 @@
 import type { BattleArt } from "./battle-view.js";
 import { clubPresentation } from "./club-presentation.js";
 import { enemyCandidateUrlById } from "./enemy-presentation.js";
-import { stageCandidateUrlByAct, stageCandidateUrlByActPhase } from "./stage-presentation.js";
+
+import { stageCandidateArtIdByPlaceId, stageCandidateUrlByAct, stageCandidateUrlByActPhase, stageCandidateUrlByPlaceId } from "./stage-presentation.js";
+
+import { enemyActionArtById } from "./enemy-action-art.js";
+
 
 /** Demo presentation is kept outside battle logic so later club and enemy art can replace it. */
 export const demoBattleArt: BattleArt = {
-  stageUrl: new URL("../assets/stage-hallway-v1.png", import.meta.url).href,
+  stageUrl: stageCandidateUrlByAct[1]!,
   stageUrlByAct: stageCandidateUrlByAct,
   stageUrlByActPhase: stageCandidateUrlByActPhase,
+  stageUrlByPlaceId: stageCandidateUrlByPlaceId,
+  stageArtIdByPlaceId: stageCandidateArtIdByPlaceId,
   heroUrl: clubPresentation["literature-demo"].idle,
   heroUrlByClubId: Object.fromEntries(Object.entries(clubPresentation).map(([id, art]) => [id, art.idle])),
   heroPosesByClubId: Object.fromEntries(Object.entries(clubPresentation).map(([id, art]) => [id, { idle: art.idle, activate: art.activate, hit: art.hit }])),
+  heroRigCandidateIds: ["literature-demo"],
   fxPaletteByClubId: {
     "literature-demo": ["#f14a70", "#ffd3dc"],
     "science-demo": ["#25afcc", "#c1f4fa"],
@@ -19,6 +26,7 @@ export const demoBattleArt: BattleArt = {
     "art-demo": ["#30a994", "#c5f0de"],
   },
   enemyUrlById: enemyCandidateUrlById,
+  enemyActionArtById,
 };
 
 /** #84/#96/#112 development preview only. These candidate images are not approved runtime art. */

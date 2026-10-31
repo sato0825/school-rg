@@ -52,8 +52,9 @@ for (const asset of register.assets) {
       assert(asset.reviewFile, `review record missing: ${asset.id}`);
       await access(projectPath(asset.reviewFile));
     } else assert(asset.status === "candidate", `invalid pose status: ${asset.id}`);
-  } else if (asset.role === "enemy-portrait") {
+  } else if (asset.role === "enemy-portrait" || asset.role === "enemy-action-pose") {
     assert(typeof asset.enemyId === "string" && asset.enemyId.length > 0, `enemy ID missing: ${asset.id}`);
+    if (asset.role === "enemy-action-pose") assert(["attack-windup", "guard-windup", "hit"].includes(asset.pose), `enemy action pose missing: ${asset.id}`);
     assert(typeof asset.generator === "string" && asset.promptFile, `enemy provenance missing: ${asset.id}`);
     await access(projectPath(asset.promptFile));
     if (asset.status === "approved-runtime") {
@@ -76,11 +77,19 @@ for (const asset of register.assets) {
       assert(asset.reviewFile, `review record missing: ${asset.id}`);
       await access(projectPath(asset.reviewFile));
     } else assert(asset.status === "candidate", `invalid environment status: ${asset.id}`);
+  } else if (asset.role === "location-prop") {
+    assert(["archive", "shop", "rest", "event"].includes(asset.place), `location prop place missing: ${asset.id}`);
+    assert(asset.status === "candidate", `location prop requires candidate review: ${asset.id}`);
+    assert(typeof asset.sourceId === "string" && typeof asset.generator === "string" && asset.promptFile, `location prop provenance missing: ${asset.id}`);
+    assert(Array.isArray(asset.focalPoint) && asset.focalPoint.length === 2 && asset.focalPoint.every((number) => number >= 0 && number <= 1), `location prop focal point missing: ${asset.id}`);
+    assert(Array.isArray(asset.contactPoint) && asset.contactPoint.length === 2 && asset.contactPoint.every((number) => number >= 0 && number <= 1), `location prop contact point missing: ${asset.id}`);
+    await access(projectPath(asset.promptFile));
   } else assert(asset.role === "reference", `invalid art role: ${asset.id}`);
   const bounds = info.alphaBounds ? `, visible ${info.alphaBounds.left},${info.alphaBounds.top}..${info.alphaBounds.right},${info.alphaBounds.bottom}` : "";
   console.log(`${asset.id}: ${info.width}x${info.height}, alpha ${info.minAlpha}..${info.maxAlpha}${bounds}, SHA OK`);
 }
 for (const asset of register.assets.filter((item) => item.referenceId)) assert(ids.has(asset.referenceId), `unknown reference: ${asset.id}`);
+for (const asset of register.assets.filter((item) => item.sourceId)) assert(ids.has(asset.sourceId), `unknown source: ${asset.id}`);
 for (const [characterId, poses] of grouped) {
   const sizes = new Set(poses.map((pose) => `${pose.width}x${pose.height}`));
   assert(sizes.size === 1, `pose canvas mismatch: ${characterId}`);

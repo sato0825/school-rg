@@ -1,17 +1,31 @@
 import type { Card, ContentRegistry, RunState } from "../domain/schema.js";
-import { stagePhaseForNode, stageUrlForRun, type StageArt } from "./stage-presentation.js";
+import { stagePhaseForNode, stageSelectionForRun, type StageArt } from "./stage-presentation.js";
 import { stageLayout } from "./stage-layout.js";
 import { actionDelayMs, loopDelayMs, MOTION_MS } from "./motion-timing.js";
 import type { CardFx } from "./card-fx.js";
 import type { ResultFx } from "./result-fx.js";
+import { intentGlyphMarkup, intentTargetMarkup } from "./intent-glyph.js";
+import { cardArtForId } from "./card-art.js";
+import { describeEnemyIntent, type IntentVisualStep } from "./intent-visual.js";
+import { DEFAULT_GAME_CONFIG, type GameConfig } from "../domain/config.js";
+import { identityForClub } from "../content/character-identities.js";
+import { paperHeapActionForIntent, type EnemyActionArt } from "./enemy-action-art.js";
+
+import { potionArtForId, potionEffectText, potionObjectMarkup, relicDetailMarkup, relicInventoryMarkup, relicObjectMarkup } from "./item-art.js";
+
+import { actorMotionClips, actorMotionState } from "./actor-motion.js";
+import { literatureRigMarkup } from "./literature-rig.js";
+
 
 export type BattleArt = StageArt & {
   heroUrl: string;
   heroUrlByClubId?: Readonly<Record<string, string>>;
   heroPosesByClubId?: Readonly<Record<string, { idle: string; activate: string; hit: string }>>;
+  heroRigCandidateIds?: readonly string[];
   previewLabel?: string;
   previewLabelByClubId?: Readonly<Record<string, string>>;
   enemyUrlById: Readonly<Record<string, string>>;
+  enemyActionArtById?: Readonly<Record<string, EnemyActionArt>>;
   fxPaletteByClubId?: Readonly<Record<string, readonly [string, string]>>;
 };
 
@@ -26,6 +40,7 @@ export type BattleView = {
   cardFx?: CardFx | null;
   resultFx?: ResultFx | null;
   dyingEnemyInstanceIds?: readonly string[];
+  resolvedEnemyIntentIdByInstanceId?: Readonly<Record<string, string>>;
   animationNowMs: number;
   potionModeKey: string;
   potionSlotLimit: number;
@@ -33,6 +48,9 @@ export type BattleView = {
   imeNotice?: string;
   helpOpen?: boolean;
   layoutPreviewAllies?: number;
+  selectedRelicId?: string | null;
+  relicCue?: { relicIds: readonly string[]; outcome: string; startedAtMs: number } | null;
+  potionCue?: { potionId: string; outcome: string; startedAtMs: number } | null;
 };
 
 function html(value: string): string {
@@ -94,6 +112,10 @@ function pileMarkup(name: string, kind: string, count: number): string {
   return `<span class="pile-token" data-pile="${kind}" role="img" aria-label="${name} ${count}枚"><span class="pile-symbol" aria-hidden="true"></span><span class="pile-name" aria-hidden="true">${name}</span><strong aria-hidden="true">${count}</strong></span>`;
 }
 
+function intentStepsMarkup(steps: readonly IntentVisualStep[]): string {
+  return `<span class="intent-steps" aria-hidden="true">${steps.map((step, index) => `<span class="intent-step" data-kind="${html(step.kind)}" data-target="${html(step.target)}" title="${html(step.description)}">${intentTargetMarkup(step.target)}${intentGlyphMarkup(step.kind)}<strong>${html(step.value)}</strong></span>${index < steps.length - 1 ? `<span class="intent-sequence">›</span>` : ""}`).join("")}</span>`;
+}
+
 function cardFxMarkup(fx: CardFx | null, clubId: string, nowMs: number, palette: BattleArt["fxPaletteByClubId"]): string {
   if (!fx) return "";
   const [accent, glow] = palette?.[clubId] ?? ["#75a9df", "#d7e7ff"];
@@ -114,11 +136,12 @@ function resultFxMarkup(fx: ResultFx | null, nowMs: number): string {
     const sameActor = previous.filter((item) => item.xPercent === mark.xPercent).length;
     const actorOrder = new Set([...previous.map((item) => item.xPercent), mark.xPercent]).size - 1;
     const stack = sameActor * 2 + actorOrder % 2;
-    return `<span class="result-fx-mark" data-kind="${mark.kind}" style="left:${mark.xPercent}%;--fx-offset:${stack * 36}px;animation-delay:${delay}ms">${html(mark.label)}</span>`;
+    const kind = mark.kind === "damage" ? "attack" : mark.kind === "block-loss" ? "block" : mark.kind;
+    return `<span class="result-fx-mark" data-kind="${mark.kind}" style="left:${mark.xPercent}%;--fx-offset:${stack * 36}px;animation-delay:${delay}ms">${intentGlyphMarkup(kind)}<span>${html(mark.label)}</span></span>`;
   }).join("")}</div>`;
 }
 
-export function renderBattle(root: HTMLElement, run: RunState, content: ContentRegistry, view: BattleView): void {
+export function renderBattle(root: HTMLElement, run: RunState, content: ContentRegistry, view: BattleView, config: GameConfig = DEFAULT_GAME_CONFIG): void {
   const combat = run.combat!;
   const hand = combat.hand.map((instanceId) => {
     const instance = combat.cards.find((item) => item.instanceId === instanceId)!;
@@ -137,7 +160,10 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
   const timeRatio = Math.max(0, Math.min(100, combat.clock.remainingMs / view.baseTurnMs * 100));
   const playerHpRatio = Math.max(0, Math.min(100, run.player.hp / run.player.maxHp * 100));
   const clubName = content.clubs.find((club) => club.id === run.clubId)?.name ?? run.clubId;
+  const characterName = identityForClub(run.clubId)?.fullName ?? clubName;
   const heroPoses = view.art.heroPosesByClubId?.[run.clubId];
+  const actorMotion = actorMotionState(view.motion, view.motionStartedAtMs, view.animationNowMs, view.lowStimulus, run.clubId, heroPoses);
+  const useRig = run.clubId === "literature-demo" && Boolean(view.art.heroRigCandidateIds?.includes(run.clubId));
   const heroUrl = (view.motion === "hero" ? heroPoses?.activate : view.motion === "hit" ? heroPoses?.hit : heroPoses?.idle)
     ?? view.art.heroUrlByClubId?.[run.clubId] ?? view.art.heroUrl;
   const previewLabel = view.art.previewLabelByClubId?.[run.clubId] ?? view.art.previewLabel;
@@ -147,50 +173,80 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
   const enemyDelay = view.motion === "enemy"
     ? actionDelayMs(view.animationNowMs, view.motionStartedAtMs ?? view.animationNowMs, MOTION_MS.enemy)
     : loopDelayMs(view.animationNowMs, MOTION_MS.enemyIdle);
-  const relicNames = run.relicIds.map((id) => content.relics.find((relic) => relic.id === id)?.name ?? id);
+  const selectedRelic = view.selectedRelicId && run.relicIds.includes(view.selectedRelicId)
+    ? content.relics.find((item) => item.id === view.selectedRelicId) : null;
+  const cue = view.relicCue && view.animationNowMs - view.relicCue.startedAtMs < 1200 && view.relicCue.relicIds.some((id) => run.relicIds.includes(id))
+    ? view.relicCue : null;
+  const potionCue = view.potionCue && view.animationNowMs - view.potionCue.startedAtMs < 1200 ? view.potionCue : null;
   const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
+  const stageSelection = stageSelectionForRun(view.art, run);
   const nodeKindLabel: Record<string, string> = { combat: "戦闘", elite: "強敵", boss: "ボス" };
   const livingEnemies = combat.enemies.filter((enemy) => enemy.hp > 0 || (combat.phase === "WON" && view.motion === "hero" && view.dyingEnemyInstanceIds?.includes(enemy.instanceId)));
   const layout = stageLayout(view.layoutPreviewAllies ?? 1, livingEnemies.length);
   const denseFormation = livingEnemies.length >= 3;
   const enemyRoster: string[] = [];
+  let selectedThreatPath = "";
+  const playerX = layout.allies[0]!.xPercent;
+  const playerImpact = view.resultFx?.marks.some((mark) => mark.xPercent === playerX && (mark.kind === "damage" || mark.kind === "block-loss"));
+  // A resolved line is attributed only when one visible enemy actually previewed an attack.
+  // Several attackers resolve as an aggregate: drawing a single line would invent a source.
+  const resolvedAttackers = livingEnemies.filter((enemy) => {
+    const intentId = view.resolvedEnemyIntentIdByInstanceId?.[enemy.instanceId];
+    const intent = content.intents.find((item) => item.id === intentId);
+    return intent?.effectIds.some((id) => content.effects.find((effect) => effect.id === id)?.kind === "damage");
+  });
+  const resolvedSourceX = resolvedAttackers.length === 1 ? layout.enemies[livingEnemies.indexOf(resolvedAttackers[0]!)]?.xPercent : undefined;
+  const resolvedAttackPath = view.motion === "hit" && playerImpact && resolvedSourceX !== undefined
+    ? `<svg class="intent-trajectory" data-phase="resolved" data-source="${html(resolvedAttackers[0]!.instanceId)}" data-target="player" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M ${resolvedSourceX} 39 C ${resolvedSourceX - 12} 36 ${playerX + 14} 39 ${playerX} 39"/><path d="m ${playerX} 39 3 -2 -1 4 z"/></svg>`
+    : "";
   const enemies = livingEnemies.map((enemy, index) => {
     const definition = content.enemies.find((item) => item.id === enemy.enemyId);
-    const intent = content.intents.find((item) => item.id === enemy.intentId);
-    const intentEffect = content.effects.find((item) => item.id === intent?.effectIds[0]);
-    const amount = intentEffect?.parameters.amount;
-    const intentVisual: Record<string, { icon: string; label: string }> = {
-      attack: { icon: "⚔", label: "攻撃" }, defend: { icon: "◇", label: "防御" },
-      buff: { icon: "↑", label: "強化" }, debuff: { icon: "↓", label: "弱体化" },
-      summon: { icon: "+", label: "増援" }, mixed: { icon: "✦", label: "複合" },
-    };
-    const intentKind = intentVisual[intent?.category ?? ""] ?? intentVisual.mixed!;
+    const intentVisual = describeEnemyIntent(run, enemy, content, config);
     const hpRatio = Math.max(0, Math.min(100, enemy.hp / enemy.maxHp * 100));
     const enemyStatuses = combat.statuses.enemies[enemy.instanceId] ?? {};
     const statusDescription = Object.entries(enemyStatuses).filter(([, count]) => count !== 0)
       .map(([kind, count]) => `${statusNames[kind] ?? kind} ${count}`).join("、");
     const targeted = (potionActive ? potionControl!.typing.targetEnemyInstanceId : combat.typing.targetEnemyInstanceId) === enemy.instanceId;
-    const enemyLabel = `敵 ${index + 1}、${html(definition?.name ?? "敵")}を対象に選ぶ。HP ${enemy.hp}/${enemy.maxHp}、ブロック ${enemy.block}。次の行動: ${intentKind.label}、${html(intent?.label ?? "行動")}${typeof amount === "number" ? `、${amount}` : ""}${statusDescription ? `。状態: ${html(statusDescription)}` : ""}${targeted ? "。選択中" : ""}`;
-    if (denseFormation) enemyRoster.push(`<button type="button" class="enemy-roster-button ${targeted ? "targeted" : ""}" data-action="enemy" data-id="${enemy.instanceId}" aria-pressed="${targeted}" aria-label="${enemyLabel}"><span class="enemy-roster-head"><span class="enemy-roster-order" aria-hidden="true">${index + 1}</span><span class="enemy-roster-name">${html(definition?.name ?? "敵")}</span><span class="enemy-roster-value">${enemy.hp}<small>/${enemy.maxHp}</small></span></span><span class="enemy-roster-bar" role="meter" aria-label="敵 ${index + 1}のHP" aria-valuemin="0" aria-valuemax="${enemy.maxHp}" aria-valuenow="${enemy.hp}"><span style="width:${hpRatio}%"></span></span><span class="enemy-detail" aria-hidden="true"><span class="enemy-detail-heading"><span>敵 ${index + 1}</span><strong>${html(definition?.name ?? "敵")}</strong></span><span class="enemy-detail-intent"><span class="enemy-detail-icon">${intentKind.icon}</span><span><small>次の行動 · ${intentKind.label}</small><strong>${html(intent?.label ?? "行動")}</strong></span>${typeof amount === "number" && amount > 0 ? `<b>${amount}</b>` : ""}</span><span class="enemy-detail-values">HP ${enemy.hp}/${enemy.maxHp}${enemy.block > 0 ? ` · ブロック ${enemy.block}` : ""}</span>${statusDescription ? `<span class="enemy-detail-status">${statusMarkup(enemyStatuses)}</span>` : ""}</span></button>`);
+    const resolvedIntentId = view.resolvedEnemyIntentIdByInstanceId?.[enemy.instanceId];
+    const actionArt = view.art.enemyActionArtById?.[enemy.enemyId];
+    const actionKind = paperHeapActionForIntent(resolvedIntentId ?? enemy.intentId);
+    const hitByCard = view.motion === "hero" && view.resultFx?.marks.some((mark) => mark.kind === "damage" && Math.abs(mark.xPercent - layout.enemies[index]!.xPercent) < 0.1);
+    const pose = hitByCard ? "hit" : actionKind;
+    const actionImage = pose === "hit" ? actionArt?.hit : pose === "attack" ? actionArt?.attack : pose === "guard" ? actionArt?.guard : null;
+    const posePhase = hitByCard ? "hit" : view.motion === "enemy" || resolvedIntentId ? "action" : "preview";
+    const enemyImage = actionArt && actionImage
+      ? `<div class="enemy-art enemy-action-art ${view.motion === "enemy" ? "act" : ""}" data-art-id="${html(actionArt.artId)}" data-art-version="${html(actionArt.version)}" data-pose="${pose}" data-phase="${posePhase}" data-intent-id="${html(resolvedIntentId ?? enemy.intentId)}" style="animation-delay:${enemyDelay}ms"><img class="enemy-pose-idle" src="${html(view.art.enemyUrlById[enemy.enemyId] ?? "")}" alt=""/><img class="enemy-pose-action" src="${html(actionImage)}" alt=""/></div>`
+      : `<img class="enemy-art ${view.motion === "enemy" ? "act" : ""}" style="animation-delay:${enemyDelay}ms" src="${html(view.art.enemyUrlById[enemy.enemyId] ?? "")}" alt="" />`;
+    const enemyLabel = `敵 ${index + 1}を対象に選ぶ。${intentVisual.ariaLabel}${statusDescription ? `。状態: ${statusDescription}` : ""}${targeted ? "。選択中" : ""}`;
+    if (targeted && view.motion !== "hero" && !view.cardFx && !view.resultFx
+      && intentVisual.steps.some((step) => (step.kind === "attack" || step.kind === "debuff") && step.target === "player")) {
+      const sourceX = layout.enemies[index]!.xPercent;
+      const targetX = layout.allies[0]!.xPercent;
+      selectedThreatPath = `<svg class="intent-trajectory" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M ${sourceX} 39 C ${sourceX - 12} 36 ${targetX + 14} 29 ${targetX} 28"/><path d="m ${targetX + 1.5} 25 -1.5 3 3 1"/></svg>`;
+    }
+    // A struck enemy shows its hit reaction and applied result, not its next-action windup.
+    const bodyCues = hitByCard ? "" : intentVisual.steps.filter((step) => step.kind !== "unknown").map((step, order) => `<span class="intent-body-cue" data-kind="${step.kind}" data-order="${order}" data-target="${step.target}" aria-hidden="true"></span>`).join("");
+    if (denseFormation) enemyRoster.push(`<button type="button" class="enemy-roster-button ${targeted ? "targeted" : ""}" data-action="enemy" data-id="${enemy.instanceId}" aria-pressed="${targeted}" aria-label="${html(enemyLabel)}"><span class="enemy-roster-head"><span class="enemy-roster-order" aria-hidden="true">${index + 1}</span><span class="enemy-tier" data-tier="${intentVisual.tier.kind}" aria-hidden="true">${html(intentVisual.tier.symbol)}</span><span class="enemy-roster-name">${html(definition?.name ?? "敵")}</span><span class="enemy-roster-value">${enemy.hp}<small>/${enemy.maxHp}</small></span></span><span class="enemy-roster-bar" role="meter" aria-label="敵 ${index + 1}のHP" aria-valuemin="0" aria-valuemax="${enemy.maxHp}" aria-valuenow="${enemy.hp}"><span style="width:${hpRatio}%"></span></span>${intentStepsMarkup(intentVisual.steps)}${enemy.block > 0 ? `<span class="enemy-block">◇ ${enemy.block}</span>` : ""}<span class="enemy-detail" aria-hidden="true"><span class="enemy-detail-heading"><span>敵 ${index + 1}</span><strong>${html(definition?.name ?? "敵")}</strong></span><strong>次の行動 · ${html(intentVisual.title)}</strong>${intentStepsMarkup(intentVisual.steps)}${intentVisual.steps.map((step, order) => `<span>${order + 1}. ${html(step.description)}</span>`).join("")}${statusDescription ? `<span class="enemy-detail-status">${statusMarkup(enemyStatuses)}</span>` : ""}</span></button>`);
     const slotTag = denseFormation || enemy.hp <= 0 ? "div" : "button";
-    return `<${slotTag} class="enemy-slot ${targeted ? "targeted" : ""} ${enemy.hp <= 0 ? "defeated" : ""}" style="--slot-x:${layout.enemies[index]!.xPercent}%" ${slotTag === "div" ? 'aria-hidden="true"' : `type="button" data-action="enemy" data-id="${enemy.instanceId}" aria-pressed="${targeted}" aria-label="${enemyLabel}"`}>
-      <span class="intent-ticket" data-category="${intent?.category ?? "mixed"}"><span class="intent-icon" aria-hidden="true">${intentKind.icon}</span><span class="intent-copy"><small>次の行動 · ${intentKind.label}</small><strong>${html(intent?.label ?? "行動")}</strong></span>${typeof amount === "number" && amount > 0 ? `<b>${amount}</b>` : ""}</span>
-      <img class="enemy-art ${view.motion === "enemy" ? "act" : ""}" style="animation-delay:${enemyDelay}ms" src="${html(view.art.enemyUrlById[enemy.enemyId] ?? "")}" alt="" />
+    return `<${slotTag} class="enemy-slot ${targeted ? "targeted" : ""} ${enemy.hp <= 0 ? "defeated" : ""}" style="--slot-x:${layout.enemies[index]!.xPercent}%" ${slotTag === "div" ? 'aria-hidden="true"' : `type="button" data-action="enemy" data-id="${enemy.instanceId}" aria-pressed="${targeted}" aria-label="${html(enemyLabel)}"`}>
+      ${enemyImage}
+      ${bodyCues}
       ${denseFormation ? `<span class="enemy-art-number" aria-hidden="true">${index + 1}</span>` : ""}
-      <span class="enemy-hud"><span class="enemy-hud-head"><span class="enemy-order" aria-hidden="true">${index + 1}</span><strong>${targeted ? "対象: " : ""}${html(definition?.name ?? "敵")}</strong><span class="enemy-hp-number">${enemy.hp}<small>/${enemy.maxHp}</small></span></span><span class="enemy-health-track" role="meter" aria-label="${html(definition?.name ?? "敵")}のHP" aria-valuemin="0" aria-valuemax="${enemy.maxHp}" aria-valuenow="${enemy.hp}"><span class="enemy-health-fill" style="width:${hpRatio}%"></span></span>${enemy.block > 0 ? `<span class="enemy-block">◇ ${enemy.block} ブロック</span>` : ""}</span>
+      <span class="enemy-hud"><span class="enemy-hud-head"><span class="enemy-tier" data-tier="${intentVisual.tier.kind}" aria-hidden="true">${html(intentVisual.tier.symbol)}</span><strong>${targeted ? "対象: " : ""}${html(definition?.name ?? "敵")}</strong><span class="enemy-hp-number">${enemy.hp}<small>/${enemy.maxHp}</small></span></span><span class="enemy-health-track" role="meter" aria-label="${html(definition?.name ?? "敵")}のHP" aria-valuemin="0" aria-valuemax="${enemy.maxHp}" aria-valuenow="${enemy.hp}"><span class="enemy-health-fill" style="width:${hpRatio}%"></span></span><span class="intent-ticket" aria-hidden="true"><span class="intent-copy"><small>次の行動 · </small><strong>${html(intentVisual.title)}</strong></span></span>${intentStepsMarkup(intentVisual.steps)}${enemy.block > 0 ? `<span class="enemy-block">◇ ${enemy.block} ブロック</span>` : ""}</span>
       <span class="enemy-status">${statusMarkup(enemyStatuses)}</span>
     </${slotTag}>`;
   }).join("");
   const previewAllies = layout.allies.slice(1).map((slot, index) => `<div class="ally-slot mock-ally" style="--slot-x:${slot.xPercent}%" aria-hidden="true"><div class="mock-ally-body"><span>仮配置 ${index + 2}</span></div></div>`).join("");
-  const cards = hand.map(({ instanceId, card }, index) => `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-card-kind="${card.type}" data-action="card" data-id="${instanceId}" aria-pressed="${selected === instanceId}" aria-label="${html(card.input.text)} ${html(describeCard(card, content))}${selected === instanceId ? "（選択中）" : ""}">
+  const cards = hand.map(({ instanceId, card }, index) => { const art = cardArtForId(card.id); return `<button type="button" class="card ${combat.typing.candidateCardInstanceIds.includes(instanceId) ? "candidate" : "dim"} ${selected === instanceId ? "selected" : ""}" data-card-kind="${card.type}" data-long-word="${card.input.text.length > 10}" data-action="card" data-id="${instanceId}" data-art-id="${html(art.artId)}" data-art-version="${html(art.version)}" aria-pressed="${selected === instanceId}" aria-label="${html(card.input.text)} ${html(describeCard(card, content))}${selected === instanceId ? "（選択中）" : ""}">
     <span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-kind">${html(cardTypeNames[card.type] ?? card.type)}</span><span class="card-sigil" aria-hidden="true"></span>
-    <strong class="card-word">${wordMarkup(card.input.text, combat.typing.buffer)}</strong><span class="card-effect">${html(describeCard(card, content))}</span>
-  </button>`).join("");
+    <span class="card-art" data-art-state="${art.state}" aria-hidden="true">${art.url ? `<img src="${html(art.url)}" alt="" />` : ""}</span><strong class="card-word">${wordMarkup(card.input.text, combat.typing.buffer)}</strong><span class="card-effect">${html(describeCard(card, content))}</span>
+  </button>`; }).join("");
   const potions = run.potionIds.map((potionId, index) => {
     const potion = content.potions.find((item) => item.id === potionId)!;
     const instanceId = `potion-${index}`;
     const candidate = potionControl?.typing.candidateCardInstanceIds.includes(instanceId) ?? false;
-    return `<div class="potion-slot"><button type="button" class="potion ${potionActive && candidate ? "candidate" : ""} ${selectedPotionId === instanceId ? "selected" : ""}" data-action="potion" data-id="${instanceId}" aria-pressed="${selectedPotionId === instanceId}" aria-label="${html(potion.name)}、入力語 ${html(potion.input.text)}"><strong>${html(potion.name)}</strong><span>${wordMarkup(potion.input.text, potionActive ? potionControl!.typing.buffer : "")}</span></button><button type="button" class="potion-discard" data-action="discard-potion" data-id="${index}" aria-label="${html(potion.name)}を破棄">×</button></div>`;
+    const art = potionArtForId(potionId);
+    return `<div class="potion-slot"><button type="button" class="potion ${potionActive && candidate ? "candidate" : ""} ${selectedPotionId === instanceId ? "selected" : ""}" data-action="potion" data-id="${instanceId}" data-art-id="${html(art.artId)}" data-art-version="${html(art.version)}" aria-pressed="${selectedPotionId === instanceId}" aria-label="${html(potion.name)}、入力語 ${html(potion.input.text)}。${html(potionEffectText(potionId, content))}">${potionObjectMarkup(potionId)}<span class="potion-copy"><strong>${html(potion.name)}</strong><span>${wordMarkup(potion.input.text, potionActive ? potionControl!.typing.buffer : "")}</span></span></button><button type="button" class="potion-discard" data-action="discard-potion" data-id="${index}" aria-label="${html(potion.name)}を破棄">×</button></div>`;
   }).join("");
   const discard = combat.discardPile.map((instanceId) => {
     const cardId = combat.cards.find((item) => item.instanceId === instanceId)?.cardId;
@@ -208,10 +264,15 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
   const potionMarkup = `<div class="potion-row ${potionActive ? "active" : ""}" aria-label="ポーション"><button type="button" class="potion-mode ${potionActive ? "active" : ""}" data-action="potion-mode" aria-pressed="${potionActive}">ポーション ${run.potionIds.length}/${view.potionSlotLimit} · 入力 ${html(view.potionModeKey)}</button><span class="potion-buffer" role="status">${potionTargetHint ?? (potionActive ? html(potionControl!.typing.buffer) || "入力待ち" : "")}</span><div class="potion-slots">${potions}</div></div>`;
   const handMarkup = `<div class="hand-guide" aria-hidden="true">${hand.length > 3 ? `手札 ${hand.length}枚 <span>← 横に送って確認 →</span>` : ""}</div><div class="hand" aria-label="手札">${cards || `<p class="empty-hand">手札なし</p>`}</div>`;
   const terminal = (combat.phase === "WON" || combat.phase === "LOST") && view.motion !== "hero" && view.motion !== "hit";
+  const itemOverlayMarkup = `${selectedRelic ? relicDetailMarkup(selectedRelic.id, content) : ""}${cue ? `<span class="relic-activation" role="status" aria-label="${html(`レリック発動。${cue.outcome}`)}"><span class="item-activation-arts">${cue.relicIds.map((id) => relicObjectMarkup(id, "relic-activation-art")).join("")}</span><strong>${html(cue.outcome)}</strong></span>` : ""}${potionCue ? `<span class="potion-activation" data-potion-id="${html(potionCue.potionId)}" data-art-id="${html(potionArtForId(potionCue.potionId).artId)}" aria-label="${html(`${content.potions.find((item) => item.id === potionCue.potionId)?.name ?? potionCue.potionId}を使用。${potionCue.outcome}`)}" role="status">${potionObjectMarkup(potionCue.potionId, "potion-activation-art")}<strong>${html(potionCue.outcome)}</strong></span>` : ""}`;
   root.innerHTML = `<main class="game" data-club="${html(run.clubId)}" data-effects="${view.lowStimulus ? "quiet" : "standard"}" aria-label="学園タイピングローグライク戦闘">
-    <header class="topbar" aria-label="戦闘情報"><div class="run-meta" data-kind="${html(node?.kind ?? "combat")}"><span>ACT ${run.act} · ${node?.floor ?? 0}F · ${nodeKindLabel[node?.kind ?? "combat"] ?? "戦闘"}</span><span>TURN ${combat.turn}</span></div><div class="player-hud" aria-label="${html(clubName)}の状態"><span class="player-health"><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><span class="player-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span class="player-health-fill" style="width:${playerHpRatio}%"></span></span></span><b>◇ ${run.player.block}</b><div class="status-row">${statusMarkup(combat.statuses.player)}</div><div class="relic-row" aria-label="レリック">${relicNames.map((name) => `<span class="relic-chip" title="${html(name)}">✦ ${html(name)}</span>`).join("")}</div></div><button type="button" class="pause-button" data-action="pause" ${combat.phase !== "PLAYER_INPUT" ? "disabled" : ""}>${combat.clock.paused ? "再開" : "一時停止"}</button><button type="button" class="battle-guide" data-action="toggle-battle-help" aria-controls="battle-help" aria-expanded="${Boolean(view.helpOpen)}" ${combat.phase !== "PLAYER_INPUT" ? "disabled" : ""}>操作</button></header>
+    <header class="topbar" aria-label="戦闘情報"><div class="run-meta" data-kind="${html(node?.kind ?? "combat")}"><span>ACT ${run.act} · ${node?.floor ?? 0}F · ${nodeKindLabel[node?.kind ?? "combat"] ?? "戦闘"}</span><span>TURN ${combat.turn}</span></div><div class="player-hud" aria-label="${html(clubName)}の状態"><span class="player-health"><strong>♥ ${run.player.hp}<span>/${run.player.maxHp}</span></strong><span class="player-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span class="player-health-fill" style="width:${playerHpRatio}%"></span></span></span><b>◇ ${run.player.block}</b><div class="status-row">${statusMarkup(combat.statuses.player)}</div>${relicInventoryMarkup(run.relicIds, content, view.selectedRelicId)}</div><button type="button" class="pause-button" data-action="pause" ${combat.phase !== "PLAYER_INPUT" ? "disabled" : ""}>${combat.clock.paused ? "再開" : "一時停止"}</button><button type="button" class="battle-guide" data-action="toggle-battle-help" aria-label="操作" aria-controls="battle-help" aria-expanded="${Boolean(view.helpOpen)}" ${combat.phase !== "PLAYER_INPUT" ? "disabled" : ""}>操作</button></header>
     <aside id="battle-help" class="battle-help" role="region" aria-label="戦闘の操作方法" ${view.helpOpen ? "" : "hidden"}><strong>戦闘の操作</strong><ol><li>手札の英単語をタイプして発動</li><li>対象が必要なら敵や手札を選択</li><li>敵の予告を見て、時間内に行動</li></ol><p>誤キーは無視 · Escで入力取消 · ${html(view.potionModeKey)}でポーション</p><button type="button" data-action="toggle-battle-help">閉じる</button></aside>
-    <section class="stage" aria-label="戦闘ステージ" data-act="${run.act}" data-stage-phase="${node ? stagePhaseForNode(node, run.map.nodes) : "early"}" data-ally-count="${layout.allies.length}" data-enemy-count="${layout.enemies.length}" style="background-image:url('${html(stageUrlForRun(view.art, run))}')"><div class="stage-vignette"></div>${previewLabel ? `<span class="art-preview-label">${html(previewLabel)}</span>` : ""}${view.layoutPreviewAllies ? `<span class="layout-preview-label">味方${layout.allies.length}人の配置検討 · 戦闘ルール未実装</span>` : ""}<div class="ally-group"><div class="ally-slot" style="--slot-x:${layout.allies[0]!.xPercent}%"><img class="hero-art ${view.motion === "hero" ? "act" : view.motion === "hit" ? "react" : ""}" style="animation-delay:${heroDelay}ms" src="${html(heroUrl)}" alt="${html(clubName)}の生徒" /><div class="hero-shadow"></div><span class="hero-nameplate" aria-hidden="true">${html(clubName)}</span></div>${previewAllies}</div><div class="enemy-group">${enemies}</div>${denseFormation ? `<div class="enemy-roster" role="group" aria-label="敵の一覧" style="--enemy-count:${livingEnemies.length}">${enemyRoster.join("")}</div>` : ""}${cardFxMarkup(view.cardFx ?? null, run.clubId, view.animationNowMs, view.art.fxPaletteByClubId)}${resultFxMarkup(view.resultFx ?? null, view.animationNowMs)}</section>
+
+
+    <section class="stage" aria-label="戦闘ステージ" data-act="${run.act}" data-stage-phase="${node ? stagePhaseForNode(node, run.map.nodes) : "early"}" data-stage-place="${html(stageSelection.placeId ?? "")}" data-stage-art="${html(stageSelection.artId ?? "")}" data-stage-band="${stageSelection.band ?? ""}" data-ally-count="${layout.allies.length}" data-enemy-count="${layout.enemies.length}" style="background-image:url('${html(stageSelection.stageUrl)}')"><div class="stage-vignette"></div>${previewLabel ? `<span class="art-preview-label">${html(previewLabel)}</span>` : ""}${view.layoutPreviewAllies ? `<span class="layout-preview-label">味方${layout.allies.length}人の配置検討 · 戦闘ルール未実装</span>` : ""}<div class="ally-group"><div class="ally-slot" ${actorMotion ? `data-actor-motion="${actorMotion.kind ?? "idle"}"` : ""} ${useRig ? 'data-actor-rig="literature-v1"' : ""} style="--slot-x:${layout.allies[0]!.xPercent}%;--rig-idle-delay:${loopDelayMs(view.animationNowMs, MOTION_MS.heroIdle)}ms;${actorMotion?.kind ? `--actor-duration:${actorMotionClips[actorMotion.kind].durationMs}ms;--actor-delay:${actorMotion.delayMs}ms` : ""}"><img class="hero-art ${actorMotion ? "" : view.motion === "hero" ? "act" : view.motion === "hit" ? "react" : ""}" ${actorMotion?.kind ? "" : `style="animation-delay:${actorMotion ? loopDelayMs(view.animationNowMs, MOTION_MS.heroIdle) : heroDelay}ms"`} src="${html(actorMotion?.baseUrl ?? heroUrl)}" alt="${html(characterName)}、${html(clubName)}" />${useRig ? literatureRigMarkup() : actorMotion?.overlayUrl ? `<img class="hero-motion-frame" src="${html(actorMotion.overlayUrl)}" alt="" aria-hidden="true" />` : ""}<div class="hero-shadow"></div><span class="hero-nameplate" aria-hidden="true">${html(characterName)}${identityForClub(run.clubId) ? ` <small>${html(clubName)} · 仮名</small>` : ""}</span></div>${previewAllies}</div><div class="enemy-group">${enemies}</div>${selectedThreatPath}${resolvedAttackPath}${denseFormation ? `<div class="enemy-roster" role="group" aria-label="敵の一覧" style="--enemy-count:${livingEnemies.length}">${enemyRoster.join("")}</div>` : ""}${itemOverlayMarkup}${cardFxMarkup(view.cardFx ?? null, run.clubId, view.animationNowMs, view.art.fxPaletteByClubId)}${resultFxMarkup(view.resultFx ?? null, view.animationNowMs)}</section>
+
+
     <section class="control-deck" aria-label="タイピング戦闘操作"><div class="time-row"><div class="time-label"><span>残り時間</span><strong data-role="time" aria-label="残り時間 ${remaining}秒">${remaining}<small> 秒</small></strong></div><div class="time-track" role="meter" aria-label="入力時間の残り" aria-valuemin="0" aria-valuemax="${view.baseTurnMs}" aria-valuenow="${combat.clock.remainingMs}"><div class="time-fill" data-role="time-fill" style="width:${timeRatio}%"></div></div><div class="pile-counts" aria-label="カードの束">${pileMarkup("山札", "draw", combat.drawPile.length)}${pileMarkup("捨て札", "discard", combat.discardPile.length)}${pileMarkup("除外", "exhaust", combat.exhaustPile.length)}</div></div>
       <div class="typing-row"><label class="typing-caption" for="battle-typing-input">${potionActive ? "ポーション名をタイプ" : "カード名をタイプ"}</label><div class="typing-buffer"><span class="typing-visual" aria-hidden="true">${html(activeInput)}<span class="caret"></span></span><input id="battle-typing-input" class="typing-input" type="text" value="${html(activeInput)}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="battle-typing-help battle-ime-notice" ${combat.phase !== "PLAYER_INPUT" || combat.clock.paused ? "disabled" : ""} /></div><span id="battle-typing-help" class="typing-input-help">英単語を1文字ずつ入力。誤キーは無視されます。Escapeで取消、${html(view.potionModeKey)}でポーション入力に切替。</span><span id="battle-ime-notice" class="ime-notice" role="status" aria-live="polite">${html(view.imeNotice ?? "")}</span><span class="typing-hint" role="status">${potionActive ? potionTargetHint ?? "" : typingHint}</span></div>
       ${potionActive ? potionMarkup + handMarkup : handMarkup + potionMarkup}

@@ -10,6 +10,7 @@ export default defineConfig({
   use: {
     ...devices["Desktop Chrome"],
     baseURL,
+    video: process.env.SCHOOL_RG_E2E_VIDEO === "1" ? "on" : "off",
   },
   webServer: {
     command: `npm run dev -- --host 127.0.0.1 --port ${port} --strictPort`,
