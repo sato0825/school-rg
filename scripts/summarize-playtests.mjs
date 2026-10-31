@@ -33,13 +33,14 @@ function actDurations(record) {
 }
 
 function encounterSamples(record) {
-  if (record.partial || record.result === null) return null;
-  const battles = (record.battles ?? []).filter((battle) => !battle.partial
-    && (battle.result === "won" || battle.result === "lost")
+  if (record.partial || record.result === null || !Array.isArray(record.battles)
+    || record.battles.length === 0 || record.battles.length !== record.battleNodeIds.length) return null;
+  const battles = record.battles;
+  if (!battles.every((battle) => !battle.partial && (battle.result === "won" || battle.result === "lost")
     && Number.isSafeInteger(battle.act) && battle.act >= 1 && battle.act <= 3
     && Array.isArray(battle.enemyIds) && battle.enemyIds.length > 0
-    && battle.enemyIds.every((id) => typeof id === "string" && id.length > 0));
-  return battles.length ? battles : null;
+    && battle.enemyIds.every((id) => typeof id === "string" && id.length > 0))) return null;
+  return battles;
 }
 
 function encounterVariety(records) {
