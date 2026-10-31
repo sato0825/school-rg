@@ -7,7 +7,7 @@ import { emitRelicEvent } from "../../src/domain/relic-hooks.js";
 import { availableRunNodes, createRunSession, enterRunNode } from "../../src/domain/run-flow.js";
 import { deserializeRunSession, serializeRunSession } from "../../src/domain/save.js";
 import type { RunState } from "../../src/domain/schema.js";
-import { submitPlayerKey } from "../../src/domain/turn-state.js";
+import { resumePlayerTurn, submitPlayerKey } from "../../src/domain/turn-state.js";
 import { parseRunState } from "../../src/domain/validate.js";
 
 function musicCombat(cardId: string, remainingMs = 10_000): { run: RunState; instanceId: string } {
@@ -80,7 +80,8 @@ describe("music time economy", () => {
     const saved = serializeRunSession({ run: afterTempo, screen: "combat", completedNodeIds: [], rewardCardIds: [], encounterHistory: {} },
       demoContent, { nowMs: () => 2_250 }, () => "discard");
     const loaded = deserializeRunSession(saved, demoContent, { nowMs: () => 2_500 });
-    const afterSync = typeAt(loaded.run, "sync", 2_500, 450);
+    expect(loaded.run.combat!.clock.paused).toBe(true);
+    const afterSync = typeAt(resumePlayerTurn(loaded.run, { nowMs: () => 2_500 }), "sync", 2_500, 450);
     expect(afterSync.combat!.clock.remainingMs).toBe(8_950);
     expect(afterSync.combat!.hand).toContain(beatId);
     expect(afterSync.combat!.discardPile).toContain(syncId);
@@ -90,7 +91,7 @@ describe("music time economy", () => {
     expect(afterBeat.combat!.clock.remainingMs).toBe(7_150);
     expect(afterBeat.combat!.enemies[0]!.hp).toBe(enemyBefore - 6);
     expect(afterBeat.combat!.discardPile).toEqual(expect.arrayContaining([tempoId, syncId, beatId]));
-    expect(afterBeat.combat!.actionLog.filter((entry) => entry.kind === "card").map((entry) => entry.actionId))
+    expect((afterBeat.combat!.actionLog ?? []).filter((entry) => entry.kind === "card").map((entry) => entry.actionId))
       .toEqual(["MUS-001", "MUS-004", "MUS-002"]);
     expect(parseRunState(afterBeat, demoContent)).toEqual(afterBeat);
   });
