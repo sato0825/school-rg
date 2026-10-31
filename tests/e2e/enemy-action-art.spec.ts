@@ -105,12 +105,26 @@ for (const [pose, intentId, quiet] of [["attack", "paper-intent-hit", false], ["
     expect(await page.locator(".enemy-action-art").evaluate((node) => [node, ...node.querySelectorAll("img")].every((item) => item.getAnimations().length === 0))).toBe(true);
   }
   const [stage, hero, paper] = await Promise.all([page.locator(".stage").boundingBox(), page.locator(".ally-slot").boundingBox(), page.locator(".enemy-action-art").boundingBox()]);
+  const slotBefore = await page.locator(".enemy-slot").first().boundingBox();
   expect(stage && hero && paper).toBeTruthy();
   expect(paper!.x).toBeGreaterThan(hero!.x + hero!.width);
   expect(paper!.x + paper!.width).toBeLessThanOrEqual(stage!.x + stage!.width);
   if (captureDir) {
     await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-${pose}${quiet ? "-quiet" : ""}-1024.png` });
-    await page.addStyleTag({ content: ".enemy-hud,.enemy-roster,.enemy-art-number,.intent-body-cue,.intent-trajectory{visibility:hidden!important}" });
+    const labelsHidden = await page.addStyleTag({ content: ".enemy-hud,.enemy-roster,.enemy-art-number,.intent-body-cue,.intent-trajectory{visibility:hidden!important}" });
     await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-${pose}${quiet ? "-quiet" : ""}-visual-only-1024.png` });
+    await labelsHidden.evaluate((element) => element.parentNode?.removeChild(element));
   }
+  // Selection keeps every slot fixed while enlarging the authored action image.
+  await page.locator('.enemy-roster-button[data-id="five-0"]').click();
+  await expect(page.locator('.enemy-slot.targeted .enemy-action-art')).toBeVisible();
+  await page.clock.runFor(250);
+  const selectedPaper = await page.locator(".enemy-action-art").boundingBox();
+  expect(selectedPaper!.width).toBeGreaterThan(paper!.width * 1.3);
+  expect(await page.locator(".stage").boundingBox()).toEqual(stage);
+  if (captureDir) await page.screenshot({ path: `${captureDir}/paper-heap-five-enemies-${pose}${quiet ? "-quiet" : ""}-selected-1024.png` });
+  await page.locator('.enemy-roster-button[data-id="five-1"]').click();
+  await page.clock.runFor(250);
+  expect(await page.locator(".enemy-slot").first().boundingBox()).toEqual(slotBefore);
+  expect((await page.locator(".enemy-action-art").boundingBox())!.width).toBeCloseTo(paper!.width, 0);
 });
