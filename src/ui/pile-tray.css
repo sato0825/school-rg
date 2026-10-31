@@ -26,5 +26,18 @@
 .pile-card-upgraded{position:absolute;top:9px;right:9px;color:#9a4b32;font-size:9px}
 .pile-card-effect{margin-top:auto;padding-top:3px;border-top:1px solid #c4d2d3;color:#4a6273;font-size:9px;font-weight:700}
 .game[data-effects="quiet"] .pile-tray{backdrop-filter:none}
-@media(max-width:1100px){.pile-tray{left:calc(50% - 17px)}}
+.game[data-tray-layout="wide"] .pile-tray{left:clamp(20px,12vw,170px);top:80px;transform:none;width:min(760px,55vw);max-height:160px;padding:8px 10px;gap:4px}
+.game[data-tray-layout="wide"] .pile-tray-head h2{font-size:16px}
+.game[data-tray-layout="wide"] .pile-tray-head button{width:24px;height:24px;font-size:18px}
+.game[data-tray-layout="wide"] .pile-tray-switch button{padding:3px 6px;font-size:9px}
+.game[data-tray-layout="wide"] .pile-order-note{font-size:10px}
+.game[data-tray-layout="wide"] .pile-card-list{grid-template-columns:none;grid-auto-columns:136px;grid-auto-flow:column;gap:6px;overflow-x:auto;overflow-y:hidden}
+.game[data-tray-layout="wide"] .pile-card{min-height:54px;padding:4px;gap:2px}
+.game[data-tray-layout="wide"] .pile-card-kind{padding:1px 3px;font-size:8px}
+.game[data-tray-layout="wide"] .pile-card strong{font-size:12px}
+@media(max-width:1100px){
+  .pile-tray{left:calc(50% - 17px)}
+  .game[data-tray-layout="wide"] .pile-tray{left:18px;top:100px;width:min(600px,58vw)}
+  .game[data-tray-layout="wide"] .pile-card-list{grid-auto-columns:108px}
+}
 @media(max-width:760px){.pile-tray{right:8px;bottom:345px;width:calc(100% - 16px);max-height:35dvh;padding:10px}.pile-card-list{grid-template-columns:repeat(auto-fill,minmax(115px,1fr))}.pile-card{min-height:90px;padding:7px}.pile-card strong{font-size:12px}.pile-card-effect{font-size:9px}}
