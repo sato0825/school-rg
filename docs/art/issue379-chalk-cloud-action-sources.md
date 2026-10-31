@@ -18,3 +18,19 @@ The three variants were made with the built-in image generation edit tool, alway
 - Card hit: the cyclone crumples and bends away from player-left, the eraser tilts, and three broad ribbons break away. It must remain the same enemy rather than swapping to a generic impact symbol.
 
 The images are not yet human-approved. A first-sight visual-only comparison at one and five enemies, 1024×768 and 1440×900, normal and quiet modes is required before art adoption. If the veil reads as another attack or the floating base shifts, revise the images rather than relying on the label.
+
+## Exact edit prompts
+
+All three prompts used `src/assets/enemies/chalk-cloud-candidate-v1.png` as the only reference image and `transparent_background: true`.
+
+**Attack:**
+
+> Use case: identity-preserve. Asset type: isolated transparent action pose for an original school typing roguelike enemy. Edit target: the provided chalk-cloud idle illustration. Preserve the exact same individual: a cool blue-grey white-chalk dust cyclone, green chalkboard eraser embedded diagonally at upper left, two small amber eyes, ink-and-gouache painterly texture, soft blue contour, compact 3/4 camera, hovering tapered bottom, no limbs. Action: ATTACK windup, visibly distinct at 80px silhouette. The cloud twists like a spring while a broad chalk-dust spear/ribbon extends forcefully toward screen-left, outside the original body contour, with the eraser still embedded and both amber eyes aimed left. Preserve palette, lighting and recognizable core. Whole body stays in frame, centered at approximately same scale and anchored bottom. Transparent real alpha only; no stage/background, no UI, no values, no words, no extra characters, no flash. Original design, no imitation of any existing game.
+
+**Weak:**
+
+> Use case: identity-preserve. Asset type: isolated transparent action pose for an original school typing roguelike enemy. Edit target: the provided chalk-cloud idle image. Preserve exactly the same cool blue-grey white-chalk dust cyclone, green chalkboard eraser embedded diagonally at upper left, two small amber eyes, ink-and-gouache texture, compact camera, hovering tapered bottom, scale and lighting. Action: DEBUFF windup, visibly unlike a leftward attack at 80px. It cups itself inward and lifts the green eraser high; a broad soft ring of chalk mist curls around the hero-facing left side like a veil obscuring sight, while the core stays compact and eyes watch. No spear, projectile, attack pose or shield. Actual transparent background, entire body in frame, center/bottom alignment, no stage/UI/numbers/words/additional character/flash. Original design; no existing-game imitation.
+
+**Hit:**
+
+> Use case: identity-preserve. Asset type: isolated transparent hit-reaction pose for an original school typing roguelike enemy. Edit target: the provided chalk-cloud idle image. Preserve the same individual: cool blue-grey chalk dust cyclone, green board eraser embedded in the upper swirl, two small amber eyes, ink-and-gouache painterly surface, camera/scale/light and tapered bottom. Action: clearly hit by a card from screen-left: the central cyclone crumples and bends back to screen-right, broad chalk ribbons break into three distinct floating chunks, the eraser tilts and the eyes squint. Distinct at 80px; no attack toward left, no status veil, no gore, no comic impact text. Entire body in frame; transparent real alpha; no background, stage, UI, values, words, other characters or flash. Original design, no imitation of any existing game.

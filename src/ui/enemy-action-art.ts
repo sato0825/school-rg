@@ -1,3 +1,5 @@
+import { chalkCloudActionArt } from "./chalk-cloud-action-art.js";
+
 /** Presentation-only assets. Intent choice and effects remain owned by the domain. */
 export type EnemyActionPose = "attack" | "guard" | "status" | "buff" | "summon" | "mixed" | "prepare" | "heavy";
 export type EnemyIntentPose = { pose: EnemyActionPose; url: string };
@@ -19,6 +21,7 @@ export const enemyActionArtById: Readonly<Record<string, EnemyActionArt>> = {
     },
     hit: new URL("../assets/enemies/actions/paper-heap-hit-candidate-v2.png", import.meta.url).href,
   },
+  [chalkCloudActionArt.enemyId]: chalkCloudActionArt,
 };
 
 /** A missing asset remains idle; it must never borrow another enemy's pose. */
