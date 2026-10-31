@@ -34,12 +34,29 @@
 }
 .map-copy h2 { margin: 6px 0; color: #263e55; font-size: 31px; }
 .map-copy p { color: #526c7d; }
+.map-copy .map-progress{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin:5px 0 11px;color:#4b6472;font-size:12px;line-height:1.35}
+.map-progress strong{padding:2px 6px;border:1px solid #b3c5c8;border-radius:3px;background:#fffdf7;color:#27475a;font-size:12px}
+.map-progress strong:last-child{border-color:#ba6175;color:#963b53}
+.map-progress>span{color:#a1455f;font-size:17px;font-weight:900}
 .map-stats {
-  display: inline-block;
-  padding: 8px 11px;
-  border-left: 3px solid #ca6179;
-  background: #ffffffa8;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+  width:max-content;
+  max-width:100%;
+  padding:0;
+  border:0;
+  background:transparent;
 }
+.map-health,.map-stat,.map-secondary{display:flex;align-items:center;gap:4px;min-height:30px;padding:4px 7px;border:1px solid #b9c9cc;border-radius:4px;background:#fffefaed;color:#2b4b5f;font-size:11px;font-weight:800;white-space:nowrap}
+.map-health{display:grid;gap:2px;min-width:83px}
+.map-health-value{font-variant-numeric:tabular-nums}
+.map-health-track{display:block;width:100%;height:7px;overflow:hidden;border:1px solid #aebdc4;border-radius:2px;background:repeating-linear-gradient(90deg,#dce6e6 0,#dce6e6 calc(25% - 1px),#819ba5 calc(25% - 1px),#819ba5 25%)}
+.map-health-track>span{display:block;height:100%;background:#d9667a;border-right:2px solid #fff}
+.map-stat b{font-size:14px;color:#437b87}
+.map-stat small{font-size:9px;color:#607988}
+.map-secondary{background:#eaf0ef;color:#4e6672;font-size:10px}
 .map-compendium { margin-top: 10px; }
 .map-hero {
   position: absolute;
@@ -144,7 +161,7 @@
   border-width: 3px;
   background: #fffefa;
   box-shadow: 0 0 0 5px #ffffffc9, 0 4px 0 #8eacb9, 0 9px 16px #203d5673;
-  animation: map-available 2.4s ease-in-out infinite;
+  animation:none;
 }
 .map-node.available:hover,
 .map-node.available:focus-visible {
@@ -153,6 +170,9 @@
 }
 .map-node.visited { background: #dce9e9; color: #3e6875; opacity: .85; }
 .map-node.current { border-color: #cc5b75; background: #f6e7e9; color: #a6405a; opacity: 1; }
+.map-node-state{position:absolute;z-index:3;left:50%;bottom:-15px;min-width:46px;padding:2px 4px;border:1px solid #9f455a;border-radius:3px;background:#fffdf7;color:#95384e;font-size:10px!important;font-weight:900;line-height:1;white-space:nowrap;transform:translateX(-50%);box-shadow:0 1px 3px #25445b38}
+.map-node.current .map-node-state{top:-15px;bottom:auto;border-color:#805063;background:#344f61;color:#fff}
+.map-node.available:focus-visible{outline:3px solid #244f73;outline-offset:5px}
 @keyframes map-available { 50% { box-shadow: 0 0 0 7px #f4bdc97a, 0 4px 0 #8eacb9, 0 9px 18px #203d5673; } }
 
 @media (max-width: 760px) {
@@ -161,7 +181,12 @@
   .map-copy { max-width: calc(100% - 90px); }
   .map-copy h2 { font-size: 22px; }
   .map-copy p { max-width: 220px; font-size: 11px; }
+  .map-copy .map-progress{gap:3px;font-size:10px}
+  .map-progress strong{padding:2px 4px;font-size:10px}
   .map-stats { padding: 5px 6px; font-size: 10px; line-height: 1.5; }
+  .map-stats{gap:4px;padding:0}
+  .map-health,.map-stat,.map-secondary{min-height:24px;padding:3px 5px;font-size:10px}
+  .map-secondary{font-size:9px}
   .map-hero { right: 4px; bottom: -25px; height: 170px; width: 95px; }
   .map-scroll { max-height: calc(100dvh - 270px); min-height: 280px; padding: 3px 7px 18px; }
   .map-route-lines { left: 38px; width: calc(100% - 38px); }
@@ -173,6 +198,8 @@
   .map-node.current { flex-basis: 59px; width: 59px; height: 59px; padding: 3px; }
   .map-node span { font-size: 18px; }
   .map-node small { font-size: 8px; }
+  .map-node small{font-size:10px}
+  .map-node-state{min-width:41px;font-size:9px!important}
 }
 @media (prefers-reduced-motion: reduce) {
   .map-node.available { animation: none; }
