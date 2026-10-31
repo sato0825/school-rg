@@ -10,8 +10,8 @@
 .game-shell .topbar .run-player-hud{flex:none;gap:16px;margin-right:auto}
 .game-shell .topbar .run-gold,.game-shell .topbar .run-deck{font-size:12px;font-weight:900;white-space:nowrap}
 .game-shell .topbar .pause-button,.game-shell .topbar .battle-guide{border:1px solid #98b4bc;border-radius:5px;background:#f5faf6;color:#254b5b;font-size:11px}
-.game-shell .topbar .battle-guide{min-width:33px;padding:5px 7px;font-size:0}
-.game-shell .topbar .battle-guide::before{content:"•••";font-size:13px;letter-spacing:1px}
+.game-shell .topbar .battle-guide{min-width:63px;padding:6px 7px;font-size:0}
+.game-shell .topbar .battle-guide::before{content:"⚙ 操作";font-size:11px;letter-spacing:.02em}
 .game-shell .battle-help .stimulus-toggle,.game-shell .battle-help .audio-toggle{display:inline-flex;margin:7px 7px 0 0;padding:6px 9px;font-size:11px}
 .game-shell .stage{background-position:center 56%}
 .game-shell .stage-vignette{background:linear-gradient(180deg,#142d4114 0%,transparent 38%,#24425755 100%)}
