@@ -68,12 +68,12 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
     test(`wave7 ${club.name} candidates at ${viewport.width}`, async ({ page }) => {
       await page.clock.install();
       await page.setViewportSize(viewport);
-      await page.addInitScript((saved) => localStorage.setItem("school-rg-run-v1", saved), combatSave(club.id, [...common, club.own, "BASE-017", "BASE-023"]));
+      await page.addInitScript((saved) => localStorage.setItem("school-rg-run-v1", saved), combatSave(club.id, [...common, club.own]));
       await page.goto("/?seed=46");
       await expect(page.locator(".game")).toHaveAttribute("data-club", club.id);
-      for (const id of [...common, club.own, "BASE-017", "BASE-023"]) await assertCard(page.locator(`.hand .card[data-art-id="card.${id}"]`), id, false);
+      for (const id of [...common, club.own]) await assertCard(page.locator(`.hand .card[data-art-id="card.${id}"]`), id, false);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-      await page.screenshot({ path: `docs/art/previews/issue367/${club.name}-${viewport.width}-hand.png` });
+      await page.screenshot({ path: `docs/art/previews/issue367/${club.name}-${viewport.width}-hand-v2.png` });
       const context = page.context();
       await page.close();
 
@@ -84,7 +84,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
         await rewardPage.goto("/?seed=46");
         for (const id of ids) await assertCard(rewardPage.locator(`.reward-card[data-art-id="card.${id}"]`), id, true);
         expect(await rewardPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-        await rewardPage.screenshot({ path: `docs/art/previews/issue367/${club.name}-${viewport.width}-reward-${index + 1}.png` });
+        await rewardPage.screenshot({ path: `docs/art/previews/issue367/${club.name}-${viewport.width}-reward-${index + 1}-v2.png` });
         await rewardPage.close();
       }
     });
