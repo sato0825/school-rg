@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "sourceRefs": {
+    "242": "codex/issue-242-screen-concept",
+    "296": "codex/issue-296-outline-art",
+    "314": "bfd8663c4363f32e3b6c1993d3d76cb7f35eb779"
+  },
+  "assets": [
+    {
+      "cardId": "BASE-023",
+      "version": "issue242-v1",
+      "runtimePath": "src/assets/cards/issue329/base-delay-candidate-v1.png",
+      "originalPath": "docs/design/issue242-assets/card-delay-candidate-v1.png",
+      "sourceIssue": 242,
+      "sha256": "acb8ee03f0de8080301a81686d277bca5643cced676aa055dd14ab27d91c494c",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "LIT-004",
+      "version": "issue296-v3",
+      "runtimePath": "src/assets/cards/issue329/lit-outline-candidate-v3.png",
+      "originalPath": "docs/art/production/issue296/assets/card-lit-outline-v3.png",
+      "sourceIssue": 296,
+      "sha256": "60fd4cfd2c5fb31d591a3a9c774b83bbdf32639fc09a3fe1aeb47080a08bf4ad",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "LIT-007",
+      "version": "issue314-v1",
+      "runtimePath": "src/assets/cards/issue329/lit-aside-candidate-v1.png",
+      "originalPath": "docs/art/production/issue314/assets/card-lit-aside-v1.png",
+      "sourceIssue": 314,
+      "sha256": "d16c07e64117088931e844d94b17a311b1c71f17b0971e6eeb481303b9d1678f",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "LIT-012",
+      "version": "issue314-v1",
+      "runtimePath": "src/assets/cards/issue329/lit-anthology-candidate-v1.png",
+      "originalPath": "docs/art/production/issue314/assets/card-lit-anthology-v1.png",
+      "sourceIssue": 314,
+      "sha256": "53ee04e6f183a89a02501d9d95f2979f644a112b0b2c191ae8accbd74bd1589e",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "SCI-008",
+      "version": "issue314-v1",
+      "runtimePath": "src/assets/cards/issue329/sci-assay-candidate-v1.png",
+      "originalPath": "docs/art/production/issue314/assets/card-sci-assay-v1.png",
+      "sourceIssue": 314,
+      "sha256": "6acb4efc9bc1fad487cf4138e5740f162332f7814564ced15b2e7cbe6c881afa",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "SCI-010",
+      "version": "issue314-v1",
+      "runtimePath": "src/assets/cards/issue329/sci-culture-candidate-v1.png",
+      "originalPath": "docs/art/production/issue314/assets/card-sci-culture-v1.png",
+      "sourceIssue": 314,
+      "sha256": "edf1908ccbdca6315fc3362578b861d90a0ae3eb1633f4ae81c127089935a1cd",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "KEN-007",
+      "version": "issue314-v1",
+      "runtimePath": "src/assets/cards/issue329/ken-sweep-candidate-v1.png",
+      "originalPath": "docs/art/production/issue314/assets/card-ken-sweep-v1.png",
+      "sourceIssue": 314,
+      "sha256": "c3cb69f72bb83db20b633f5e74c806bad62fe489c9af8f5907fb24954b762e19",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "KEN-008",
+      "version": "issue314-v1",
+      "runtimePath": "src/assets/cards/issue329/ken-breath-candidate-v1.png",
+      "originalPath": "docs/art/production/issue314/assets/card-ken-breath-v1.png",
+      "sourceIssue": 314,
+      "sha256": "8c4c32890daa1f4dcf08e4ebbb6bf0db4ced1403f5659cd7532d35754a3a422e",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "MUS-007",
+      "version": "issue314-v1",
+      "runtimePath": "src/assets/cards/issue329/mus-bridge-candidate-v1.png",
+      "originalPath": "docs/art/production/issue314/assets/card-mus-bridge-v1.png",
+      "sourceIssue": 314,
+      "sha256": "62f552dc2dbcce4f8c3fcf04bfccfd9409a71663cacca7f2ea025a94ef57d9fe",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "MUS-008",
+      "version": "issue314-v1",
+      "runtimePath": "src/assets/cards/issue329/mus-refrain-candidate-v1.png",
+      "originalPath": "docs/art/production/issue314/assets/card-mus-refrain-v1.png",
+      "sourceIssue": 314,
+      "sha256": "20cae3de266521a96b31abfd239744be5c43ff14958fc132fe1c26101d66ef90",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "ART-007",
+      "version": "issue314-v1",
+      "runtimePath": "src/assets/cards/issue329/art-wash-candidate-v1.png",
+      "originalPath": "docs/art/production/issue314/assets/card-art-wash-v1.png",
+      "sourceIssue": 314,
+      "sha256": "ce998c9b5e88bcc9d2c89a1044b3ddc743710ed3e39cd2af51a3ba5c1065cd59",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    },
+    {
+      "cardId": "ART-009",
+      "version": "issue314-v1",
+      "runtimePath": "src/assets/cards/issue329/art-primer-candidate-v1.png",
+      "originalPath": "docs/art/production/issue314/assets/card-art-primer-v1.png",
+      "sourceIssue": 314,
+      "sha256": "7bee7e3db47f2c6ce6d2c42eba3c0cbec55683e5422916573ca326131493b69e",
+      "state": "candidate",
+      "formalAdoption": false,
+      "rightsReview": "pending"
+    }
+  ]
+}
