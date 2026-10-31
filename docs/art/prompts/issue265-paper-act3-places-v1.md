@@ -1,0 +1,25 @@
+# Issue #265 Act 3 講堂周辺4場所の生成入力
+
+組み込みImageGenで新規3枚を各1回生成。#266の講堂舞台を4場所目として比較する。詳細モデル版は公開されず、同一入力のピクセル再現性は保証されない。全画像は不透明16:9の候補で、薄い紙/ガッシュ面、濃紺細線、低彩度の涼色と適度な夕方の光、写実的な床反射なしを共通化。味方最大3人と敵最大5体を別レイヤーで置く広い中央/下部を残し、人物・敵・文字・UI・効果を背景に描かない。
+
+| 候補 | 参照画像の役割 | 場所の差 |
+| --- | --- | --- |
+| 講堂前広場 | #266舞台=夕方の画風、#249アトリウム=校舎、女子=線 | 半屋外の庇、講堂外観、大きな窓と空 |
+| ホワイエ | #266舞台=夕方の画風、#249アトリウム=校舎、紙の敵=面 | 左の広場扉、右の幕・舞台入口 |
+| 舞台裏 | #266舞台=夕方の画風、ホワイエ=接続建築、女子=線 | 左の大道具、右の舞台幕・舞台への開口 |
+
+## 正確な生成入力
+
+### 講堂前広場
+
+> Use case: stylized-concept. Asset type: opaque 16:9 Act 3 school battle environment plate. Image 1 is the #266 auditorium-stage reference for cool blue-violet evening, matte paper/gouache, fine deep-navy linework. Image 2 is the #249 school atrium reference for broad gameplay space and shared school architecture, NOT its symmetric entrance composition. Image 3 is the approved schoolgirl drawing reference for line weight and low-saturation layering. Create the BROAD EXTERIOR PLAZA IN FRONT OF THE MIDDLE-SCHOOL AUDITORIUM at blue hour, viewed diagonally from the left covered arcade. The auditorium facade with tall blue-gray arched windows, one visible side entrance and the distant connected classroom wing spans the FAR background; low rail/planters at edges, very few trees. The broad open slate paved center/lower foreground must be clear for 1–3 separately overlaid girl sprites on left and up to five enemy sprites on right. Distinguish this dusk assembly plaza from Act 1's leafy daytime inner courtyard: more sky, monumental auditorium facade, blue-violet light and subtle closed performance doors. Thin navy contour lines, matte layered gouache on pale paper, low-saturation periwinkle/slate, soft diffuse shadows, enough luminance to read character/Intent/HP overlays. No realistic wet pavement or mirror reflections, no orange theatrical glow, no crowd, characters, creatures, banners with text, UI, effects, logos, watermark.
+
+### ホワイエ
+
+> Use case: stylized-concept. Asset type: opaque 16:9 Act 3 auditorium foyer battle background plate for a Japanese middle-school game. Image 1 is the existing paper-gouache auditorium stage reference for muted twilight blues, matte pale paper surfaces and fine navy outlines; do not copy its seats and stage. Image 2 is the #249 school atrium reference for school architecture only; avoid its symmetric main entry. Image 3 is the paper-monster reference for dry-brush texture and ink edges. Create a DISTINCT AUDITORIUM FOYER from a LEFT-SIDE oblique viewpoint: large glass doors back-left reveal the blue evening plaza, tall narrow windows and a small trophy display are far left, a broad interior lobby turns diagonally toward dark blue double doors and folded plum curtains at FAR RIGHT BACK leading to the stage. The diagonal route from exterior to interior should be legible without arrows or writing. Keep central and lower two-thirds a broad empty matte pale slate/wood floor for separately layered 1–3 girl sprites left and up to five enemies right; no counter or trophy case in the fighting zone. Calm neutral/cool evening, low-saturation blue-gray, dusty violet only in curtains, gentle warm-neutral practical lamp accents but NO orange wash. Painted gouache on fibrous paper, thin deep-navy contour, flat soft shadow shapes. No glossy tile reflections, photographic windows, bright theatrical beams, people, monsters, text, UI, effects, logos, watermark.
+
+### 舞台裏
+
+> Use case: stylized-concept. Asset type: independent opaque 16:9 Act 3 battle environment plate in a Japanese middle-school auditorium. Image 1 is the paper-gouache auditorium-stage reference for fine navy contour, muted blue-hour light, matte wood and school architecture. Image 2 is the auditorium foyer reference ONLY for connected building colors; do not repeat its glass doors or open lobby. Image 3 is the approved middle-school girl linework reference. Create a distinctly different BACKSTAGE WING / REHEARSAL BAY viewed from a diagonal stage-side angle. On the FAR LEFT are neatly stacked painted set flats and a few closed prop trunks; overhead to the left hang simple ropes and rigging. At FAR RIGHT BACK a broad parted dark-blue curtain reveals a small distant sliver of the actual auditorium stage. A side service door is visible at back center. Keep the central and lower two-thirds a broad EMPTY matte pale-wood floor for 1–3 separately layered girls at left and up to five enemies at right; no trunk, rope, stand or curtain falls between the combat sides. This is behind the stage, not the foyer and not the empty performance stage. Low-saturation cool slate, dusty blue-violet and neutral wood, readable moderate practical work light, no orange stage spotlights or black horror darkness. Hand-painted layered gouache on pale paper, dry-brush texture, thin deep-navy outlines, soft flat shadows, no realistic shine or floor reflection. No people, monsters, words, labels, UI, effects, logos, watermark.
+
+寸法、SHA、版、原本有無、候補状態は[台帳](../asset-register.json)。候補4場所の比較はランタイム採用・#29最終アート承認ではない。
