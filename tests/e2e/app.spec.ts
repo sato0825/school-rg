@@ -337,6 +337,9 @@ test("an elite formation accepts a typed single target and an all-enemy attack",
   await expect(page.locator(".enemy-hud").nth(1)).toContainText("答案の切れ端");
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
+    if (process.env.SCHOOL_RG_CAPTURE_ENEMY_ART === "1") {
+      await page.screenshot({ path: `docs/art/previews/issue140-two-enemies-${viewport.width}-20261031.png`, fullPage: true });
+    }
     for (const selector of [".enemy-slot", ".enemy-hud", ".intent-ticket"]) {
       const boxes = await page.locator(selector).evaluateAll((nodes) => nodes.map((node) => {
         const rect = node.getBoundingClientRect();
@@ -551,9 +554,17 @@ test("candidate pose preview follows enemy damage and typed activation", async (
   await expect(page.locator(".art-preview-label")).toContainText("未採用");
   await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v1/);
   await expect.poll(decoded).toBeGreaterThan(0);
-  await page.clock.runFor(10_000);
-  await page.clock.runFor(10_000);
-  await page.clock.runFor(650);
+  // The timer starts after the restored battle renders. Observe the short hit
+  // state while advancing virtual time instead of assuming an exact boundary.
+  let hitObserved = false;
+  for (let step = 0; step < 110; step++) {
+    await page.clock.runFor(200);
+    if ((await hero.getAttribute("src"))?.includes("serious-student-hit-candidate-v1")) {
+      hitObserved = true;
+      break;
+    }
+  }
+  expect(hitObserved).toBe(true);
   await expect(hero).toHaveAttribute("src", /serious-student-hit-candidate-v1/);
   await expect.poll(decoded).toBeGreaterThan(0);
   await page.clock.runFor(420);
