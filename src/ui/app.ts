@@ -502,12 +502,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   function refreshTime(): void {
     const remainingMs = run.combat!.clock.remainingMs;
     const time = root.querySelector<HTMLElement>("[data-role=time]");
+    const timeTrack = root.querySelector<HTMLElement>(".time-track");
     const fill = root.querySelector<HTMLElement>("[data-role=time-fill]");
     if (time) {
       const seconds = (remainingMs / 1_000).toFixed(1);
-      time.innerHTML = `${seconds}<small> sec</small>`;
+      time.innerHTML = `${seconds}<small> 秒</small>`;
       time.setAttribute("aria-label", `残り時間 ${seconds}秒`);
     }
+    timeTrack?.setAttribute("aria-valuenow", String(remainingMs));
     if (fill) fill.style.width = `${Math.max(0, Math.min(100, remainingMs / view.baseTurnMs * 100))}%`;
   }
 

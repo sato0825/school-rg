@@ -21,6 +21,11 @@ for (const [count, width] of [[3, 390], [4, 390], [5, 390], [5, 1440]] as const)
     const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
     await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
     await page.goto("/");
+    const initialTimeValue = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
+    await page.clock.runFor(150);
+    await expect(page.locator("[data-role=time]")).toContainText("秒");
+    await expect(page.locator("[data-role=time]")).not.toContainText("sec");
+    expect(Number(await page.locator(".time-track").getAttribute("aria-valuenow"))).toBeLessThan(initialTimeValue);
     const roster = page.locator(".enemy-roster-button");
     await expect(roster).toHaveCount(count);
     await expect(page.locator(".enemy-slot")).toHaveCount(count);
@@ -44,7 +49,7 @@ for (const [count, width] of [[3, 390], [4, 390], [5, 390], [5, 1440]] as const)
     const detail = await roster.last().locator(".enemy-detail").boundingBox();
     expect(detail!.x).toBeGreaterThanOrEqual(stage!.x - 1);
     expect(detail!.x + detail!.width).toBeLessThanOrEqual(stage!.x + stage!.width + 1);
-    if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1" && count === 5) await page.screenshot({ path: `docs/art/previews/issue170-five-enemies-v4-${width}.png` });
+    if (process.env.SCHOOL_RG_CAPTURE_MULTI === "1" && count === 5) await page.screenshot({ path: `docs/art/previews/issue170-five-enemies-v5-${width}.png` });
     await roster.nth(1).click();
     await expect(roster.nth(1)).toBeFocused();
     await expect(roster.nth(1).locator(".enemy-detail")).toBeVisible();
