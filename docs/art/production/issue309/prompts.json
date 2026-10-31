@@ -1,0 +1,27 @@
+[
+  {
+    "id": "potion-time",
+    "slug": "potion-time-v1",
+    "prompt": "A single original consumable-item inventory illustration for a Japanese middle-school typing roguelike: a small clear HOURGLASS-SHAPED glass vial, narrow waist, filled with pale lavender liquid in the lower bulb, dark-navy cork and a simple teal curved timing ribbon looping around the glass. This is a one-use time item, distinct from the square dark ink bottle, round multi-drop splash flask, and square practice-timer relic. Centered isolated complete object within central 70% of square canvas with transparent padding; readable at 48px. Youthful anime storybook gouache, thin confident dark-navy ink contour, matte watercolor shading, cool navy teal lavender and one tiny coral accent matching the existing school ink-bottle candidate. Transparent background; no scene, person, text, numbers, logo, rarity frame, photorealism, 3D or imitation of another game."
+  },
+  {
+    "id": "potion-heal",
+    "slug": "potion-heal-v1",
+    "prompt": "A single original consumable-item inventory illustration for a Japanese middle-school typing roguelike: one ROLLED WHITE NURSE'S GAUZE BANDAGE in a small open pale-teal first-aid paper sleeve, with a loose curved bandage tail. Its spiral roll silhouette must differ from the crossed two-strip pocket-bandage relic. A tiny coral warmth mark suggests recovery. Centered isolated complete object within central 70% of square canvas with transparent padding, readable at 48px. Youthful anime storybook gouache, thin confident dark-navy ink contour, matte watercolor shading, cool navy teal lavender and tiny coral accent matching the existing school ink-bottle candidate. Transparent background; no medical cross, skin, injury, person, room, text, logo, rarity frame, photorealism, 3D or imitation of another game."
+  },
+  {
+    "id": "potion-guard",
+    "slug": "potion-guard-v1",
+    "prompt": "A single original consumable-item inventory illustration for a Japanese middle-school typing roguelike: a handmade THICK CARDBOARD SHIELD cut from a school box, simple broad pentagon outline with visible layered corrugated edge, pale teal painted center and two navy paper fasteners. It is a use-once shield item, not armor, metal, a potion bottle or a generic flat icon. Centered isolated complete object within central 70% of square canvas with transparent padding, recognizable at 48px. Youthful anime storybook gouache, thin confident dark-navy ink contour, matte watercolor shading, cool navy teal lavender and one tiny coral accent matching the existing school ink-bottle candidate. Transparent background; no person, hands, scene, letters, logo, rarity frame, photorealism, 3D or imitation of another game."
+  },
+  {
+    "id": "potion-splash",
+    "slug": "potion-splash-v1",
+    "prompt": "A single original consumable-item inventory illustration for a Japanese middle-school typing roguelike: one ROUND-BOTTOMED clear school-lab flask with a short navy stopper, tilted slightly as exactly THREE large colored water droplets fan outward left, center and right from its mouth. The group of three droplets suggests a broad multi-target splash, distinct from the narrow hourglass time vial and sealed square ink bottle. No splashing people or injury. Centered isolated complete object and all three drops inside central 72% of square canvas with transparent padding, recognizable at 48px. Youthful anime storybook gouache, thin confident dark-navy ink contour, matte watercolor shading, cool navy teal lavender with tiny coral accents matching the existing school ink-bottle candidate. Transparent background; no scene, text, chemical labels, logo, rarity frame, photorealism, 3D or imitation of another game."
+  },
+  {
+    "id": "potion-tea",
+    "slug": "potion-tea-v1",
+    "prompt": "A single original consumable-item inventory illustration for a Japanese middle-school typing roguelike: a small lidded school THERMOS CUP containing warm tea, short broad cylindrical shape, dark-navy handle, pale teal body and one soft lavender curl of steam. A tiny coral warmth glint suggests recovery while the steam curl suggests a little extra time. Distinct from hourglass vial, ink bottle and round splash flask. Centered isolated complete object within central 70% of square canvas with transparent padding, recognizable at 48px. Youthful anime storybook gouache, thin confident dark-navy ink contour, matte watercolor shading, cool navy teal lavender and tiny coral accent matching the existing school ink-bottle candidate. Transparent background; no person, hand, room, text, logo, rarity frame, photorealism, 3D or imitation of another game."
+  }
+]

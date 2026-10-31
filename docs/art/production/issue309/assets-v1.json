@@ -1,0 +1,107 @@
+[
+  {
+    "id": "potion-time",
+    "version": "v1",
+    "path": "docs/art/production/issue309/assets/potion-time-v1.png",
+    "sha256": "d67d9ff528d896284c2e5b9a8103b129b2d6cd95c63d57a0d3e79be11538c479",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-65da3e7c-a789-48b0-aa65-3ec4b6d55e5b.png",
+    "promptRef": "prompts.json#potion-time",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "48-64-128-grayscale-art-text-pair-board-reviewed",
+    "selectionDecision": "object and broad nature distinct at 48px; target and exact effect require adjacent text and runtime feedback; adoption pending"
+  },
+  {
+    "id": "potion-heal",
+    "version": "v1",
+    "path": "docs/art/production/issue309/assets/potion-heal-v1.png",
+    "sha256": "c992a0dfaebae04a6a2c7f44de4a0c789d525e856afc89a2885dc09276e9664e",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-a8c56c3e-b71b-4a2a-b92b-c6536e82c007.png",
+    "promptRef": "prompts.json#potion-heal",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "48-64-128-grayscale-art-text-pair-board-reviewed",
+    "selectionDecision": "object and broad nature distinct at 48px; target and exact effect require adjacent text and runtime feedback; adoption pending"
+  },
+  {
+    "id": "potion-guard",
+    "version": "v1",
+    "path": "docs/art/production/issue309/assets/potion-guard-v1.png",
+    "sha256": "054228610746a360180f8eb2f0b7aedba3418b1c63156acf2789b0ca8bcc754c",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-b87dcccc-7cca-4969-9d9b-44972aafa253.png",
+    "promptRef": "prompts.json#potion-guard",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "48-64-128-grayscale-art-text-pair-board-reviewed",
+    "selectionDecision": "object and broad nature distinct at 48px; target and exact effect require adjacent text and runtime feedback; adoption pending"
+  },
+  {
+    "id": "potion-splash",
+    "version": "v1",
+    "path": "docs/art/production/issue309/assets/potion-splash-v1.png",
+    "sha256": "8dcecf9cbda399ada034024cd958ecdb1429f4fe065fc060448723de06810937",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-5ce409a8-4a71-4687-8404-c384d042009a.png",
+    "promptRef": "prompts.json#potion-splash",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "48-64-128-grayscale-art-text-pair-board-reviewed",
+    "selectionDecision": "object and broad nature distinct at 48px; target and exact effect require adjacent text and runtime feedback; adoption pending"
+  },
+  {
+    "id": "potion-tea",
+    "version": "v1",
+    "path": "docs/art/production/issue309/assets/potion-tea-v1.png",
+    "sha256": "26de3fba61c141069e018f94de42d54d5b9bba891f8691b1f841920536659971",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-d9b6faef-fa8d-4343-869a-9d58a8127c9e.png",
+    "promptRef": "prompts.json#potion-tea",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "hasAlpha": "yes",
+    "rightsReview": "pending",
+    "visualReview": "48-64-128-grayscale-art-text-pair-board-reviewed",
+    "selectionDecision": "object and broad nature distinct at 48px; target and exact effect require adjacent text and runtime feedback; adoption pending"
+  }
+]
