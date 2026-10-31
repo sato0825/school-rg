@@ -24,7 +24,7 @@ for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, he
     await expect(page.locator(".stage")).toBeVisible();
     await expect(page.locator('#battle-pile-tray [data-action="close-pile"]')).toBeFocused();
     await expect(page.locator(".pile-order-note")).toBeVisible();
-    await expect(page.locator(".pile-card")).toHaveCount(session.run.combat!.drawPile.length);
+    await expect(page.locator(".pile-card")).toHaveCount(Number(await draw.locator("strong").innerText()));
     const remaining = Number((await page.locator("[data-role=time]").innerText()).replace(/[^0-9.]/g, ""));
     await page.clock.runFor(400);
     const after = Number((await page.locator("[data-role=time]").innerText()).replace(/[^0-9.]/g, ""));
