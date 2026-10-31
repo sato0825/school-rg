@@ -23,6 +23,7 @@ test("five provisional names identify distinct clubs without changing run IDs", 
   await page.getByRole("button", { name: /みずの さき、科学部/ }).click();
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).first().click();
   await expect(page.locator(".hero-nameplate")).toHaveText("さき");
+  await expect(page.locator(".player-hud .hud-name")).toHaveText("さき");
   await expect(page.locator(".hero-nameplate")).toHaveAttribute("data-name-status", "provisional");
   await expect(page.getByRole("img", { name: "みずの さき（科学部）" })).toBeVisible();
   await expect(page.locator(".player-hud")).toHaveAttribute("aria-label", "みずの さき、科学部の状態");
@@ -41,6 +42,7 @@ test("a character name stays beside its portrait at iPad width", async ({ page }
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).first().click();
 
   await expect(page.locator(".hero-nameplate")).toHaveText("いろは");
+  await expect(page.locator(".player-hud .hud-name")).toHaveText("いろは");
   const placement = await page.evaluate(() => {
     const stage = document.querySelector(".stage")!.getBoundingClientRect();
     const name = document.querySelector(".hero-nameplate")!.getBoundingClientRect();
