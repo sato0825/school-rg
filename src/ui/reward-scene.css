@@ -10,7 +10,7 @@
 .reward-scene-actors img { position: absolute; bottom: 0; object-fit: contain; object-position: bottom; }
 .reward-scene-hero { left: 2%; width: min(28vw, 390px); height: min(72vh, 620px); filter: drop-shadow(0 14px 10px #15314d80); }
 .reward-scene-enemy { right: 2%; width: min(24vw, 330px); height: min(56vh, 500px); opacity: .42; filter: grayscale(.25) drop-shadow(0 12px 10px #15314d80); }
-.reward-scene-shade { z-index: 1; background: linear-gradient(90deg, #112f4954 0%, #18385124 21%, #15314928 77%, #112f4954 100%); }
+.reward-scene-shade { z-index: 1; background: linear-gradient(90deg, #112f4954 0%, #15314942 24%, #17354c36 76%, #112f4954 100%); }
 .reward-scene-header { z-index: 4; justify-content: flex-start; gap: clamp(12px, 2vw, 30px); min-height: 66px; }
 .reward-scene-location { flex: none; display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 900; letter-spacing: .07em; }
 .reward-scene-location span { padding: 5px 8px; border-radius: 3px; background: #ebf0ed25; font-size: 10px; letter-spacing: 0; }
@@ -19,9 +19,13 @@
 .reward-scene-health-track > span { display: block; height: 100%; background: #e5879d; }
 .reward-scene-resources { display: flex; gap: 12px; font-size: 12px; font-weight: 800; }
 .reward-scene-header .audio-toggle { margin-left: auto; }
-.reward-scene-overlay { z-index: 3; width: min(720px, calc(100% - 40px)); margin: clamp(42px, 10vh, 104px) auto 40px; border: 1px solid #e4dfd2; border-radius: 4px 18px 4px 18px; background: #f8f7f0e8; box-shadow: 0 25px 80px #0c233b92, inset 0 0 0 6px #ffffff6e; backdrop-filter: blur(8px); }
-.reward-scene-overlay .reward-options { max-width: 660px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.reward-scene-overlay .reward-card { background: #fffefa; }
+.reward-scene-overlay { z-index: 3; width: min(720px, calc(100% - 40px)); margin: clamp(42px, 10vh, 104px) auto 40px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.reward-scene-overlay h2 { margin: 10px 0 18px; color: #fffdf8; font-size: clamp(24px, 2.7vw, 33px); text-shadow: 0 2px 12px #0d2739, 0 1px 1px #0d2739; }
+.reward-scene-overlay .reward-options { max-width: 660px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+.reward-scene-overlay .reward-card { min-height: 204px; border: 2px solid #afc2c8; border-radius: 4px 14px 4px 14px; background: #fffefaee; box-shadow: 0 6px 0 #43677a9c, 0 16px 28px #0d273b99; backdrop-filter: blur(5px); }
+.reward-scene-overlay .reward-card:hover,
+.reward-scene-overlay .reward-card:focus-visible { border-color: #d76b83; box-shadow: 0 7px 0 #684c619c, 0 18px 30px #0d273bbb; }
+.reward-scene-overlay .skip-reward { border-color: #adc5d0; background: #1b3549d9; color: #f8faf8; box-shadow: 0 6px 18px #0d273b88; }
 @media (max-width: 1100px) {
   .reward-scene-hero { left: -6%; width: min(33vw, 320px); height: 57vh; }
   .reward-scene-enemy { right: -4%; width: min(35vw, 350px); height: min(60vh, 500px); opacity: .68; }

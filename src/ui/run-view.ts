@@ -157,7 +157,7 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
     return `<button type="button" class="reward-card ${signature.has(card.id) ? "signature" : ""}" data-card-kind="${card.type}" data-action="reward-card" data-id="${card.id}"><span class="offer-heading">${offerSymbol("card")}<small>${signature.has(card.id) ? "部活固有 · " : ""}${cardKindNames[card.type] ?? html(card.type)}</small></span><strong>${html(card.input.text)}</strong><span class="offer-description">${html(describeCard(card, content))}</span><span class="offer-outcome"><span aria-hidden="true">＋</span> デッキに追加</span></button>`;
   }).join("");
   const header = `<span class="reward-scene-health"><strong>♥ ${run.player.hp}/${run.player.maxHp}</strong><span class="reward-scene-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span style="width:${hpRatio}%"></span></span></span><span class="reward-scene-resources"><span>◉ ${run.gold}G</span><span>▤ ${run.deck.length}枚</span></span>`;
-  const body = `<section class="reward-panel reward-scene-overlay" aria-label="カード報酬の選択"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button></section>`;
+  const body = `<section class="reward-panel reward-scene-overlay" aria-label="カード報酬の選択"><h2>カードを1枚選ぶ</h2><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button></section>`;
   root.innerHTML = stageScene(run, art, { scene: "reward", label: "戦闘報酬", location: "戦闘終了", headerDetails: header, body, enemyUrl: enemy, lowStimulus });
 }
 

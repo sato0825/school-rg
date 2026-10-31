@@ -89,12 +89,19 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
         await page.locator(".enemy-slot").last().click();
       }
       if (await page.locator(completion).count()) return;
-      if ((await page.locator(".typing-buffer").innerText()).trim() === word) {
+      // The last hit remains on the stage briefly before reward replaces combat.
+      // Read both states atomically so the typing buffer disappearing is not a timeout.
+      const progress = await page.evaluate((selector) => ({
+        complete: Boolean(document.querySelector(selector)),
+        buffer: document.querySelector(".typing-buffer")?.textContent?.trim() ?? null,
+      }), completion);
+      if (progress.complete) return;
+      if (progress.buffer === word) {
         await page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: new RegExp(`^${word}$`) }) }).first().focus();
         await page.keyboard.press("Enter");
       }
       if (await page.locator(completion).count()) return;
-      if ((await page.locator(".typing-buffer").innerText()).trim()) await page.keyboard.press("Escape");
+      if (await page.evaluate(() => Boolean(document.querySelector(".typing-buffer")?.textContent?.trim()))) await page.keyboard.press("Escape");
     }
     await page.clock.runFor(11_000);
   }
