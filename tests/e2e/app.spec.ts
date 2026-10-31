@@ -449,6 +449,7 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
     };
   });
   await expectIntentMatchesSavedBattle(page);
+  expect(await page.locator('.enemy-hud .intent-copy strong').first().evaluate((node) => Number.parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThanOrEqual(13);
   if (process.env.SCHOOL_RG_CAPTURE_261 === "1") {
     const original = page.viewportSize()!;
     for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
