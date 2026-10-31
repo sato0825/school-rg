@@ -46,7 +46,8 @@ export function renderArtReviewBoard(register, decisions, outputFile = resolve(r
   if (byId.size !== register.assets.length) throw new Error("duplicate art ID");
   const byDecision = new Map(decisions.reviews.map((review) => [review.characterId, review]));
   if (byDecision.size !== decisions.reviews.length) throw new Error("duplicate character review");
-  const characters = [...new Set(register.assets.filter((asset) => asset.role === "character-pose").map((asset) => asset.characterId))];
+  const characters = [...new Set(register.assets.filter((asset) => asset.role === "character-pose").map((asset) => asset.characterId))]
+    .sort((left, right) => (Object.keys(names).indexOf(left) + 1 || 999) - (Object.keys(names).indexOf(right) + 1 || 999) || left.localeCompare(right));
   for (const characterId of characters) {
     const review = byDecision.get(characterId);
     if (!review || !decisionNames[review.status] || !review.reviewFile || !review.note) throw new Error(`review record missing: ${characterId}`);
