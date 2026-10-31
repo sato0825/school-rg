@@ -11,6 +11,23 @@ async function startDemoRun(page: import("@playwright/test").Page): Promise<void
   await page.getByRole("button", { name: /文芸部/ }).click();
 }
 
+/** Isolate a feature flow from the provisional seeded route topology. */
+async function startScriptedRoute(page: import("@playwright/test").Page, kinds: MapNode["kind"][]): Promise<void> {
+  const start = createRunSession(42, "literature-demo", demoContent);
+  const nodes: MapNode[] = [
+    { id: "script-start", act: 1, floor: 0, kind: "start", nextIds: ["script-1"] },
+    ...kinds.map((kind, index): MapNode => ({ id: `script-${index + 1}`, act: 1, floor: index + 1, kind, nextIds: [index === kinds.length - 1 ? "script-boss" : `script-${index + 2}`] })),
+    { id: "script-boss", act: 1, floor: kinds.length + 1, kind: "boss", nextIds: ["script-next-act"] },
+    { id: "script-next-act", act: 2, floor: 0, kind: "start", nextIds: [] },
+  ];
+  const session = { ...start, run: { ...start.run, map: { nodes, currentNodeId: nodes[0]!.id } }, completedNodeIds: [nodes[0]!.id] };
+  const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
+  await page.addInitScript((value) => {
+    if (!localStorage.getItem("school-rg-run-v1")) localStorage.setItem("school-rg-run-v1", value);
+  }, saved);
+  await page.goto("/");
+}
+
 test("map routes match the saved seed and remain keyboard operable on narrow screens", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await startDemoRun(page);
@@ -726,7 +743,7 @@ test("one to three ally slots fit a shared stage at desktop and narrow widths", 
 test("a full Act can be finished through typed combat, rewards and a boss", async ({ page }) => {
   test.setTimeout(60_000);
   await page.clock.install();
-  await startDemoRun(page);
+  await startScriptedRoute(page, ["combat", "combat"]);
   for (let encounter = 0; encounter < 3; encounter++) {
     await enterNextNode(page);
     if (encounter === 2) await expect(page.locator(".enemy-hud")).toContainText(/追試の番人|体育館の得点板/);
@@ -1007,7 +1024,7 @@ test("art deck clears three Acts by typing and unlocks its own Ascension", async
 test("treasure offers survive reload and a focused choice completes its node", async ({ page }) => {
   test.setTimeout(60_000);
   await page.clock.install();
-  await startDemoRun(page);
+  await startScriptedRoute(page, ["combat", "treasure"]);
   await enterNextNode(page);
   await typeThroughBattle(page);
   await page.getByRole("button", { name: "報酬を受け取らず進む" }).click();
@@ -1025,7 +1042,7 @@ test("treasure offers survive reload and a focused choice completes its node", a
 });
 
 test("a route can upgrade at rest and buy once at the shop", async ({ page }) => {
-  await startDemoRun(page);
+  await startScriptedRoute(page, ["rest", "shop"]);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).last().click();
   await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
   await page.locator("[data-action=rest-upgrade]").first().click();
@@ -1161,7 +1178,7 @@ test("reload preserves an unfinished potion word and its inventory", async ({ pa
 });
 
 test("reload preserves a shop purchase and an unfinished typed card", async ({ page }) => {
-  await startDemoRun(page);
+  await startScriptedRoute(page, ["rest", "shop", "combat"]);
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).last().click();
   await page.locator("[data-action=rest-upgrade]").first().click();
   await page.locator(".map-node.available").filter({ hasText: "購買" }).click();
