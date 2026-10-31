@@ -1,0 +1,107 @@
+[
+  {
+    "id": "LIT-010",
+    "version": "v1",
+    "path": "docs/art/production/issue338/assets/card-lit-bookmark-v1.png",
+    "sha256": "c7953ffaaa5fecb5eff29f607124e612e05151aafd5e8cfc6e68a7b5be989a03",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-6a192ecf-db56-4f34-8eae-a01f9a50cff8.png",
+    "promptRef": "prompts-b.md#LIT-010",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "1024-1440 hand/reward, 48px, grayscale, art-only/text-only static review",
+    "selectionDecision": "preferred for runtime comparison; formal adoption and rights review pending"
+  },
+  {
+    "id": "SCI-011",
+    "version": "v1",
+    "path": "docs/art/production/issue338/assets/card-sci-test-tube-v1.png",
+    "sha256": "d50520225cd47e561c55c050f812b67671f8bfcba50db6a09e6507430d2a218c",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-4b5ad3da-2e2f-4a3b-998c-6fdadb04622a.png",
+    "promptRef": "prompts-b.md#SCI-011",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "1024-1440 hand/reward, 48px, grayscale, art-only/text-only static review",
+    "selectionDecision": "preferred for runtime comparison; formal adoption and rights review pending"
+  },
+  {
+    "id": "KEN-005",
+    "version": "v1",
+    "path": "docs/art/production/issue338/assets/card-ken-kata-v1.png",
+    "sha256": "9ffe98646ecebb1e40a0f445916f09f976d24011fd4937bcd1cf97c00f434086",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-9ee0e1a1-65e2-4086-8f90-1cb7cd2629db.png",
+    "promptRef": "prompts-b.md#KEN-005",
+    "state": "superseded-candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "112x57 and 48px: shinai too thin and small",
+    "selectionDecision": "do not use v1; v2 enlarged foreground form"
+  },
+  {
+    "id": "MUS-009",
+    "version": "v1",
+    "path": "docs/art/production/issue338/assets/card-mus-pickup-v1.png",
+    "sha256": "4bbbd8ab723b321da822424a1b840984fbd5089df51221ed60d3e23dcb8e456c",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-0af2ec22-d8ba-4262-a283-a15567f1c990.png",
+    "promptRef": "prompts-b.md#MUS-009",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "1024-1440 hand/reward, 48px, grayscale, art-only/text-only static review",
+    "selectionDecision": "preferred for runtime comparison; formal adoption and rights review pending"
+  },
+  {
+    "id": "ART-010",
+    "version": "v1",
+    "path": "docs/art/production/issue338/assets/card-art-palette-v1.png",
+    "sha256": "2aef3903f7d3bcbf10f93b34a7f68054aee1157fe59b11543ff22470adbf54b8",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-00194ab2-ece9-4144-93bf-c8a01cc8ad6c.png",
+    "promptRef": "prompts-b.md#ART-010",
+    "state": "preferred-draft",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "1024-1440 hand/reward, 48px, grayscale, art-only/text-only static review",
+    "selectionDecision": "preferred for runtime comparison; formal adoption and rights review pending"
+  }
+]

@@ -35,7 +35,10 @@ const clubWave = ["assets-a.json", "assets-b.json"]
 const commonWaveDir = path.join(root, "docs/art/production/issue328");
 const commonWave = ["assets-a.json", "assets-b.json", "revision-assets.json"]
   .flatMap((file) => JSON.parse(fs.readFileSync(path.join(commonWaveDir, file), "utf8")));
-const allProducedAssets = [...wave1.map((asset) => ({ ...asset, issue: 255 })), ...wave2.map((asset) => ({ ...asset, issue: 269 })), ...heavyStrike.map((asset) => ({ ...asset, issue: 275 })), ...wave3.map((asset) => ({ ...asset, issue: 277 })), ...wave4.map((asset) => ({ ...asset, issue: 284 })), ...relicWave1.map((asset) => ({ ...asset, issue: 291 })), ...outlineRevisions.map((asset) => ({ ...asset, issue: 296 })), ...relicWave2.map((asset) => ({ ...asset, issue: 301 })), ...potionWave1.map((asset) => ({ ...asset, issue: 309 })), ...clubWave.map((asset) => ({ ...asset, issue: 314 })), ...commonWave.map((asset) => ({ ...asset, issue: 328 }))];
+const finalWaveDir = path.join(root, "docs/art/production/issue338");
+const finalWave = ["assets-a.json", "assets-b.json", "revision-assets.json"]
+  .flatMap((file) => JSON.parse(fs.readFileSync(path.join(finalWaveDir, file), "utf8")));
+const allProducedAssets = [...wave1.map((asset) => ({ ...asset, issue: 255 })), ...wave2.map((asset) => ({ ...asset, issue: 269 })), ...heavyStrike.map((asset) => ({ ...asset, issue: 275 })), ...wave3.map((asset) => ({ ...asset, issue: 277 })), ...wave4.map((asset) => ({ ...asset, issue: 284 })), ...relicWave1.map((asset) => ({ ...asset, issue: 291 })), ...outlineRevisions.map((asset) => ({ ...asset, issue: 296 })), ...relicWave2.map((asset) => ({ ...asset, issue: 301 })), ...potionWave1.map((asset) => ({ ...asset, issue: 309 })), ...clubWave.map((asset) => ({ ...asset, issue: 314 })), ...commonWave.map((asset) => ({ ...asset, issue: 328 })), ...finalWave.map((asset) => ({ ...asset, issue: 338 }))];
 if (new Set(allProducedAssets.map((asset) => `${asset.id}:${asset.version}`)).size !== allProducedAssets.length) throw new Error("duplicate produced asset ID/version");
 for (const asset of allProducedAssets) {
   const actual = createHash("sha256").update(fs.readFileSync(path.join(root, asset.path))).digest("hex");
