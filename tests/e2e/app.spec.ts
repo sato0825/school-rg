@@ -306,7 +306,7 @@ test("kendo club starts with counter equipment and types a guard card", async ({
   await expect(page.locator(".map-stats")).toContainText("44/44");
   await enterNextNode(page);
   await expect(page.locator(".relic-row")).toContainText("竹刀の握り");
-  await expect(page.locator(".status-row")).toContainText("反撃 1");
+  await expect(page.locator('.status-row .status-chip[data-status="thorns"]')).toHaveAttribute("aria-label", /反撃 1/);
   const words = await page.locator(".card-word").allTextContents();
   const unique = ["parry", "stance", "thrust", "riposte"].find((word) => words.includes(word));
   expect(unique).toBeDefined();
@@ -393,7 +393,7 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await expect(page.locator(".run-meta")).toContainText("TURN 2");
   await expect(page.locator(".player-hud")).toContainText("40/40");
   await expect(page.locator(".relic-row")).toContainText("図書室のしおり");
-  await expect(page.locator(".pile-counts")).toContainText("捨て札 5");
+  await expect(page.locator('.pile-token[data-pile="discard"]')).toHaveAttribute("aria-label", "捨て札 5枚");
   await expect(page.locator(".intent-ticket")).toContainText("遅刻札を投げる");
   await typeThroughBattle(page);
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
@@ -469,7 +469,7 @@ test("a typed support card keeps its flash by the player", async ({ page }) => {
   await page.clock.install();
   await startDemoRun(page);
   await enterNextNode(page);
-  const supportCard = page.locator(".card").filter({ has: page.locator(".card-kind").filter({ hasText: "SKILL" }) }).first();
+  const supportCard = page.locator('.card[data-card-kind="skill"]').first();
   await page.keyboard.type(await supportCard.locator(".card-word").innerText());
   const fx = page.locator(".card-fx-layer");
   await expect(fx).toHaveAttribute("data-kind", "support");
@@ -723,7 +723,7 @@ for (const [clubId, label, name] of [
     const hero = page.locator(".hero-art");
     await expect(hero).toHaveAttribute("src", new RegExp(`${name}-idle-candidate-v1`));
     await expect(page.locator(".intent-ticket")).toContainText("紙片が飛ぶ");
-    const attack = page.locator(".card").filter({ has: page.locator(".card-kind").filter({ hasText: "ATTACK" }) }).first();
+    const attack = page.locator('.card[data-card-kind="attack"]').first();
     await page.keyboard.type(await (await attack.count() ? attack.locator(".card-word") : page.locator(".card-word").first()).innerText());
     const activateVersion = name === "kendo" ? "v3" : "v2";
     const hitVersion = name === "art" ? "v3" : "v2";
