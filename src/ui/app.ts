@@ -295,10 +295,6 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       else run = submitPlayerKey(run, { key: event.key, repeat: event.repeat, isComposing: event.isComposing }, clock, config, demoContent, useCard, disposition);
       settleIfFinished();
       render();
-      if (action === "enemy") {
-        const targetButtons = root.querySelectorAll<HTMLButtonElement>(".enemy-roster-button[data-action='enemy'], .enemy-slot[data-action='enemy']");
-        Array.from(targetButtons).find((enemyButton) => enemyButton.dataset.id === id && !enemyButton.hasAttribute("aria-hidden"))?.focus();
-      }
       enemyPhase();
     } catch (error) { handleError(error); }
   }
@@ -482,6 +478,10 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       }
       settleIfFinished();
       render();
+      if (action === "enemy") {
+        const targetButtons = root.querySelectorAll<HTMLButtonElement>(".enemy-roster-button[data-action='enemy'], .enemy-slot[data-action='enemy']");
+        Array.from(targetButtons).find((enemyButton) => enemyButton.dataset.id === id && !enemyButton.hasAttribute("aria-hidden"))?.focus();
+      }
       enemyPhase();
     } catch (error) { handleError(error); }
   }
