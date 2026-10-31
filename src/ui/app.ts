@@ -157,8 +157,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else if (frontScreen === "clubs") renderClubSelect(root, demoContent, demoBattleArt, progression, selectedAscensionLevels, progressionLoadError);
     else if (frontScreen === "compendium") renderCompendium(root, demoContent, demoBattleArt);
     else if (frontScreen === "history") renderRunHistory(root, history, demoContent, demoBattleArt, historyLoadError, historySaveError);
-    else if (session.screen === "map") renderRunMap(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError);
-    else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt);
+    else if (session.screen === "map") renderRunMap(root, session, demoBattleArt, metrics?.record ?? null, metricsLoadError, lowStimulus);
+    else if (session.screen === "reward") renderRunReward(root, session, demoContent, demoBattleArt, lowStimulus);
     else if (session.screen === "treasure") renderRunTreasure(root, session, demoContent, demoBattleArt, config);
     else if (session.screen === "shop") renderRunShop(root, session, demoContent, demoBattleArt, view.message);
     else if (session.screen === "rest") renderRunRest(root, session, demoContent, demoBattleArt);

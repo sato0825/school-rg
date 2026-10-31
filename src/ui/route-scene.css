@@ -1,0 +1,58 @@
+/* Route choices stay in the school stage established by the preceding reward. */
+.route-scene .reward-scene-shade {
+  background: linear-gradient(90deg, #102b4370, #203d5252 23%, #1c3b5150 77%, #102b4370);
+}
+.route-scene-header { gap: 12px; }
+.route-scene-header .map-stats { flex: 1; min-width: 0; }
+.route-scene-header .map-health,
+.route-scene-header .map-stat,
+.route-scene-header .map-secondary {
+  border-color: #93a8b4;
+  background: #f8f7f0f2;
+}
+.route-scene-overlay {
+  z-index: 3;
+  width: min(820px, calc(100% - 54px));
+  max-height: calc(100dvh - 106px);
+  margin: 20px auto;
+  border-color: #ece6d8;
+  background: #f8f7f0dc;
+  box-shadow: 0 25px 70px #0e2a4291, inset 0 0 0 5px #ffffff6d;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+.route-scene-overlay .map-intro {
+  min-height: 0;
+  padding: 18px 26px 14px;
+  background: #f8f7f0dc;
+}
+.route-scene-overlay .map-intro::after { display: none; }
+.route-scene-overlay .map-copy { max-width: none; }
+.route-scene-overlay .map-copy h2 { margin: 3px 0 5px; font-size: 28px; }
+.route-scene-overlay .map-progress { margin: 3px 0 7px; }
+.route-scene-overlay .map-compendium { margin-top: 4px; }
+.route-scene-overlay .map-scroll {
+  max-height: calc(100dvh - 286px);
+  min-height: 240px;
+  background: repeating-linear-gradient(180deg, #dfe8e447 0 1px, transparent 1px 96px), #f8f7f0cf;
+}
+.route-scene[data-effects="quiet"] .route-scene-overlay,
+.reward-scene[data-effects="quiet"] .reward-scene-overlay {
+  background: #f8f7f0f2;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+@media (max-width: 1100px) {
+  .route-scene-overlay { width: min(760px, calc(100% - 46px)); }
+  .route-scene-header { gap: 8px; }
+  .route-scene-header .map-secondary { font-size: 9px; }
+}
+@media (max-width: 760px) {
+  .route-scene-overlay { width: calc(100% - 20px); margin: 12px auto; max-height: calc(100dvh - 86px); }
+  .route-scene-overlay .map-intro { padding: 12px 15px 9px; }
+  .route-scene-overlay .map-copy h2 { font-size: 22px; }
+  .route-scene-overlay .map-scroll { max-height: calc(100dvh - 252px); min-height: 200px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-scene-overlay { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}

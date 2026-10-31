@@ -63,6 +63,29 @@ function shell(title: string, body: string, art: BattleArt, act = 1, run?: RunSt
   return `<main class="run-screen" style="background-image:url('${html(run ? stageUrlForRun(art, run) : stageUrlForAct(art, act))}')"><div class="run-scrim"></div><header class="run-header"><div class="brand"><span class="brand-mark">✦</span><div><small>SCHOOL ROGUELIKE</small><h1>学園タイピングローグライク</h1></div></div><strong>${html(title)}</strong></header>${body}</main>`;
 }
 
+function stageScene(
+  run: RunState,
+  art: BattleArt,
+  options: {
+    scene: "reward" | "route";
+    label: string;
+    location: string;
+    headerDetails: string;
+    body: string;
+    enemyUrl?: string;
+    lowStimulus?: boolean;
+  },
+): string {
+  const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
+  const hero = art.heroUrlByClubId?.[run.clubId] ?? art.heroUrl;
+  return `<main class="run-screen reward-scene ${options.scene}-scene" data-effects="${options.lowStimulus ? "quiet" : "standard"}" aria-label="${html(options.label)}" style="background-image:url('${html(stageUrlForRun(art, run))}')">
+    <div class="reward-scene-actors" aria-hidden="true"><img class="reward-scene-hero" src="${html(hero)}" alt="" decoding="async" />${options.enemyUrl ? `<img class="reward-scene-enemy" src="${html(options.enemyUrl)}" alt="" decoding="async" />` : ""}</div>
+    <div class="reward-scene-shade" aria-hidden="true"></div>
+    <header class="run-header reward-scene-header" aria-label="ラン情報"><span class="reward-scene-location">ACT ${run.act} · ${node?.floor ?? 0}F <span>${html(options.location)}</span></span>${options.headerDetails}</header>
+    ${options.body}
+  </main>`;
+}
+
 export function renderRunTitle(root: HTMLElement, art: BattleArt, history: RunHistory): void {
   root.innerHTML = shell("放課後から始まる", `<section class="front-panel title-panel"><div class="front-copy"><span class="eyebrow">TYPE YOUR NEXT MOVE</span><h2 aria-label="放課後を、打ち抜く。">放課後を、<br>打ち抜く。</h2><p>言葉が、行動になる。カード名を打ち込み、放課後の校舎を進むタイピングローグライク。</p><div class="title-features"><span>5つの部活</span><span>3つのAct</span><span>1秒を選ぶ戦闘</span></div><div class="front-actions"><button type="button" data-action="open-clubs">ランを始める <span aria-hidden="true">↗</span></button><button type="button" data-action="open-compendium">遊び方と図鑑</button><button type="button" data-action="open-history">ラン履歴${history.entries.length ? ` · ${history.entries.length}` : ""}</button></div><p class="front-note">5部活のデッキ・人物アートは制作候補です。正式な内容と素材の受入は進行中です。</p></div><img class="front-hero" src="${html(presentationForClub("literature-demo").idle)}" alt="文芸部の生徒" /></section>`, art);
 }
@@ -100,7 +123,7 @@ export function renderCompendium(root: HTMLElement, content: ContentRegistry, ar
   root.innerHTML = shell("遊び方と図鑑", `<section class="front-panel compendium-panel"><span class="eyebrow">HOW TO PLAY</span><h2>カード名をタイプして行動</h2><p>掲載内容と数値は現在の検証用設定です。</p><div class="compendium-list"><details class="how-to-play" open><summary>遊び方</summary><ol><li><strong>手札を見る</strong>毎ターン現在は${drawn}枚を引き、基本${seconds}秒の間にカード名を直接タイプします。誤キーは無視され、Escapeで入力を取り消せます。</li><li><strong>対象とIntentを読む</strong>攻撃対象などが必要なら画面の対象を選びます。敵のIntentは次の行動の予告です。</li><li><strong>時間切れに備える</strong>使わなかった手札は時間切れで捨て札へ移り、敵が予告した行動を実行します。敵に独立したリアルタイム時計はありません。</li><li><strong>道具を使う</strong>ポーションは${html(potionKey)}か画面のボタンで入力を切り替え、ポーション名をタイプします。ランは自動保存され、再読込時は必要に応じて再開します。</li></ol></details><details><summary>カード · ${content.cards.length}</summary><ul>${cardRows}</ul></details><details><summary>レリック · ${content.relics.length}</summary><ul>${relicRows}</ul></details><details><summary>ポーション · ${content.potions.length}</summary><ul>${potionRows}</ul></details><details><summary>敵 · ${content.enemies.length}</summary><ul>${enemyRows}</ul></details></div><button type="button" class="front-back" data-action="front-back">戻る</button></section>`, art);
 }
 
-export function renderRunMap(root: HTMLElement, session: RunSession, art: BattleArt, playtest: PlaytestRecord | null = null, playtestError = false): void {
+export function renderRunMap(root: HTMLElement, session: RunSession, art: BattleArt, playtest: PlaytestRecord | null = null, playtestError = false, lowStimulus = false): void {
   const run = session.run;
   const current = run.map.nodes.find((node) => node.id === run.map.currentNodeId)!;
   const hpRatio = Math.max(0, Math.min(100, run.player.hp / run.player.maxHp * 100));
@@ -117,14 +140,13 @@ export function renderRunMap(root: HTMLElement, session: RunSession, art: Battle
     const state = isCurrent ? "現在地" : enabled ? "次に進める" : visited ? "通過済み" : "未到達";
     return `<button type="button" class="map-node kind-${node.kind} ${isCurrent ? "current" : ""} ${visited ? "visited" : ""} ${enabled ? "available" : ""}" data-action="enter-node" data-id="${node.id}" ${enabled ? "" : "disabled"} ${isCurrent ? 'aria-current="location"' : ""} aria-label="${state}、${floor}階 ${html(kindNames[node.kind])}${enabled ? " 選択可能" : ""}"><span aria-hidden="true">${kindIcons[node.kind]}</span><small>${html(kindNames[node.kind])}</small>${isCurrent || enabled ? `<span class="map-node-state" aria-hidden="true">${isCurrent ? "現在地" : "進める"}</span>` : ""}</button>`;
   }).join("")}</div></div>`).join("");
-  const hero = art.heroUrlByClubId?.[run.clubId] ?? art.heroUrl;
-  root.innerHTML = shell(`ACT ${run.act} · ${current.floor}F`, `<section class="map-panel"><div class="map-intro"><div class="map-copy"><span>ROUTE SELECT / ACT ${run.act}</span><h2>次の行き先を選ぶ</h2><p class="map-progress">現在地 <strong>${html(kindNames[current.kind])} · ${current.floor}F</strong><span aria-hidden="true">→</span> <strong>進める場所 ${available.size}</strong></p><div class="map-stats" aria-label="ランの状態"><span class="map-health"><span class="map-health-value">♥ ${run.player.hp}/${run.player.maxHp}</span><span class="map-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span style="width:${hpRatio}%"></span></span></span><span class="map-stat"><b aria-hidden="true">◉</b>${run.gold}G<small>所持金</small></span><span class="map-stat"><b aria-hidden="true">▤</b>デッキ ${run.deck.length}枚</span><span class="map-secondary">難度 ${run.ascensionLevel} · シード ${run.seed}</span></div>${playtest ? `<p class="playtest-stats">実操作 ${formatPlaytestTime(playtest.activeMs)} · 訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</p>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : ""}<button type="button" class="map-compendium" data-action="open-compendium">図鑑</button></div><img class="map-hero" src="${html(hero)}" alt="" decoding="async" /></div><div class="map-scroll" aria-label="Act ${run.act} マップ"><div class="map-route-track">${routeLines}${rows}</div></div></section>`, art, run.act, run);
+  const stats = `<div class="map-stats" aria-label="ランの状態"><span class="map-health"><span class="map-health-value">♥ ${run.player.hp}/${run.player.maxHp}</span><span class="map-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span style="width:${hpRatio}%"></span></span></span><span class="map-stat"><b aria-hidden="true">◉</b>${run.gold}G<small>所持金</small></span><span class="map-stat"><b aria-hidden="true">▤</b>デッキ ${run.deck.length}枚</span><span class="map-secondary">難度 ${run.ascensionLevel} · シード ${run.seed}</span></div>`;
+  const body = `<section class="map-panel route-scene-overlay" aria-label="次の行き先の選択"><div class="map-intro"><div class="map-copy"><span>ROUTE SELECT / ACT ${run.act}</span><h2>次の行き先を選ぶ</h2><p class="map-progress">現在地 <strong>${html(kindNames[current.kind])} · ${current.floor}F</strong><span aria-hidden="true">→</span> <strong>進める場所 ${available.size}</strong></p>${playtest ? `<p class="playtest-stats">実操作 ${formatPlaytestTime(playtest.activeMs)} · 訪問 ${playtest.visits.length}地点 · 戦闘 ${playtest.battleNodeIds.length}回${playtest.partial ? " · 途中から計測" : ""}</p>` : playtestError ? `<p class="playtest-stats" role="status">計測データを読めません。既存データを保持しています。</p>` : ""}<button type="button" class="map-compendium" data-action="open-compendium">図鑑</button></div></div><div class="map-scroll" aria-label="Act ${run.act} マップ"><div class="map-route-track">${routeLines}${rows}</div></div></section>`;
+  root.innerHTML = stageScene(run, art, { scene: "route", label: "校内経路", location: "行き先を選ぶ", headerDetails: stats, body, lowStimulus });
 }
 
-export function renderRunReward(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt): void {
+export function renderRunReward(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, lowStimulus = false): void {
   const run = session.run;
-  const node = run.map.nodes.find((item) => item.id === run.map.currentNodeId);
-  const hero = art.heroUrlByClubId?.[run.clubId] ?? art.heroUrl;
   const lastEnemy = run.combat?.enemies.at(-1);
   const enemy = lastEnemy ? art.enemyUrlById[lastEnemy.enemyId] : undefined;
   const hpRatio = Math.max(0, Math.min(100, run.player.hp / run.player.maxHp * 100));
@@ -133,12 +155,9 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
     const card = content.cards.find((item) => item.id === cardId)!;
     return `<button type="button" class="reward-card ${signature.has(card.id) ? "signature" : ""}" data-card-kind="${card.type}" data-action="reward-card" data-id="${card.id}"><span class="offer-heading">${offerSymbol("card")}<small>${signature.has(card.id) ? "部活固有 · " : ""}${cardKindNames[card.type] ?? html(card.type)}</small></span><strong>${html(card.input.text)}</strong><span class="offer-description">${html(describeCard(card, content))}</span><span class="offer-outcome"><span aria-hidden="true">＋</span> デッキに追加</span></button>`;
   }).join("");
-  root.innerHTML = `<main class="run-screen reward-scene" aria-label="戦闘報酬" style="background-image:url('${html(stageUrlForRun(art, run))}')">
-    <div class="reward-scene-actors" aria-hidden="true"><img class="reward-scene-hero" src="${html(hero)}" alt="" decoding="async" />${enemy ? `<img class="reward-scene-enemy" src="${html(enemy)}" alt="" decoding="async" />` : ""}</div>
-    <div class="reward-scene-shade" aria-hidden="true"></div>
-    <header class="run-header reward-scene-header" aria-label="報酬を選ぶ時のラン情報"><span class="reward-scene-location">ACT ${run.act} · ${node?.floor ?? 0}F <span>戦闘終了</span></span><span class="reward-scene-health"><strong>♥ ${run.player.hp}/${run.player.maxHp}</strong><span class="reward-scene-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span style="width:${hpRatio}%"></span></span></span><span class="reward-scene-resources"><span>◉ ${run.gold}G</span><span>▤ ${run.deck.length}枚</span></span></header>
-    <section class="reward-panel reward-scene-overlay" aria-label="カード報酬の選択"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button></section>
-  </main>`;
+  const header = `<span class="reward-scene-health"><strong>♥ ${run.player.hp}/${run.player.maxHp}</strong><span class="reward-scene-health-track" role="meter" aria-label="プレイヤーのHP" aria-valuemin="0" aria-valuemax="${run.player.maxHp}" aria-valuenow="${run.player.hp}"><span style="width:${hpRatio}%"></span></span></span><span class="reward-scene-resources"><span>◉ ${run.gold}G</span><span>▤ ${run.deck.length}枚</span></span>`;
+  const body = `<section class="reward-panel reward-scene-overlay" aria-label="カード報酬の選択"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button></section>`;
+  root.innerHTML = stageScene(run, art, { scene: "reward", label: "戦闘報酬", location: "戦闘終了", headerDetails: header, body, enemyUrl: enemy, lowStimulus });
 }
 
 export function renderRunTreasure(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, config: GameConfig = DEFAULT_GAME_CONFIG): void {
