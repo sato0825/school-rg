@@ -73,15 +73,18 @@ export function recordCombatResult(run: RunState): RunState {
 
 function subtractNested(total: CombatActionLogEntry, nested: CombatActionLogEntry[]): CombatActionLogEntry {
   const sum = (select: (entry: CombatActionLogEntry) => number) => nested.reduce((value, entry) => value + select(entry), 0);
-  const enemyDeltas = total.enemyDeltas.map((delta) => ({
-    ...delta,
-    hpDelta: delta.hpDelta - sum((entry) => entry.enemyDeltas.find((item) => item.instanceId === delta.instanceId)?.hpDelta ?? 0),
-    blockDelta: delta.blockDelta - sum((entry) => entry.enemyDeltas.find((item) => item.instanceId === delta.instanceId)?.blockDelta ?? 0),
+  const enemyIds = [...new Set([...total.enemyDeltas, ...nested.flatMap((entry) => entry.enemyDeltas)].map((delta) => delta.instanceId))];
+  const enemyDeltas = enemyIds.map((instanceId) => ({
+    instanceId,
+    hpDelta: (total.enemyDeltas.find((item) => item.instanceId === instanceId)?.hpDelta ?? 0) - sum((entry) => entry.enemyDeltas.find((item) => item.instanceId === instanceId)?.hpDelta ?? 0),
+    blockDelta: (total.enemyDeltas.find((item) => item.instanceId === instanceId)?.blockDelta ?? 0) - sum((entry) => entry.enemyDeltas.find((item) => item.instanceId === instanceId)?.blockDelta ?? 0),
   })).filter((delta) => delta.hpDelta !== 0 || delta.blockDelta !== 0);
-  const statusDeltas = total.statusDeltas.map((delta) => ({
-    ...delta,
-    delta: delta.delta - sum((entry) => entry.statusDeltas.find((item) => item.side === delta.side && item.enemyInstanceId === delta.enemyInstanceId && item.status === delta.status)?.delta ?? 0),
-  })).filter((delta) => delta.delta !== 0);
+  const statusKeys = [...new Set([...total.statusDeltas, ...nested.flatMap((entry) => entry.statusDeltas)].map((delta) => `${delta.side}:${delta.enemyInstanceId ?? ""}:${delta.status}`))];
+  const statusDeltas = statusKeys.map((key) => {
+    const sample = [...total.statusDeltas, ...nested.flatMap((entry) => entry.statusDeltas)].find((delta) => `${delta.side}:${delta.enemyInstanceId ?? ""}:${delta.status}` === key)!;
+    const same = (delta: typeof sample) => delta.side === sample.side && delta.enemyInstanceId === sample.enemyInstanceId && delta.status === sample.status;
+    return { ...sample, delta: (total.statusDeltas.find(same)?.delta ?? 0) - sum((entry) => entry.statusDeltas.find(same)?.delta ?? 0) };
+  }).filter((delta) => delta.delta !== 0);
   const handAddedCount = total.handAddedCount - sum((entry) => entry.handAddedCount);
   if (handAddedCount < 0) throw new Error("nested relic history exceeds enemy action draw count");
   return {

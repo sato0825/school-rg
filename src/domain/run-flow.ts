@@ -10,7 +10,7 @@ import { parseRunState } from "./validate.js";
 import { claimTreasure, leaveTreasure, openTreasure, type TreasureOptions, DEFAULT_TREASURE_OPTIONS } from "./treasure.js";
 import { ascensionEnemyHp, ascensionStartingHp, assertAscensionLevel } from "./ascension.js";
 import { generateCardRewards, type RewardGenerator } from "./card-rewards.js";
-import { recordCombatResult } from "./combat-action-log.js";
+import { recordCombatAction, recordCombatResult } from "./combat-action-log.js";
 
 export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "treasure" | "won" | "lost";
 export type EncounterCandidate = string | { readonly id: string; readonly enemyIds: readonly string[] };
@@ -150,7 +150,11 @@ export function settleRunCombat(session: RunSession, content: ContentRegistry, e
     return { ...completedSession, run: { ...completedRun, combat: null, event: null }, screen: "map", completedNodeIds: [...session.completedNodeIds, node.id] };
   }
   if (node.kind !== "combat" && node.kind !== "elite" && node.kind !== "boss") throw new Error("combat ended at a non-combat node");
-  const rewardedRun = awardEncounterGold(completedRun, node.kind, economy);
+  const awarded = awardEncounterGold(completedRun, node.kind, economy);
+  const withReward = awarded.gold === completedRun.gold ? awarded : recordCombatAction(completedRun, awarded, {
+    kind: "result", actionId: "reward", actorEnemyInstanceId: null, targetEnemyInstanceId: null,
+  });
+  const rewardedRun: RunState = { ...withReward, lastCombatLog: { ...completedRun.lastCombatLog!, entries: withReward.combat!.actionLog ?? [] } };
   const club = content.clubs.find((item) => item.id === completedRun.clubId);
   if (!club) throw new RangeError(`unknown club: ${completedRun.clubId}`);
   if (node.kind === "boss" && node.act === 3) {

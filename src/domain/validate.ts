@@ -119,7 +119,7 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
       if (entry.sequence !== i + 1 || entry.turn < previousTurn || entry.turn > maxTurn) issues.push({ code: "INVALID_STATE", path, message: "Combat action log order is invalid" });
       previousTurn = entry.turn;
       const actionIds = entry.kind === "card" ? cards : entry.kind === "potion" ? potions : entry.kind === "enemy" ? intents
-        : entry.kind === "turn" ? new Set<string>(TURN_BOUNDARIES) : entry.kind === "relic" ? relics : new Set(["won", "lost"]);
+        : entry.kind === "turn" ? new Set<string>(TURN_BOUNDARIES) : entry.kind === "relic" ? relics : new Set(["won", "lost", "reward"]);
       known(entry.actionId, actionIds, `${path}.actionId`, issues);
       if ((entry.kind === "enemy" && !entry.actorEnemyInstanceId) || (entry.kind !== "enemy" && entry.actorEnemyInstanceId)) issues.push({ code: "INVALID_STATE", path: `${path}.actorEnemyInstanceId`, message: "Combat log actor does not match its action kind" });
       if ((entry.kind === "turn" || entry.kind === "relic" || entry.kind === "result") && entry.targetEnemyInstanceId) issues.push({ code: "INVALID_STATE", path: `${path}.targetEnemyInstanceId`, message: "Action cannot target an enemy" });

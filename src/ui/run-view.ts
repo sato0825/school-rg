@@ -87,7 +87,7 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
     const card = content.cards.find((item) => item.id === cardId)!;
     return `<button type="button" class="reward-card ${signature.has(card.id) ? "signature" : ""}" data-card-kind="${card.type}" data-action="reward-card" data-id="${card.id}"><small>${signature.has(card.id) ? "部活固有 · " : ""}${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span></button>`;
   }).join("");
-  root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><p>選んだカードはこのランのデッキへ加わります。</p><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="open-combat-log">戦闘ログを見る</button><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
+  root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><p>選んだカードはこのランのデッキへ加わります。</p><div class="reward-options">${cards}</div>${session.run.lastCombatLog ? `<button type="button" class="skip-reward" data-action="open-combat-log">戦闘ログを見る</button>` : ""}<button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
 }
 
 export function renderRunTreasure(root: HTMLElement, session: RunSession, content: ContentRegistry, art: BattleArt, config: GameConfig = DEFAULT_GAME_CONFIG): void {
@@ -159,7 +159,7 @@ function combatLogEntry(entry: CombatActionLogEntry, enemies: readonly { instanc
     const enemyId = enemies.find((enemy) => enemy.instanceId === instanceId)?.enemyId;
     return content.enemies.find((enemy) => enemy.id === enemyId)?.name ?? instanceId;
   };
-  const label = entry.kind === "result" ? entry.actionId === "won" ? "勝利確定" : "敗北確定"
+  const label = entry.kind === "result" ? entry.actionId === "won" ? "勝利確定" : entry.actionId === "lost" ? "敗北確定" : "戦闘報酬"
     : entry.kind === "relic" ? content.relics.find((relic) => relic.id === entry.actionId)?.name
     : entry.kind === "turn" ? turnLabels[entry.actionId]
     : entry.kind === "card" ? content.cards.find((card) => card.id === entry.actionId)?.input.text
