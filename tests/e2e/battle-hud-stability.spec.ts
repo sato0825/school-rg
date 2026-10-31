@@ -47,6 +47,8 @@ for (const width of [1440, 390]) {
     if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-enemy-phase-v5-${width}.png` });
     await page.clock.runFor(650);
     await expect(page.locator(".battle-message")).toContainText("次のターン");
+    await expect(page.locator(".result-fx-mark[data-kind=\"damage\"]")).toBeVisible();
+    expect(await page.locator(".result-fx-layer").evaluate((node) => getComputedStyle(node).pointerEvents)).toBe("none");
     const after = await geometry();
     if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-next-turn-v5-${width}.png` });
     for (const current of [during, after]) {

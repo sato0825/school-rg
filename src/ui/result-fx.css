@@ -8,3 +8,9 @@
 .game[data-effects="quiet"] .result-fx-mark{animation:none;transform:translate(-50%,0);box-shadow:none}
 @media(prefers-reduced-motion:reduce){.result-fx-mark{animation:none;transform:translate(-50%,0)!important;box-shadow:none}}
 @media(max-width:760px){.result-fx-mark{top:43%;padding:3px 6px;min-width:34px;font-size:15px}}
+/* A short stationary scene wash replaces page-like movement between game states. */
+.stage.scene-arrive::before,.run-screen.scene-arrive::after{content:"";position:absolute;inset:0;z-index:8;pointer-events:none;background:linear-gradient(110deg,#12283bc9,#567b956b 60%,#f8f5ec44);animation:scene-arrive .42s ease-out both;animation-delay:var(--scene-delay,0ms)}
+.run-screen.scene-arrive::after{position:fixed;z-index:10}
+@keyframes scene-arrive{from{opacity:.8}to{opacity:0}}
+.game[data-effects="quiet"] .stage.scene-arrive::before{display:none}
+@media(prefers-reduced-motion:reduce){.stage.scene-arrive::before,.run-screen.scene-arrive::after{display:none}}

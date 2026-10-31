@@ -1,5 +1,5 @@
 /** CSS animations are recreated with the battle DOM. A negative delay restores their shared phase. */
-export const MOTION_MS = { heroIdle: 3_100, enemyIdle: 3_500, hero: 380, enemy: 600, enemyPhase: 650, hit: 420 } as const;
+export const MOTION_MS = { heroIdle: 3_100, enemyIdle: 3_500, hero: 380, enemy: 600, enemyPhase: 650, hit: 420, sceneChange: 420 } as const;
 
 export function loopDelayMs(nowMs: number, durationMs: number): number {
   if (!Number.isFinite(nowMs) || !Number.isFinite(durationMs) || durationMs <= 0) throw new RangeError("invalid animation time");
