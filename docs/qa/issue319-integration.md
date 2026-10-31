@@ -13,9 +13,10 @@ Status: Draft integration tree. This is not final visual, art or device acceptan
 | 6 | #312 four special locations | `4bf8125`, then `0d7b0be` | Resolved `app.ts` terminal/location branch and `game-shell.ts`/`main.ts` imports while retaining both terminal states and all four locations; `0d7b0be` updates the 42-location E2E's terminal selector. Owning CI passed on `4bf8125`; newer CI pending. |
 | 7 | #306 audio | `2f4ae7c` | Combined the treasure acquisition sound with its 340ms local visual feedback; owner's focused 26/26 and CI passed |
 | 8 | #307 visual Intent | `b60e87f`, then `a1d58d4` | Retained stage place metadata and added selected target trajectory to the battle stage. `a1d58d4` hides the preview trajectory while a card resolves; owning focused 4/4 passed, newer CI pending. Candidate visuals remain unaccepted. |
+| 9 | #311 relic/potion visuals | `22e08e8` | Combined item art and detail/activation in `app.ts`/`battle-view.ts`/`main.ts` while retaining sound activation and selected target trajectory; owner check passed (119 unit, 163 integration, 155 E2E), owning CI passed. Candidate art remains unaccepted. |
 
-Pending source: #311 item visuals (final owning tests/CI in progress). #304 props and #320 character rig remain separate art candidates. Do not count a source's earlier passing CI as a pass for this combined tree.
+Later candidate branches include #334 four location prop images, #320 character rig and #335 additional card art. They are separate from this core integration gate until their own branches settle. Do not count a source's earlier passing CI as a pass for this combined tree.
 
-After the terminal/location and visual Intent conflict resolutions, `npm run typecheck` passed on this integrated tree. Final batched tests and viewport checks remain pending.
+After the terminal/location, visual Intent and item-art conflict resolutions, `npm run typecheck` passed on this integrated tree. Final batched tests and viewport checks remain pending. The four location props, visual Intent symbols and item paintings are production candidates, not final approved art.
 
 The integrated tree has not yet run its final batched tests or viewport checks. Candidate art is not approved. iPad hardware and first-time understanding are unverified.
