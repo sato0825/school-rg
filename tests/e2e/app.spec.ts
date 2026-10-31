@@ -700,12 +700,21 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
   await expect(page.locator(".run-header")).toContainText("ACT 2 · 0F");
 });
 
-async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ battles: number; bosses: number }> {
+async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 36, reloadAtActTwo = false): Promise<{ battles: number; bosses: number }> {
   let battles = 0;
   let bosses = 0;
+  let reloadedAtActTwo = false;
   const bossNames = [/追試の番人|体育館の得点板/, /部活監査の影|実験棟の換気装置/, /終業の鐘|講堂の閉じる幕/];
-  for (let step = 0; step < 36 && !(await page.locator(".run-result").count()); step++) {
+  for (let step = 0; step < maxSteps && !(await page.locator(".run-result").count()); step++) {
     if (await page.locator(".map-panel").count()) {
+      if (reloadAtActTwo && !reloadedAtActTwo && await page.evaluate(() => {
+        const run = JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run;
+        return run.act === 2 && run.map.nodes.find((node: { id: string; floor: number }) => node.id === run.map.currentNodeId)?.floor === 0;
+      })) {
+        await page.reload();
+        reloadedAtActTwo = true;
+        continue;
+      }
       const available = page.locator(".map-node.available");
       const hp = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.player.hp as number);
       const rest = available.filter({ hasText: "休憩" });
@@ -745,6 +754,7 @@ async function clearThreeActs(page: import("@playwright/test").Page): Promise<{ 
   expect(result).toContain("全Actクリア");
   expect(bosses).toBe(3);
   expect(battles).toBeGreaterThanOrEqual(3);
+  if (reloadAtActTwo) expect(reloadedAtActTwo).toBe(true);
   await expect(page.locator(".run-header")).toContainText("全Act完走");
   return { battles, bosses };
 }
@@ -765,6 +775,34 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await enterNextNode(page);
   await expect(page.locator(".enemy-hud")).toContainText("29/29");
 });
+
+for (const [clubLabel, clubId] of [
+  ["文芸部", "literature-demo"], ["科学部", "science-demo"], ["剣道部", "kendo-demo"],
+  ["軽音部", "music-demo"], ["美術部", "art-demo"],
+] as const) {
+  test(`${clubLabel} clears the normal 12-floor three-Act map by typing`, async ({ page }, testInfo) => {
+    test.setTimeout(180_000);
+    await page.clock.install();
+    const startedAt = Date.now();
+    await page.goto("/?seed=42");
+    await page.getByRole("button", { name: "ランを始める" }).click();
+    await page.getByRole("button", { name: new RegExp(clubLabel) }).click();
+    await clearThreeActs(page, 130, true);
+    const route = await page.evaluate(() => {
+      const session = JSON.parse(localStorage.getItem("school-rg-run-v1")!).session;
+      const kinds = Object.fromEntries(session.run.map.nodes.map((node: { id: string; kind: string }) => [node.id, node.kind]));
+      return { clubId: session.run.clubId, seed: session.run.seed, completedNodeIds: session.completedNodeIds,
+        nodeKinds: session.completedNodeIds.map((id: string) => kinds[id]) };
+    });
+    expect(route.clubId).toBe(clubId);
+    expect(route.seed).toBe(42);
+    expect(route.completedNodeIds).toHaveLength(42);
+    expect(route.nodeKinds.filter((kind: string) => kind === "boss")).toHaveLength(3);
+    const report = { ...route, automatedWallTimeMs: Date.now() - startedAt };
+    await testInfo.attach("normal-run-route.json", { body: JSON.stringify(report, null, 2), contentType: "application/json" });
+    console.log(`NORMAL_RUN ${clubId} ${report.automatedWallTimeMs}ms ${route.nodeKinds.join(",")}`);
+  });
+}
 
 test("regular runs use the provisional full map while short E2E runs require an explicit flag", async ({ page, browser }) => {
   await page.goto("/?seed=42");
