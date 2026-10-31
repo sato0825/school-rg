@@ -36,7 +36,7 @@ for (const sample of samples) test(`#356 ${sample.name} compares the courtyard a
       const prop = page.locator(`.location-prop-art[data-asset-id="${sample.prop}"]`);
       await expect(prop).toBeVisible();
       await prop.evaluate((image: HTMLImageElement) => image.decode());
-    } else await expect(page.locator(".enemy-slot")).toBeVisible();
+    } else await expect(page.locator(".enemy-slot").first()).toBeVisible();
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.map.currentNodeId)).toBe(sample.targetId);
     await page.reload();
     await expect(stage).toHaveAttribute("data-stage-art", artId);
