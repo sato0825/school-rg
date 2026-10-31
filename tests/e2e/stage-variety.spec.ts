@@ -21,12 +21,15 @@ test("later floors show distinct school places in combat on PC and iPad sized sc
       await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
       await page.setViewportSize({ width, height });
       await page.goto("/");
-      await expect(page.locator(".run-screen")).toHaveAttribute("style", new RegExp(latePlates[act - 1]!));
+      const stage = page.locator(".stage");
+      await expect(page.locator('.game-shell[data-screen="map"]')).toBeVisible();
+      await expect(stage).toHaveAttribute("style", new RegExp(latePlates[act - 1]!));
+      const originalStage = await stage.elementHandle();
       if (process.env.SCHOOL_RG_CAPTURE_STAGE_VARIETY === "1" && width === 1024) {
         await page.screenshot({ path: `docs/art/previews/issue179-act${act}-map-1024.png`, fullPage: true });
       }
       await page.locator(`.map-node.available[data-id="${target.id}"]`).click();
-      const stage = page.locator(".stage");
+      expect(await stage.evaluate((element, initial) => element === initial, originalStage)).toBe(true);
       await expect(stage).toHaveAttribute("data-act", String(act));
       await expect(stage).toHaveAttribute("data-stage-phase", "late");
       await expect(stage).toHaveAttribute("style", new RegExp(latePlates[act - 1]!));

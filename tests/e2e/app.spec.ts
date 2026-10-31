@@ -267,7 +267,8 @@ test("a defeated run reaches its result and returns to the title by keyboard", a
 
 test("renders the combat HUD and accepts direct keyboard input", async ({ page }) => {
   await startDemoRun(page);
-  await expect(page.getByRole("heading", { name: "学園タイピングローグライク" })).toBeVisible();
+  await expect(page.locator('.game-shell[data-screen="map"]')).toBeVisible();
+  await expect(page.getByRole("heading", { name: "学園タイピングローグライク" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
   await enterNextNode(page);
   await expect(page.locator(".card")).toHaveCount(5);
@@ -437,6 +438,16 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await page.clock.install();
   await startDemoRun(page);
   await enterNextNode(page);
+  await page.evaluate(() => {
+    const state = window as typeof window & { gameShellAnchors?: { stage: Element; actor: Element; input: Element; background: string; stageRect: DOMRect; actorRect: DOMRect } };
+    state.gameShellAnchors = {
+      stage: document.querySelector(".stage")!, actor: document.querySelector(".ally-slot")!,
+      input: document.querySelector(".typing-input")!,
+      background: (document.querySelector(".stage") as HTMLElement).style.backgroundImage,
+      stageRect: document.querySelector(".stage")!.getBoundingClientRect(),
+      actorRect: document.querySelector(".ally-slot")!.getBoundingClientRect(),
+    };
+  });
   await expectIntentMatchesSavedBattle(page);
   const initialHp = Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"));
   await page.keyboard.type("heavy strike");
@@ -456,6 +467,23 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await expectIntentMatchesSavedBattle(page);
   await typeThroughBattle(page);
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
+  for (const screen of ["reward", "map"] as const) {
+    if (screen === "map") await page.getByRole("button", { name: "報酬を受け取らず進む" }).click();
+    await expect(page.locator(`.game-shell[data-screen="${screen}"]`)).toBeVisible();
+    expect(await page.evaluate(() => {
+      const saved = (window as typeof window & { gameShellAnchors: { stage: Element; actor: Element; input: Element; background: string; stageRect: DOMRect; actorRect: DOMRect } }).gameShellAnchors;
+      const stageRect = document.querySelector(".stage")!.getBoundingClientRect();
+      const actorRect = document.querySelector(".ally-slot")!.getBoundingClientRect();
+      return saved.stage === document.querySelector(".stage") && saved.actor === document.querySelector(".ally-slot")
+        && saved.input === document.querySelector(".typing-input")
+        && saved.background === (document.querySelector(".stage") as HTMLElement).style.backgroundImage
+        && Math.abs(saved.stageRect.top - stageRect.top) < 1 && Math.abs(saved.stageRect.height - stageRect.height) < 1
+        && Math.abs(saved.actorRect.left - actorRect.left) < 1 && Math.abs(saved.actorRect.bottom - actorRect.bottom) < 1;
+    })).toBe(true);
+  }
+  await page.reload();
+  expect(await page.locator('.game-shell[data-screen="map"] .map-node.available').count()).toBeGreaterThan(0);
+  await expect(page.locator('.game-shell .hero-art')).toHaveAttribute("alt", "文芸部の生徒");
 });
 
 test("an elite formation accepts a typed single target and an all-enemy attack", async ({ page }) => {
