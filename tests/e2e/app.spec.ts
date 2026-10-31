@@ -700,12 +700,21 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
   await expect(page.locator(".run-header")).toContainText("ACT 2 · 0F");
 });
 
-async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 36): Promise<{ battles: number; bosses: number }> {
+async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 36, reloadAtActTwo = false): Promise<{ battles: number; bosses: number }> {
   let battles = 0;
   let bosses = 0;
+  let reloadedAtActTwo = false;
   const bossNames = [/追試の番人|体育館の得点板/, /部活監査の影|実験棟の換気装置/, /終業の鐘|講堂の閉じる幕/];
   for (let step = 0; step < maxSteps && !(await page.locator(".run-result").count()); step++) {
     if (await page.locator(".map-panel").count()) {
+      if (reloadAtActTwo && !reloadedAtActTwo && await page.evaluate(() => {
+        const run = JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run;
+        return run.act === 2 && run.map.nodes.find((node: { id: string; floor: number }) => node.id === run.map.currentNodeId)?.floor === 0;
+      })) {
+        await page.reload();
+        reloadedAtActTwo = true;
+        continue;
+      }
       const available = page.locator(".map-node.available");
       const hp = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.player.hp as number);
       const rest = available.filter({ hasText: "休憩" });
@@ -745,6 +754,7 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
   expect(result).toContain("全Actクリア");
   expect(bosses).toBe(3);
   expect(battles).toBeGreaterThanOrEqual(3);
+  if (reloadAtActTwo) expect(reloadedAtActTwo).toBe(true);
   await expect(page.locator(".run-header")).toContainText("全Act完走");
   return { battles, bosses };
 }
@@ -777,7 +787,7 @@ for (const [clubLabel, clubId] of [
     await page.goto("/?seed=42");
     await page.getByRole("button", { name: "ランを始める" }).click();
     await page.getByRole("button", { name: new RegExp(clubLabel) }).click();
-    await clearThreeActs(page, 130);
+    await clearThreeActs(page, 130, true);
     const route = await page.evaluate(() => {
       const session = JSON.parse(localStorage.getItem("school-rg-run-v1")!).session;
       const kinds = Object.fromEntries(session.run.map.nodes.map((node: { id: string; kind: string }) => [node.id, node.kind]));
