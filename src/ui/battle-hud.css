@@ -121,6 +121,7 @@
   .player-health-track{height:6px}
   .typing-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px;margin:5px auto}
   .typing-caption{font-size:12px}
+  .time-label span{font-size:10px;letter-spacing:0;white-space:nowrap}
   .typing-hint{grid-column:1/-1}
   .typing-buffer .placeholder{font-size:10px}
   .game:has(.playtest-export){grid-template-rows:132px minmax(0,1fr) 350px}
