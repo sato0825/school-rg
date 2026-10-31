@@ -19,5 +19,26 @@
     "rightsReview": "pending",
     "visualReview": "pending actual-size QA",
     "selectionDecision": "v2 depicts worn lower half of enemy target rather than last hand card; not formally adopted"
+  },
+  {
+    "id": "KEN-005",
+    "version": "v2",
+    "path": "docs/art/production/issue338/assets/card-ken-kata-v2.png",
+    "sha256": "283af8c282dae4efa148889cef47c6b1e482f5c143c5dc96b9598e75060f0028",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-9a7fc096-ce05-46a0-8a65-e47cae1dd04e.png",
+    "promptRef": "prompts-b.md#KEN-005-v2",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "colorMode": "RGB",
+    "rightsReview": "pending",
+    "visualReview": "pending actual-size QA",
+    "selectionDecision": "v2 enlarges guard form at hand size; formal adoption pending"
   }
 ]
