@@ -138,6 +138,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     catch { metricsLoadError = true; }
   };
   const render = () => {
+    if (session.screen !== "combat" || frontScreen !== null) { imeComposing = false; view.imeNotice = ""; }
+    else if (imeComposing) { imeComposing = false; view.imeNotice = "英数入力に切り替えて、カードの英単語を入力してください。"; }
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
     const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
     const restoreCombatLogFocus = frontScreen === "combat-log" && root.querySelector('[data-action="front-back"]') === document.activeElement;
