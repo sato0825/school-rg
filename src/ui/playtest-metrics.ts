@@ -10,13 +10,25 @@ const BattleSampleSchema = z.strictObject({
   hpBefore: nonnegative, hpAfter: nonnegative.nullable(), turns: nonnegative.nullable(),
   result: z.enum(["won", "lost"]).nullable(), partial: z.boolean().default(false),
 });
-export const PlaytestRecordSchema = z.strictObject({
+const ContentEventSchema = z.strictObject({
+  eventId: z.string().min(1), nodeId: z.string().min(1), act: z.number().int().min(1).max(3),
+  source: z.enum(["reward", "treasure", "shop", "event", "combat"]),
+  kind: z.enum(["card", "relic", "potion", "event_choice"]),
+  action: z.enum(["offered", "selected", "skipped", "acquired", "consumed", "discarded"]),
+  contentId: z.string().min(1).nullable(), offerId: z.string().min(1).nullable(),
+  available: z.boolean().nullable(), atActiveMs: nonnegative,
+});
+const LegacyPlaytestRecordSchema = z.strictObject({
   formatVersion: z.literal(1), runId: z.string().min(1), clubId: z.string().min(1), seed: nonnegative,
   ascensionLevel: nonnegative, partial: z.boolean(), activeMs: nonnegative,
   visits: z.array(VisitSchema), battleNodeIds: z.array(z.string().min(1)),
   battles: z.array(BattleSampleSchema).default([]), result: z.enum(["won", "lost"]).nullable(),
 });
+export const PlaytestRecordSchema = LegacyPlaytestRecordSchema.omit({ formatVersion: true }).extend({
+  formatVersion: z.literal(2), contentPartial: z.boolean(), contentEvents: z.array(ContentEventSchema),
+});
 export type PlaytestRecord = z.infer<typeof PlaytestRecordSchema>;
+export type PlaytestContentEvent = z.infer<typeof ContentEventSchema>;
 export type PlaytestTracker = { record: PlaytestRecord; lastAtMs: number; active: boolean };
 
 function validNow(nowMs: number): void {
@@ -26,13 +38,13 @@ function validNow(nowMs: number): void {
 export function startPlaytest(run: RunState, runId: string, nowMs: number, partial = false): PlaytestTracker {
   validNow(nowMs);
   if (!runId) throw new RangeError("playtest run ID is required");
-  return { record: { formatVersion: 1, runId, clubId: run.clubId, seed: run.seed, ascensionLevel: run.ascensionLevel ?? 0,
-    partial, activeMs: 0, visits: [], battleNodeIds: [], battles: [], result: null }, lastAtMs: nowMs, active: true };
+  return { record: { formatVersion: 2, runId, clubId: run.clubId, seed: run.seed, ascensionLevel: run.ascensionLevel ?? 0,
+    partial, contentPartial: partial, contentEvents: [], activeMs: 0, visits: [], battleNodeIds: [], battles: [], result: null }, lastAtMs: nowMs, active: true };
 }
 
 export function resumePlaytest(record: PlaytestRecord, run: RunState, runId: string, nowMs: number, active = true): PlaytestTracker {
   validNow(nowMs);
-  const parsed = PlaytestRecordSchema.parse(record);
+  const parsed = parsePlaytestRecord(record);
   if (parsed.runId !== runId || parsed.clubId !== run.clubId || parsed.seed !== run.seed || parsed.ascensionLevel !== (run.ascensionLevel ?? 0)) {
     throw new RangeError("playtest record does not match the run");
   }
@@ -80,7 +92,23 @@ export function finishPlaytest(tracker: PlaytestTracker, result: "won" | "lost",
   return { ...observed, record: { ...observed.record, result } };
 }
 
+/** Stable event IDs make render and load observations idempotent without collapsing distinct purchases. */
+export function recordPlaytestContent(tracker: PlaytestTracker, event: Omit<PlaytestContentEvent, "atActiveMs">): PlaytestTracker {
+  const parsed = ContentEventSchema.parse({ ...event, atActiveMs: tracker.record.activeMs });
+  const existing = tracker.record.contentEvents.find((item) => item.eventId === event.eventId);
+  if (existing) {
+    const { atActiveMs: _atActiveMs, ...prior } = existing;
+    if (JSON.stringify(prior) !== JSON.stringify(event)) throw new RangeError(`conflicting playtest content event: ${event.eventId}`);
+    return tracker;
+  }
+  return { ...tracker, record: { ...tracker.record, contentEvents: [...tracker.record.contentEvents, parsed] } };
+}
+
 export function parsePlaytestRecord(value: unknown): PlaytestRecord {
+  if (value && typeof value === "object" && "formatVersion" in value && value.formatVersion === 1) {
+    const legacy = LegacyPlaytestRecordSchema.parse(value);
+    return { ...legacy, formatVersion: 2, contentPartial: true, contentEvents: [] };
+  }
   return PlaytestRecordSchema.parse(value);
 }
 

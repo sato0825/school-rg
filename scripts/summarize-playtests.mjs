@@ -13,10 +13,11 @@ function median(values) {
 }
 
 function validRecord(value) {
-  if (!value || value.formatVersion !== 1 || typeof value.runId !== "string" || !CLUB_IDS.includes(value.clubId)
+  if (!value || ![1, 2].includes(value.formatVersion) || typeof value.runId !== "string" || !CLUB_IDS.includes(value.clubId)
     || !Number.isSafeInteger(value.activeMs) || value.activeMs < 0 || !["won", "lost", null].includes(value.result)
     || !Array.isArray(value.visits) || !Array.isArray(value.battleNodeIds)
-    || (value.battles !== undefined && !Array.isArray(value.battles))) throw new Error("invalid playtest record");
+    || (value.battles !== undefined && !Array.isArray(value.battles))
+    || (value.formatVersion === 2 && (typeof value.contentPartial !== "boolean" || !Array.isArray(value.contentEvents)))) throw new Error("invalid playtest record");
   return value;
 }
 
@@ -83,6 +84,51 @@ function observedVisits(records) {
   return { fullRunsWithVisits: runs, visitKinds: kinds };
 }
 
+function usableContentEvents(record) {
+  if (record.formatVersion !== 2 || record.partial || record.contentPartial || record.result === null) return null;
+  const visited = new Map(record.visits.map((visit) => [visit.nodeId, visit.act]));
+  const ids = new Set();
+  if (!record.contentEvents.every((event) => {
+    if (!event || typeof event.eventId !== "string" || ids.has(event.eventId)
+      || visited.get(event.nodeId) !== event.act || !Number.isSafeInteger(event.atActiveMs)
+      || event.atActiveMs < 0 || event.atActiveMs > record.activeMs
+      || !["offered", "selected", "skipped", "acquired", "consumed", "discarded"].includes(event.action)
+      || !["card", "relic", "potion", "event_choice"].includes(event.kind)
+      || !["reward", "treasure", "shop", "event", "combat"].includes(event.source)) return false;
+    ids.add(event.eventId);
+    return true;
+  })) return null;
+  return record.contentEvents;
+}
+
+function emptyContentCount() {
+  return { offered: 0, selected: 0, skipped: 0, acquired: 0, consumed: 0, discarded: 0, repeatedOffers: 0, selectionRate: null };
+}
+
+function contentExposure(records) {
+  const usable = records.map(usableContentEvents).filter((events) => events !== null);
+  const byAct = [1, 2, 3].map((act) => ({ act, ...emptyContentCount(), bySource: {} }));
+  for (const events of usable) {
+    const seen = new Set();
+    for (const event of events) {
+      const act = byAct[event.act - 1];
+      const source = act.bySource[event.source] ??= emptyContentCount();
+      act[event.action]++;
+      source[event.action]++;
+      if (event.action === "offered") {
+        const key = `${event.act}:${event.kind}:${event.contentId}`;
+        if (seen.has(key)) { act.repeatedOffers++; source.repeatedOffers++; }
+        else seen.add(key);
+      }
+    }
+  }
+  for (const act of byAct) {
+    act.selectionRate = act.offered ? act.selected / act.offered : null;
+    for (const count of Object.values(act.bySource)) count.selectionRate = count.offered ? count.selected / count.offered : null;
+  }
+  return { runsWithUsableContentRecords: usable.length, byAct };
+}
+
 export function summarizePlaytests(values) {
   const byRun = new Map();
   for (const value of values) {
@@ -116,6 +162,7 @@ export function summarizePlaytests(values) {
       medianActMs: [0, 1, 2].map((index) => median(acts.map((durations) => durations[index]).filter((value) => value !== null))),
       encounterVariety: encounterVariety(records),
       observedVisits: observedVisits(records),
+      contentExposure: contentExposure(records),
     };
   }
   return { targetRunMs: TARGET_RUN_MS, uniqueRuns: byRun.size, inputRecords: values.length,

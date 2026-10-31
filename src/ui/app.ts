@@ -22,6 +22,7 @@ import { browserHistoryStore, browserPlaytestStore, browserProgressStore, browse
 import { appendRunHistory, emptyRunHistory, legacyTerminalRunId, parseRunHistory, terminalRunEntry } from "../domain/run-history.js";
 import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, MAX_ASCENSION_LEVEL } from "../domain/ascension.js";
 import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
+import { recordCombatPotionUses, recordContentAcquisitions, recordContentChoice, recordContentOffers } from "./playtest-exposure.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
 import { createAudioFeedback } from "./audio.js";
 
@@ -104,6 +105,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   const metricsActive = () => frontScreen === null && !restoreError && session.screen !== "won" && session.screen !== "lost"
     && document.visibilityState === "visible" && !(run.combat?.clock.paused ?? false);
   const observeMetrics = () => { if (metrics) metrics = observePlaytest(metrics, clock.nowMs(), metricsActive()); };
+  const recordChoice = (before: RunState, input: Parameters<typeof recordContentChoice>[2], after: RunState = before,
+    acquisitionSource: "reward" | "treasure" | "shop" | "event" | null = null) => {
+    if (!metrics) return;
+    observeMetrics();
+    metrics = recordContentChoice(metrics!, before, input);
+    if (acquisitionSource) metrics = recordContentAcquisitions(metrics, before, after, acquisitionSource, input.offerId);
+  };
   const recordTerminal = () => {
     if (historyLoadError || (session.screen !== "won" && session.screen !== "lost")) return;
     const next = appendRunHistory(history, terminalRunEntry(session));
@@ -132,6 +140,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   };
   const render = () => {
     if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT") view.helpOpen = false;
+    if (metrics) metrics = recordContentOffers(metrics, { ...session, run }, demoContent, config);
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
     const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
@@ -290,9 +299,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
 
   function submitInputKey(key: string, repeat: boolean, isComposing: boolean): void {
     try {
+      const before = run;
       if (key === requireSetting(config.potionModeKey)) run = setPotionInputActive(run, !run.combat!.potionControl?.active, clock, demoContent, disposition);
       else if (run.combat!.potionControl?.active) run = submitPotionKey(run, { key, repeat, isComposing }, clock, config, demoContent, disposition);
       else run = submitPlayerKey(run, { key, repeat, isComposing }, clock, config, demoContent, useCard, disposition);
+      if (metrics) { observeMetrics(); metrics = recordCombatPotionUses(metrics!, before, run); }
       settleIfFinished();
       render();
       enemyPhase();
@@ -418,24 +429,34 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         return;
       }
       if (session.screen === "reward" && (action === "reward-card" || action === "skip-reward")) {
+        const before = run;
         session = chooseRunReward(session, action === "skip-reward" ? null : id);
         run = session.run;
+        recordChoice(before, { source: "reward", kind: "card", action: action === "skip-reward" ? "skipped" : "selected",
+          offerId: action === "skip-reward" ? null : id, contentId: action === "skip-reward" ? null : id, available: null }, run, "reward");
         render();
         return;
       }
       if (session.screen === "treasure" && (action === "treasure-offer" || action === "skip-treasure")) {
+        const before = run;
+        const offer = action === "treasure-offer" ? run.treasure?.offers.find((item) => item.offerId === id) : null;
         const relicCount = run.relicIds.length;
         session = chooseRunTreasure(session, action === "skip-treasure" ? null : id, demoContent, config);
         run = session.run;
+        recordChoice(before, { source: "treasure", kind: offer?.kind ?? "relic", action: offer ? "selected" : "skipped",
+          offerId: offer?.offerId ?? null, contentId: offer?.contentId ?? null, available: null }, run, "treasure");
         for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
         render();
         return;
       }
       if (session.screen === "event" && action === "event-choice") {
+        const before = run;
+        const eventId = run.event?.eventId ?? null;
         const relicCount = run.relicIds.length;
         const targetCardInstanceId = button.closest(".event-target-choice")?.querySelector<HTMLSelectElement>("select[data-event-target]")?.value;
         session = chooseRunEventChoice(session, id, demoContent, demoEnemyAi, config, targetCardInstanceId);
         run = session.run;
+        recordChoice(before, { source: "event", kind: "event_choice", action: "selected", offerId: id, contentId: eventId, available: null }, run, "event");
         for (let index = relicCount; index < run.relicIds.length; index++) run = fireRelic(run, "acquired", { relicId: run.relicIds[index] });
         if (session.screen === "combat") startCombat();
         view.message = "カード名をタイプして発動。誤入力は無視されます。";
@@ -443,6 +464,10 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         return;
       }
       if (session.screen === "shop") {
+        const before = run;
+        const offer = action === "buy-offer" ? run.shop?.offers.find((item) => item.offerId === id) : action === "buy-relic"
+          ? run.shop?.relicOffers.find((item) => item.offerId === id) : action === "buy-potion"
+            ? run.shop?.potionOffers.find((item) => item.offerId === id) : null;
         if (action === "buy-offer") { session = buyRunShopCard(session, id); view.message = "カードを購入しました。"; }
         else if (action === "buy-relic") {
           session = buyRunShopRelic(session, id, demoContent);
@@ -454,6 +479,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         else if (action === "remove-shop-card") { session = removeRunShopCard(session, id); view.message = "カードを削除しました。"; }
         else if (action === "leave-shop") session = leaveRunShop(session);
         run = session.run;
+        if (offer && (action === "buy-offer" || action === "buy-relic" || action === "buy-potion")) {
+          const kind = action === "buy-offer" ? "card" : action === "buy-relic" ? "relic" : "potion";
+          const contentId = "cardId" in offer ? offer.cardId : offer.contentId;
+          recordChoice(before, { source: "shop", kind, action: "selected", offerId: id, contentId, available: null }, run, "shop");
+        }
         render();
         return;
       }
@@ -464,6 +494,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
         return;
       }
       if (session.screen !== "combat") return;
+      const beforeCombatAction = run;
       if (action === "potion-mode" && run.combat?.phase === "PLAYER_INPUT") {
         run = setPotionInputActive(run, !run.combat.potionControl?.active, clock, demoContent, disposition);
       } else if (action === "discard-potion" && run.combat?.phase === "PLAYER_INPUT") {
@@ -498,6 +529,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       } else if (action === "debuff") {
         view.selectedDebuff = id;
         view.message = "解除する状態を選びました。";
+      }
+      if (metrics) {
+        observeMetrics();
+        metrics = recordCombatPotionUses(metrics!, beforeCombatAction, run);
+        if (action === "discard-potion" && run.potionIds.length < beforeCombatAction.potionIds.length) {
+          metrics = recordContentChoice(metrics, beforeCombatAction, { source: "combat", kind: "potion", action: "discarded",
+            offerId: null, contentId: beforeCombatAction.potionIds[Number(id)] ?? null, available: null }, beforeCombatAction.potionIds.length);
+        }
       }
       settleIfFinished();
       render();
