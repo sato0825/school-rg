@@ -27,7 +27,8 @@ describe("run and typing combat HUD", () => {
     expect(root.querySelector('.pile-token[data-pile="draw"]')?.getAttribute("aria-label")).toBe("山札 5枚、内容を見る");
     expect(root.querySelector('.pile-token[data-pile="discard"]')?.getAttribute("aria-label")).toBe("捨て札 0枚、内容を見る");
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "z", bubbles: true }));
-    expect(root.querySelector(".typing-buffer")?.textContent).toContain("下の手札から英単語を入力");
+    expect(root.querySelector(".typing-visual")?.textContent).toBe("");
+    expect(root.querySelector<HTMLInputElement>(".typing-input")?.hasAttribute("placeholder")).toBe(false);
     unmount();
   });
 
