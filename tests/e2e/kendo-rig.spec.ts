@@ -14,6 +14,7 @@ async function openKendoBattle(page: import("@playwright/test").Page) {
 for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900 }]) {
   test(`Kendo rig stays on the same stage through guard, strike and hit at ${viewport.width}`, async ({ page }) => {
     await page.clock.install();
+    await page.clock.pauseAt(Date.now());
     await page.setViewportSize(viewport);
     const actor = await openKendoBattle(page);
     const stage = page.locator(".game-shell .stage");

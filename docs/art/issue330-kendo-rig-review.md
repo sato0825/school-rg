@@ -33,5 +33,6 @@
 - `npm run check:art`: 成功。
 - `npx vitest run tests/integration/kendo-rig-ui.test.ts tests/unit/actor-motion.test.ts`: 5件成功。
 - `SCHOOL_RG_E2E_PORT=45335 npx playwright test tests/e2e/kendo-rig.spec.ts tests/e2e/app.spec.ts --grep 'Kendo rig|kendo deck clears three Acts'`: PC/iPad相当の姿勢、敵2体、原子ロード、再読込、静音、剣道部の短縮3 Act/Ascension解放を含む5件成功。
-- `SCHOOL_RG_E2E_PORT=45334 npx playwright test tests/e2e/app.spec.ts --grep '軽音部 clears the normal 12-floor three-Act map by typing'`: 1件成功。前回の全E2Eでは69件成功後、軽音部通常尺ランの画面が全Actクリアへ遷移したのにテスト補助関数が戦闘入力欄を待ち、180秒で失敗。PR #312 と同じ終端セレクタ修正を局所移植して対象1件を再実行した。全E2E 148件の再実行は未実施。
+- 全E2Eの最終走行では147件成功、剣道rigの姿勢確認2件のみ失敗。軽音部通常尺ランは46.7秒で通過した。剣道2件は実ゲームではカード使用・被弾を表示していたが、仮想時計を進めた後に実時間で姿勢を読むテストが、遅いホスト上で次の待機姿勢へ進んでから判定していた。`page.clock.pauseAt` でイベント時計を固定し、該当ファイル4件を3回繰り返して12件成功。変更のない他147件の結果を再利用し、全E2Eを追加で一巡はしていない。
+- 最初の全E2Eでは軽音部通常尺ランの画面が全Actクリアへ遷移したのにテスト補助関数が戦闘入力欄を待ち、180秒で失敗。PR #312 の終端セレクタに加えて、終端移行中の入力欄読取を500ms上限にした。以後の全E2E走行で同ケースが通過した。
 - `npm run typecheck`: 成功。
