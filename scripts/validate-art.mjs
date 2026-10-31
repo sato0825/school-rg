@@ -4,6 +4,7 @@ import { readFile, access } from "node:fs/promises";
 import { resolve, relative, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { cutoutMargin, pngInfo, validateSvgSource } from "./art-asset-checks.mjs";
+import { poseGeometryFindings, validateApprovedPoseSet, validateArtVersion } from "./art-pose-geometry.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const register = JSON.parse(await readFile(resolve(root, "docs/art/asset-register.json"), "utf8"));
@@ -19,13 +20,16 @@ function projectPath(path) {
 assert(register.version === 1 && Array.isArray(register.assets), "invalid art register");
 const ids = new Set();
 const grouped = new Map();
+const poseInfo = new Map();
 for (const asset of register.assets) {
   assert(typeof asset.id === "string" && !ids.has(asset.id), `duplicate or invalid asset ID: ${asset.id}`);
   ids.add(asset.id);
+  validateArtVersion(asset);
   const bytes = await readFile(projectPath(asset.file));
   const hash = createHash("sha256").update(bytes).digest("hex");
   assert(hash === asset.sha256, `SHA mismatch: ${asset.id}`);
   const info = pngInfo(bytes);
+  if (asset.role === "character-pose") poseInfo.set(asset.id, info);
   assert(info.width === asset.width && info.height === asset.height, `size mismatch: ${asset.id}`);
   if (asset.alpha === "transparent") {
     assert(info.minAlpha === 0 && info.maxAlpha >= 240, `cutout transparency missing: ${asset.id}`);
@@ -81,6 +85,9 @@ for (const [characterId, poses] of grouped) {
   const sizes = new Set(poses.map((pose) => `${pose.width}x${pose.height}`));
   assert(sizes.size === 1, `pose canvas mismatch: ${characterId}`);
   const approved = poses.filter((pose) => pose.status === "approved-runtime");
-  if (approved.length) assert(["idle", "activate", "hit"].every((pose) => approved.some((item) => item.pose === pose)), `approved motion states incomplete: ${characterId}`);
+  if (approved.length) validateApprovedPoseSet(approved.map((asset) => ({ asset, info: poseInfo.get(asset.id) })), characterId);
+  const candidates = poses.filter((pose) => pose.status === "candidate");
+  const candidateFindings = poseGeometryFindings(candidates.map((asset) => ({ asset, info: poseInfo.get(asset.id) })));
+  for (const finding of candidateFindings) console.warn(`Candidate geometry review (${characterId}): ${finding}`);
 }
 console.log(`Validated ${register.assets.length} art records; candidate status does not imply visual approval.`);
