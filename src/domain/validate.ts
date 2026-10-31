@@ -5,6 +5,7 @@ import {
   type RunState,
 } from "./schema.js";
 import { assertAscensionLevel } from "./ascension.js";
+import { TURN_BOUNDARIES } from "./combat-action-log.js";
 
 export type ValidationIssue = {
   code: "SCHEMA_INVALID" | "DUPLICATE_ID" | "UNKNOWN_REFERENCE" | "INVALID_STATE";
@@ -212,8 +213,10 @@ export function parseRunState(value: unknown, content: ContentRegistry): RunStat
       const path = `combat.actionLog.${i}`;
       if (entry.sequence !== i + 1 || entry.turn < previousTurn || entry.turn > combat.turn) issues.push({ code: "INVALID_STATE", path, message: "Combat action log order is invalid" });
       previousTurn = entry.turn;
-      known(entry.actionId, entry.kind === "card" ? cards : entry.kind === "potion" ? potions : intents, `${path}.actionId`, issues);
-      if (entry.kind === "enemy" && !entry.actorEnemyInstanceId || entry.kind !== "enemy" && entry.actorEnemyInstanceId) issues.push({ code: "INVALID_STATE", path: `${path}.actorEnemyInstanceId`, message: "Combat log actor does not match its action kind" });
+      known(entry.actionId, entry.kind === "card" ? cards : entry.kind === "potion" ? potions : entry.kind === "enemy" ? intents : new Set(TURN_BOUNDARIES), `${path}.actionId`, issues);
+      if ((entry.kind === "enemy" && !entry.actorEnemyInstanceId) || (entry.kind !== "enemy" && entry.actorEnemyInstanceId)) issues.push({ code: "INVALID_STATE", path: `${path}.actorEnemyInstanceId`, message: "Combat log actor does not match its action kind" });
+      if (entry.kind === "turn" && entry.targetEnemyInstanceId) issues.push({ code: "INVALID_STATE", path: `${path}.targetEnemyInstanceId`, message: "Turn boundary cannot target an enemy" });
+      if (entry.kind === "turn" && (entry.timeDeltaMs !== 0 || (entry.turnClockMs !== undefined && entry.actionId !== "player-start"))) issues.push({ code: "INVALID_STATE", path, message: "Turn boundary clock is invalid" });
       if (entry.actorEnemyInstanceId) known(entry.actorEnemyInstanceId, enemyInstanceIds, `${path}.actorEnemyInstanceId`, issues);
       if (entry.targetEnemyInstanceId) known(entry.targetEnemyInstanceId, enemyInstanceIds, `${path}.targetEnemyInstanceId`, issues);
       entry.enemyDeltas.forEach((delta, j) => known(delta.instanceId, enemyInstanceIds, `${path}.enemyDeltas.${j}.instanceId`, issues));

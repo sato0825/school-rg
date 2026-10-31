@@ -2,6 +2,7 @@ import { settleHandAtTurnEnd, drawCards, type CardDisposition } from "./card-pil
 import { prepareOpeningHand } from "./card-keywords.js";
 import { createTurnClock, pauseTurnClock, resumeTurnClock, advanceTurnClock, type MonotonicClock } from "./clock.js";
 import { assessCombatOutcome } from "./combat-outcome.js";
+import { recordTurnBoundary } from "./combat-action-log.js";
 import { requireSetting, type GameConfig } from "./config.js";
 import { tickStatuses } from "./status-engine.js";
 import type { ContentRegistry, RunState } from "./schema.js";
@@ -30,7 +31,8 @@ function typableHand(run: RunState, content: ContentRegistry): TypableCard[] {
 
 function endExpiredTurn(run: RunState, dispositionFor: TurnEndDisposition): RunState {
   const combat = requirePhase(run, "PLAYER_INPUT");
-  return { ...run, combat: { ...settleHandAtTurnEnd(combat, dispositionFor), phase: "PLAYER_END", potionControl: undefined } };
+  const ended: RunState = { ...run, combat: { ...settleHandAtTurnEnd(combat, dispositionFor), phase: "PLAYER_END", potionControl: undefined } };
+  return recordTurnBoundary(run, ended, "player-input-end");
 }
 
 function applyCompletedInput(run: RunState, result: SelectionResult, useCard: UseTypedCard, dispositionFor: TurnEndDisposition): RunState {
@@ -62,7 +64,7 @@ export function beginPlayerTurn(run: RunState, clock: MonotonicClock, config: Ga
   requirePhase(run, "PLAYER_START");
   const reset = { ...run, player: { ...run.player, block: 0 } };
   const outcome = assessCombatOutcome(tickStatuses(reset, "player_start", config).run);
-  if (outcome.combat!.phase !== "PLAYER_START") return outcome;
+  if (outcome.combat!.phase !== "PLAYER_START") return recordTurnBoundary(run, outcome, "player-start");
   const combat = outcome.combat!;
   const handLimit = requireSetting(config.handLimit);
   const opening = combat.turn === 1 ? prepareOpeningHand(combat, content, handLimit) : { combat, innateIds: [] };
@@ -70,11 +72,12 @@ export function beginPlayerTurn(run: RunState, clock: MonotonicClock, config: Ga
   const drawn = drawCards(opening.combat, outcome.rngState, Math.max(0, count), handLimit);
   const duration = Math.min(requireSetting(config.timeCapMs), requireSetting(config.playerTurnMs) + combat.nextTurnBonusMs);
   if (!Number.isSafeInteger(duration)) throw new RangeError("turn duration overflow");
-  return {
+  const started: RunState = {
     ...outcome,
     rngState: drawn.rngState,
     combat: { ...drawn.combat, phase: "PLAYER_INPUT", nextTurnBonusMs: 0, clock: createTurnClock(duration, clock) },
   };
+  return recordTurnBoundary(run, started, "player-start");
 }
 
 export function tickPlayerTurn(run: RunState, clock: MonotonicClock, dispositionFor: TurnEndDisposition): RunState {
@@ -166,12 +169,13 @@ export function resumePlayerTurn(run: RunState, clock: MonotonicClock): RunState
 export function beginEnemyPhase(run: RunState, config: GameConfig): RunState {
   requirePhase(run, "PLAYER_END");
   const outcome = assessCombatOutcome(tickStatuses(run, "player_end", config).run);
-  if (outcome.combat!.phase !== "PLAYER_END") return outcome;
-  const enemyPhase = { ...outcome, combat: {
-    ...outcome.combat!, phase: "ENEMY_PHASE" as const,
-    enemies: outcome.combat!.enemies.map((enemy) => ({ ...enemy, block: 0 })),
+  const playerEnded = recordTurnBoundary(run, outcome, "player-end");
+  if (playerEnded.combat!.phase !== "PLAYER_END") return playerEnded;
+  const enemyPhase = { ...playerEnded, combat: {
+    ...playerEnded.combat!, phase: "ENEMY_PHASE" as const,
+    enemies: playerEnded.combat!.enemies.map((enemy) => ({ ...enemy, block: 0 })),
   } };
-  return tickStatuses(enemyPhase, "enemy_start", config).run;
+  return recordTurnBoundary(playerEnded, tickStatuses(enemyPhase, "enemy_start", config).run, "enemy-start");
 }
 
 /** Enemy AI #13 supplies one deterministic resolution of every visible Intent. */
@@ -184,6 +188,7 @@ export function completeEnemyPhase(run: RunState, resolve: ResolveEnemyActions, 
   const outcome = assessCombatOutcome(resolved);
   if (outcome.combat!.phase === "WON" || outcome.combat!.phase === "LOST") return outcome;
   const ended = tickStatuses(outcome, "enemy_end", config).run;
-  if (ended.combat!.phase === "WON" || ended.combat!.phase === "LOST") return ended;
-  return { ...ended, combat: { ...ended.combat!, phase: "PLAYER_START", turn: ended.combat!.turn + 1 } };
+  const enemyEnded = recordTurnBoundary(outcome, ended, "enemy-end");
+  if (enemyEnded.combat!.phase === "WON" || enemyEnded.combat!.phase === "LOST") return enemyEnded;
+  return { ...enemyEnded, combat: { ...enemyEnded.combat!, phase: "PLAYER_START", turn: enemyEnded.combat!.turn + 1 } };
 }

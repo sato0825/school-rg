@@ -300,6 +300,8 @@
 .combat-log-entry { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 12px 15px; border: 1px solid #a8bac7; border-left: 4px solid #c94e6b; border-radius: 4px; background: #fffdf8; }
 .combat-log-entry[data-kind="enemy"] { border-left-color: #547f9a; }
 .combat-log-entry[data-kind="potion"] { border-left-color: #45928d; }
+.combat-log-entry[data-kind="turn"] { border-left-color: #85939c; background: #f2f5f4; }
+.combat-log-entry[data-kind="turn"] strong { font-size: 14px; }
 .log-sequence { grid-column: 1 / -1; color: #688297; font: 800 10px ui-monospace, Menlo, monospace; letter-spacing: .1em; }
 .combat-log-entry strong { min-width: 0; color: #253d54; font-size: 16px; overflow-wrap: anywhere; }
 .log-kind { align-self: center; color: #6c8294; font-size: 10px; font-weight: 800; white-space: nowrap; }
