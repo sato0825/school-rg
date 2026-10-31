@@ -3277,10 +3277,18 @@
       "rarity": null,
       "meaning": "入力時間を追加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 309,
+            "version": "v1",
+            "source": "docs/art/production/issue309/assets/potion-time-v1.png",
+            "state": "preferred-draft",
+            "sha256": "d67d9ff528d896284c2e5b9a8103b129b2d6cd95c63d57a0d3e79be11538c479"
+          }
+        ]
       }
     },
     {
@@ -3297,10 +3305,18 @@
       "rarity": null,
       "meaning": "HP回復",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 309,
+            "version": "v1",
+            "source": "docs/art/production/issue309/assets/potion-heal-v1.png",
+            "state": "preferred-draft",
+            "sha256": "c992a0dfaebae04a6a2c7f44de4a0c789d525e856afc89a2885dc09276e9664e"
+          }
+        ]
       }
     },
     {
@@ -3344,10 +3360,18 @@
       "rarity": null,
       "meaning": "防御",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 309,
+            "version": "v1",
+            "source": "docs/art/production/issue309/assets/potion-guard-v1.png",
+            "state": "preferred-draft",
+            "sha256": "054228610746a360180f8eb2f0b7aedba3418b1c63156acf2789b0ca8bcc754c"
+          }
+        ]
       }
     },
     {
@@ -3364,10 +3388,18 @@
       "rarity": null,
       "meaning": "全体攻撃",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 309,
+            "version": "v1",
+            "source": "docs/art/production/issue309/assets/potion-splash-v1.png",
+            "state": "preferred-draft",
+            "sha256": "8dcecf9cbda399ada034024cd958ecdb1429f4fe065fc060448723de06810937"
+          }
+        ]
       }
     },
     {
@@ -3385,10 +3417,18 @@
       "rarity": null,
       "meaning": "回復と入力時間追加",
       "art": {
-        "state": "missing",
+        "state": "candidate",
         "acceptedVersion": null,
         "editableSource": null,
-        "candidateRefs": []
+        "candidateRefs": [
+          {
+            "issue": 309,
+            "version": "v1",
+            "source": "docs/art/production/issue309/assets/potion-tea-v1.png",
+            "state": "preferred-draft",
+            "sha256": "26de3fba61c141069e018f94de42d54d5b9bba891f8691b1f841920536659971"
+          }
+        ]
       }
     }
   ]
