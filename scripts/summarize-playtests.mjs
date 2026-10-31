@@ -12,11 +12,16 @@ function median(values) {
   return Math.round((sorted[Math.floor((sorted.length - 1) / 2)] + sorted[Math.floor(sorted.length / 2)]) / 2);
 }
 
+function range(values) {
+  return values.length ? { min: Math.min(...values), max: Math.max(...values) } : null;
+}
+
 function validRecord(value) {
-  if (!value || value.formatVersion !== 1 || typeof value.runId !== "string" || !CLUB_IDS.includes(value.clubId)
+  if (!value || ![1, 2].includes(value.formatVersion) || typeof value.runId !== "string" || !CLUB_IDS.includes(value.clubId)
     || !Number.isSafeInteger(value.activeMs) || value.activeMs < 0 || !["won", "lost", null].includes(value.result)
-    || !Array.isArray(value.visits) || !Array.isArray(value.battleNodeIds)
-    || (value.battles !== undefined && !Array.isArray(value.battles))) throw new Error("invalid playtest record");
+    || typeof value.partial !== "boolean" || !Array.isArray(value.visits) || !Array.isArray(value.battleNodeIds)
+    || (value.battles !== undefined && !Array.isArray(value.battles))
+    || (value.formatVersion === 2 && (typeof value.contentPartial !== "boolean" || !Array.isArray(value.contentEvents)))) throw new Error("invalid playtest record");
   return value;
 }
 
@@ -83,6 +88,75 @@ function observedVisits(records) {
   return { fullRunsWithVisits: runs, visitKinds: kinds };
 }
 
+function usableContentEvents(record) {
+  if (record.formatVersion !== 2 || record.partial || record.contentPartial || record.result === null) return null;
+  const visited = new Map(record.visits.map((visit) => [visit.nodeId, visit.act]));
+  const ids = new Set();
+  if (!record.contentEvents.every((event) => {
+    if (!event || typeof event.eventId !== "string" || ids.has(event.eventId)
+      || visited.get(event.nodeId) !== event.act || !Number.isSafeInteger(event.atActiveMs)
+      || event.atActiveMs < 0 || event.atActiveMs > record.activeMs
+      || (event.contentId !== null && (typeof event.contentId !== "string" || !event.contentId))
+      || (event.offerId !== null && (typeof event.offerId !== "string" || !event.offerId))
+      || ![true, false, null].includes(event.available)
+      || !["offered", "selected", "skipped", "acquired", "consumed", "discarded"].includes(event.action)
+      || !["card", "relic", "potion", "event_choice"].includes(event.kind)
+      || !["reward", "treasure", "shop", "event", "combat"].includes(event.source)
+      || (event.source === "event" && event.kind === "event_choice" && (!event.contentId || !event.offerId))) return false;
+    ids.add(event.eventId);
+    return true;
+  })) return null;
+  return record.contentEvents;
+}
+
+function emptyContentCount() {
+  return { offered: 0, availableOffers: 0, unavailableOffers: 0, unknownAvailabilityOffers: 0,
+    selected: 0, skipped: 0, acquired: 0, consumed: 0, discarded: 0,
+    repeatedOffers: 0, eventsShown: 0, repeatedEvents: 0, selectionRate: null };
+}
+
+function contentExposure(records) {
+  const usable = records.map(usableContentEvents).filter((events) => events !== null);
+  const byAct = [1, 2, 3].map((act) => ({ act, ...emptyContentCount(), bySource: {} }));
+  for (const events of usable) {
+    const seen = new Set();
+    const seenEventNodes = new Set();
+    const seenEventTypes = new Set();
+    for (const event of events) {
+      const act = byAct[event.act - 1];
+      const source = act.bySource[event.source] ??= emptyContentCount();
+      act[event.action]++;
+      source[event.action]++;
+      if (event.action === "offered") {
+        if (event.source === "event" && event.kind === "event_choice") {
+          const nodeKey = `${event.act}:${event.nodeId}`;
+          if (!seenEventNodes.has(nodeKey)) {
+            seenEventNodes.add(nodeKey);
+            act.eventsShown++;
+            source.eventsShown++;
+            const typeKey = `${event.act}:${event.contentId}`;
+            if (seenEventTypes.has(typeKey)) { act.repeatedEvents++; source.repeatedEvents++; }
+            else seenEventTypes.add(typeKey);
+          }
+        }
+        const availabilityKey = event.available === true ? "availableOffers"
+          : event.available === false ? "unavailableOffers" : "unknownAvailabilityOffers";
+        act[availabilityKey]++;
+        source[availabilityKey]++;
+        const key = JSON.stringify([event.act, event.kind, event.contentId,
+          event.kind === "event_choice" ? event.offerId : null]);
+        if (seen.has(key)) { act.repeatedOffers++; source.repeatedOffers++; }
+        else seen.add(key);
+      }
+    }
+  }
+  for (const act of byAct) {
+    act.selectionRate = act.offered ? act.selected / act.offered : null;
+    for (const count of Object.values(act.bySource)) count.selectionRate = count.offered ? count.selected / count.offered : null;
+  }
+  return { runsWithUsableContentRecords: usable.length, byAct };
+}
+
 export function summarizePlaytests(values) {
   const byRun = new Map();
   for (const value of values) {
@@ -109,13 +183,16 @@ export function summarizePlaytests(values) {
       completionRate: records.length ? terminal.length / records.length : null,
       winRate: terminal.length ? won.length / terminal.length : null,
       medianTerminalMs: median(terminal.map((record) => record.activeMs)),
-      medianWonMs, wonGapToTargetMs: medianWonMs === null ? null : medianWonMs - TARGET_RUN_MS,
+      rangeTerminalMs: range(terminal.map((record) => record.activeMs)),
+      medianWonMs, rangeWonMs: range(won.map((record) => record.activeMs)),
+      wonGapToTargetMs: medianWonMs === null ? null : medianWonMs - TARGET_RUN_MS,
       battlesRecorded: battles.length, battlesWithHpAndTime: finishedBattles.length,
       medianBattleMs: median(finishedBattles.map((battle) => battle.endedAtActiveMs - battle.startedAtActiveMs)),
       totalHpLoss: finishedBattles.reduce((sum, battle) => sum + Math.max(0, battle.hpBefore - battle.hpAfter), 0),
       medianActMs: [0, 1, 2].map((index) => median(acts.map((durations) => durations[index]).filter((value) => value !== null))),
       encounterVariety: encounterVariety(records),
       observedVisits: observedVisits(records),
+      contentExposure: contentExposure(records),
     };
   }
   return { targetRunMs: TARGET_RUN_MS, uniqueRuns: byRun.size, inputRecords: values.length,
