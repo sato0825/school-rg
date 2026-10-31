@@ -29,3 +29,4 @@
 .game[data-effects="quiet"] .intent-body-cue,.game[data-effects="quiet"] .intent-trajectory{animation:none;transition:none;filter:none}
 @media(prefers-reduced-motion:reduce){.game-shell .intent-body-cue,.game-shell .intent-trajectory{animation:none;transition:none;filter:none}}
 @media(max-width:1100px){.game-shell .intent-step .intent-glyph{width:17px;height:17px}.game-shell .intent-step .intent-target-glyph{width:13px;height:13px}}
+@media(max-width:600px){.game-shell .result-fx-mark{min-width:0;padding:2px 3px;gap:1px;font-size:13px}.game-shell .result-fx-mark .intent-glyph{width:13px;height:13px}}
