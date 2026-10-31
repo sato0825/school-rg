@@ -93,4 +93,13 @@ describe("combat objects", () => {
     expect(target.querySelectorAll(".enemy-detail-status .status-chip")).toHaveLength(2);
     expect(target.querySelector('[data-status="vulnerable"]')?.getAttribute("aria-label")).toContain("脆弱 1。受ける攻撃の威力が増加");
   });
+
+  it("does not offer pile inspection after victory while the last hit animates", () => {
+    const run = structuredClone(validRun);
+    run.combat!.phase = "WON";
+    const root = new JSDOM("<div id='game'></div>").window.document.getElementById("game")!;
+    renderBattle(root, run, validContent, { ...view, motion: "hero" });
+    expect(root.querySelectorAll(".pile-token:disabled")).toHaveLength(3);
+    expect(root.querySelector(".result-backdrop")).toBeNull();
+  });
 });
