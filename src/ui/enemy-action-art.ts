@@ -1,5 +1,5 @@
 /** Presentation-only assets. Intent choice and effects remain owned by the domain. */
-export type EnemyActionPose = "attack" | "guard" | "status" | "buff" | "summon" | "mixed";
+export type EnemyActionPose = "attack" | "guard" | "status" | "buff" | "summon" | "mixed" | "prepare" | "heavy";
 export type EnemyIntentPose = { pose: EnemyActionPose; url: string };
 export type EnemyActionArt = {
   artId: string;
