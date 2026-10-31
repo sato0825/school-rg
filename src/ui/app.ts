@@ -432,7 +432,11 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     audio.play("enemy");
     setMotion("enemy");
     view.resultFx = null;
+
     view.potionCue = null;
+
+    view.resolvedEnemyIntentIdByInstanceId = undefined;
+
     view.message = "敵が予告した行動を実行します。";
     render();
     const currentGeneration = generation;
@@ -447,6 +451,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
               if (hpLost > 0) receivedHit = true;
               return fireRelic(hitState, "hit_taken", { hpLost });
             })), config);
+        view.resolvedEnemyIntentIdByInstanceId = Object.fromEntries(beforeEnemyAction.combat!.enemies.map((enemy) => [enemy.instanceId, enemy.intentId]));
         view.resultFx = resultFxForTransition(beforeEnemyAction, run, view.layoutPreviewAllies ?? 1, clock.nowMs());
         enemyPending = false;
         // Quiet defeat settles immediately; avoid stacking hit and loss cues.
@@ -459,7 +464,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
           view.message = "次のターン。カード名をタイプしてください。";
         } else settleIfFinished();
         render();
-        window.setTimeout(() => { if (generation === currentGeneration && view.motion === (receivedHit ? "hit" : null)) { view.resultFx = null; setMotion(null); settleIfFinished(); render(); } }, MOTION_MS.hit);
+        window.setTimeout(() => { if (generation === currentGeneration && view.motion === (receivedHit ? "hit" : null)) { view.resultFx = null; view.resolvedEnemyIntentIdByInstanceId = undefined; setMotion(null); settleIfFinished(); render(); } }, MOTION_MS.hit);
       } catch (error) { handleError(error); }
     }, MOTION_MS.enemyPhase);
   }
@@ -470,9 +475,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     setMotion(null);
     view.cardFx = null;
     view.resultFx = null;
+
     view.relicCue = null;
     view.potionCue = null;
     view.selectedRelicId = null;
+
+    view.resolvedEnemyIntentIdByInstanceId = undefined;
+
     view.dyingEnemyInstanceIds = [];
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
