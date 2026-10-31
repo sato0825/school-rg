@@ -985,6 +985,9 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
     } else if (await page.locator('.location-scene[data-location="treasure"]').count()) {
       await page.locator('[data-action="treasure-offer"]:not(:disabled)').first().focus();
       await page.keyboard.press("Enter");
+      await expect(page.locator('.location-scene[data-claiming="true"]')).toBeVisible();
+      await page.clock.runFor(350);
+      await expect(page.locator(".map-panel")).toBeVisible();
     } else if (await page.locator(".reward-panel:not(.run-result):not(.economy-panel):not(.event-panel)").count()) {
       await page.getByRole("button", { name: "報酬を受け取らず進む" }).focus();
       await page.keyboard.press("Enter");
