@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Issue 252 敗北舞台デザイン候補</title>
+<style>
+  :root { color-scheme: dark; font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif; --ink:#13273a; --paper:#f2f1e9; --line:#d4e1e8; --aqua:#72b7bf; --rose:#d993a4; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; width:100%; height:100%; overflow:hidden; background:#10283a; }
+  .screen { width:100vw; height:100vh; display:grid; grid-template-rows:64px minmax(0,1fr) 104px; color:#eff7f7; }
+  .hud { display:flex; align-items:center; gap:24px; padding:0 34px; background:#152c40; border-bottom:1px solid #7394a433; font-weight:700; letter-spacing:.04em; }
+  .place { font-size:15px; white-space:nowrap; }
+  .hp { display:flex; align-items:center; gap:12px; margin-left:auto; font-size:18px; font-variant-numeric:tabular-nums; }
+  .hp .heart { color:#edc4cf; font-size:19px; }
+  .hp-track { width:155px; height:8px; background:#d3e6e73b; border-radius:9px; border:1px solid #d9e9ec4a; }
+  .hp-track::after { content:""; display:block; height:100%; width:0; background:var(--rose); }
+  .pause { width:36px;height:36px;border:1px solid #b4cdd17a;border-radius:8px;background:#223e50;color:#eff7f7;font-size:17px; }
+  .stage { position:relative; min-height:0; overflow:hidden; isolation:isolate; background:#9ebbc9; }
+  .stage-bg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; filter:saturate(.77) brightness(.82); }
+  .stage::after { content:""; position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,#18344918 0%,transparent 35%,#112a3c46 100%); }
+  .actor { position:absolute;left:8.5%;bottom:1%;height:86%;width:auto;max-width:34%;object-fit:contain;object-position:bottom;z-index:3;filter:drop-shadow(0 12px 13px #1630438a); }
+  .actor.hit { display:none; height:83%; }
+  .actor.defeat { display:block; }
+  .enemy { position:absolute;right:6%;bottom:13%;height:53%;width:29%;object-fit:contain;object-position:bottom;z-index:2;filter:saturate(.66) brightness(.68) drop-shadow(0 15px 8px #14354a70);opacity:.67; }
+  .enemy-base { position:absolute;right:5.7%;bottom:5%;width:30%;padding:8px 13px;border-radius:9px;background:#173347c7;border:1px solid #a4bec874;display:flex;align-items:center;justify-content:space-between;font-size:13px;z-index:4;opacity:.65; }
+  .enemy-base .track { height:5px;width:36%;border-radius:5px;background:#eaafbf; }
+  .impact .actor.hit { display:block; }
+  .impact .actor.defeat { display:none; }
+  .impact .enemy,.impact .enemy-base { filter:drop-shadow(0 15px 8px #14354a70);opacity:1; }
+  .impact-mark { position:absolute;left:33%;top:43%;z-index:6;padding:6px 12px;color:#fff4f6;background:#973b5d;border:1px solid #e6adbb;border-radius:8px;font-size:27px;font-weight:800;font-variant-numeric:tabular-nums;box-shadow:0 3px 10px #4b1b2e66; }
+  .impact .impact-mark { display:block; }
+  .impact-mark { display:none; }
+  .low-stimulus.impact .actor.hit,.low-stimulus.impact .impact-mark { display:none; }
+  .low-stimulus.impact .actor.defeat { display:block; }
+  .low-stimulus.impact .scene-title { display:grid; }
+  .scene-title { position:absolute;left:44%;top:21%;z-index:5;display:grid;gap:7px;align-items:start;pointer-events:none; }
+  .scene-title .rule { width:75px;height:2px;background:var(--aqua); }
+  .scene-title strong { font-size:34px;letter-spacing:.14em;text-shadow:0 2px 8px #112539b0; }
+  .scene-title span { font-size:13px;color:#d7e6e8; }
+  .impact .scene-title,.summary .scene-title { display:none; }
+  .notebook { position:absolute;left:41%;top:18%;z-index:7;width:min(350px,35vw);padding:18px 24px 20px;color:#233d4d;background:linear-gradient(90deg,#d2e1e1 0 5px,transparent 5px),repeating-linear-gradient(180deg,#f3f1e8 0 33px,#e1e6df 34px,#f3f1e8 35px);border:1px solid #a4b9bb;border-radius:4px 12px 11px 5px;box-shadow:0 15px 35px #0d273b73,4px 4px 0 #dae6e4;transform:rotate(-1deg); }
+  .notebook::before { content:""; position:absolute;top:11px;left:-7px;bottom:10px;width:5px;background:repeating-linear-gradient(#6b8a99 0 9px,transparent 9px 23px); }
+  .notebook h2 { margin:0 0 9px; font-size:20px;letter-spacing:.04em; }
+  .notebook .sub { display:block;font-size:11px;color:#5c7782;margin-bottom:14px; }
+  .notebook .record { display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:14px;line-height:1.65; }
+  .notebook .record b { font-variant-numeric:tabular-nums; }
+  .notebook .record .ruleline { grid-column:1/-1;border-top:1px solid #9bb0b5;margin:3px 0; }
+  .notebook .actions { display:flex;gap:9px;margin-top:18px; }
+  .notebook button { flex:1;min-height:38px;font-family:inherit;font-size:12px;font-weight:700;border-radius:6px;border:1px solid #6b919d;background:#e5eeee;color:#173b4c; }
+  .notebook button.primary { color:#f8fbfa;background:#275568;border-color:#275568; }
+  .notebook button:focus-visible,.pause:focus-visible { outline:3px solid #ffdf8c;outline-offset:3px; }
+  .notebook { display:none; }
+  .summary .notebook { display:block; }
+  .rail { display:flex;align-items:center;justify-content:center;gap:17px;background:#142b3e;border-top:1px solid #7394a433; }
+  .rail .pile { width:54px;height:69px;border:2px solid #a6bdc59c;border-radius:6px;transform:rotate(-5deg);opacity:.42;background:linear-gradient(135deg,#b6c9c4,#dce4d7); }
+  .rail .line { width:min(520px,43vw);height:4px;background:#8db7bf66;border-radius:6px; }
+  .rail .label { font-size:12px;color:#b8cdd1; }
+  .summary .rail,.settled .rail { opacity:.42; }
+  .prototype { display:none;position:absolute;right:8px;bottom:8px;z-index:20;gap:5px; }
+  .show-controls .prototype { display:flex; }
+  .prototype a { padding:5px;background:#fff;color:#123;text-decoration:none;font-size:12px; }
+  @media (max-width:1100px) { .screen { grid-template-rows:56px minmax(0,1fr) 92px; } .hud {padding:0 18px;} .actor { left:3%;max-width:34%;height:85%;} .actor.hit{height:81%;} .enemy{right:3%;width:32%;height:50%;} .enemy-base{right:3%;width:32%;} .notebook{left:37%;top:17%;width:30%;padding:14px 17px;} .notebook h2{font-size:18px;} .notebook .record{font-size:12px;} .notebook .actions{flex-direction:column;margin-top:9px;} .notebook button{min-height:31px;} .scene-title{left:39%;top:20%;} .scene-title strong{font-size:29px;} .impact-mark{left:35%;top:42%;} }
+  @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important;transition:none!important; } }
+</style>
+<div class="screen settled" id="screen">
+  <header class="hud">
+    <div class="place">ACT 1 · 1F</div>
+    <div class="hp"><span class="heart" aria-hidden="true">♥</span><span>0/38</span><span class="hp-track" aria-hidden="true"></span></div>
+    <button class="pause" aria-label="設定">⚙</button>
+  </header>
+  <main class="stage">
+    <img class="stage-bg" src="../../src/assets/stages/act1-library-entrance-candidate-v1.png" alt="">
+    <img class="actor hit" src="../art/candidates/literature-hit-candidate-v2.png" alt="敗北直前の文芸部員・吉野こはる">
+    <img class="actor defeat" src="../art/candidates/literature-defeat-candidate-v1.png" alt="床に座り込み、ノートを抱えた吉野こはる">
+    <img class="enemy" src="../../src/assets/enemies/paper-scrap-candidate-v1.png" alt="紙片の敵">
+    <div class="enemy-base"><strong>答案の切れ端</strong><span>12/12</span><span class="track" aria-hidden="true"></span></div>
+    <div class="impact-mark" aria-label="2のダメージ、HPが0になった">−2</div>
+    <div class="scene-title"><span class="rule"></span><strong>敗北</strong></div>
+    <section class="notebook" aria-label="今回のラン記録">
+      <h2>今回の記録</h2><span class="sub" id="club-label">文芸部 · 吉野こはる</span>
+      <div class="record"><span>到達</span><b>ACT 1 · 1F</b><span>体力</span><b>0 / 38</b></div>
+      <div class="actions"><button type="button">記録を見る</button><button type="button" class="primary">新しいランへ</button></div>
+    </section>
+  </main>
+  <footer class="rail" aria-label="入力が終了したカードレール"><span class="pile" aria-hidden="true"></span><span class="line" aria-hidden="true"></span><span class="label">入力終了</span></footer>
+  <nav class="prototype"><a href="?state=impact&controls=1">最終被弾</a><a href="?state=settled&controls=1">敗北静止</a><a href="?state=summary&controls=1">記録</a><a href="?state=summary&low=1&controls=1">低刺激</a></nav>
+</div>
+<script>
+  const query = new URLSearchParams(location.search);
+  const screen = document.querySelector('#screen');
+  const state = query.get('state');
+  const displayState = query.has('low') ? 'summary' : (['impact','settled','summary'].includes(state) ? state : 'settled');
+  screen.className = `screen ${displayState}${query.has('low') ? ' low-stimulus' : ''}${query.has('controls') ? ' show-controls' : ''}`;
+  if (query.get('stage') === 'atrium') document.querySelector('.stage-bg').src = 'issue252-assets/paper-atrium-issue249-candidate-v1.png';
+  if (query.get('club') === 'science') {
+    document.querySelector('.actor.hit').src = '../art/candidates/serious-student-hit-candidate-v2.png';
+    document.querySelector('.actor.defeat').src = '../art/candidates/serious-student-defeat-candidate-v1.png';
+    document.querySelector('.actor.hit').alt = '敗北直前の科学部員';
+    document.querySelector('.actor.defeat').alt = '床に座り込み、ノートを抱えた科学部員';
+    document.querySelector('#club-label').textContent = '科学部';
+  }
+</script>
+</html>

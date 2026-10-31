@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "purpose": "Issue #252 defeat pose comparison; candidate status is not art approval",
+  "assets": [
+    {
+      "id": "literature-defeat-candidate-v1",
+      "file": "docs/art/candidates/literature-defeat-candidate-v1.png",
+      "sha256": "7d9b6656891c030c31a31f410f728f0ec1b6f1c1e490ab783afaf260d21b5c5b",
+      "width": 1199,
+      "height": 1312,
+      "status": "candidate",
+      "characterId": "literature-student",
+      "pose": "defeat",
+      "referenceFiles": ["docs/art/candidates/literature-idle-candidate-v1.png", "docs/art/candidates/literature-hit-candidate-v2.png"],
+      "promptFile": "docs/art/prompts/issue252-defeat-v1.md",
+      "generatedOriginal": "/Users/mikoto/.codex/generated_images/01a19159-f868-7e32-9011-65a1d7d35c19/exec-d1ac4943-03e3-46f9-81f8-426d686307ed.png",
+      "editableSource": null,
+      "scaleReview": "Different canvas size from idle/hit; compare on stage before runtime use"
+    },
+    {
+      "id": "serious-student-defeat-candidate-v1",
+      "file": "docs/art/candidates/serious-student-defeat-candidate-v1.png",
+      "sha256": "1cf476aae06825c68cf84427e6136a58883e17ae52f3aeb9f634652dbdf5f018",
+      "width": 1024,
+      "height": 1536,
+      "status": "candidate",
+      "characterId": "serious-student",
+      "pose": "defeat",
+      "referenceFiles": ["docs/art/candidates/serious-student-idle-candidate-v2.png", "docs/art/candidates/serious-student-hit-candidate-v2.png"],
+      "promptFile": "docs/art/prompts/issue252-defeat-v1.md",
+      "generatedOriginal": "/Users/mikoto/.codex/generated_images/01a19159-f868-7e32-9011-65a1d7d35c19/exec-7c5152d4-5a60-4bdb-bc98-46a5e6bf6fc5.png",
+      "editableSource": null,
+      "scaleReview": "Canvas matches idle/hit; visible silhouette and ground anchor need art approval"
+    }
+  ]
+}
