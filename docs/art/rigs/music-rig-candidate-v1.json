@@ -1,0 +1,19 @@
+{
+  "id": "music-rig-candidate-v1",
+  "characterId": "music-student",
+  "status": "candidate",
+  "canvas": { "width": 1024, "height": 1536 },
+  "runtimeScale": 1.09,
+  "groundY": 1514,
+  "sourceSheet": { "file": "docs/art/candidates/music-rig-parts-sheet-candidate-v2.png", "sha256": "3c35b9d19ebf8cc5c2061fcc9fa01f62644861f8d09864e55dcd58fef79154d3" },
+  "editableSource": "docs/art/sources/music-rig-candidate-v1.ora",
+  "parts": [
+    { "id": "case", "file": "docs/art/candidates/music-rig-parts-v1/case.png", "sha256": "8f396544e88081d2b9860b1ceb84d26911c6b50a681385edaf2b546ac2062e8d", "x": 110, "y": 235, "width": 313, "height": 783, "pivotX": 190, "pivotY": 90 },
+    { "id": "left-leg", "file": "docs/art/candidates/music-rig-parts-v1/left-leg.png", "sha256": "4c77b7e3ee8ae00e59a43a42f884df315a208bdb5eaf2908137c9903b9e69ece", "x": 235, "y": 880, "width": 296, "height": 628, "pivotX": 210, "pivotY": 20 },
+    { "id": "right-leg", "file": "docs/art/candidates/music-rig-parts-v1/right-leg.png", "sha256": "044af9be3b6803840836203a385eba69f6dd691e06717b53c2244975705f3532", "x": 570, "y": 900, "width": 225, "height": 614, "pivotX": 70, "pivotY": 20 },
+    { "id": "torso", "file": "docs/art/candidates/music-rig-parts-v1/torso.png", "sha256": "8a5d4c54ffb1a6e27e59f0ca30f38d36cb3ca68350a545ce3c522577f601a95f", "x": 340, "y": 350, "width": 449, "height": 598, "pivotX": 225, "pivotY": 495 },
+    { "id": "left-arm", "file": "docs/art/candidates/music-rig-parts-v1/left-arm.png", "sha256": "dd8f0c3b8aabcf5d5a9bca4ee7ff4843ae64c011010b14adb0e90ac6b1be93d4", "x": 265, "y": 455, "width": 210, "height": 326, "pivotX": 135, "pivotY": 35 },
+    { "id": "right-arm", "file": "docs/art/candidates/music-rig-parts-v1/right-arm.png", "sha256": "8225b2d3a0afe5bbfb51c61b7f64dd2cb7a20983b6db4477eb578dd3924082a4", "x": 650, "y": 450, "width": 211, "height": 370, "pivotX": 65, "pivotY": 35 },
+    { "id": "head", "file": "docs/art/candidates/music-rig-parts-v1/head.png", "sha256": "bcd1d7d43387351db596f85b894e2b3c7020e3e034f4dc19c4dcd5e3b4c03ebe", "x": 375, "y": 45, "width": 381, "height": 348, "pivotX": 190, "pivotY": 322 }
+  ]
+}

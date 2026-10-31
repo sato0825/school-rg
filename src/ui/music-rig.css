@@ -1,0 +1,38 @@
+/* A separate beat-led performance for the music club; the stage actor stays fixed. */
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-rig-ready="true"]>.hero-art{opacity:0!important;animation:none!important}
+.game-shell .ally-slot[data-actor-rig="music-v1"]:not([data-rig-ready="true"])>.hero-rig{visibility:hidden}
+.game-shell .ally-slot[data-actor-rig="music-v1"]>.hero-motion-frame{display:none}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="idle"] [data-part="head"]{animation:music-head 2800ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="idle"] [data-part="torso"]{animation:music-torso 2800ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="idle"] [data-part="right-arm"]{animation:music-tap 1400ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="idle"] [data-part="case"]{animation:music-case 2800ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+@keyframes music-head{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1.5deg)}}
+@keyframes music-torso{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}
+@keyframes music-tap{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(3deg)}}
+@keyframes music-case{0%,100%{transform:rotate(.4deg)}50%{transform:rotate(-.5deg)}}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="card-use"] .rig-part,
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="hit"] .rig-part{animation-duration:var(--actor-duration);animation-timing-function:ease-out;animation-fill-mode:both;animation-delay:var(--actor-delay)}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="card-use"] [data-part="head"]{animation-name:music-cue-head}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="card-use"] [data-part="torso"]{animation-name:music-cue-torso}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="card-use"] [data-part="right-arm"]{animation-name:music-cue-arm}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="card-use"] [data-part="left-arm"]{animation-name:music-cue-left}
+@keyframes music-cue-head{0%,18%{transform:rotate(5deg)}42%{transform:rotate(-4deg)}100%{transform:rotate(0)}}
+@keyframes music-cue-torso{0%,18%{transform:translateY(3px) rotate(-1deg)}42%{transform:translateY(-2px) rotate(1deg)}100%{transform:none}}
+@keyframes music-cue-arm{0%,16%{transform:rotate(-18deg)}38%{transform:rotate(12deg)}65%{transform:rotate(-6deg)}100%{transform:rotate(0)}}
+@keyframes music-cue-left{0%,20%{transform:rotate(4deg)}100%{transform:rotate(0)}}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="hit"] [data-part="head"]{animation-name:music-hit-head}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="hit"] [data-part="torso"]{animation-name:music-hit-torso}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="hit"] [data-part="right-arm"]{animation-name:music-hit-right}
+.game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="hit"] [data-part="left-arm"]{animation-name:music-hit-left}
+@keyframes music-hit-head{0%,18%{transform:rotate(-8deg)}100%{transform:rotate(0)}}
+@keyframes music-hit-torso{0%,18%{transform:rotate(-3deg)}100%{transform:rotate(0)}}
+@keyframes music-hit-right{0%,18%{transform:rotate(17deg)}100%{transform:rotate(0)}}
+@keyframes music-hit-left{0%,18%{transform:rotate(-6deg)}100%{transform:rotate(0)}}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="music-v1"] .rig-part{animation:none!important}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="music-v1"][data-actor-motion="card-use"] [data-part="right-arm"]{transform:rotate(-18deg)}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="music-v1"][data-actor-motion="hit"] [data-part="head"]{transform:rotate(-8deg)}
+@media(prefers-reduced-motion:reduce){
+  .game-shell .ally-slot[data-actor-rig="music-v1"] .rig-part{animation:none!important}
+  .game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="card-use"] [data-part="right-arm"]{transform:rotate(-18deg)}
+  .game-shell .ally-slot[data-actor-rig="music-v1"][data-actor-motion="hit"] [data-part="head"]{transform:rotate(-8deg)}
+}
