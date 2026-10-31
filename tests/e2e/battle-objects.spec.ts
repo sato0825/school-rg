@@ -47,6 +47,16 @@ for (const { width, height } of [{ width: 1440, height: 900 }, { width: 1024, he
     await expect(page.locator(".pile-empty")).toHaveText("カードはありません");
     await page.locator('#battle-pile-tray [data-action="close-pile"]').click();
     await expect(page.locator(".typing-input")).toBeFocused();
+    await draw.click();
+    await page.locator(".battle-map-trigger").click();
+    await expect(page.locator("#battle-pile-tray")).toBeHidden();
+    await expect(page.locator(".battle-map-overlay")).toBeVisible();
+    const pausedTime = await page.locator("[data-role=time]").innerText();
+    await page.clock.runFor(400);
+    await expect(page.locator("[data-role=time]")).toHaveText(pausedTime);
+    await page.keyboard.press("Escape");
+    await expect(page.locator(".battle-map-overlay")).toHaveCount(0);
+    await expect(page.locator(".typing-input")).toBeFocused();
   });
 
   test(`card piles and both sides' statuses stay readable at ${width}×${height}`, async ({ page }) => {

@@ -23,7 +23,8 @@ describe("run and typing combat HUD", () => {
     expect(root.textContent).toContain("次の行き先を選ぶ");
     root.querySelector<HTMLButtonElement>(".map-node.available[aria-label*='戦闘']")?.click();
     expect(root.querySelectorAll(".card")).toHaveLength(5);
-    expect(root.textContent).toContain("飛び散る答案");
+    const announcedIntent = root.querySelector(".intent-ticket .intent-copy strong")?.textContent;
+    expect(demoContent.intents.some((intent) => intent.label === announcedIntent)).toBe(true);
     expect(root.querySelector('.pile-token[data-pile="draw"]')?.getAttribute("aria-label")).toBe("山札 5枚、内容を見る");
     expect(root.querySelector('.pile-token[data-pile="discard"]')?.getAttribute("aria-label")).toBe("捨て札 0枚、内容を見る");
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "z", bubbles: true }));

@@ -13,9 +13,13 @@ const examples = [
   [2, "boss", "gym-scoreboard"], [2, "boss", "lab-ventilation"],
   [3, "combat", "window-shadow"], [3, "combat", "night-announcement"], [3, "combat", "lost-and-found"],
   [3, "combat", "empty-desk"], [3, "combat", "last-bus"], [3, "elite", "night-locker"], [3, "boss", "graduation-curtain"],
+  [1, "combat", "hall-mop"], [1, "combat", "folded-school-map"],
+  [2, "combat", "beaker-mist"], [2, "combat", "lab-coil"],
+  [3, "combat", "stage-spotlight"], [3, "combat", "archive-clock"],
 ] as const;
 
-test("all 25 enemy candidates decode and keep battle controls readable across three Acts", async ({ context }) => {
+test("all registered enemy candidates decode and keep battle controls readable across three Acts", async ({ context }) => {
+  expect(examples).toHaveLength(demoContent.enemies.length);
   for (const [act, kind, enemyId] of examples) {
     const base = createRunSession(42, "literature-demo", demoContent);
     const from: MapNode = { id: "art-start", act, floor: 0, kind: "start", nextIds: ["art-fight"] };
@@ -27,11 +31,12 @@ test("all 25 enemy candidates decode and keep battle controls readable across th
     const scene = await context.newPage();
     await scene.clock.install();
     await scene.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
-    const width = ["paper-heap", "lab-ventilation", "last-bus"].includes(enemyId) || act === 2 ? 1280 : 390;
+    const width = ["paper-heap", "lab-ventilation", "last-bus"].includes(enemyId) || act === 2 ? 1280
+      : ["hall-mop", "folded-school-map", "stage-spotlight", "archive-clock"].includes(enemyId) ? 1024 : 390;
     await scene.setViewportSize({ width, height: 844 });
     await scene.goto("/");
     const enemy = scene.locator(".enemy-art");
-    await expect(enemy).toHaveAttribute("src", new RegExp(`${enemyId}-candidate-v${enemyId === "lost-and-found" ? 2 : 1}`));
+    await expect(enemy).toHaveAttribute("src", new RegExp(`${enemyId}-candidate-v${["lost-and-found", "hall-mop"].includes(enemyId) ? 2 : 1}`));
     await enemy.evaluate(async (image) => (image as HTMLImageElement).decode());
     expect(await enemy.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(1_000);
     await expect(scene.locator(".intent-ticket")).toBeInViewport();
