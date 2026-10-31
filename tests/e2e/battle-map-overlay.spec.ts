@@ -50,7 +50,8 @@ test("closing the map preserves a manual pause and reload does not reopen the ov
   await page.locator(".map-node.available").filter({ hasText: "戦闘" }).last().click();
   await page.getByRole("button", { name: "一時停止" }).click();
   await page.getByRole("button", { name: "マップ", exact: true }).click();
-  await page.getByRole("button", { name: /閉じる Esc/ }).click();
+  await page.getByRole("button", { name: /閉じる Esc/ }).focus();
+  await page.keyboard.press("Enter");
   await expect(page.getByRole("button", { name: "再開" })).toBeVisible();
   await expect(page.getByRole("textbox", { name: "カード名をタイプ" })).toBeDisabled();
 

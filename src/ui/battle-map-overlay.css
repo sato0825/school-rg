@@ -157,12 +157,33 @@
 .battle-map-footer .battle-map-key-next { background: #efb4c2; }
 .game[data-effects="quiet"] .battle-map-panel { background: #203b4e; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .game[data-effects="quiet"] .battle-map-scrim { background: #10263888; }
+@media (min-width: 761px) and (max-width: 1100px) {
+  .game { grid-template-rows: 96px minmax(0, 1fr) 326px; }
+  .topbar { display: grid; grid-template-columns: minmax(0, 1fr) repeat(5, auto); grid-template-rows: 32px 44px; gap: 4px; padding: 6px 10px; }
+  .topbar .run-meta { grid-column: 1; grid-row: 1; }
+  .topbar .pause-button { grid-column: 2; grid-row: 1; }
+  .topbar .battle-guide { grid-column: 3; grid-row: 1; }
+  .topbar .battle-map-trigger { grid-column: 4; grid-row: 1; }
+  .topbar .stimulus-toggle { grid-column: 5; grid-row: 1; }
+  .topbar .audio-toggle { grid-column: 6; grid-row: 1; }
+  .topbar .player-hud { grid-column: 1 / -1; grid-row: 2; width: 100%; max-width: none; height: 44px; }
+  .game:has(.playtest-export) { grid-template-rows: 120px minmax(0, 1fr) 326px; }
+  .topbar:has(.playtest-export) { grid-template-rows: 32px 44px 18px; }
+  .topbar .playtest-export { grid-column: 1 / -1; grid-row: 3; justify-self: end; }
+}
 @media (max-width: 900px) {
   .battle-map-panel { width: calc(100% - 42px); max-height: calc(100dvh - 50px); }
   .battle-map-heading { padding: 15px 18px 10px; }
   .battle-map-context { margin: 0 18px 10px; }
   .battle-map-footer { padding: 10px 18px 14px; }
   .battle-map-scroll { max-height: calc(100dvh - 210px); }
+}
+@media (max-width: 760px) {
+  .topbar .battle-map-trigger { grid-column: 2; grid-row: 3; padding: 2px 6px; font-size: 9px; }
+  .battle-map-panel { width: calc(100% - 20px); }
+  .battle-map-floor-nodes { gap: 3px; }
+  .battle-map-node { width: min(64px, 22%); height: 52px; }
+  .battle-map-footer span:last-child { margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .battle-map-panel, .battle-map-node { animation: none !important; transition: none !important; }
