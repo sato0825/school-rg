@@ -17,3 +17,11 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run check
+      - name: Preserve failed normal-run diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: normal-run-diagnostics-${{ github.run_id }}
+          path: test-results/**/normal-run-diagnostic*.json
+          if-no-files-found: ignore
+          retention-days: 7

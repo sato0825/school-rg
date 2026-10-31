@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { demoContent, demoEnemyAi, demoRunContentTables } from "../../src/content/demo-battle.js";
 import { createRunSession, enterRunNode, type EncounterPool } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
@@ -70,7 +70,7 @@ async function scriptActiveEvent(page: import("@playwright/test").Page, eventId:
   await expect(page.locator('.location-scene[data-location="event"]')).toBeVisible();
 }
 
-async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel"): Promise<void> {
+async function typeThroughBattle(page: import("@playwright/test").Page, completion = ".reward-panel", fixedInputMsPerKey = 0): Promise<void> {
   const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "thrust", "riposte", "final cut", "beat", "chorus", "crescendo", "mural", "sketch", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "parry", "stance", "kata", "tempo", "sync", "rest", "frame", "outline", "defend", "counter", "draw", "boost", "delay"];
   const artPriorities = ["frame", "defend", ...priorities.filter((word) => word !== "frame" && word !== "defend")];
   const isArt = (await page.locator(".player-hud").innerText()).includes("美術部");
@@ -80,6 +80,7 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
       const words = await page.locator(".card-word").allInnerTexts();
       const word = (isArt ? artPriorities : priorities).find((item) => words.includes(item));
       if (!word) break;
+      if (fixedInputMsPerKey) await page.clock.runFor(word.length * fixedInputMsPerKey);
       // Keep the long-run bot independent of CI host key-dispatch latency.
       await page.evaluate((value) => {
         for (const key of value) window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
@@ -948,12 +949,36 @@ test("a full Act can be finished through typed combat, rewards and a boss", asyn
   await expect(page.locator(".run-header")).toContainText("ACT 2 · 0F");
 });
 
-async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 36, reloadAtActTwo = false): Promise<{ battles: number; bosses: number }> {
+async function readRunDiagnostic(page: import("@playwright/test").Page, phase: string): Promise<unknown> {
+  return page.evaluate((phase) => {
+    const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
+    const run = saved.session.run;
+    const node = run.map.nodes.find((item: { id: string }) => item.id === run.map.currentNodeId);
+    const entries = run.combat?.actionLog ?? run.lastCombatLog?.entries ?? [];
+    const count = (kind: string) => entries.filter((entry: { kind: string }) => entry.kind === kind).length;
+    const clock = run.combat?.clock;
+    return {
+      phase, seed: run.seed, rngState: run.rngState, act: run.act, nodeId: node?.id, floor: node?.floor,
+      nodeKind: node?.kind, screen: saved.session.screen, hp: run.player.hp, maxHp: run.player.maxHp,
+      gold: run.gold, deckSize: run.deck.length, potionCount: run.potionIds.length,
+      logicalTurn: run.combat?.turn ?? run.lastCombatLog?.turn ?? null,
+      clockSource: "performance.now via Playwright page.clock",
+      clockNowMs: Math.floor(performance.now()), clockRemainingMs: clock?.remainingMs ?? null,
+      clockDeadlineMs: clock ? clock.lastEventAtMs + clock.remainingMs : null,
+      clockPaused: clock?.paused ?? null, cardInputSuccessCount: count("card"),
+      potionInputSuccessCount: count("potion"), enemyActionCount: count("enemy"),
+      actionCount: entries.length,
+    };
+  }, phase);
+}
+
+async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 36, reloadAtActTwo = false, onTrace?: (phase: string) => Promise<void>, fixedInputMsPerKey = 0): Promise<{ battles: number; bosses: number }> {
   let battles = 0;
   let bosses = 0;
   let reloadedAtActTwo = false;
   const bossNames = [/追試の番人|体育館の得点板/, /部活監査の影|実験棟の換気装置/, /終業の鐘|講堂の閉じる幕/];
   for (let step = 0; step < maxSteps && !(await page.locator(".run-result").count()); step++) {
+    if (onTrace) await onTrace(`step-${step}`);
     if (await page.locator(".map-panel").count()) {
       if (reloadAtActTwo && !reloadedAtActTwo && await page.evaluate(() => {
         const run = JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run;
@@ -1002,7 +1027,8 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
         bosses++;
       }
       battles++;
-      await typeThroughBattle(page, ".reward-panel, .run-result");
+      try { await typeThroughBattle(page, ".reward-panel, .run-result", fixedInputMsPerKey); }
+      finally { if (onTrace) await onTrace(`battle-${battles}-end`); }
     } else throw new Error(`unexpected run screen at step ${step}`);
   }
   const result = await page.locator(".run-result").innerText().catch(() => "ラン結果画面なし");
@@ -1061,7 +1087,18 @@ for (const [clubLabel, clubId] of [
     await page.goto("/?seed=42");
     await page.getByRole("button", { name: "ランを始める" }).click();
     await page.getByRole("button", { name: new RegExp(clubLabel) }).click();
-    await clearThreeActs(page, 130, true);
+    await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 10_000);
+    const diagnostics: unknown[] = [];
+    const onTrace = async (phase: string) => { diagnostics.push(await readRunDiagnostic(page, phase)); };
+    try { await clearThreeActs(page, 130, true, onTrace, 50); }
+    finally {
+      await onTrace("final").catch(() => undefined);
+      const diagnosticPath = testInfo.outputPath("normal-run-diagnostic.json");
+      await writeFile(diagnosticPath, JSON.stringify({ clubId, seed: 42, diagnostics }, null, 2));
+      await testInfo.attach("normal-run-diagnostic.json", {
+        path: diagnosticPath, contentType: "application/json",
+      });
+    }
     const route = await page.evaluate(() => {
       const session = JSON.parse(localStorage.getItem("school-rg-run-v1")!).session;
       const kinds = Object.fromEntries(session.run.map.nodes.map((node: { id: string; kind: string }) => [node.id, node.kind]));
