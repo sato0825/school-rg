@@ -1,6 +1,6 @@
 import { actionDelayMs, MOTION_MS } from "./motion-timing.js";
 
-/** Candidate whole-pose sources. Authored in-between frames and editable layers are still missing. */
+/** Candidate whole-pose sources used as a fallback until every rig layer is decoded. */
 export type ActorPoseSources = Readonly<{ idle: string; activate: string; hit: string }>;
 export type ActorMotionKind = "card-use" | "hit";
 
@@ -40,7 +40,7 @@ export function actorMotionState(
   clubId: string,
   sources: ActorPoseSources | undefined,
 ): Readonly<{ baseUrl: string; overlayUrl: string | null; kind: ActorMotionKind | null; delayMs: number }> | null {
-  if (clubId !== "literature-demo" || !sources) return null;
+  if ((clubId !== "literature-demo" && clubId !== "science-demo") || !sources) return null;
   const kind = motion === "hero" ? "card-use" : motion === "hit" ? "hit" : null;
   if (!kind) return { baseUrl: sources.idle, overlayUrl: null, kind: null, delayMs: 0 };
   const clip = actorMotionClips[kind];

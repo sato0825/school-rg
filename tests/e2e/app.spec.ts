@@ -767,10 +767,15 @@ test("candidate pose preview follows enemy damage and typed activation", async (
   await page.goto("/?artPreview=1&shortRun=1&seed=42");
   await expect(page.locator(".enemy-hud")).toContainText("答案の切れ端");
   const hero = page.locator(".hero-art");
+  const actor = page.locator(".ally-slot").first();
+  const rig = actor.locator(".hero-rig");
   const decoded = () => hero.evaluate((image) => (image as HTMLImageElement).naturalWidth);
   await expect(page.locator(".art-preview-label")).toContainText("未採用");
   await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v2/);
   await expect.poll(decoded).toBeGreaterThan(0);
+  await expect(actor).toHaveAttribute("data-rig-ready", "true");
+  await expect(rig).toHaveAttribute("data-rig-id", "science-rig-candidate-v5");
+  const rigNode = await rig.elementHandle();
   // The timer starts after the restored battle renders. Observe the short hit
   // state while advancing virtual time instead of assuming an exact boundary.
   let hitObserved = false;
@@ -783,6 +788,8 @@ test("candidate pose preview follows enemy damage and typed activation", async (
     }
   }
   expect(hitObserved).toBe(true);
+  await expect(actor).toHaveAttribute("data-actor-motion", "hit");
+  expect(await actor.locator('[data-part="head-hit"]').evaluate((node) => getComputedStyle(node).visibility)).toBe("visible");
   await page.clock.runFor(420);
   await expect(hero).toHaveAttribute("src", /serious-student-idle-candidate-v2/);
   await page.clock.runFor(730);
@@ -795,8 +802,9 @@ test("candidate pose preview follows enemy damage and typed activation", async (
   await expect.poll(decoded).toBeGreaterThan(0);
   await page.clock.runFor(170);
   await page.keyboard.press("z");
-  await expect(hero).toHaveClass(/act/);
-  const actionDelay = await hero.evaluate((image) => Number.parseFloat((image as HTMLImageElement).style.animationDelay));
+  await expect(actor).toHaveAttribute("data-actor-motion", "card-use");
+  expect(await rig.evaluate((node, previous) => node === previous, rigNode)).toBe(true);
+  const actionDelay = await actor.evaluate((node) => Number.parseFloat((node as HTMLElement).style.getPropertyValue("--actor-delay")));
   expect(actionDelay).toBeLessThan(-100);
   expect(actionDelay).toBeGreaterThan(-380);
   await page.clock.runFor(210);

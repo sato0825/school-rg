@@ -1,0 +1,62 @@
+/* Science reads her notes, raises the pen to act, and shields the notebook on impact. */
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-rig-ready="true"]>.hero-art{opacity:0!important;animation:none!important}
+.game-shell .ally-slot[data-actor-rig="science-v1"]:not([data-rig-ready="true"])>.hero-rig{visibility:hidden}
+.game-shell .ally-slot[data-actor-rig="science-v1"]>.hero-motion-frame{display:none}
+.game-shell .ally-slot[data-actor-rig="science-v1"] .hero-rig::before{left:35%;width:15%;bottom:.5%}
+.game-shell .ally-slot[data-actor-rig="science-v1"] .hero-rig::after{right:31%;width:15%;bottom:.5%}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="idle"] .hero-rig::before{animation:science-left-contact 3700ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="idle"] .hero-rig::after{animation:science-right-contact 3700ms ease-in-out infinite;animation-delay:var(--rig-idle-delay,0ms)}
+@keyframes science-left-contact{0%,100%{transform:translateX(0) scaleX(1);opacity:.72}50%{transform:translateX(-2%) scaleX(.96);opacity:.65}}
+@keyframes science-right-contact{0%,100%{transform:translateX(0) scaleX(1);opacity:.72}50%{transform:translateX(2%) scaleX(1.03);opacity:.75}}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="idle"] .rig-part{animation-delay:var(--rig-idle-delay,0ms)}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="idle"] [data-part="head"]{animation:science-observe-head 3700ms ease-in-out infinite}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="idle"] [data-part="right-arm-pen"]{animation:science-observe-pen 3700ms ease-in-out infinite}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="idle"] [data-part="left-arm-notebook"]{animation:science-observe-book 3700ms ease-in-out infinite}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="idle"] [data-part="skirt"]{animation:science-observe-skirt 3700ms ease-in-out infinite}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="idle"] [data-part="left-leg"]{animation:science-observe-left-leg 3700ms ease-in-out infinite}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="idle"] [data-part="right-leg"]{animation:science-observe-right-leg 3700ms ease-in-out infinite}
+@keyframes science-observe-head{0%,28%,100%{transform:rotate(0)}48%,68%{transform:rotate(3deg)}}
+@keyframes science-observe-pen{0%,30%,100%{transform:rotate(0)}48%{transform:rotate(-8deg)}60%{transform:rotate(-5deg)}}
+@keyframes science-observe-book{0%,100%{transform:rotate(0)}48%,68%{transform:rotate(2deg)}}
+@keyframes science-observe-skirt{0%,100%{transform:rotate(0)}50%{transform:rotate(.45deg)}}
+@keyframes science-observe-left-leg{0%,100%{transform:rotate(0)}50%{transform:rotate(-.45deg)}}
+@keyframes science-observe-right-leg{0%,100%{transform:rotate(0)}50%{transform:rotate(.35deg)}}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="card-use"] .rig-part,
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="hit"] .rig-part{
+  animation-duration:var(--actor-duration);animation-timing-function:ease-out;
+  animation-fill-mode:both;animation-delay:var(--actor-delay)
+}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="card-use"] [data-part="head"]{animation-name:science-card-head}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="card-use"] [data-part="right-arm-pen"]{animation-name:science-card-pen}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="card-use"] [data-part="left-arm-notebook"]{animation-name:science-card-book}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="card-use"] [data-part="torso"]{animation-name:science-card-body}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="card-use"] [data-part="skirt"]{animation-name:science-card-skirt}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="card-use"] [data-part="left-leg"]{animation-name:science-card-left-leg}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="card-use"] [data-part="right-leg"]{animation-name:science-card-right-leg}
+@keyframes science-card-head{0%,20%{transform:rotate(-5deg)}100%{transform:rotate(0)}}
+@keyframes science-card-pen{0%,20%{transform:rotate(-38deg) translateY(-3%)}100%{transform:rotate(0)}}
+@keyframes science-card-book{0%,20%{transform:rotate(-9deg)}100%{transform:rotate(0)}}
+@keyframes science-card-body{0%,20%{transform:rotate(1.5deg)}100%{transform:rotate(0)}}
+@keyframes science-card-skirt{0%,20%{transform:rotate(.7deg)}100%{transform:rotate(0)}}
+@keyframes science-card-left-leg{0%,20%{transform:rotate(-1.2deg)}100%{transform:rotate(0)}}
+@keyframes science-card-right-leg{0%,20%{transform:rotate(.5deg)}100%{transform:rotate(0)}}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="hit"] [data-part="head-hit"]{animation-name:science-hit-head}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="hit"] [data-part="right-arm-pen"]{animation-name:science-hit-pen}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="hit"] [data-part="left-arm-notebook"]{animation-name:science-hit-book}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="hit"] [data-part="torso"]{animation-name:science-hit-body}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="hit"] [data-part="skirt"]{animation-name:science-hit-skirt}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="hit"] [data-part="left-leg"]{animation-name:science-hit-left-leg}
+.game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="hit"] [data-part="right-leg"]{animation-name:science-hit-right-leg}
+@keyframes science-hit-head{0%,20%{transform:rotate(-7deg)}100%{transform:rotate(0)}}
+@keyframes science-hit-pen{0%,20%{transform:rotate(21deg)}100%{transform:rotate(0)}}
+@keyframes science-hit-book{0%,20%{transform:rotate(-20deg) translateX(-3%)}100%{transform:rotate(0)}}
+@keyframes science-hit-body{0%,20%{transform:rotate(-3deg)}100%{transform:rotate(0)}}
+@keyframes science-hit-skirt{0%,20%{transform:rotate(-.8deg)}100%{transform:rotate(0)}}
+@keyframes science-hit-left-leg{0%,20%{transform:rotate(-.7deg)}100%{transform:rotate(0)}}
+@keyframes science-hit-right-leg{0%,20%{transform:rotate(.6deg)}100%{transform:rotate(0)}}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="science-v1"][data-actor-motion="card-use"] [data-part="right-arm-pen"]{transform:rotate(-38deg)}
+.game[data-effects="quiet"] .ally-slot[data-actor-rig="science-v1"][data-actor-motion="hit"] [data-part="left-arm-notebook"]{transform:rotate(-20deg)}
+@media(prefers-reduced-motion:reduce){
+  .game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="card-use"] [data-part="right-arm-pen"]{transform:rotate(-38deg)}
+  .game-shell .ally-slot[data-actor-rig="science-v1"][data-actor-motion="hit"] [data-part="left-arm-notebook"]{transform:rotate(-20deg)}
+}

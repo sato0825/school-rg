@@ -1,0 +1,22 @@
+{
+  "id": "science-rig-candidate-v1",
+  "characterId": "science-student",
+  "status": "candidate",
+  "canvas": { "width": 1024, "height": 1536 },
+  "runtimeScale": 1.09,
+  "groundY": 1506,
+  "sourceSheet": {
+    "file": "docs/art/candidates/science-rig-parts-sheet-candidate-v1.png",
+    "sha256": "5032d0f23e3e9ea57e9775b043d7d4cc78a33870a5a0f044a4e878ebe6f36f23"
+  },
+  "editableSource": "docs/art/sources/science-rig-candidate-v1.ora",
+  "expressionLayers": [],
+  "parts": [
+    { "id": "left-leg", "file": "docs/art/candidates/science-rig-parts-v1/left-leg.png", "sha256": "b7d6b01e7085e6201729bafd4bda199cbb8a5483fc534505eef3efb6d0f073f6", "x": 260, "y": 805, "width": 263, "height": 697, "pivotX": 206, "pivotY": 12 },
+    { "id": "right-leg", "file": "docs/art/candidates/science-rig-parts-v1/right-leg.png", "sha256": "5079b2bfe249fdc5229e3e7a510095376945b806dd0e1d498cc539295ae72e40", "x": 520, "y": 800, "width": 281, "height": 706, "pivotX": 56, "pivotY": 12 },
+    { "id": "torso", "file": "docs/art/candidates/science-rig-parts-v1/torso.png", "sha256": "d574e6d58aa74201c1b7a932d01d7e04024b93e98ea15b4734e12711587ffad5", "x": 245, "y": 365, "width": 470, "height": 477, "pivotX": 235, "pivotY": 420 },
+    { "id": "right-arm-pen", "file": "docs/art/candidates/science-rig-parts-v1/right-arm-pen.png", "sha256": "0280506e198f828151bef0cf3e8430da32b9fe80d75bee7aaa0a5df725262d14", "x": 300, "y": 280, "width": 181, "height": 366, "pivotX": 42, "pivotY": 107 },
+    { "id": "left-arm-notebook", "file": "docs/art/candidates/science-rig-parts-v1/left-arm-notebook.png", "sha256": "1ad212236e348d9535407071ecd8f416fb952f561aac6530b26d90b14578cd9f", "x": 520, "y": 420, "width": 287, "height": 290, "pivotX": 52, "pivotY": 14 },
+    { "id": "head", "file": "docs/art/candidates/science-rig-parts-v1/head.png", "sha256": "17b79bbaf79c29efe7e17db9663bde78539c9ce7f2009d97488f9e01a080def2", "x": 320, "y": 65, "width": 384, "height": 334, "pivotX": 180, "pivotY": 310 }
+  ]
+}
