@@ -48,5 +48,11 @@ for (const [count, width] of [[3, 390], [4, 390], [5, 390], [5, 1440]] as const)
     await roster.nth(1).click();
     await expect(roster.nth(1)).toBeFocused();
     await expect(roster.nth(1).locator(".enemy-detail")).toBeVisible();
+    if (count === 5 && width === 390) {
+      const beforeHp = Number(await roster.nth(1).locator(".enemy-roster-bar").getAttribute("aria-valuenow"));
+      await page.keyboard.type("strike");
+      await expect(page.locator(".battle-message")).toContainText("strike を発動");
+      expect(Number(await roster.nth(1).locator(".enemy-roster-bar").getAttribute("aria-valuenow"))).toBeLessThan(beforeHp);
+    }
   });
 }
