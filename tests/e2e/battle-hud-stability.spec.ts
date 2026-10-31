@@ -25,7 +25,9 @@ for (const width of [1440, 390]) {
     });
     const before = await geometry();
     await expect(page.locator(".topbar .player-hud")).toContainText("科学部");
-    await expect(page.locator(".topbar .battle-guide")).toHaveCount(2);
+    await expect(page.locator('.topbar [data-action="toggle-battle-help"]')).toHaveCount(1);
+    await expect(page.locator('.topbar [data-action="open-combat-log"]')).toHaveCount(0);
+    await expect(page.locator(".topbar .brand")).toHaveCount(0);
     await expect(page.locator(".typing-row .battle-guide")).toHaveCount(0);
     await expect(page.locator(".intent-copy small")).toContainText("次の行動");
     await expect(page.locator(".enemy-health-track")).toHaveAttribute("role", "meter");
