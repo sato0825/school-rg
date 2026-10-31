@@ -15,9 +15,9 @@ export function cardFxForUse(card: Card, run: RunState, targetEnemyInstanceId: s
   const layout = stageLayout(allyCount, enemies.length);
   const sourceXPercent = layout.allies[0]!.xPercent;
   const effectKinds = new Set(effects.filter((effect) => card.effectIds.includes(effect.id)).map((effect) => effect.kind));
-  const visualAction = effectKinds.has("transform_card") ? "transform"
+  const visualAction: CardFx["visualAction"] = effectKinds.has("transform_card") ? "transform"
     : effectKinds.has("copy_card") ? "copy"
-      : card.keywordIds.includes("retain") ? "retain" : null;
+      : card.keywordIds.includes("retain") ? "retain" : undefined;
   const action = visualAction ? { visualAction } : {};
   if (card.type !== "attack") return { kind: "support", sourceXPercent, targetXPercents: [sourceXPercent], startedAtMs, ...action };
   const targetXPercents = card.target === "all_enemies"
