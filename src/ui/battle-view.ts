@@ -161,6 +161,5 @@ export function renderBattle(root: HTMLElement, run: RunState, content: ContentR
       ${selectionShelf}<p class="battle-message" role="status" aria-live="polite">${html(view.message)}</p>
     </section>
     ${terminal ? `<div class="result-backdrop"><section class="result-panel" role="dialog" aria-modal="true"><span>COMBAT RESULT</span><h2>${combat.phase === "WON" ? "勝利" : "敗北"}</h2><p>${combat.phase === "WON" ? "廊下の敵を退けました。" : "もう一度、カードの入力を試しましょう。"}</p><button type="button" data-action="restart">もう一度戦う</button></section></div>` : ""}
-    ${combat.phase === "ENEMY_PHASE" ? `<div class="phase-banner" role="status">敵の行動</div>` : ""}
   </main>`;
 }
