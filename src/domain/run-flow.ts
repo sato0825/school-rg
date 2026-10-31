@@ -14,7 +14,8 @@ import { generateCardRewards, type RewardGenerator } from "./card-rewards.js";
 export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "treasure" | "won" | "lost";
 export type EncounterCandidate = string | { readonly id: string; readonly enemyIds: readonly string[] };
 export type EncounterPool = Readonly<Record<"combat" | "elite" | "boss", readonly EncounterCandidate[]>>;
-export type EncounterTable = EncounterPool | { readonly byAct: Readonly<Record<1 | 2 | 3, EncounterPool>> };
+export type EncounterSelectionPolicy = "uniform" | "cycle";
+export type EncounterTable = EncounterPool | { readonly byAct: Readonly<Record<1 | 2 | 3, EncounterPool>>; readonly selectionPolicy?: EncounterSelectionPolicy };
 export type RunContentTables = { readonly enemies: EncounterTable; readonly events?: EventPools };
 
 function encounterPool(encounters: EncounterTable, act: number): EncounterPool {
@@ -29,6 +30,8 @@ export type RunSession = {
   screen: RunScreen;
   completedNodeIds: readonly string[];
   rewardCardIds: readonly string[];
+  /** Candidate IDs already drawn in the current Act/kind cycle. Older saves omit this. */
+  encounterHistory?: Readonly<Record<string, readonly string[]>>;
 };
 
 function currentNode(run: RunState): MapNode {
@@ -49,7 +52,7 @@ export function createRunSession(seed: number, clubId: string, content: ContentR
     deck, relicIds: club.startingRelicId ? [club.startingRelicId] : [], potionIds: club.startingPotionIds ?? [], gold: economy.startingGold, shop: null, event: null, treasure: null,
     map: { nodes: map.nodes, currentNodeId: map.currentNodeId }, combat: null,
   }, content);
-  return { run, screen: "map", completedNodeIds: [map.currentNodeId], rewardCardIds: [] };
+  return { run, screen: "map", completedNodeIds: [map.currentNodeId], rewardCardIds: [], encounterHistory: {} };
 }
 
 export function availableRunNodes(session: RunSession): MapNode[] {
@@ -109,12 +112,21 @@ export function enterRunNode(session: RunSession, nextNodeId: string, content: C
   const encounters = "enemies" in tables ? tables.enemies : tables;
   const pool = encounterPool(encounters, next.act)[next.kind];
   if (!pool.length) throw new RangeError(`empty encounter pool for ${next.kind}`);
-  const draw = randomInt(session.run.rngState, pool.length);
-  const choice = pool[draw.value]!;
+  const policy = "byAct" in encounters ? encounters.selectionPolicy ?? "uniform" : "uniform";
+  const history = session.encounterHistory ?? {};
+  const historyKey = `${next.act}:${next.kind}`;
+  const seen = new Set(history[historyKey] ?? []);
+  const available = policy === "cycle" ? pool.filter((candidate) => !seen.has(typeof candidate === "string" ? candidate : candidate.id)) : pool;
+  const options = available.length ? available : pool;
+  const draw = randomInt(session.run.rngState, options.length);
+  const choice = options[draw.value]!;
   if (typeof choice !== "string" && !choice.id.trim()) throw new RangeError("encounter formation ID is empty");
   const enemyIds = typeof choice === "string" ? choice : choice.enemyIds;
   const moved = moveToConnectedNode({ ...session.run, rngState: draw.state }, next.id);
-  return { ...session, run: createEncounter(moved, enemyIds, content, ai), screen: "combat", rewardCardIds: [] };
+  const encounterHistory = policy === "cycle"
+    ? { ...history, [historyKey]: [...(available.length ? history[historyKey] ?? [] : []), typeof choice === "string" ? choice : choice.id] }
+    : history;
+  return { ...session, run: createEncounter(moved, enemyIds, content, ai), screen: "combat", rewardCardIds: [], encounterHistory };
 }
 
 export function chooseRunTreasure(session: RunSession, offerId: string | null, content: ContentRegistry, config: GameConfig = DEFAULT_GAME_CONFIG): RunSession {
