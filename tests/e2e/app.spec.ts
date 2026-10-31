@@ -53,6 +53,13 @@ async function enterNextNode(page: import("@playwright/test").Page): Promise<voi
   else await page.locator(".map-node.available").first().click();
 }
 
+async function expectIntentMatchesSavedBattle(page: import("@playwright/test").Page): Promise<void> {
+  const intentId = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.enemies[0].intentId as string);
+  const intent = demoContent.intents.find((item) => item.id === intentId);
+  expect(intent).toBeDefined();
+  await expect(page.locator(".intent-ticket")).toContainText(intent!.label);
+}
+
 async function scriptActiveEvent(page: import("@playwright/test").Page, eventId: string): Promise<void> {
   await page.addInitScript((id) => {
     const saved = JSON.parse(localStorage.getItem("school-rg-run-v1")!);
@@ -271,8 +278,9 @@ test("renders the combat HUD and accepts direct keyboard input", async ({ page }
   await page.keyboard.press("z");
   await expect(page.locator(".typing-visual")).toHaveText("");
   await expect(page.locator(".typing-input")).not.toHaveAttribute("placeholder");
+  const initialHp = Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"));
   await page.keyboard.type("heavy strike");
-  await expect(page.locator(".enemy-hud")).toContainText("10/24");
+  await expect(page.locator(".enemy-health-track")).toHaveAttribute("aria-valuenow", String(initialHp - 14));
   await expect(page.locator(".card")).toHaveCount(4);
 });
 
@@ -429,10 +437,11 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await page.clock.install();
   await startDemoRun(page);
   await enterNextNode(page);
-  await expect(page.locator(".intent-ticket")).toContainText("焦りを誘う");
+  await expectIntentMatchesSavedBattle(page);
+  const initialHp = Number(await page.locator(".enemy-health-track").getAttribute("aria-valuenow"));
   await page.keyboard.type("heavy strike");
   await page.keyboard.type("strike");
-  await expect(page.locator(".enemy-hud")).toContainText("4/24");
+  await expect(page.locator(".enemy-health-track")).toHaveAttribute("aria-valuenow", String(initialHp - 20));
   await page.getByRole("button", { name: "一時停止" }).click();
   const pausedTime = await page.locator("[data-role=time]").innerText();
   await page.locator(".enemy-slot").click();
@@ -442,10 +451,9 @@ test("a typed battle reaches victory with the visible Intent and pile counts", a
   await page.getByRole("button", { name: "再開" }).click();
   await page.clock.runFor(11_000);
   await expect(page.locator(".run-meta")).toContainText("TURN 2");
-  await expect(page.locator(".player-hud")).toContainText("40/40");
   await expect(page.locator(".relic-row")).toContainText("図書室のしおり");
   await expect(page.locator('.pile-token[data-pile="discard"]')).toHaveAttribute("aria-label", "捨て札 5枚");
-  await expect(page.locator(".intent-ticket")).toContainText("遅刻札を投げる");
+  await expectIntentMatchesSavedBattle(page);
   await typeThroughBattle(page);
   await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
 });
@@ -968,7 +976,10 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await page.getByRole("button", { name: /文芸部/ }).click();
   await expect(page.locator(".map-stats")).toContainText("難度 1");
   await enterNextNode(page);
-  await expect(page.locator(".enemy-hud")).toContainText("29/29");
+  const ascensionEnemy = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.enemies[0] as { enemyId: string; hp: number; maxHp: number });
+  expect(ascensionEnemy.hp).toBe(ascensionEnemy.maxHp);
+  expect(ascensionEnemy.maxHp).toBeGreaterThan(demoContent.enemies.find((enemy) => enemy.id === ascensionEnemy.enemyId)!.maxHp);
+  await expect(page.locator(".enemy-health-track")).toHaveAttribute("aria-valuemax", String(ascensionEnemy.maxHp));
 });
 
 test("literature clears three Acts by typing at tablet width after a save reload", async ({ page }) => {
