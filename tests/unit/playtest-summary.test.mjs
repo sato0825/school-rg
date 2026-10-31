@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { execFileSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import process from "node:process";
+import { fileURLToPath, URL } from "node:url";
 import { summarizePlaytests, TARGET_RUN_MS } from "../../scripts/summarize-playtests.mjs";
 
 const makeRecord = (runId, clubId, result, activeMs, battles = []) => ({

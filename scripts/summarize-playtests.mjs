@@ -1,4 +1,7 @@
 import { readFile } from "node:fs/promises";
+import console from "node:console";
+import process from "node:process";
+import { URL } from "node:url";
 
 export const TARGET_RUN_MS = 60 * 60 * 1_000;
 const CLUB_IDS = ["literature-demo", "science-demo", "kendo-demo", "music-demo", "art-demo"];
