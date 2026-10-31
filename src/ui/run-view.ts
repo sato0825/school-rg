@@ -72,7 +72,7 @@ export function renderRunReward(root: HTMLElement, session: RunSession, content:
   const signature = new Set(content.clubs.find((club) => club.id === session.run.clubId)?.signatureCardIds ?? []);
   const cards = session.rewardCardIds.map((cardId) => {
     const card = content.cards.find((item) => item.id === cardId)!;
-    return `<button type="button" class="reward-card ${signature.has(card.id) ? "signature" : ""}" data-action="reward-card" data-id="${card.id}"><small>${signature.has(card.id) ? "部活固有 · " : ""}${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span></button>`;
+    return `<button type="button" class="reward-card ${signature.has(card.id) ? "signature" : ""}" data-card-kind="${card.type}" data-action="reward-card" data-id="${card.id}"><small>${signature.has(card.id) ? "部活固有 · " : ""}${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span></button>`;
   }).join("");
   root.innerHTML = shell("戦闘報酬", `<section class="reward-panel"><span class="eyebrow">COMBAT CLEAR</span><h2>カードを1枚選ぶ</h2><p>選んだカードはこのランのデッキへ加わります。</p><div class="reward-options">${cards}</div><button type="button" class="skip-reward" data-action="skip-reward">報酬を受け取らず進む</button><div class="map-stats">♥ ${session.run.player.hp}/${session.run.player.maxHp} · ${session.run.gold}G · デッキ ${session.run.deck.length}枚</div></section>`, art, session.run.act);
 }
@@ -98,7 +98,7 @@ export function renderRunShop(root: HTMLElement, session: RunSession, content: C
   const offers = shop.offers.map((offer) => {
     const card = content.cards.find((item) => item.id === offer.cardId)!;
     const reason = offer.purchased ? "購入済み" : gold < offer.price ? "所持金不足" : "";
-    return `<button type="button" class="reward-card" data-action="buy-offer" data-id="${offer.offerId}" ${reason ? "disabled" : ""}><small>${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span><b>${offer.price}G${reason ? ` · ${reason}` : ""}</b></button>`;
+    return `<button type="button" class="reward-card" data-card-kind="${card.type}" data-action="buy-offer" data-id="${offer.offerId}" ${reason ? "disabled" : ""}><small>${html(card.type.toUpperCase())}</small><strong>${html(card.input.text)}</strong><span>${html(describeCard(card, content))}</span><b>${offer.price}G${reason ? ` · ${reason}` : ""}</b></button>`;
   }).join("");
   const relicOffers = shop.relicOffers.map((offer) => {
     const relic = content.relics.find((item) => item.id === offer.contentId)!;
