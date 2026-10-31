@@ -15,6 +15,7 @@ import "./card-visuals.css";
 import "./visual-system.css";
 import "./actor-motion.css";
 import "./literature-rig.css";
+import "./kendo-rig.css";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("Missing #app root");

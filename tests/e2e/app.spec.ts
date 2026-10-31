@@ -74,6 +74,8 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
   const priorities = ["heavy strike", "sweep", "proof", "verse", "reaction", "thrust", "riposte", "final cut", "beat", "chorus", "crescendo", "mural", "sketch", "strike", "jot", "sample", "distill", "observe", "finish", "poison", "leaf", "formula", "quarantine", "parry", "stance", "kata", "tempo", "sync", "rest", "frame", "outline", "defend", "counter", "draw", "boost", "delay"];
   const artPriorities = ["frame", "defend", ...priorities.filter((word) => word !== "frame" && word !== "defend")];
   const isArt = (await page.locator(".player-hud").innerText()).includes("美術部");
+  // Victory can replace the combat input between the terminal check and this read.
+  const bufferText = () => page.locator(".typing-buffer").innerText({ timeout: 500 }).catch(() => "");
   for (let turn = 0; turn < 20; turn++) {
     for (let use = 0; use < 12; use++) {
       if (await page.locator(completion).count()) return;
@@ -89,12 +91,12 @@ async function typeThroughBattle(page: import("@playwright/test").Page, completi
         await page.locator(".enemy-slot").last().click();
       }
       if (await page.locator(completion).count()) return;
-      if ((await page.locator(".typing-buffer").innerText()).trim() === word) {
+      if ((await bufferText()).trim() === word) {
         await page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: new RegExp(`^${word}$`) }) }).first().focus();
         await page.keyboard.press("Enter");
       }
       if (await page.locator(completion).count()) return;
-      if ((await page.locator(".typing-buffer").innerText()).trim()) await page.keyboard.press("Escape");
+      if ((await bufferText()).trim()) await page.keyboard.press("Escape");
     }
     await page.clock.runFor(11_000);
   }
@@ -994,7 +996,7 @@ async function clearThreeActs(page: import("@playwright/test").Page, maxSteps = 
         bosses++;
       }
       battles++;
-      await typeThroughBattle(page);
+      await typeThroughBattle(page, ".reward-panel, .run-result");
     } else throw new Error(`unexpected run screen at step ${step}`);
   }
   const result = await page.locator(".run-result").innerText().catch(() => "ラン結果画面なし");
