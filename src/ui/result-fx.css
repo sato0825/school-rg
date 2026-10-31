@@ -1,5 +1,7 @@
 /* Resolved values float over actors. Nothing changes the stage, header, or input geometry. */
 .result-fx-layer{position:absolute;inset:0;z-index:9;overflow:hidden;contain:paint;pointer-events:none}
+/* A hovered target's detail can cover several actors in dense formations. Yield the stage during a resolved cue. */
+.stage:has(.result-fx-layer) .enemy-detail{display:none}
 .result-fx-mark{position:absolute;top:calc(38% + var(--fx-offset,0px));display:block;min-width:48px;padding:5px 9px;transform:translate(-50%,0);border:2px solid #fff;border-radius:4px;background:#912f4a;color:#fff;box-shadow:0 3px 0 #4b2039,0 4px 14px #112b45b0;font:900 clamp(15px,2vw,26px)/1 ui-monospace,Menlo,monospace;text-align:center;white-space:nowrap;animation:result-pop .42s ease-out both}
 .result-fx-mark[data-kind="heal"]{background:#247c6e;box-shadow:0 3px 0 #175247,0 4px 14px #112b45b0}
 .result-fx-mark[data-kind="block"]{background:#38698f;box-shadow:0 3px 0 #254865,0 4px 14px #112b45b0}

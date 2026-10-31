@@ -174,14 +174,20 @@ for (const { count, width, height } of [{ count: 3, width: 1024, height: 768 }, 
     await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
     await page.goto("/");
     await page.locator(".enemy-roster-button").first().click();
+    await expect(page.locator(".enemy-detail").first()).toBeVisible();
     await page.keyboard.type("sample");
     await expect(page.locator(".result-fx-mark[data-kind=debuff]")).toContainText("毒 +3");
+    await expect(page.locator(".enemy-detail").first()).toBeHidden();
+    await expect(page.locator(".enemy-roster-button").first()).toHaveAttribute("aria-label", /状態: 毒 3/);
     const statusMark = await page.locator(".result-fx-mark[data-kind=debuff]").boundingBox();
     const roster = await page.locator(".enemy-roster").boundingBox();
     expect(statusMark!.y + statusMark!.height).toBeLessThanOrEqual(roster!.y);
+    await page.clock.runFor(420);
+    await expect(page.locator(".enemy-detail").first()).toBeVisible();
     await expect(page.locator(".enemy-detail-status").first()).toContainText("毒");
     await page.keyboard.type("sweep");
     await expect(page.locator(".result-fx-mark[data-kind=damage]")).toHaveCount(count);
+    await expect(page.locator(".enemy-detail").first()).toBeHidden();
     await page.clock.runFor(140);
     const marks = await page.locator(".result-fx-mark[data-kind=damage]").evaluateAll((nodes) => nodes.map((node) => {
       const box = node.getBoundingClientRect();
