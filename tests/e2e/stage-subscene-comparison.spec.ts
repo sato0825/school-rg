@@ -2,6 +2,8 @@ import { expect, test } from "@playwright/test";
 import { demoContent } from "../../src/content/demo-battle.js";
 import { createRunSession } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
+import { demoBattleArt } from "../../src/ui/demo-art.js";
+import { subscenePreviewForRun } from "../../src/ui/stage-subscene-experiment.js";
 
 const samples = [
   { name: "act3-shop", seed: 97, act: 3, fromId: "a3-f10-n1", targetId: "a3-f11-n1", kind: "shop", localArt: "act3-paper-auditorium-stage-candidate-v1", annexArt: "act3-paper-backstage-candidate-v1" },
@@ -20,29 +22,33 @@ test("#315 compares local objects and connected subscene proxies at the same nod
     const run = { ...base.run, act: sample.act as 1 | 2 | 3, player: { ...base.run.player, hp: 20 }, map: { ...base.run.map, currentNodeId: from.id } };
     const saved = serializeRunSession({ ...base, run, completedNodeIds: [from.id] }, demoContent, { nowMs: () => 0 }, () => "discard");
     for (const concept of ["local", "annex"] as const) {
+      const before = subscenePreviewForRun(demoBattleArt, run, concept);
+      const arrived = subscenePreviewForRun(demoBattleArt, { ...run, map: { ...run.map, currentNodeId: target.id } }, concept);
+      expect(arrived.artId).toBe(concept === "annex" ? sample.annexArt : sample.localArt);
       for (const [width, height] of [[1440, 900], [1024, 768]] as const) {
         const context = await browser.newContext({ viewport: { width, height } });
         const page = await context.newPage();
         await page.goto("/");
         await page.evaluate((value) => localStorage.setItem("school-rg-run-v1", value), saved);
         await page.goto(`/?experimentalSubscene=${concept}`);
+        expect(await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.map.currentNodeId)).toBe(sample.fromId);
         const stage = page.locator(".game-shell .stage");
-        await expect(stage).toHaveAttribute("data-stage-art", sample.localArt);
+        await expect(stage).toHaveAttribute("data-stage-art", before.artId!);
         const firstImage = await stage.evaluate((element) => (element as HTMLElement).style.backgroundImage);
         const stageElement = await stage.elementHandle();
         await page.locator(`.map-node.available[data-id="${sample.targetId}"]`).click();
         await expect(page.locator(`.location-scene[data-location="${sample.kind}"]`)).toBeVisible();
         expect(await stage.evaluate((element, initial) => element === initial, stageElement)).toBe(true);
         await expect(stage).toHaveAttribute("data-stage-concept", concept);
-        await expect(stage).toHaveAttribute("data-stage-art", concept === "annex" ? sample.annexArt : sample.localArt);
-        await expect(stage).toHaveAttribute("data-stage-proxy", concept === "annex" ? "true" : "false");
+        await expect(stage).toHaveAttribute("data-stage-art", arrived.artId!);
+        await expect(stage).toHaveAttribute("data-stage-proxy", String(arrived.proxy));
         const arrivedImage = await stage.evaluate((element) => (element as HTMLElement).style.backgroundImage);
-        if (concept === "annex") expect(arrivedImage).not.toBe(firstImage);
+        if (before.artId !== arrived.artId) expect(arrivedImage).not.toBe(firstImage);
         else expect(arrivedImage).toBe(firstImage);
         const arrivedSave = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!));
         expect(arrivedSave.session.run.map.currentNodeId).toBe(sample.targetId);
         await page.reload();
-        await expect(stage).toHaveAttribute("data-stage-art", concept === "annex" ? sample.annexArt : sample.localArt);
+        await expect(stage).toHaveAttribute("data-stage-art", arrived.artId!);
         expect(await stage.evaluate((element) => (element as HTMLElement).style.backgroundImage)).toBe(arrivedImage);
         if (process.env.SCHOOL_RG_CAPTURE_SUBSCENE === "1") {
           await page.screenshot({ path: `docs/design/previews/issue315-${sample.name}-${concept}-${width}.png`, fullPage: true });
