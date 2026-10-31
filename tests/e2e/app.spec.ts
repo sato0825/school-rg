@@ -11,6 +11,25 @@ async function startDemoRun(page: import("@playwright/test").Page): Promise<void
   await page.getByRole("button", { name: /文芸部/ }).click();
 }
 
+test("map routes match the saved seed and remain keyboard operable on narrow screens", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await startDemoRun(page);
+  const visible = await page.locator(".map-node").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("data-id")));
+  const paths = await page.locator(".map-route-lines path").evaluateAll((nodes) => nodes.map((node) => ({
+    from: node.getAttribute("data-from"), to: node.getAttribute("data-to"), state: node.getAttribute("class"),
+  })));
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!));
+  const nodes: MapNode[] = saved.session.run.map.nodes;
+  const expected = nodes.flatMap((node) => visible.includes(node.id) ? node.nextIds.filter((id) => visible.includes(id)).map((id) => `${node.id}:${id}`) : []);
+  expect(paths.map((path) => `${path.from}:${path.to}`).sort()).toEqual(expected.sort());
+  const available = await page.locator(".map-node.available").evaluateAll((buttons) => buttons.map((button) => button.getAttribute("data-id")));
+  expect(paths.filter((path) => path.state === "route-available").map((path) => path.to).sort()).toEqual(available.sort());
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  await page.locator(".map-node.available").first().focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".map-panel")).toHaveCount(0);
+});
+
 async function enterNextNode(page: import("@playwright/test").Page): Promise<void> {
   const combat = page.locator(".map-node.available").filter({ hasText: "戦闘" });
   if (await combat.count()) await combat.last().click();
