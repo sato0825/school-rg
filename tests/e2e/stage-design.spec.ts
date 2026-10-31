@@ -7,7 +7,7 @@ import type { MapNode } from "../../src/domain/schema.js";
 const plates = ["stage-hallway-v1", "act2-science-wing-candidate-v1", "act3-auditorium-foyer-candidate-v1"];
 
 test("each Act uses its own school plate on map and in typed combat at desktop and narrow widths", async ({ context }) => {
-  for (const act of [1, 2, 3]) {
+  for (const act of [1, 2, 3] as const) {
     for (const width of [1280, 390]) {
       const base = createRunSession(42, "literature-demo", demoContent);
       const from: MapNode = { id: "stage-start", act, floor: 0, kind: "start", nextIds: ["stage-fight"] };
