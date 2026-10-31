@@ -24,6 +24,7 @@ import { emptyProgression, parseProgression, unlockAfterVictory, unlockedLevel, 
 import { finishPlaytest, finishPlaytestBattle, observePlaytest, parsePlaytestRecord, recordPlaytestBattle, resumePlaytest, startPlaytest, visitPlaytestNode, type PlaytestTracker } from "./playtest-metrics.js";
 import { browserRandomUint32, newRunSeed } from "./run-seed.js";
 import { createAudioFeedback } from "./audio.js";
+import { imeLatinKey } from "./ime-key.js";
 
 const config = DEFAULT_GAME_CONFIG;
 const disposition = (instanceId: string, combat: NonNullable<RunState["combat"]>) => dispositionForCard(combat, demoContent, config, instanceId);
@@ -86,6 +87,9 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   }
   const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   let imeComposing = false;
+  let keyboardLayoutMap: ReadonlyMap<string, string> | null = null;
+  const keyboardWithLayout = (navigator as Navigator & { keyboard?: { getLayoutMap?: () => Promise<ReadonlyMap<string, string>> } }).keyboard;
+  void keyboardWithLayout?.getLayoutMap?.().then((map) => { keyboardLayoutMap = map; }).catch(() => { /* Keep the ordinary key path when unsupported. */ });
   const setImeNotice = (notice: string) => {
     view.imeNotice = notice;
     const element = root.querySelector<HTMLElement>("#battle-ime-notice");
@@ -313,16 +317,20 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
 
   function onKeyDown(event: KeyboardEvent): void {
     if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
-    if (imeComposing || event.isComposing || event.keyCode === 229) {
+    const composing = imeComposing || event.isComposing || event.keyCode === 229;
+    const resolvedKey = composing ? imeLatinKey(event, keyboardLayoutMap) : null;
+    if (composing && !resolvedKey) {
       setImeNotice("日本語入力中です。英数入力に切り替えるとカード名をタイプできます。");
       return;
     }
-    if (/^[a-z]$/i.test(event.key) && view.imeNotice) setImeNotice("");
+    const key = resolvedKey ?? event.key;
+    if (resolvedKey) imeComposing = false;
+    if (/^[a-z]$/i.test(key) && view.imeNotice) setImeNotice("");
     if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
-    const focusTypingInput = event.target instanceof HTMLButtonElement && event.key.length === 1;
-    if (event.target instanceof HTMLButtonElement && event.key.length === 1) event.target.blur();
-    if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (event.key === "Backspace" || event.key === "Delete"))) event.preventDefault();
-    submitInputKey(event.key, event.repeat, event.isComposing);
+    const focusTypingInput = event.target instanceof HTMLButtonElement && key.length === 1;
+    if (focusTypingInput) event.target.blur();
+    if (key.length === 1 || key === "Enter" || key === "Escape" || key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (key === "Backspace" || key === "Delete"))) event.preventDefault();
+    submitInputKey(key, event.repeat, false);
     if (focusTypingInput && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
   }
 
