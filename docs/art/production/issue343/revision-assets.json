@@ -55,5 +55,24 @@
     "rightsReview": "pending",
     "visualReview": "pending",
     "selectionDecision": "pending old/new real-size comparison"
+  },
+  {
+    "id": "KEN-011",
+    "version": "v4",
+    "path": "docs/art/production/issue343/assets/ken-hasso-candidate-v4.png",
+    "sha256": "3056b605087b526c62deda23477885548fb1d03751cc9998a301bda4ca76a28b",
+    "sourceFile": "/Users/mikoto/.codex/generated_images/01a1914e-f868-77d2-a3ca-dc39e383dd6d/exec-62585bd6-d790-4ede-b122-fc050939ff70.png",
+    "priorRuntimePath": "src/assets/cards/issue261/ken-hasso-candidate-v2.png",
+    "priorSha256": "7302b9a1c031de1de9dd436339e444df5ddc2f3f5d421b908b4f4e5bdbdad45b",
+    "promptRef": "revision-prompts.md#KEN-011-v4",
+    "styleReference": "docs/art/production/issue338/assets/card-ken-kata-v1.png",
+    "state": "candidate",
+    "editableSource": null,
+    "seed": null,
+    "generator": "built-in image_gen__imagegen",
+    "generatedAt": "2026-10-31",
+    "rightsReview": "pending",
+    "visualReview": "pending",
+    "selectionDecision": "v3 crop made subject too small; v4 to compare at actual size"
   }
 ]
