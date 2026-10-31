@@ -201,6 +201,9 @@ test("rest choice accepts focused keyboard activation", async ({ page }) => {
   await page.locator(".map-node.available").filter({ hasText: "休憩" }).first().focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "休憩" })).toBeVisible();
+  await expect(page.locator(".rest-heal")).toContainText(/HP \d+\/\d+ → \d+\/\d+/);
+  await expect(page.locator(".rest-heal")).toHaveAccessibleName(/休んで回復.*HP/);
+  if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-rest-desktop-20261031.png", fullPage: true });
   await page.locator("[data-action=rest-heal]").focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "次の行き先を選ぶ" })).toBeVisible();
@@ -1044,10 +1047,15 @@ test("treasure offers survive reload and a focused choice completes its node", a
   await startDemoRun(page);
   await enterNextNode(page);
   await typeThroughBattle(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator(".reward-card .offer-outcome").first()).toContainText("デッキに追加");
+  if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-reward-phone-20261031.png", fullPage: true });
   await page.getByRole("button", { name: "報酬を受け取らず進む" }).click();
   await page.locator(".map-node.available").filter({ hasText: "宝箱" }).focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "宝箱から1つ選ぶ" })).toBeVisible();
+  await expect(page.locator(".treasure-offer .offer-outcome").first()).toContainText("受け取る");
+  if (process.env.SCHOOL_RG_CAPTURE_CHOICES === "1") await page.screenshot({ path: "docs/content/previews/issue175-treasure-phone-20261031.png", fullPage: true });
   const offers = await page.locator(".treasure-offer").allTextContents();
   await page.reload();
   await expect(page.locator(".treasure-offer")).toHaveText(offers);
