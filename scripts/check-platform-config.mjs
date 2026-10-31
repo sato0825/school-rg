@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import process from "node:process";
+import { URL } from "node:url";
 
 const config = JSON.parse(readFileSync(new URL("../src-tauri/tauri.conf.json", import.meta.url), "utf8"));
 const project = readFileSync(new URL("../src-tauri/gen/apple/project.yml", import.meta.url), "utf8");
@@ -15,4 +17,4 @@ assert.equal((xcodeProject.match(/TARGETED_DEVICE_FAMILY = 2;/g) ?? []).length, 
 assert.match(project, /ASSETCATALOG_COMPILER_APPICON_NAME:\s*SchoolRGIcon\b/);
 assert.equal((xcodeProject.match(/ASSETCATALOG_COMPILER_APPICON_NAME = SchoolRGIcon;/g) ?? []).length, 2);
 
-console.log("Tauri desktop and iPad package configuration is consistent.");
+process.stdout.write("Tauri desktop and iPad package configuration is consistent.\n");
