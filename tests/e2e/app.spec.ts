@@ -981,7 +981,8 @@ test("a seeded run clears all three Acts with typed combat", async ({ page }) =>
   await page.locator(".ascension-choice").nth(1).focus();
   await page.keyboard.press("Enter");
   await page.getByRole("button", { name: /文芸部/ }).click();
-  await expect(page.locator(".map-stats")).toContainText("難度 1");
+  await page.locator(".route-run-record summary").click();
+  await expect(page.locator(".route-run-record")).toContainText("難度 1");
   await enterNextNode(page);
   const ascensionEnemy = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!).session.run.combat.enemies[0] as { enemyId: string; hp: number; maxHp: number });
   expect(ascensionEnemy.hp).toBe(ascensionEnemy.maxHp);
@@ -1048,11 +1049,13 @@ test("ordinary new runs draw independent seeds and reload preserves a run seed",
   await page.goto("/");
   await page.getByRole("button", { name: "ランを始める" }).click();
   await page.getByRole("button", { name: /文芸部/ }).click();
-  const firstSeed = Number((await page.locator(".map-stats").innerText()).match(/シード (\d+)/)?.[1]);
+  await page.locator(".route-run-record summary").click();
+  const firstSeed = Number((await page.locator(".route-run-record").innerText()).match(/シード (\d+)/)?.[1]);
   expect(firstSeed).toBeGreaterThanOrEqual(0);
   expect(firstSeed).toBeLessThanOrEqual(0xffffffff);
   await page.reload();
-  await expect(page.locator(".map-stats")).toContainText(`シード ${firstSeed}`);
+  await page.locator(".route-run-record summary").click();
+  await expect(page.locator(".route-run-record")).toContainText(`シード ${firstSeed}`);
 
   const otherContext = await browser.newContext();
   try {
@@ -1060,7 +1063,8 @@ test("ordinary new runs draw independent seeds and reload preserves a run seed",
     await otherPage.goto("/");
     await otherPage.getByRole("button", { name: "ランを始める" }).click();
     await otherPage.getByRole("button", { name: /文芸部/ }).click();
-    const secondSeed = Number((await otherPage.locator(".map-stats").innerText()).match(/シード (\d+)/)?.[1]);
+    await otherPage.locator(".route-run-record summary").click();
+    const secondSeed = Number((await otherPage.locator(".route-run-record").innerText()).match(/シード (\d+)/)?.[1]);
     expect(secondSeed).not.toBe(firstSeed);
   } finally {
     await otherContext.close();

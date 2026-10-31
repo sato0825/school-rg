@@ -1,0 +1,80 @@
+/* Route choices stay in the school stage established by the preceding reward. */
+.route-scene .reward-scene-shade {
+  background: linear-gradient(90deg, #102b4370, #203d5252 23%, #1c3b5150 77%, #102b4370);
+}
+.route-scene-header { gap: 12px; }
+.route-scene-header .map-stats { flex: 1; min-width: 0; }
+.route-scene-header .map-health,
+.route-scene-header .map-stat,
+.route-scene-header .map-secondary {
+  border-color: #93a8b4;
+  background: #f8f7f0f2;
+}
+.route-scene-overlay {
+  z-index: 3;
+  width: min(700px, calc(100% - 54px));
+  max-height: calc(100dvh - 102px);
+  margin: 18px 4% 18px auto;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.route-scene-overlay .map-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 0;
+  padding: 9px 14px;
+  border: 1px solid #b9d4d4a8;
+  border-bottom: 0;
+  border-radius: 9px 9px 0 0;
+  background: #1c3d50bd;
+}
+.route-scene-overlay .map-intro::after { display: none; }
+.route-scene-overlay .map-copy { max-width: none; }
+.route-scene-overlay .map-copy h2 { margin: 0; color: #f7f7f0; font-size: 23px; }
+.route-scene-overlay .map-copy p { color: #e6f0ee; }
+.route-scene-overlay .map-progress { margin: 2px 0 0; font-size: 11px; }
+.route-scene-overlay .map-progress > span { color: #f3bdcb; }
+.route-scene-overlay .map-compendium { flex: none; margin: 0; }
+.route-scene-overlay .map-scroll {
+  max-height: calc(100dvh - 210px);
+  min-height: 280px;
+  border: 1px solid #b9d4d4a8;
+  border-radius: 0 0 9px 9px;
+  background: repeating-linear-gradient(180deg, #e5f0ee20 0 1px, transparent 1px 96px), #16394ab8;
+}
+.route-scene-overlay .map-floor-label { color: #d0e0df; }
+.route-scene-overlay .map-route-lines path { stroke: #b4ced0; }
+.route-scene-overlay .map-route-lines .route-available { stroke: #f0afc1; }
+.route-run-record { margin: 5px 3px 0; color: #e8f0ee; font-size: 11px; }
+.route-run-record summary { width: max-content; margin-left: auto; cursor: pointer; }
+.route-run-record-details { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+.route-run-record .playtest-stats { margin: 0; }
+.route-scene[data-effects="quiet"] .map-intro,
+.route-scene[data-effects="quiet"] .map-scroll,
+.reward-scene[data-effects="quiet"] .reward-scene-overlay {
+  background: #203c4ee6;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.reward-scene[data-effects="quiet"] .reward-scene-overlay { background: #f8f7f0f2; }
+@media (max-width: 1100px) {
+  .route-scene-overlay { width: min(620px, calc(100% - 46px)); margin-right: 3%; }
+  .route-scene-header { gap: 8px; }
+  .route-scene-header .map-secondary { font-size: 9px; }
+}
+@media (max-width: 760px) {
+  .route-scene-overlay { width: calc(100% - 20px); margin: 12px auto; max-height: calc(100dvh - 86px); }
+  .route-scene-overlay .map-intro { padding: 8px 10px; }
+  .route-scene-overlay .map-copy h2 { font-size: 22px; }
+  .route-scene-overlay .map-scroll { max-height: calc(100dvh - 180px); min-height: 200px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-scene-overlay .map-intro,
+  .route-scene-overlay .map-scroll { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
