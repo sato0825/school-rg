@@ -133,6 +133,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   };
   const render = () => {
     const handScrollLeft = root.querySelector<HTMLElement>(".hand")?.scrollLeft ?? 0;
+    const restoreTypingFocus = root.querySelector(".typing-input") === document.activeElement;
     const restoreCombatLogFocus = frontScreen === "combat-log" && root.querySelector('[data-action="front-back"]') === document.activeElement;
     if (restoreError) renderSaveRecovery(root, demoBattleArt);
     else if (frontScreen === "title") renderRunTitle(root, demoBattleArt, history);
@@ -150,6 +151,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     else { view.animationNowMs = clock.nowMs(); renderBattle(root, run, demoContent, view); }
     const handElement = root.querySelector<HTMLElement>(".hand");
     if (handElement) handElement.scrollLeft = handScrollLeft;
+    if (restoreTypingFocus && session.screen === "combat" && run.combat?.phase === "PLAYER_INPUT" && !run.combat.clock.paused) root.querySelector<HTMLInputElement>(".typing-input")?.focus({ preventScroll: true });
     if (restoreCombatLogFocus) root.querySelector<HTMLButtonElement>('[data-action="front-back"]')?.focus();
     const header = root.querySelector(".topbar, .run-header");
     if (header) {
@@ -284,19 +286,35 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     render();
   }
 
-  function onKeyDown(event: KeyboardEvent): void {
-    if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
-    if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
-    if (event.target instanceof HTMLButtonElement && event.key.length === 1) event.target.blur();
-    if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey)) event.preventDefault();
+  function submitInputKey(key: string, repeat: boolean, isComposing: boolean): void {
     try {
-      if (event.key === requireSetting(config.potionModeKey)) run = setPotionInputActive(run, !run.combat.potionControl?.active, clock, demoContent, disposition);
-      else if (run.combat.potionControl?.active) run = submitPotionKey(run, { key: event.key, repeat: event.repeat, isComposing: event.isComposing }, clock, config, demoContent, disposition);
-      else run = submitPlayerKey(run, { key: event.key, repeat: event.repeat, isComposing: event.isComposing }, clock, config, demoContent, useCard, disposition);
+      if (key === requireSetting(config.potionModeKey)) run = setPotionInputActive(run, !run.combat!.potionControl?.active, clock, demoContent, disposition);
+      else if (run.combat!.potionControl?.active) run = submitPotionKey(run, { key, repeat, isComposing }, clock, config, demoContent, disposition);
+      else run = submitPlayerKey(run, { key, repeat, isComposing }, clock, config, demoContent, useCard, disposition);
       settleIfFinished();
       render();
       enemyPhase();
     } catch (error) { handleError(error); }
+  }
+
+  function onKeyDown(event: KeyboardEvent): void {
+    if (session.screen !== "combat" || event.metaKey || event.ctrlKey || event.altKey || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused) return;
+    if (event.target instanceof HTMLButtonElement && (event.key === "Enter" || event.key === " ")) return;
+    if (event.target instanceof HTMLButtonElement && event.key.length === 1) event.target.blur();
+    if (event.key.length === 1 || event.key === "Enter" || event.key === "Escape" || event.key === requireSetting(config.potionModeKey) || (event.target instanceof HTMLInputElement && (event.key === "Backspace" || event.key === "Delete"))) event.preventDefault();
+    submitInputKey(event.key, event.repeat, event.isComposing);
+  }
+
+  function onBeforeInput(event: InputEvent): void {
+    if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
+    event.preventDefault();
+    if (session.screen !== "combat" || run.combat?.phase !== "PLAYER_INPUT" || run.combat.clock.paused || event.inputType !== "insertText" || !event.data || [...event.data].length !== 1 || event.isComposing) return;
+    submitInputKey(event.data, false, false);
+  }
+
+  function onTypingInput(event: Event): void {
+    if (!(event.target instanceof HTMLInputElement && event.target.classList.contains("typing-input"))) return;
+    event.target.value = run.combat?.potionControl?.active ? run.combat.potionControl.typing.buffer : run.combat?.typing.buffer ?? "";
   }
 
   function onClick(event: MouseEvent): void {
@@ -514,6 +532,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   }
 
   root.addEventListener("click", onClick);
+  root.addEventListener("beforeinput", onBeforeInput);
+  root.addEventListener("input", onTypingInput);
   window.addEventListener("keydown", onKeyDown);
   document.addEventListener("visibilitychange", onVisibility);
   window.addEventListener("pagehide", onPageHide);
@@ -538,6 +558,8 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     window.clearInterval(timer);
     window.clearInterval(saveTimer);
     root.removeEventListener("click", onClick);
+    root.removeEventListener("beforeinput", onBeforeInput);
+    root.removeEventListener("input", onTypingInput);
     window.removeEventListener("keydown", onKeyDown);
     document.removeEventListener("visibilitychange", onVisibility);
     window.removeEventListener("pagehide", onPageHide);
