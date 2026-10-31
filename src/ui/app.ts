@@ -144,7 +144,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     if (after.player.block !== before.player.block) changes.push(`ブロック ${after.player.block > before.player.block ? "+" : ""}${after.player.block - before.player.block}`);
     if (after.gold !== before.gold) changes.push(`${after.gold > before.gold ? "+" : ""}${after.gold - before.gold}G`);
     const timeDelta = (after.combat?.clock.remainingMs ?? 0) - (before.combat?.clock.remainingMs ?? 0);
-    if (timeDelta > 0) changes.push(`入力時間 +${timeDelta / 1_000}秒`);
+    if (timeDelta > 0) changes.push(`入力時間 約+${(timeDelta / 1_000).toFixed(1)}秒`);
     for (const [status, count] of Object.entries(after.combat?.statuses.player ?? {})) {
       const delta = count - (before.combat?.statuses.player[status] ?? 0);
       if (delta > 0) changes.push(`${statusName[status] ?? status} +${delta}`);

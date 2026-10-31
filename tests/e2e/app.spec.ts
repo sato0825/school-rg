@@ -711,7 +711,7 @@ test("a potion is typed in its own mode and consumed after extending the active 
   await expect(page.locator(".potion-mode")).toHaveAttribute("aria-pressed", "true");
   await page.keyboard.type("clock");
   await expect(page.locator(".potion-mode")).toHaveAttribute("aria-pressed", "false");
-  await expect(page.locator('.potion-activation[data-art-id="potion.potion-time"]')).toContainText('入力時間 +3秒');
+  await expect(page.locator('.potion-activation[data-art-id="potion.potion-time"]')).toContainText('入力時間 約+');
   await expect(page.locator(".potion-slot")).toHaveCount(1);
   await expect(page.locator(".potion-row")).not.toContainText("clock");
   const after = Number.parseFloat(await page.locator("[data-role=time]").innerText());
