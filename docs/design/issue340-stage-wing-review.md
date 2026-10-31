@@ -2,7 +2,7 @@
 
 Issue [#340](https://github.com/sato0825/school-rg/issues/340) は、[#315のC案](issue315-stage-state-review.md)でP0にした1場所だけを検証する。新しい `auditorium-stage-wing` の v2 を `?experimentalStageWing=on` で Act 3 の11–12Fに仮表示する。通常の12プレート割当、地図、セーブ形式、戦闘/マップ乱数は変えない。13Fボスは従来の講堂舞台へ戻る。場所IDは候補であり、#315の正式な地理規則ではない。
 
-[PC1440とiPad相当1024の比較ボード](issue340-stage-wing-comparison.html)は、同じ文芸部・保存地点・HP・商品/イベントと、[#304の地点小物候補](https://github.com/sato0825/school-rg/pull/334)で現行舞台と舞台袖を並べる。seed97の11F購買・12F休憩、seed42の11Fイベントを到着操作で開き、再読込後に撮った。12画面のSHAは[一覧](previews/issue340-SHA256SUMS)。これらは保存状態からの実UIであり、自然な42地点通しプレイではない。
+[PC1440とiPad相当1024の比較ボード](issue340-stage-wing-comparison.html)は、同じ文芸部・保存地点・HP・商品/イベントと、[#304の地点小物候補](https://github.com/sato0825/school-rg/pull/334)で現行舞台と舞台袖を並べる。seed97の11F購買・12F休憩、seed42の11Fイベントを到着操作で開き、再読込後に撮った。12画面のSHAは[一覧](previews/issue340-SHA256SUMS)。画像と小物のdecodeを待ち、アニメーションを止めて撮影した2回のPNG SHAは全12画面で一致した。これらは保存状態からの実UIであり、自然な42地点通しプレイではない。
 
 ## 画風・地理・接地の判定
 
