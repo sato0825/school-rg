@@ -1,6 +1,7 @@
 import { expect, it } from "vitest";
 import { demoContent } from "../../src/content/demo-battle.js";
 import { createRunSession } from "../../src/domain/run-flow.js";
+import { generateRunMap } from "../../src/domain/map-generation.js";
 import { demoBattleArt } from "../../src/ui/demo-art.js";
 import { stageCandidateUrlByAct, stageCandidateUrlByActPhase, stagePhaseForNode, stageUrlForAct, stageUrlForRun } from "../../src/ui/stage-presentation.js";
 
@@ -28,4 +29,17 @@ it("uses two distinct places per Act without changing seeded map or save data", 
   }
   expect(JSON.stringify(session.run)).toBe(before);
   expect(stageUrlForRun({ stageUrl: "fallback.png" }, session.run)).toBe("fallback.png");
+});
+
+it("uses the same early/late rule for the short development run", () => {
+  const session = createRunSession(42, "literature-demo", demoContent);
+  const shortMap = generateRunMap(42, {
+    floorsPerAct: 2, lanes: 4,
+    kindWeights: { combat: 1, elite: 0, event: 1, shop: 1, rest: 1, treasure: 1 },
+  });
+  const first = shortMap.nodes.find((node) => node.act === 1 && node.floor === 1)!;
+  const second = shortMap.nodes.find((node) => node.act === 1 && node.floor === 2)!;
+  const withNode = (currentNodeId: string) => ({ ...session.run, map: { nodes: shortMap.nodes, currentNodeId } });
+  expect(stageUrlForRun(demoBattleArt, withNode(first.id))).toBe(stageCandidateUrlByActPhase[1]!.early);
+  expect(stageUrlForRun(demoBattleArt, withNode(second.id))).toBe(stageCandidateUrlByActPhase[1]!.late);
 });
