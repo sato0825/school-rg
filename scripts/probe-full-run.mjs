@@ -18,7 +18,6 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 const wallStartedAt = performance.now();
 const errors = [];
 const observations = [];
-let activeNodeId = "";
 let actionCount = 0;
 page.on("pageerror", (error) => errors.push(error.message));
 
@@ -34,7 +33,6 @@ async function recordScreen(screen, extra = {}) {
   const background = await page.locator(".stage, .run-screen").first().evaluate((element) => getComputedStyle(element).backgroundImage).catch(() => null);
   observations.push({ screen, nodeId: node.id, act: node.act, floor: node.floor, kind: node.kind,
     hp: run.player.hp, maxHp: run.player.maxHp, background, ...extra });
-  activeNodeId = node.id;
   actionCount++;
 }
 async function tap(locator) {
@@ -59,10 +57,16 @@ async function typeBattle() {
         await page.locator(".enemy-slot").last().click();
       }
       if (await page.locator(".reward-panel, .run-result").count()) return;
+      if (!(await page.locator(".typing-buffer").count())) {
+        // Victory motion can remove input before the reward panel's timer runs.
+        await page.clock.runFor(1_000);
+        if (await page.locator(".reward-panel, .run-result").count()) return;
+        throw new Error("combat input disappeared before a reward or result");
+      }
       if ((await page.locator(".typing-buffer").innerText()).trim() === word) {
         await tap(page.locator(".card").filter({ has: page.locator(".card-word").filter({ hasText: new RegExp(`^${word}$`) }) }));
       }
-      if ((await page.locator(".typing-buffer").innerText()).trim()) await page.keyboard.press("Escape");
+      if (await page.locator(".typing-buffer").count() && (await page.locator(".typing-buffer").innerText()).trim()) await page.keyboard.press("Escape");
     }
     await page.clock.runFor(11_000);
   }
@@ -138,6 +142,7 @@ try {
     finalScreen: await page.locator(".run-result").count() ? "result" : "incomplete",
     runResult: metrics?.result ?? null, errors, observations, metrics,
     finalNodeId: savedRun?.session?.run?.map?.currentNodeId ?? null,
+    finalUi: (await page.locator("body").innerText().catch(() => "")).slice(0, 500),
   };
   const target = `${outputDirectory}/${clubId}-seed${seed}-${routePolicy}.json`;
   await writeFile(target, `${JSON.stringify(outcome, null, 2)}\n`, { flag: "wx" });
