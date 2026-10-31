@@ -13,7 +13,7 @@ import { generateCardRewards, type RewardGenerator } from "./card-rewards.js";
 import { recordCombatAction, recordCombatResult } from "./combat-action-log.js";
 
 export type RunScreen = "map" | "combat" | "reward" | "shop" | "rest" | "event" | "treasure" | "won" | "lost";
-export type EncounterCandidate = string | { readonly id: string; readonly enemyIds: readonly string[] };
+export type EncounterCandidate = string | { readonly id: string; readonly enemyIds: readonly string[]; readonly minFloor?: number };
 export type EncounterPool = Readonly<Record<"combat" | "elite" | "boss", readonly EncounterCandidate[]>>;
 export type EncounterSelectionPolicy = "uniform" | "cycle";
 export type EncounterTable = EncounterPool | { readonly byAct: Readonly<Record<1 | 2 | 3, EncounterPool>>; readonly selectionPolicy?: EncounterSelectionPolicy };
@@ -112,8 +112,16 @@ export function enterRunNode(session: RunSession, nextNodeId: string, content: C
     throw new Error(`node kind ${next.kind} requires its own system before entry`);
   }
   const encounters = "enemies" in tables ? tables.enemies : tables;
-  const pool = encounterPool(encounters, next.act)[next.kind];
-  if (!pool.length) throw new RangeError(`empty encounter pool for ${next.kind}`);
+  const candidates = encounterPool(encounters, next.act)[next.kind];
+  if (!candidates.length) throw new RangeError(`empty encounter pool for ${next.kind}`);
+  for (const candidate of candidates) {
+    if (typeof candidate !== "string" && candidate.minFloor !== undefined
+      && (!Number.isSafeInteger(candidate.minFloor) || candidate.minFloor < 1)) {
+      throw new RangeError(`invalid minimum floor for encounter ${candidate.id}`);
+    }
+  }
+  const pool = candidates.filter((candidate) => typeof candidate === "string" || candidate.minFloor === undefined || next.floor >= candidate.minFloor);
+  if (!pool.length) throw new RangeError(`no encounter eligible on floor ${next.floor} for ${next.kind}`);
   const policy = "byAct" in encounters ? encounters.selectionPolicy ?? "uniform" : "uniform";
   const history = session.encounterHistory ?? {};
   const historyKey = `${next.act}:${next.kind}`;

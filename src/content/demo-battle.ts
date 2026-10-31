@@ -19,6 +19,7 @@ import { extraConsumableEffects, extraPotions, extraRelicRules, extraRelics } fr
 import { extraEvents } from "./extra-events.js";
 import { extraEnemies, extraEnemyAi, extraEnemyEffects, extraEnemyIntents } from "./extra-enemies.js";
 import { extraBosses, extraBossAi, extraBossEffects, extraBossIntents } from "./extra-bosses.js";
+import { normalFormationsByAct } from "./normal-formations.js";
 import { runEnemies, runEnemyAi, runEnemyEffects, runEnemyIntents } from "./run-enemies.js";
 
 /** One complete combat encounter for #14. Full run content belongs to #15–#24. */
@@ -256,9 +257,9 @@ export const demoRelicRules: RelicRule[] = [
 export const demoEncounterTable: EncounterTable = {
   selectionPolicy: "cycle", // Provisional #144 variety policy; final encounter weights belong to #68.
   byAct: {
-    1: { combat: ["paper-heap", "late-pass", "lost-homework", "hall-mop", "folded-school-map"], elite: [{ id: "hall-and-scrap", enemyIds: ["hall-monitor", "paper-scrap"] }, "notice-board", "school-gate"], boss: ["final-exam", "gym-scoreboard"] },
-    2: { combat: ["chalk-cloud", "safety-sign", "lab-magnet", "beaker-mist", "lab-coil"], elite: ["library-cart", "stairwell-echo", "library-index"], boss: ["club-auditor", "lab-ventilation"] },
-    3: { combat: ["night-announcement", "window-shadow", "empty-desk", "stage-spotlight", "archive-clock"], elite: ["lost-and-found", "night-locker", "last-bus"], boss: ["closing-bell", "graduation-curtain"] },
+    1: { combat: ["paper-heap", "late-pass", "lost-homework", "hall-mop", "folded-school-map", ...normalFormationsByAct[1]], elite: [{ id: "hall-and-scrap", enemyIds: ["hall-monitor", "paper-scrap"] }, "notice-board", "school-gate"], boss: ["final-exam", "gym-scoreboard"] },
+    2: { combat: ["chalk-cloud", "safety-sign", "lab-magnet", "beaker-mist", "lab-coil", ...normalFormationsByAct[2]], elite: ["library-cart", "stairwell-echo", "library-index"], boss: ["club-auditor", "lab-ventilation"] },
+    3: { combat: ["night-announcement", "window-shadow", "empty-desk", "stage-spotlight", "archive-clock", ...normalFormationsByAct[3]], elite: ["lost-and-found", "night-locker", "last-bus"], boss: ["closing-bell", "graduation-curtain"] },
   },
 };
 
