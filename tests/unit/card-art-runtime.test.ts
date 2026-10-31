@@ -9,12 +9,12 @@ type Provenance = { assets: { cardId: string; version: string; runtimePath: stri
 const provenance = JSON.parse(readFileSync(new URL("../../src/assets/cards/issue329/provenance.json", import.meta.url), "utf8")) as Provenance;
 
 describe("candidate card art runtime catalog", () => {
-  it("covers 56 of the 84 cards by ID and leaves the other 28 visibly missing", () => {
+  it("covers 66 of the 84 cards by ID and leaves the other 18 visibly missing", () => {
     const ids = demoContent.cards.map((card) => card.id);
     expect(ids).toHaveLength(84);
-    expect(Object.keys(candidateCardArtCatalog)).toHaveLength(56);
-    expect(ids.filter((id) => cardArtForId(id).state === "candidate")).toHaveLength(56);
-    expect(ids.filter((id) => cardArtForId(id).state === "missing")).toHaveLength(28);
+    expect(Object.keys(candidateCardArtCatalog)).toHaveLength(66);
+    expect(ids.filter((id) => cardArtForId(id).state === "candidate")).toHaveLength(66);
+    expect(ids.filter((id) => cardArtForId(id).state === "missing")).toHaveLength(18);
     expect(cardArtForId("unknown").url).toBeNull();
   });
 
