@@ -499,6 +499,12 @@ for (const [act, kind, enemyId, name] of [
     await expect(page.locator(".intent-ticket")).toContainText(label);
     if (["hall-mop", "folded-school-map", "beaker-mist", "lab-coil", "stage-spotlight", "archive-clock"].includes(enemyId)) {
       await page.setViewportSize({ width: 1024, height: 768 });
+      const art = page.locator(".enemy-art");
+      await expect(art).toHaveAttribute("src", new RegExp(`${enemyId}-candidate-v[0-9]+`));
+      expect(await art.evaluate(async (image) => {
+        await (image as HTMLImageElement).decode();
+        return (image as HTMLImageElement).naturalWidth;
+      })).toBeGreaterThan(1_000);
       await expect(page.locator(".intent-ticket")).toBeInViewport();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     }
