@@ -102,3 +102,52 @@ test("a typed status card marks the affected enemy in the stage", async ({ page 
   await expect(page.locator(".enemy-status")).toContainText("毒 3");
   if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") await page.screenshot({ path: "docs/art/previews/issue177-status-response-1024.png" });
 });
+
+test("the final typed hit remains on stage briefly and a reload settles the saved victory", async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 1024, height: 768 });
+  const base = createRunSession(42, "literature-demo", demoContent);
+  const start: MapNode = { id: "final-start", act: 1, floor: 0, kind: "start", nextIds: ["final-fight"] };
+  const fight: MapNode = { id: "final-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+  const session = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
+    demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
+  const strikeId = session.run.combat!.cards.find((card) => card.cardId === "BASE-001")!.instanceId;
+  const combat = session.run.combat!;
+  const prepared = { ...session, run: { ...session.run, combat: { ...combat, enemies: combat.enemies.map((enemy) => ({ ...enemy, hp: 1 })), drawPile: [...combat.drawPile.filter((id) => id !== strikeId), strikeId] } } };
+  const saved = serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard");
+  await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+  await page.goto("/");
+  await page.keyboard.type("strike");
+  await expect(page.locator(".enemy-slot.defeated")).toBeVisible();
+  await expect(page.locator(".result-fx-mark[data-kind=damage]")).toBeVisible();
+  await expect(page.locator(".battle-message")).toContainText("勝利");
+  await expect(page.locator(".reward-panel")).toHaveCount(0);
+  if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") await page.screenshot({ path: "docs/art/previews/issue177-final-hit-1024.png" });
+  const terminalSave = await page.evaluate(() => JSON.parse(localStorage.getItem("school-rg-run-v1")!));
+  expect(terminalSave.session.screen).toBe("combat");
+  expect(terminalSave.session.run.combat.phase).toBe("WON");
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "カードを1枚選ぶ" })).toBeVisible();
+});
+
+test("a lethal enemy hit stays localized before the defeat result", async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 1024, height: 768 });
+  const base = createRunSession(42, "science-demo", demoContent);
+  const start: MapNode = { id: "loss-start", act: 1, floor: 0, kind: "start", nextIds: ["loss-fight"] };
+  const fight: MapNode = { id: "loss-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+  const session = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] }, player: { ...base.run.player, hp: 1 } }, completedNodeIds: [start.id] }, fight.id,
+    demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
+  const saved = serializeRunSession(session, demoContent, { nowMs: () => 0 }, () => "discard");
+  await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+  await page.goto("/");
+  const remainingMs = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
+  await page.clock.runFor(remainingMs + 80);
+  await page.clock.runFor(650);
+  await expect(page.locator(".game .result-fx-mark[data-kind=damage]")).toBeVisible();
+  await expect(page.locator(".battle-message")).toContainText("敗北");
+  await expect(page.locator(".run-result")).toHaveCount(0);
+  if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") await page.screenshot({ path: "docs/art/previews/issue177-final-loss-1024.png" });
+  await page.clock.runFor(420);
+  await expect(page.locator(".run-result")).toBeVisible();
+});

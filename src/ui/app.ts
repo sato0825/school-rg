@@ -84,7 +84,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, resultFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, helpOpen: false, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, resultFx: null, dyingEnemyInstanceIds: [], animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   const artPreloads: HTMLImageElement[] = [];
   let preloadedClubId: string | null = null;
   const preloadClubArt = (clubId: string) => {
@@ -119,6 +119,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     preloadClubArt(run.clubId);
     view.cardFx = null;
     view.resultFx = null;
+    view.dyingEnemyInstanceIds = [];
     if (metrics) metrics = recordPlaytestBattle(metrics, run);
     run = fireRelic(run, "combat_start");
     run = beginPlayerTurn(run, clock, config, demoContent);
@@ -192,6 +193,12 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
 
   function settleIfFinished(): void {
     if (session.screen !== "combat" || (run.combat?.phase !== "WON" && run.combat?.phase !== "LOST")) return;
+    // The combat rules are already terminal and the clock is stopped. Keep the
+    // resolved hit on the stage until its actor-local cue has been shown.
+    if (view.motion === "hero" || view.motion === "hit") {
+      view.message = run.combat.phase === "WON" ? "勝利。最後の一撃を確認してください。" : "敗北。最後の被弾を確認してください。";
+      return;
+    }
     audio.play(run.combat.phase === "WON" ? "win" : "lose");
     run = recordCombatResult(run);
     run = fireRelic(run, "combat_end");
@@ -222,12 +229,13 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     const resolved = fireRelic(updated, "card_used", { cardInstanceId: instanceId });
     view.cardFx = cardFx;
     view.resultFx = resultFxForTransition(state, resolved, view.layoutPreviewAllies ?? 1, clock.nowMs());
+    view.dyingEnemyInstanceIds = state.combat!.enemies.filter((enemy) => enemy.hp > 0 && (resolved.combat?.enemies.find((next) => next.instanceId === enemy.instanceId)?.hp ?? enemy.hp) <= 0).map((enemy) => enemy.instanceId);
     setMotion("hero");
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
     const currentGeneration = generation;
     const startedAtMs = view.motionStartedAtMs;
-    window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hero" && view.motionStartedAtMs === startedAtMs) { view.cardFx = null; view.resultFx = null; setMotion(null); render(); } }, MOTION_MS.hero);
+    window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hero" && view.motionStartedAtMs === startedAtMs) { view.cardFx = null; view.resultFx = null; view.dyingEnemyInstanceIds = []; setMotion(null); settleIfFinished(); render(); } }, MOTION_MS.hero);
     return resolved;
   };
 
@@ -272,7 +280,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
           view.message = "次のターン。カード名をタイプしてください。";
         } else settleIfFinished();
         render();
-        window.setTimeout(() => { if (generation === currentGeneration && view.motion === (receivedHit ? "hit" : null)) { view.resultFx = null; setMotion(null); render(); } }, MOTION_MS.hit);
+        window.setTimeout(() => { if (generation === currentGeneration && view.motion === (receivedHit ? "hit" : null)) { view.resultFx = null; setMotion(null); settleIfFinished(); render(); } }, MOTION_MS.hit);
       } catch (error) { handleError(error); }
     }, MOTION_MS.enemyPhase);
   }
@@ -283,6 +291,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     setMotion(null);
     view.cardFx = null;
     view.resultFx = null;
+    view.dyingEnemyInstanceIds = [];
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
     session = createRunSession(0, "literature-demo", demoContent, mapOptions);
@@ -561,6 +570,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   if (session.screen === "won" || session.screen === "lost") recordTerminal();
   if (metrics && session.screen === "combat" && run.combat) metrics = recordPlaytestBattle(metrics, run, true);
   if (session.screen === "combat" && run.combat?.phase === "PLAYER_START") startCombat();
+  if (session.screen === "combat" && (run.combat?.phase === "WON" || run.combat?.phase === "LOST")) settleIfFinished();
   if (session.screen === "combat") preloadClubArt(run.clubId);
   render();
   if (session.screen === "combat") enemyPhase();
