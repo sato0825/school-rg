@@ -85,6 +85,8 @@ try {
   const first = (await saved())?.session?.run;
   const maxFloor = Math.max(...first.map.nodes.filter((node) => node.act === 1).map((node) => node.floor));
   if (maxFloor !== 13) throw new Error(`shortened map detected: Act 1 boss floor ${maxFloor}`);
+  // Include the first map arrival when auditing all 42 normal-run locations.
+  if (process.env.SCHOOL_RG_CAPTURE_START === "1") await recordScreen("node");
 
   for (let step = 0; step < 115 && !(await page.locator(".run-result").count()); step++) {
     if (await page.locator(".map-panel").count()) {
