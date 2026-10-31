@@ -4,10 +4,10 @@ import { createRunSession, enterRunNode } from "../../src/domain/run-flow.js";
 import { serializeRunSession } from "../../src/domain/save.js";
 import type { MapNode } from "../../src/domain/schema.js";
 
-for (const width of [1440, 390]) {
+for (const width of [1440, 1024, 390]) {
   test(`enemy turn leaves the battle layout still at ${width}px`, async ({ page }) => {
     await page.clock.install();
-    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    await page.setViewportSize({ width, height: width === 390 ? 844 : width === 1024 ? 768 : 900 });
     const base = createRunSession(42, "science-demo", demoContent);
     const start: MapNode = { id: "hud-start", act: 1, floor: 0, kind: "start", nextIds: ["hud-fight"] };
     const fight: MapNode = { id: "hud-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
@@ -41,15 +41,17 @@ for (const width of [1440, 390]) {
     expect(before.message.y + before.message.height).toBeLessThanOrEqual(before.controls.y + before.controls.height + 1);
     expect(before.scrollWidth).toBe(width);
     if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-battle-hud-v5-${width}.png` });
-    await page.clock.runFor(30_100);
+    const remainingMs = Number(await page.locator(".time-track").getAttribute("aria-valuenow"));
+    await page.clock.runFor(remainingMs + 80);
     await expect(page.locator(".battle-message")).toContainText("敵が予告した行動を実行します");
     await expect(page.locator(".phase-banner")).toHaveCount(0);
     const during = await geometry();
     if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-enemy-phase-v5-${width}.png` });
     await page.clock.runFor(650);
     await expect(page.locator(".battle-message")).toContainText("次のターン");
-    await expect(page.locator(".result-fx-mark[data-kind=\"damage\"]")).toBeVisible();
+    expect(await page.locator(".result-fx-mark[data-kind=\"damage\"]").count()).toBeGreaterThan(0);
     expect(await page.locator(".result-fx-layer").evaluate((node) => getComputedStyle(node).pointerEvents)).toBe("none");
+    if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") await page.screenshot({ path: `docs/art/previews/issue177-enemy-response-${width}.png` });
     const after = await geometry();
     if (process.env.SCHOOL_RG_CAPTURE_HUD === "1") await page.screenshot({ path: `docs/art/previews/issue166-next-turn-v5-${width}.png` });
     for (const current of [during, after]) {
@@ -61,5 +63,39 @@ for (const width of [1440, 390]) {
     }
     await expect(page.locator(".intent-ticket")).toBeInViewport();
     await expect(page.locator(".typing-buffer")).toBeInViewport();
+    await page.keyboard.type("sweep");
+    await expect(page.locator(".result-fx-mark[data-kind=\"damage\"]")).toBeVisible();
+    await expect(page.locator(".hero-art.act")).toBeVisible();
+    expect((await geometry()).actorSlot).toEqual(before.actorSlot);
+    if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") await page.screenshot({ path: `docs/art/previews/issue177-card-response-${width}.png` });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    expect(await page.locator(".result-fx-mark").first().evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.locator("[data-action=toggle-stimulus]").click();
+    await page.keyboard.type("formula");
+    await expect(page.locator(".result-fx-mark[data-kind=\"block\"]")).toBeVisible();
+    expect(await page.locator(".result-fx-mark[data-kind=\"block\"]").evaluate((node) => getComputedStyle(node).animationName)).toBe("none");
+    if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") await page.screenshot({ path: `docs/art/previews/issue177-quiet-support-${width}.png` });
   });
 }
+
+test("a typed status card marks the affected enemy in the stage", async ({ page }) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 1024, height: 768 });
+  const base = createRunSession(42, "science-demo", demoContent);
+  const start: MapNode = { id: "status-start", act: 1, floor: 0, kind: "start", nextIds: ["status-fight"] };
+  const fight: MapNode = { id: "status-fight", act: 1, floor: 1, kind: "combat", nextIds: [] };
+  const session = enterRunNode({ ...base, run: { ...base.run, map: { currentNodeId: start.id, nodes: [start, fight] } }, completedNodeIds: [start.id] }, fight.id,
+    demoContent, demoEnemyAi, { combat: ["paper-scrap"], elite: ["paper-scrap"], boss: ["paper-scrap"] });
+  const sampleId = session.run.combat!.cards.find((card) => card.cardId === "SCI-001")!.instanceId;
+  const drawPile = [...session.run.combat!.drawPile.filter((id) => id !== sampleId), sampleId];
+  const prepared = { ...session, run: { ...session.run, combat: { ...session.run.combat!, drawPile } } };
+  const saved = serializeRunSession(prepared, demoContent, { nowMs: () => 0 }, () => "discard");
+  await page.addInitScript((value) => localStorage.setItem("school-rg-run-v1", value), saved);
+  await page.goto("/");
+  await expect(page.locator(".card-word").filter({ hasText: "sample" })).toBeVisible();
+  await page.keyboard.type("sample");
+  await expect(page.locator(".result-fx-mark[data-kind=debuff]")).toContainText("毒 +3");
+  await expect(page.locator(".enemy-status")).toContainText("毒 3");
+  if (process.env.SCHOOL_RG_CAPTURE_MOTION === "1") await page.screenshot({ path: "docs/art/previews/issue177-status-response-1024.png" });
+});

@@ -7,11 +7,13 @@
 .result-fx-mark[data-kind="buff"]{background:#397258;box-shadow:0 3px 0 #264a3c,0 4px 14px #112b45b0}
 .result-fx-mark[data-kind="debuff"]{background:#715093;box-shadow:0 3px 0 #43315c,0 4px 14px #112b45b0}
 .result-fx-mark[data-kind="damage"]::before{content:"";position:absolute;z-index:-1;inset:-13px;border:2px solid #f39bac;border-radius:50%;animation:impact-ring .42s ease-out both}
+.result-fx-mark:is([data-kind="buff"],[data-kind="debuff"])::before{content:"";position:absolute;z-index:-1;inset:-12px;border:2px solid #c3f2d2;border-radius:50%;animation:impact-ring .42s ease-out both}
+.result-fx-mark[data-kind="debuff"]::before{border-color:#dfbff5}
 @keyframes result-pop{0%{opacity:0;transform:translate(-50%,8px) scale(.8)}35%{opacity:1;transform:translate(-50%,-13px) scale(1.08)}100%{opacity:1;transform:translate(-50%,-19px) scale(1)}}
 @keyframes impact-ring{from{opacity:.9;transform:scale(.55)}to{opacity:0;transform:scale(1.65)}}
 .game[data-effects="quiet"] .result-fx-mark{animation:none;transform:translate(-50%,0);box-shadow:none}
-.game[data-effects="quiet"] .result-fx-mark[data-kind="damage"]::before{display:none}
-@media(prefers-reduced-motion:reduce){.result-fx-mark{animation:none;transform:translate(-50%,0)!important;box-shadow:none}.result-fx-mark[data-kind="damage"]::before{display:none}}
+.game[data-effects="quiet"] .result-fx-mark::before{display:none}
+@media(prefers-reduced-motion:reduce){.result-fx-mark{animation:none;transform:translate(-50%,0)!important;box-shadow:none}.result-fx-mark::before{display:none}}
 @media(max-width:760px){.result-fx-mark{top:43%;padding:3px 6px;min-width:34px;font-size:15px}}
 /* Pose images must not size the actor slot when idle/attack/hit sources change. */
 .stage .ally-slot{width:min(32vw,440px)}
