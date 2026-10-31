@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { cropFor, projectPath, PROFILES } from "../../scripts/art-derivatives.mjs";
+
+const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
 describe("candidate art derivatives", () => {
   it("keeps the focal point within a wide hand crop", () => {
@@ -20,5 +24,20 @@ describe("candidate art derivatives", () => {
   it("rejects paths outside the repository", () => {
     expect(() => projectPath("../../outside.png")).toThrow(/escapes repository/);
     expect(projectPath("docs/art/production/derivatives/issue255-config.json")).toMatch(/issue255-config\.json$/);
+  });
+
+  it("keeps all committed candidates and derivatives tied to their source SHA", () => {
+    const manifest = JSON.parse(readFileSync(projectPath("docs/art/production/derivatives/issue255-manifest.json"), "utf8"));
+    expect(manifest.records).toHaveLength(30);
+    expect(new Set(manifest.records.map((item) => item.id))).toHaveProperty("size", 5);
+    for (const item of manifest.records) {
+      expect(sha256(readFileSync(projectPath(item.path)))).toBe(item.sha256);
+      expect(sha256(readFileSync(projectPath(item.sourcePath)))).toBe(item.sourceSha256);
+      expect(item.sourceState).toBe("draft-candidate");
+      expect(item.editableSource).toBeNull();
+      expect(item.rightsReview).toBe("pending");
+      expect(item.visualReview).toBe("pending");
+      expect([item.width, item.height]).toEqual(PROFILES[item.profile]);
+    }
   });
 });
