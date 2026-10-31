@@ -16,6 +16,7 @@ import { candidateBattleArt, demoBattleArt } from "./demo-art.js";
 import { cardFxForUse } from "./card-fx.js";
 import { recordCombatResult } from "../domain/combat-action-log.js";
 import { MOTION_MS } from "./motion-timing.js";
+import { resultFxForTransition } from "./result-fx.js";
 import { renderClubSelect, renderCompendium, renderRunCombatLog, renderRunEvent, renderRunHistory, renderRunMap, renderRunRest, renderRunResult, renderRunReward, renderRunShop, renderRunTitle, renderRunTreasure, renderSaveRecovery } from "./run-view.js";
 import { deserializeRunSession, serializeRunSession } from "../domain/save.js";
 import { browserHistoryStore, browserPlaytestStore, browserProgressStore, browserSaveStore, type SaveStore } from "./save-store.js";
@@ -84,7 +85,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (!parsedMetrics || parsedMetrics.runId !== session.runId) metrics = visitPlaytestNode(metrics, run.map.nodes.find((node) => node.id === run.map.currentNodeId)!);
     } catch { metricsLoadError = true; }
   }
-  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
+  const view: BattleView = { art: previewArt ? candidateBattleArt : demoBattleArt, baseTurnMs: requireSetting(config.playerTurnMs), potionModeKey: requireSetting(config.potionModeKey), potionSlotLimit: requireSetting(config.potionSlots), lowStimulus, message: "カード名をタイプして発動。誤入力は無視されます。", selectedDiscardId: null, selectedDebuff: null, motion: null, motionStartedAtMs: null, cardFx: null, resultFx: null, animationNowMs: clock.nowMs(), layoutPreviewAllies: layoutPreview === 2 || layoutPreview === 3 ? layoutPreview : undefined };
   const artPreloads: HTMLImageElement[] = [];
   let preloadedClubId: string | null = null;
   const preloadClubArt = (clubId: string) => {
@@ -118,6 +119,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
   const startCombat = () => {
     preloadClubArt(run.clubId);
     view.cardFx = null;
+    view.resultFx = null;
     if (metrics) metrics = recordPlaytestBattle(metrics, run);
     run = fireRelic(run, "combat_start");
     run = beginPlayerTurn(run, clock, config, demoContent);
@@ -214,14 +216,16 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     }, config, demoContent);
     audio.play("card");
     view.message = `${card.input.text} を発動`;
+    const resolved = fireRelic(updated, "card_used", { cardInstanceId: instanceId });
     view.cardFx = cardFx;
+    view.resultFx = resultFxForTransition(state, resolved, view.layoutPreviewAllies ?? 1, clock.nowMs());
     setMotion("hero");
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
     const currentGeneration = generation;
     const startedAtMs = view.motionStartedAtMs;
-    window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hero" && view.motionStartedAtMs === startedAtMs) { view.cardFx = null; setMotion(null); render(); } }, MOTION_MS.hero);
-    return fireRelic(updated, "card_used", { cardInstanceId: instanceId });
+    window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hero" && view.motionStartedAtMs === startedAtMs) { view.cardFx = null; view.resultFx = null; setMotion(null); render(); } }, MOTION_MS.hero);
+    return resolved;
   };
 
   function handleError(error: unknown): void {
@@ -240,6 +244,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     enemyPending = true;
     audio.play("enemy");
     setMotion("enemy");
+    view.resultFx = null;
     view.message = "敵が予告した行動を実行します。";
     render();
     const currentGeneration = generation;
@@ -247,12 +252,14 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
       if (currentGeneration !== generation) return;
       try {
         let receivedHit = false;
+        const beforeEnemyAction = run;
         run = completeEnemyPhase(run, (state) => resolveEnemyIntents(state, demoEnemyAi, demoContent,
           (live, enemyInstanceId, intent) => executeEnemyIntentEffects(live, enemyInstanceId, intent, demoEnemyAi, demoContent, config,
             (hitState, hpLost) => {
               if (hpLost > 0) receivedHit = true;
               return fireRelic(hitState, "hit_taken", { hpLost });
             })), config);
+        view.resultFx = resultFxForTransition(beforeEnemyAction, run, view.layoutPreviewAllies ?? 1, clock.nowMs());
         enemyPending = false;
         if (receivedHit) audio.play("hit");
         setMotion(receivedHit ? "hit" : null);
@@ -262,7 +269,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
           view.message = "次のターン。カード名をタイプしてください。";
         } else settleIfFinished();
         render();
-        if (receivedHit) window.setTimeout(() => { if (generation === currentGeneration && view.motion === "hit") { setMotion(null); render(); } }, MOTION_MS.hit);
+        window.setTimeout(() => { if (generation === currentGeneration && view.motion === (receivedHit ? "hit" : null)) { view.resultFx = null; setMotion(null); render(); } }, MOTION_MS.hit);
       } catch (error) { handleError(error); }
     }, MOTION_MS.enemyPhase);
   }
@@ -272,6 +279,7 @@ export function mountApp(root: HTMLElement, store: SaveStore = browserSaveStore(
     enemyPending = false;
     setMotion(null);
     view.cardFx = null;
+    view.resultFx = null;
     view.selectedDiscardId = null;
     view.selectedDebuff = null;
     session = createRunSession(0, "literature-demo", demoContent, mapOptions);
