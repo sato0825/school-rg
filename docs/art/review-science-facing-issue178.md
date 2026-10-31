@@ -4,6 +4,8 @@
 
 戦闘画面の味方は左、敵は右。旧待機・発動・被弾 v1 は科学部だけ顔と発動の鉛筆が左へ向き、敵との対面が読みにくかった。新 v2 は3状態とも顔・視線を右へ向け、発動時の鉛筆も右へ向けた。旧ファイルを保持し、`club-presentation.ts` の科学部参照だけ v2 へ変更した。他の4部活の待機絵は右または正面寄りで、この問題は確認しなかった。
 
+[同条件の比較ボード](review-board.html#serious-student)に台帳から旧 v1 と新 v2 の各3ポーズを並べた。![科学部の比較ボード](previews/issue178-science-comparison-board.png)
+
 | 状態 | 旧 v1 | 新 v2 | 目視結果 |
 | --- | --- | --- | --- |
 | 待機 | ![旧待機](candidates/serious-student-idle-candidate-v1.png) | ![新待機](candidates/serious-student-idle-candidate-v2.png) | 敵を見る右向き。年齢感、髪、制服、鞄、ノートの特徴は残る。 |
